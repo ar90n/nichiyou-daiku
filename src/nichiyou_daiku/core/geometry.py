@@ -243,7 +243,9 @@ def _validate_normalized_value(value: float, name: str) -> None:
         raise ValueError(f"{name} must be between 0.0 and 1.0, got {value}")
 
 
-def get_face_tangents(face: Face) -> Tuple[Tuple[float, float, float], Tuple[float, float, float]]:
+def get_face_tangents(
+    face: Face,
+) -> Tuple[Tuple[float, float, float], Tuple[float, float, float]]:
     """Get the two tangent vectors for a face (U and V directions).
 
     Args:
@@ -252,7 +254,9 @@ def get_face_tangents(face: Face) -> Tuple[Tuple[float, float, float], Tuple[flo
     Returns:
         Tuple of (u_tangent, v_tangent) unit vectors
     """
-    tangents: Dict[Face, Tuple[Tuple[float, float, float], Tuple[float, float, float]]] = {
+    tangents: Dict[
+        Face, Tuple[Tuple[float, float, float], Tuple[float, float, float]]
+    ] = {
         Face.TOP: ((1.0, 0.0, 0.0), (0.0, 1.0, 0.0)),  # U=X, V=Y
         Face.BOTTOM: ((1.0, 0.0, 0.0), (0.0, -1.0, 0.0)),  # U=X, V=-Y
         Face.RIGHT: ((1.0, 0.0, 0.0), (0.0, 0.0, 1.0)),  # U=X, V=Z

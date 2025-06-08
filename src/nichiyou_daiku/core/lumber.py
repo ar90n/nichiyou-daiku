@@ -1,7 +1,8 @@
 """Lumber data models for wood pieces.
 
 This module provides the core data structures for representing lumber pieces
-in a woodworking project, including their dimensions, positions, and orientations.
+in a woodworking project. Position and rotation are determined by graph traversal,
+not stored in the lumber piece itself.
 """
 
 from dataclasses import dataclass
@@ -16,10 +17,14 @@ Dimensions3D = Tuple[float, float, float]
 
 
 class LumberType(Enum):
-    """Standard lumber dimensions."""
+    """Standard lumber dimensions in inches (nominal size)."""
 
-    LUMBER_1X = "1x"
-    LUMBER_2X = "2x"
+    LUMBER_1X4 = "1x4"
+    LUMBER_1X8 = "1x8"
+    LUMBER_1X16 = "1x16"
+    LUMBER_2X4 = "2x4"
+    LUMBER_2X8 = "2x8"
+    LUMBER_2X16 = "2x16"
 
 
 class Face(Enum):
@@ -43,21 +48,20 @@ class LumberSpec:
 
 @dataclass(frozen=True)
 class LumberPiece:
-    """A single piece of lumber with position and orientation.
+    """A single piece of lumber.
+
+    Position and rotation are not stored here but calculated
+    through graph traversal from a specified origin point.
 
     Attributes:
         id: Unique identifier for this lumber piece
-        lumber_type: Type of lumber (1x or 2x)
+        lumber_type: Type of lumber (e.g., 2x4, 1x8)
         length: Length of the lumber piece in millimeters
-        position: 3D position (x, y, z) in millimeters
-        rotation: 3D rotation (rx, ry, rz) in degrees
     """
 
     id: str
     lumber_type: LumberType
     length: float
-    position: Position3D = (0.0, 0.0, 0.0)
-    rotation: Rotation3D = (0.0, 0.0, 0.0)
 
     def get_dimensions(self) -> Dimensions3D:
         """Get the dimensions (width, height, length) of the lumber piece.
@@ -65,34 +69,33 @@ class LumberPiece:
         Returns:
             Tuple of (width, height, length) in millimeters
 
-        >>> piece = LumberPiece("test", LumberType.LUMBER_2X, 1000.0)
+        >>> piece = LumberPiece("test", LumberType.LUMBER_2X4, 1000.0)
         >>> piece.get_dimensions()
         (38.0, 89.0, 1000.0)
         """
         spec = _get_lumber_spec(self.lumber_type)
         return (spec.width, spec.height, self.length)
 
-    def get_face_center_3d(self, face: Face) -> Position3D:
-        """Get the 3D coordinates of the center of the specified face.
+    def get_face_center_local(self, face: Face) -> Position3D:
+        """Get the center of the specified face in local coordinates.
+
+        Local coordinates assume the piece center is at origin (0, 0, 0)
+        with no rotation applied.
 
         Args:
             face: The face to get the center of
 
         Returns:
-            3D position (x, y, z) of the face center in millimeters
+            3D position (x, y, z) of the face center in local coordinates
 
-        >>> piece = LumberPiece("test", LumberType.LUMBER_2X, 1000.0)
-        >>> piece.get_face_center_3d(Face.TOP)
+        >>> piece = LumberPiece("test", LumberType.LUMBER_2X4, 1000.0)
+        >>> piece.get_face_center_local(Face.TOP)
         (0.0, 0.0, 44.5)
-        >>> piece.get_face_center_3d(Face.FRONT)
+        >>> piece.get_face_center_local(Face.FRONT)
         (500.0, 0.0, 0.0)
         """
         width, height, length = self.get_dimensions()
-        x, y, z = self.position
-
-        # Calculate face center offset from piece center
-        offset = _get_face_offset(face, width, height, length)
-        return (x + offset[0], y + offset[1], z + offset[2])
+        return _get_face_offset(face, width, height, length)
 
 
 # Module-level functions following functional programming approach
@@ -101,15 +104,23 @@ class LumberPiece:
 def _get_lumber_spec(lumber_type: LumberType) -> LumberSpec:
     """Get the standard specification for a lumber type.
 
+    Actual dimensions in millimeters for nominal inch sizes.
+
     Args:
         lumber_type: Type of lumber
 
     Returns:
         LumberSpec with standard dimensions in millimeters
     """
+    # Actual dimensions for dried lumber (mm)
+    # 1x nominal: 19mm thick, 2x nominal: 38mm thick
     specs: Dict[LumberType, LumberSpec] = {
-        LumberType.LUMBER_1X: LumberSpec(19.0, 38.0),
-        LumberType.LUMBER_2X: LumberSpec(38.0, 89.0),
+        LumberType.LUMBER_1X4: LumberSpec(19.0, 89.0),  # 3/4" x 3.5"
+        LumberType.LUMBER_1X8: LumberSpec(19.0, 184.0),  # 3/4" x 7.25"
+        LumberType.LUMBER_1X16: LumberSpec(19.0, 387.0),  # 3/4" x 15.25"
+        LumberType.LUMBER_2X4: LumberSpec(38.0, 89.0),  # 1.5" x 3.5"
+        LumberType.LUMBER_2X8: LumberSpec(38.0, 184.0),  # 1.5" x 7.25"
+        LumberType.LUMBER_2X16: LumberSpec(38.0, 387.0),  # 1.5" x 15.25"
     }
     return specs[lumber_type]
 
