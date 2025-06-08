@@ -8,7 +8,8 @@ from dataclasses import dataclass
 from typing import List, Tuple, Optional
 import networkx as nx
 
-from nichiyou_daiku.core.lumber import LumberPiece
+from nichiyou_daiku.core.lumber import LumberPiece, Face
+from nichiyou_daiku.core.geometry import EdgePoint
 from nichiyou_daiku.connectors.aligned_screw import AlignedScrewJoint
 
 
@@ -23,13 +24,9 @@ class NodeData:
 
     Attributes:
         lumber_piece: The lumber piece this node represents
-        local_position: Position relative to parent (or world if root)
-        local_rotation: Rotation relative to parent (or world if root)
     """
 
     lumber_piece: LumberPiece
-    local_position: Position3D = (0.0, 0.0, 0.0)
-    local_rotation: Rotation3D = (0.0, 0.0, 0.0)
 
 
 @dataclass(frozen=True)
@@ -59,18 +56,11 @@ class WoodworkingGraph:
 
     # Node operations
 
-    def add_lumber_piece(
-        self,
-        lumber: LumberPiece,
-        position: Position3D = (0.0, 0.0, 0.0),
-        rotation: Rotation3D = (0.0, 0.0, 0.0),
-    ) -> None:
+    def add_lumber_piece(self, lumber: LumberPiece) -> None:
         """Add a lumber piece as a node in the graph.
 
         Args:
             lumber: The lumber piece to add
-            position: Local position relative to parent
-            rotation: Local rotation relative to parent
 
         Raises:
             ValueError: If lumber ID already exists in graph
@@ -78,9 +68,7 @@ class WoodworkingGraph:
         if lumber.id in self._graph:
             raise ValueError(f"Lumber piece '{lumber.id}' already exists in graph")
 
-        node_data = NodeData(
-            lumber_piece=lumber, local_position=position, local_rotation=rotation
-        )
+        node_data = NodeData(lumber_piece=lumber)
         self._graph.add_node(lumber.id, data=node_data)
 
     def has_lumber(self, lumber_id: str) -> bool:
@@ -204,24 +192,16 @@ class WoodworkingGraph:
 # Functional helpers for graph operations
 
 
-def create_lumber_node(
-    lumber: LumberPiece,
-    position: Position3D = (0.0, 0.0, 0.0),
-    rotation: Rotation3D = (0.0, 0.0, 0.0),
-) -> NodeData:
+def create_lumber_node(lumber: LumberPiece) -> NodeData:
     """Create a node data instance for a lumber piece.
 
     Args:
         lumber: The lumber piece
-        position: Local position
-        rotation: Local rotation
 
     Returns:
         NodeData instance
     """
-    return NodeData(
-        lumber_piece=lumber, local_position=position, local_rotation=rotation
-    )
+    return NodeData(lumber_piece=lumber)
 
 
 def create_joint_edge(
@@ -239,10 +219,12 @@ def create_joint_edge(
     return EdgeData(joint=joint, assembly_order=assembly_order)
 
 
-def calculate_world_position(
+def calculate_piece_origin_position(
     graph: WoodworkingGraph, lumber_id: str, origin_id: Optional[str] = None
 ) -> Position3D:
-    """Calculate world position of a lumber piece by traversing the graph.
+    """Calculate the origin position of a lumber piece.
+
+    The origin is at the left-top corner of the bottom face.
 
     Args:
         graph: The woodworking graph
@@ -250,60 +232,204 @@ def calculate_world_position(
         origin_id: ID of origin piece (defaults to lumber_id itself)
 
     Returns:
-        World position coordinates
-
-    Note:
-        This is a simplified implementation. Full implementation would
-        traverse the graph from origin to target, accumulating transforms.
+        World position of the lumber piece origin
     """
     if origin_id is None or lumber_id == origin_id:
-        # Return local position as world position
-        node_data = graph.get_lumber_data(lumber_id)
-        return node_data.local_position
-
-    # For connected pieces, accumulate positions
-    # This is a simplified version - real implementation would use
-    # graph traversal and proper 3D transformations
-    try:
-        path = nx.shortest_path(graph._graph, origin_id, lumber_id)
-        total_x, total_y, total_z = 0.0, 0.0, 0.0
-
-        for node_id in path:
-            node_data = graph.get_lumber_data(node_id)
-            pos = node_data.local_position
-            total_x += pos[0]
-            total_y += pos[1]
-            total_z += pos[2]
-
-        return (total_x, total_y, total_z)
-    except nx.NetworkXNoPath:
-        # No path found, return local position
-        node_data = graph.get_lumber_data(lumber_id)
-        return node_data.local_position
+        # This is the origin piece - its origin is at world origin
+        return (0.0, 0.0, 0.0)
+    
+    # Get the center position for connected pieces
+    center_pos = _calculate_piece_center_position_connected(graph, lumber_id, origin_id)
+    
+    # Get lumber dimensions to calculate offset from center to origin
+    lumber = graph.get_lumber_data(lumber_id).lumber_piece
+    dims = lumber.get_dimensions()
+    width, height, length = dims
+    
+    # Origin is at left-top of bottom face
+    # Center to origin offset: (-length/2, -width/2, -height/2)
+    origin_pos = (
+        center_pos[0] - length / 2,
+        center_pos[1] - width / 2,
+        center_pos[2] - height / 2,
+    )
+    
+    return origin_pos
 
 
-def calculate_world_rotation(
-    graph: WoodworkingGraph, lumber_id: str, origin_id: Optional[str] = None
-) -> Rotation3D:
-    """Calculate world rotation of a lumber piece by traversing the graph.
+
+
+def calculate_world_position(
+    graph: WoodworkingGraph, lumber_id: str, face: Face, origin_id: Optional[str] = None
+) -> Position3D:
+    """Calculate world position of a face center on a lumber piece.
 
     Args:
         graph: The woodworking graph
-        lumber_id: ID of lumber to calculate rotation for
+        lumber_id: ID of lumber piece
+        face: Which face to get the center of
         origin_id: ID of origin piece (defaults to lumber_id itself)
 
     Returns:
-        World rotation angles (rx, ry, rz) in degrees
-
-    Note:
-        This is a simplified implementation. Full implementation would
-        traverse the graph and properly compose rotations.
+        World position of the face center
     """
-    node_data = graph.get_lumber_data(lumber_id)
+    # Get the lumber piece
+    lumber = graph.get_lumber_data(lumber_id).lumber_piece
 
+    # For single pieces, their center is at world origin
+    # For connected pieces, we calculate based on graph traversal
     if origin_id is None or lumber_id == origin_id:
-        return node_data.local_rotation
+        # Single piece - center at origin
+        local_face_center = lumber.get_face_center_local(face)
+        return local_face_center
+    
+    # Get piece center position through graph traversal
+    piece_center = _calculate_piece_center_position_connected(
+        graph, lumber_id, origin_id
+    )
 
-    # Simplified - just return local rotation
-    # Real implementation would compose rotations along path
-    return node_data.local_rotation
+    # Get face center in local coordinates (relative to piece center)
+    local_face_center = lumber.get_face_center_local(face)
+
+    # Add to world center position
+    world_pos = (
+        piece_center[0] + local_face_center[0],
+        piece_center[1] + local_face_center[1],
+        piece_center[2] + local_face_center[2],
+    )
+
+    return world_pos
+
+
+# Helper functions for position calculations
+
+
+def _calculate_piece_center_position_connected(
+    graph: WoodworkingGraph, lumber_id: str, origin_id: str
+) -> Position3D:
+    """Calculate center position for connected pieces.
+    
+    For connected pieces, the origin piece has its origin (not center) at (0,0,0).
+    """
+    # Get origin piece to find its center offset
+    origin_lumber = graph.get_lumber_data(origin_id).lumber_piece
+    origin_dims = origin_lumber.get_dimensions()
+    origin_width, origin_height, origin_length = origin_dims
+    
+    # Origin piece center is offset from its origin
+    origin_center = (origin_length/2, origin_width/2, origin_height/2)
+    
+    # If this is the origin piece, return its center
+    if lumber_id == origin_id:
+        return origin_center
+    
+    # Find path from origin to target
+    try:
+        path = nx.shortest_path(graph._graph, origin_id, lumber_id)
+    except nx.NetworkXNoPath:
+        raise ValueError(f"No path from '{origin_id}' to '{lumber_id}'")
+
+    # Start at origin piece center
+    current_pos = origin_center
+    current_rot = (0.0, 0.0, 0.0)
+
+    # Traverse path and accumulate transformations
+    for i in range(len(path) - 1):
+        src_id = path[i]
+        dst_id = path[i + 1]
+
+        # Get the joint connecting these pieces
+        edge_data = graph.get_joint_data(src_id, dst_id)
+        joint = edge_data.joint
+
+        # Get lumber pieces
+        src_lumber = graph.get_lumber_data(src_id).lumber_piece
+        dst_lumber = graph.get_lumber_data(dst_id).lumber_piece
+
+        # Calculate position offset based on joint connection
+        dst_offset = _calculate_joint_offset(
+            src_lumber, dst_lumber, joint, current_rot
+        )
+        
+        # Update position
+        current_pos = (
+            current_pos[0] + dst_offset[0],
+            current_pos[1] + dst_offset[1],
+            current_pos[2] + dst_offset[2],
+        )
+
+    return current_pos
+
+
+def _calculate_edge_point_world(
+    lumber: LumberPiece,
+    edge_point: EdgePoint,
+    origin_pos: Position3D,
+    rotation: Rotation3D,
+) -> Position3D:
+    """Calculate world position of an edge point on a lumber piece.
+    
+    Args:
+        lumber: The lumber piece
+        edge_point: The edge point to calculate
+        origin_pos: World position of lumber origin
+        rotation: World rotation of lumber
+        
+    Returns:
+        World position of the edge point
+    """
+    # This is a simplified implementation
+    # Full implementation would calculate exact edge position
+    # based on face intersection and parametric position
+    return origin_pos
+
+
+def _calculate_joint_offset(
+    src_lumber: LumberPiece,
+    dst_lumber: LumberPiece,
+    joint: AlignedScrewJoint,
+    current_rotation: Rotation3D,
+) -> Position3D:
+    """Calculate offset for destination piece center based on joint alignment.
+    
+    Args:
+        src_lumber: Source lumber piece
+        dst_lumber: Destination lumber piece  
+        joint: The joint connecting them
+        current_rotation: Current world rotation
+        
+    Returns:
+        Offset to apply for destination piece center
+    """
+    # Get dimensions
+    src_dims = src_lumber.get_dimensions()
+    dst_dims = dst_lumber.get_dimensions()  
+    src_width, src_height, src_length = src_dims
+    dst_width, dst_height, dst_length = dst_dims
+    
+    # Calculate center-to-center offset based on connected faces
+    if joint.src_face == Face.FRONT and joint.dst_face == Face.BACK:
+        # End-to-end connection along X axis
+        # When connecting FRONT of src to BACK of dst:
+        # src FRONT is at src_center + src_length/2
+        # dst BACK is at dst_center - dst_length/2
+        # They should align, so: dst_center = src_center + src_length
+        return (src_length/2 + dst_length/2, 0.0, 0.0)
+    elif joint.src_face == Face.BACK and joint.dst_face == Face.FRONT:
+        # Reverse connection
+        return (-src_length/2 - dst_length/2, 0.0, 0.0)
+    elif joint.src_face == Face.RIGHT and joint.dst_face == Face.LEFT:
+        # Side-by-side connection along Y axis
+        return (0.0, src_width/2 + dst_width/2, 0.0)
+    elif joint.src_face == Face.LEFT and joint.dst_face == Face.RIGHT:
+        # Reverse connection
+        return (0.0, -src_width/2 - dst_width/2, 0.0)
+    elif joint.src_face == Face.TOP and joint.dst_face == Face.BOTTOM:
+        # Stacked connection along Z axis
+        return (0.0, 0.0, src_height/2 + dst_height/2)
+    elif joint.src_face == Face.BOTTOM and joint.dst_face == Face.TOP:
+        # Reverse connection
+        return (0.0, 0.0, -src_height/2 - dst_height/2)
+    else:
+        # More complex alignment - would need full calculation
+        return (0.0, 0.0, 0.0)
