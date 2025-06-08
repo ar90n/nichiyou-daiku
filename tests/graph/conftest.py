@@ -1,7 +1,6 @@
 """Shared fixtures for graph tests."""
 
 import pytest
-from typing import List
 
 from nichiyou_daiku.graph.woodworking_graph import WoodworkingGraph
 from nichiyou_daiku.core.lumber import LumberPiece, LumberType, Face
