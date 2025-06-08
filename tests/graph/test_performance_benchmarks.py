@@ -2,7 +2,7 @@
 
 import pytest
 import time
-from typing import List, Dict, Any
+from typing import List, Dict
 
 from nichiyou_daiku.graph.woodworking_graph import WoodworkingGraph
 from nichiyou_daiku.core.lumber import LumberPiece, LumberType, Face
@@ -155,7 +155,7 @@ class TestGraphCreationPerformance:
         assert piece_time < 1.0  # 1000 pieces in under 1 second
         assert joint_time < 5.0  # ~2700 joints in under 5 seconds
 
-        print(f"\nLarge assembly creation:")
+        print("\nLarge assembly creation:")
         print(f"  Pieces: {len(pieces)} in {piece_time:.2f}s")
         print(f"  Joints: {connections} in {joint_time:.2f}s")
 
@@ -330,7 +330,7 @@ class TestGraphManipulationPerformance:
             graph2.add_lumber_piece(piece)
 
         # Time merge operation
-        result = timer.time_operation("merge", graph1.merge_graph, graph2)
+        timer.time_operation("merge", graph1.merge_graph, graph2)
 
         stats = timer.get_stats("merge")
         assert stats["avg"] < 0.1  # Under 100ms
@@ -434,7 +434,7 @@ class TestConcurrentAccess:
                 node = f"beam_{random.randint(0, grid_size-1)}_{random.randint(0, grid_size-1)}"
                 timer.time_operation("read_data", graph.get_lumber_data, node)
             elif op == "path":
-                src = f"beam_0_0"
+                src = "beam_0_0"
                 dst = f"beam_{random.randint(0, grid_size-1)}_{random.randint(0, grid_size-1)}"
                 timer.time_operation("read_path", graph.find_path, src, dst)
 
@@ -480,12 +480,12 @@ def test_performance_summary(timer):
         if size <= 100:  # Skip expensive ops on huge graphs
             # Pathfinding
             start = time.perf_counter()
-            path = graph.find_path("beam0", f"beam{size-1}")
+            graph.find_path("beam0", f"beam{size-1}")
             path_time = time.perf_counter() - start
             print(f"  Pathfinding: {path_time*1000:.2f}ms")
 
             # Component detection
             start = time.perf_counter()
-            components = graph.get_connected_components()
+            graph.get_connected_components()
             comp_time = time.perf_counter() - start
             print(f"  Component detection: {comp_time*1000:.2f}ms")

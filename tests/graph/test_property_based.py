@@ -1,6 +1,5 @@
 """Property-based tests for graph invariants using hypothesis."""
 
-import pytest
 from hypothesis import given, strategies as st, assume, settings, HealthCheck
 from hypothesis.stateful import RuleBasedStateMachine, rule, invariant, initialize
 
@@ -446,7 +445,7 @@ class TestPropertyBasedValidation:
             assert isinstance(result, ValidationSuccess)
         else:
             assert isinstance(result, ValidationError)
-            assert result.has_errors == True
+            assert result.has_errors
 
     @given(
         pieces=st.lists(

@@ -1,8 +1,5 @@
 """Tests for graph validation module."""
 
-import pytest
-from typing import List
-
 from nichiyou_daiku.graph.woodworking_graph import WoodworkingGraph
 from nichiyou_daiku.graph.validation import (
     ValidationMode,

@@ -1,20 +1,15 @@
 """Extended tests for graph manipulation operations."""
 
 import pytest
-import networkx as nx
-from typing import List, Set, Tuple
-
-# Skip all tests in this file as the methods being tested are not yet implemented
-pytestmark = pytest.mark.skip(reason="Graph manipulation methods not yet implemented")
-
 from nichiyou_daiku.graph.woodworking_graph import (
     WoodworkingGraph,
-    NodeData,
-    EdgeData,
 )
 from nichiyou_daiku.core.lumber import LumberPiece, LumberType, Face
 from nichiyou_daiku.core.geometry import EdgePoint
 from nichiyou_daiku.connectors.aligned_screw import AlignedScrewJoint
+
+# Skip all tests in this file as the methods being tested are not yet implemented
+pytestmark = pytest.mark.skip(reason="Graph manipulation methods not yet implemented")
 
 
 class TestAdvancedGraphManipulation:

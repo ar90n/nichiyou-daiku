@@ -15,7 +15,6 @@ from nichiyou_daiku.graph.woodworking_graph import (
     calculate_piece_origin_position,
 )
 from nichiyou_daiku.core.lumber import Face
-from nichiyou_daiku.core.geometry import EdgePoint
 
 
 # Type aliases
