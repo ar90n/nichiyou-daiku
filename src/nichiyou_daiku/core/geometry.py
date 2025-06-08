@@ -25,7 +25,7 @@ class EdgeType(Enum):
     """Type of edge based on its orientation."""
 
     LENGTH_WISE = "length_wise"  # Along the length axis (X)
-    WIDTH_WISE = "width_wise"    # Along the width axis (Y)
+    WIDTH_WISE = "width_wise"  # Along the width axis (Y)
     HEIGHT_WISE = "height_wise"  # Along the height axis (Z)
 
 

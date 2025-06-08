@@ -36,16 +36,16 @@ def lumber_2x4_1000():
 def three_piece_chain():
     """Provide a graph with three pieces connected in a chain."""
     graph = WoodworkingGraph()
-    
+
     # Create three pieces
     lumber1 = LumberPiece("beam1", LumberType.LUMBER_2X4, 1000.0)
     lumber2 = LumberPiece("beam2", LumberType.LUMBER_2X4, 800.0)
     lumber3 = LumberPiece("beam3", LumberType.LUMBER_2X4, 1000.0)
-    
+
     graph.add_lumber_piece(lumber1)
     graph.add_lumber_piece(lumber2)
     graph.add_lumber_piece(lumber3)
-    
+
     # Connect them in a chain
     joint = AlignedScrewJoint(
         src_face=Face.FRONT,
@@ -53,10 +53,10 @@ def three_piece_chain():
         src_edge_point=EdgePoint(Face.FRONT, Face.TOP, 0.5),
         dst_edge_point=EdgePoint(Face.BACK, Face.TOP, 0.5),
     )
-    
+
     graph.add_joint("beam1", "beam2", joint, assembly_order=1)
     graph.add_joint("beam2", "beam3", joint, assembly_order=2)
-    
+
     return graph
 
 
@@ -64,7 +64,7 @@ def three_piece_chain():
 def square_frame():
     """Provide a graph forming a square frame."""
     graph = WoodworkingGraph()
-    
+
     # Create four pieces
     pieces = [
         LumberPiece("top", LumberType.LUMBER_2X4, 1000.0),
@@ -72,10 +72,10 @@ def square_frame():
         LumberPiece("bottom", LumberType.LUMBER_2X4, 1000.0),
         LumberPiece("left", LumberType.LUMBER_2X4, 1000.0),
     ]
-    
+
     for piece in pieces:
         graph.add_lumber_piece(piece)
-    
+
     # Connect in a square
     joint = AlignedScrewJoint(
         src_face=Face.FRONT,
@@ -83,12 +83,12 @@ def square_frame():
         src_edge_point=EdgePoint(Face.FRONT, Face.TOP, 0.5),
         dst_edge_point=EdgePoint(Face.BACK, Face.TOP, 0.5),
     )
-    
+
     graph.add_joint("top", "right", joint, assembly_order=1)
     graph.add_joint("right", "bottom", joint, assembly_order=2)
     graph.add_joint("bottom", "left", joint, assembly_order=3)
     graph.add_joint("left", "top", joint, assembly_order=4)
-    
+
     return graph
 
 
@@ -96,36 +96,36 @@ def square_frame():
 def disconnected_graph():
     """Provide a graph with disconnected components."""
     graph = WoodworkingGraph()
-    
+
     # Component 1: Two connected pieces
     lumber1 = LumberPiece("comp1_beam1", LumberType.LUMBER_2X4, 1000.0)
     lumber2 = LumberPiece("comp1_beam2", LumberType.LUMBER_2X4, 800.0)
-    
+
     graph.add_lumber_piece(lumber1)
     graph.add_lumber_piece(lumber2)
-    
+
     joint = AlignedScrewJoint(
         src_face=Face.TOP,
         dst_face=Face.TOP,
         src_edge_point=EdgePoint(Face.TOP, Face.RIGHT, 0.5),
         dst_edge_point=EdgePoint(Face.TOP, Face.LEFT, 0.5),
     )
-    
+
     graph.add_joint("comp1_beam1", "comp1_beam2", joint)
-    
+
     # Component 2: Two connected pieces
     lumber3 = LumberPiece("comp2_beam1", LumberType.LUMBER_2X4, 1200.0)
     lumber4 = LumberPiece("comp2_beam2", LumberType.LUMBER_2X4, 1200.0)
-    
+
     graph.add_lumber_piece(lumber3)
     graph.add_lumber_piece(lumber4)
-    
+
     graph.add_joint("comp2_beam1", "comp2_beam2", joint)
-    
+
     # Isolated piece
     lumber5 = LumberPiece("isolated", LumberType.LUMBER_2X4, 600.0)
     graph.add_lumber_piece(lumber5)
-    
+
     return graph
 
 
@@ -133,7 +133,7 @@ def disconnected_graph():
 def complex_assembly():
     """Provide a complex furniture-like assembly."""
     graph = WoodworkingGraph()
-    
+
     # Table-like structure with legs, frame, and top
     # Legs
     legs = [
@@ -142,7 +142,7 @@ def complex_assembly():
         LumberPiece("leg_bl", LumberType.LUMBER_2X4, 750.0),  # back-left
         LumberPiece("leg_br", LumberType.LUMBER_2X4, 750.0),  # back-right
     ]
-    
+
     # Frame pieces
     frame = [
         LumberPiece("frame_front", LumberType.LUMBER_2X4, 1200.0),
@@ -150,17 +150,17 @@ def complex_assembly():
         LumberPiece("frame_left", LumberType.LUMBER_2X4, 800.0),
         LumberPiece("frame_right", LumberType.LUMBER_2X4, 800.0),
     ]
-    
+
     # Top supports
     supports = [
         LumberPiece("support1", LumberType.LUMBER_2X4, 1200.0),
         LumberPiece("support2", LumberType.LUMBER_2X4, 1200.0),
     ]
-    
+
     # Add all pieces
     for piece in legs + frame + supports:
         graph.add_lumber_piece(piece)
-    
+
     # Joint for vertical connections
     vert_joint = AlignedScrewJoint(
         src_face=Face.TOP,
@@ -168,7 +168,7 @@ def complex_assembly():
         src_edge_point=EdgePoint(Face.TOP, Face.FRONT, 0.5),
         dst_edge_point=EdgePoint(Face.BOTTOM, Face.FRONT, 0.5),
     )
-    
+
     # Joint for horizontal connections
     horiz_joint = AlignedScrewJoint(
         src_face=Face.FRONT,
@@ -176,30 +176,30 @@ def complex_assembly():
         src_edge_point=EdgePoint(Face.FRONT, Face.TOP, 0.5),
         dst_edge_point=EdgePoint(Face.BACK, Face.TOP, 0.5),
     )
-    
+
     # Connect legs to frame
     graph.add_joint("leg_fl", "frame_front", vert_joint, assembly_order=1)
     graph.add_joint("leg_fr", "frame_front", vert_joint, assembly_order=2)
     graph.add_joint("leg_bl", "frame_back", vert_joint, assembly_order=3)
     graph.add_joint("leg_br", "frame_back", vert_joint, assembly_order=4)
-    
+
     graph.add_joint("leg_fl", "frame_left", vert_joint, assembly_order=5)
     graph.add_joint("leg_bl", "frame_left", vert_joint, assembly_order=6)
     graph.add_joint("leg_fr", "frame_right", vert_joint, assembly_order=7)
     graph.add_joint("leg_br", "frame_right", vert_joint, assembly_order=8)
-    
+
     # Connect frame pieces
     graph.add_joint("frame_front", "frame_left", horiz_joint, assembly_order=9)
     graph.add_joint("frame_front", "frame_right", horiz_joint, assembly_order=10)
     graph.add_joint("frame_back", "frame_left", horiz_joint, assembly_order=11)
     graph.add_joint("frame_back", "frame_right", horiz_joint, assembly_order=12)
-    
+
     # Add supports
     graph.add_joint("frame_left", "support1", horiz_joint, assembly_order=13)
     graph.add_joint("frame_right", "support1", horiz_joint, assembly_order=14)
     graph.add_joint("frame_left", "support2", horiz_joint, assembly_order=15)
     graph.add_joint("frame_right", "support2", horiz_joint, assembly_order=16)
-    
+
     return graph
 
 
@@ -207,16 +207,16 @@ def complex_assembly():
 def large_grid_graph():
     """Provide a large grid-structured graph for performance testing."""
     graph = WoodworkingGraph()
-    
+
     grid_size = 10
-    
+
     # Create grid of pieces
     for i in range(grid_size):
         for j in range(grid_size):
             piece_id = f"beam_{i}_{j}"
             piece = LumberPiece(piece_id, LumberType.LUMBER_2X4, 1000.0)
             graph.add_lumber_piece(piece)
-    
+
     # Connect in grid pattern
     joint = AlignedScrewJoint(
         src_face=Face.TOP,
@@ -224,24 +224,24 @@ def large_grid_graph():
         src_edge_point=EdgePoint(Face.TOP, Face.RIGHT, 0.5),
         dst_edge_point=EdgePoint(Face.TOP, Face.LEFT, 0.5),
     )
-    
+
     order = 1
     for i in range(grid_size):
         for j in range(grid_size):
             current = f"beam_{i}_{j}"
-            
+
             # Connect to right neighbor
             if j < grid_size - 1:
                 right = f"beam_{i}_{j+1}"
                 graph.add_joint(current, right, joint, assembly_order=order)
                 order += 1
-            
+
             # Connect to bottom neighbor
             if i < grid_size - 1:
                 bottom = f"beam_{i+1}_{j}"
                 graph.add_joint(current, bottom, joint, assembly_order=order)
                 order += 1
-    
+
     return graph
 
 
