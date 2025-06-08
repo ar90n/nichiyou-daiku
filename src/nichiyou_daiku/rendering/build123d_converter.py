@@ -1,6 +1,6 @@
 """Convert woodworking graph to build123d objects."""
 
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Dict
 import logging
 
 from build123d import Box, Compound, Location, Solid
@@ -61,26 +61,41 @@ def lumber_to_box(
     return box
 
 
-def graph_to_assembly(graph: WoodworkingGraph) -> Optional[Compound]:
+def graph_to_assembly(
+    graph: WoodworkingGraph,
+    positions: Optional[Dict[str, Position3D]] = None,
+    rotations: Optional[Dict[str, Rotation3D]] = None,
+) -> Optional[Compound]:
     """Convert a woodworking graph to a build123d assembly.
 
     This is a standalone function for Task 4.3.
 
     Args:
         graph: The woodworking graph to convert
+        positions: Optional mapping of node_id to position (x, y, z)
+        rotations: Optional mapping of node_id to rotation (rx, ry, rz)
 
     Returns:
         A build123d Compound containing all pieces,
         or None if graph is empty
     """
+    # Default empty dicts if not provided
+    if positions is None:
+        positions = {}
+    if rotations is None:
+        rotations = {}
+
     # Collect all boxes
     boxes = []
     for node_id in graph._graph.nodes():
         node_data = graph.get_lumber_data(node_id)
         piece = node_data.lumber_piece
-        # For now, use default position/rotation
-        # In the future, this could come from graph node data
-        box = lumber_to_box(piece)
+
+        # Get position and rotation for this piece
+        position = positions.get(node_id)
+        rotation = rotations.get(node_id)
+
+        box = lumber_to_box(piece, position, rotation)
         boxes.append(box)
 
     # Return compound or None if no pieces
@@ -123,19 +138,26 @@ class GraphToBuild123D:
         """
         return lumber_to_box(piece, position, rotation)
 
-    def graph_to_compound(self, graph: WoodworkingGraph) -> Optional[Compound]:
+    def graph_to_compound(
+        self,
+        graph: WoodworkingGraph,
+        positions: Optional[Dict[str, Position3D]] = None,
+        rotations: Optional[Dict[str, Rotation3D]] = None,
+    ) -> Optional[Compound]:
         """Convert a woodworking graph to a build123d Compound.
 
         This method delegates to the standalone graph_to_assembly function.
 
         Args:
             graph: The woodworking graph to convert
+            positions: Optional mapping of node_id to position (x, y, z)
+            rotations: Optional mapping of node_id to rotation (rx, ry, rz)
 
         Returns:
             A build123d Compound containing all pieces,
             or None if graph is empty
         """
-        return graph_to_assembly(graph)
+        return graph_to_assembly(graph, positions, rotations)
 
     def convert(self, graph: WoodworkingGraph) -> Optional[Compound]:
         """Main conversion method.
