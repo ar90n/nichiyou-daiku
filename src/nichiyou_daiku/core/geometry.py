@@ -24,9 +24,9 @@ Line3D = Tuple[Point3D, Vector3D]  # Point and direction
 class EdgeType(Enum):
     """Type of edge based on its orientation."""
 
-    HORIZONTAL = "horizontal"  # Parallel to length
-    VERTICAL = "vertical"  # Parallel to height
-    WIDTH = "width"  # Parallel to width
+    LENGTH_WISE = "length_wise"  # Along the length axis (X)
+    WIDTH_WISE = "width_wise"    # Along the width axis (Y)
+    HEIGHT_WISE = "height_wise"  # Along the height axis (Z)
 
 
 @dataclass(frozen=True)
@@ -51,7 +51,7 @@ class EdgePosition:
 
         >>> edge = EdgePosition(Face.TOP, Face.RIGHT)
         >>> edge.get_edge_type()
-        <EdgeType.HORIZONTAL: 'horizontal'>
+        <EdgeType.WIDTH_WISE: 'width_wise'>
         """
         return _classify_edge_type(self.face1, self.face2)
 
@@ -202,25 +202,27 @@ def _classify_edge_type(face1: Face, face2: Face) -> EdgeType:
     """
     face_set = {face1, face2}
 
-    # Define edge classifications
+    # Define edge classifications based on axis orientation
     edge_classifications: Dict[EdgeType, list[Set[Face]]] = {
-        EdgeType.HORIZONTAL: [
-            {Face.TOP, Face.RIGHT},
-            {Face.TOP, Face.LEFT},
-            {Face.BOTTOM, Face.RIGHT},
-            {Face.BOTTOM, Face.LEFT},
-        ],
-        EdgeType.VERTICAL: [
-            {Face.FRONT, Face.RIGHT},
-            {Face.FRONT, Face.LEFT},
-            {Face.BACK, Face.RIGHT},
-            {Face.BACK, Face.LEFT},
-        ],
-        EdgeType.WIDTH: [
+        EdgeType.LENGTH_WISE: [  # Edges along X axis (length)
             {Face.TOP, Face.FRONT},
             {Face.TOP, Face.BACK},
             {Face.BOTTOM, Face.FRONT},
             {Face.BOTTOM, Face.BACK},
+            {Face.RIGHT, Face.LEFT},  # Also runs along length
+        ],
+        EdgeType.WIDTH_WISE: [  # Edges along Y axis (width)
+            {Face.TOP, Face.RIGHT},
+            {Face.TOP, Face.LEFT},
+            {Face.BOTTOM, Face.RIGHT},
+            {Face.BOTTOM, Face.LEFT},
+            {Face.FRONT, Face.BACK},  # Also runs along width
+        ],
+        EdgeType.HEIGHT_WISE: [  # Edges along Z axis (height)
+            {Face.FRONT, Face.RIGHT},
+            {Face.FRONT, Face.LEFT},
+            {Face.BACK, Face.RIGHT},
+            {Face.BACK, Face.LEFT},
         ],
     }
 
