@@ -1,0 +1,1 @@
+"""CI/CD pipeline modules for nichiyou-daiku."""

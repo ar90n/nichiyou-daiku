@@ -1,7 +1,8 @@
 # nichiyou-daiku (日曜大工)
 
-[![CI](https://github.com/YOUR_USERNAME/nichiyou-daiku/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/nichiyou-daiku/actions/workflows/ci.yml)
+[![Quality Assurance](https://github.com/YOUR_USERNAME/nichiyou-daiku/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/nichiyou-daiku/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/YOUR_USERNAME/nichiyou-daiku/branch/main/graph/badge.svg)](https://codecov.io/gh/YOUR_USERNAME/nichiyou-daiku)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 
 DIY Woodworking CAD Library - A Python library for designing furniture using standard lumber sizes and simple joinery methods.
 
@@ -55,41 +56,49 @@ make lint
 make format
 ```
 
-### CI/CD
+### Quality Assurance
 
-This project uses Dagger for CI/CD pipelines. The CI runs:
-- Tests with pytest and coverage (90% minimum)
-- Code formatting with black
-- Linting with ruff
-- Type checking with mypy
-- Package building
+This project uses Dagger for CI/CD pipelines. The Quality Assurance pipeline includes:
 
-#### Running CI Locally
+- ✅ **Testing**: pytest with 90% minimum coverage + docstring tests
+- 🎨 **Code Formatting**: black code formatter
+- 🔍 **Linting**: ruff static analysis
+- 🏷️ **Type Checking**: mypy type verification
+- 📦 **Building**: Python package distribution
+
+#### Running QA Locally
 
 ```bash
-# Quick CI run (Python 3.11 only)
+# Quick QA run (Python 3.11 only)
 make ci-local
 
-# Full CI run (all Python versions)
+# Full QA run (all Python versions)
 make ci-all
 ```
 
 #### GitHub Actions
 
-The CI automatically runs on:
+The Quality Assurance pipeline automatically runs on:
 - Push to main branch
 - Pull requests
 - Manual workflow dispatch
 
+See the [ci/](ci/) directory for pipeline implementation details.
+
 ## Project Structure
 
 ```
-nichiyou_daiku/
-├── core/           # Core data models
-├── connectors/     # Joinery implementations
-├── rendering/      # 3D visualization
-├── assembly/       # Instruction generation
-└── utils/          # Utilities
+nichiyou-daiku/
+├── src/
+│   └── nichiyou_daiku/
+│       ├── core/           # Core data models
+│       ├── connectors/     # Joinery implementations
+│       ├── rendering/      # 3D visualization
+│       ├── assembly/       # Instruction generation
+│       └── utils/          # Utilities
+├── tests/                  # Test suite
+├── ci/                     # CI/CD pipeline (Dagger)
+└── docs/                   # Documentation
 ```
 
 ## Contributing
