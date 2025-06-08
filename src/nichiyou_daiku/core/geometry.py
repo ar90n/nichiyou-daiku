@@ -424,6 +424,7 @@ def check_line_intersection(
     line1_end: Point3D,
     line2_start: Point3D,
     line2_end: Point3D,
+    tolerance: float = 1e-10,
 ) -> Tuple[bool, Optional[Point3D]]:
     """Check if two line segments intersect in 3D.
 
@@ -432,6 +433,7 @@ def check_line_intersection(
         line1_end: End point of first line segment
         line2_start: Start point of second line segment
         line2_end: End point of second line segment
+        tolerance: Maximum distance between lines to consider intersection
 
     Returns:
         Tuple of (intersects, intersection_point)
@@ -476,7 +478,7 @@ def check_line_intersection(
 
         # Check if points are close enough to be considered intersecting
         distance = np.linalg.norm(point2 - point1)
-        if distance < 1e-10:
+        if distance < tolerance:
             intersection_arr = (point1 + point2) / 2
             intersection = (
                 float(intersection_arr[0]),
@@ -525,7 +527,11 @@ def check_plane_intersection(
     # Calculate intersection point
     intersection = l0 + t * line_dir
 
-    return True, (float(intersection[0]), float(intersection[1]), float(intersection[2]))
+    return True, (
+        float(intersection[0]),
+        float(intersection[1]),
+        float(intersection[2]),
+    )
 
 
 # Coordinate transformation functions
@@ -587,19 +593,19 @@ def transform_to_local_coordinates(
 
 
 def project_point_onto_plane(
-    point: Point3D, plane_point: Point3D, plane_normal: Vector3D
+    point: Point3D, plane_normal: Vector3D, plane_point: Point3D
 ) -> Point3D:
     """Project a point onto a plane.
 
     Args:
         point: The point to project
-        plane_point: A point on the plane
         plane_normal: Normal vector of the plane
+        plane_point: A point on the plane
 
     Returns:
         Projected point on the plane
 
-    >>> project_point_onto_plane((3, 4, 5), (0, 0, 0), (0, 0, 1))
+    >>> project_point_onto_plane((3, 4, 5), (0, 0, 1), (0, 0, 0))
     (3.0, 4.0, 0.0)
     """
     p = np.array(point)
@@ -607,7 +613,11 @@ def project_point_onto_plane(
     n = np.array(plane_normal)
 
     # Normalize normal
-    n = n / np.linalg.norm(n)
+    norm = np.linalg.norm(n)
+    if norm < 1e-10:
+        # If normal is zero vector, return original point
+        return point
+    n = n / norm
 
     # Vector from plane point to point
     v = p - p0
