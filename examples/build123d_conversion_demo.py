@@ -4,6 +4,11 @@ This example shows how to:
 1. Create a simple furniture assembly (table frame)
 2. Convert it to build123d objects
 3. Visualize using build123d's show() method
+
+For more complex examples, see:
+- bookshelf_example.py: Traditional bookshelf and modular storage
+- workbench_example.py: Heavy-duty and mobile workbenches
+- parametric_furniture.py: Customizable, parametric designs
 """
 
 from nichiyou_daiku.core.lumber import LumberPiece, LumberType
@@ -60,7 +65,7 @@ def main():
     compound = graph_to_assembly(graph)
 
     if compound:
-        print(f"  Created compound with assembly")
+        print("  Created compound with assembly")
     else:
         print("  No compound created (empty graph)")
 
@@ -76,7 +81,7 @@ def main():
     compound2 = converter.graph_to_compound(graph)
 
     if compound2:
-        print(f"  Created compound with pieces")
+        print("  Created compound with pieces")
         print("\nTo visualize in build123d:")
         print("  from build123d import show")
         print("  show(compound)  # or show(compound2)")
