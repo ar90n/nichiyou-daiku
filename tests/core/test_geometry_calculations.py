@@ -262,3 +262,143 @@ class TestProjections:
         )
         dot_product = sum(t * n for t, n in zip(to_projected, plane_normal))
         assert abs(dot_product) < 1e-10
+
+    def test_project_point_with_zero_normal(self):
+        """Test projecting with zero normal vector returns original point."""
+        point = (1.0, 2.0, 3.0)
+        plane_normal = (0.0, 0.0, 0.0)  # Zero normal
+        plane_point = (0.0, 0.0, 0.0)
+
+        projected = project_point_onto_plane(point, plane_normal, plane_point)
+        assert projected == point
+
+
+class TestAdditionalGeometryFunctions:
+    """Test additional geometry functions for complete coverage."""
+
+    def test_check_plane_intersection_perpendicular(self):
+        """Test line-plane intersection when line is perpendicular to plane."""
+        from nichiyou_daiku.core.geometry import check_plane_intersection
+
+        # Line along Z axis
+        line_point = (0.0, 0.0, 0.0)
+        line_direction = (0.0, 0.0, 1.0)
+
+        # XY plane at z=5
+        plane_point = (0.0, 0.0, 5.0)
+        plane_normal = (0.0, 0.0, 1.0)
+
+        intersects, point = check_plane_intersection(
+            line_point, line_direction, plane_point, plane_normal
+        )
+        assert intersects
+        assert point == (0.0, 0.0, 5.0)
+
+    def test_check_plane_intersection_parallel(self):
+        """Test line-plane intersection when line is parallel to plane."""
+        from nichiyou_daiku.core.geometry import check_plane_intersection
+
+        # Line along X axis
+        line_point = (0.0, 0.0, 0.0)
+        line_direction = (1.0, 0.0, 0.0)
+
+        # XY plane at z=5
+        plane_point = (0.0, 0.0, 5.0)
+        plane_normal = (0.0, 0.0, 1.0)
+
+        intersects, point = check_plane_intersection(
+            line_point, line_direction, plane_point, plane_normal
+        )
+        assert not intersects
+        assert point is None
+
+    def test_check_plane_intersection_angled(self):
+        """Test line-plane intersection at an angle."""
+        from nichiyou_daiku.core.geometry import check_plane_intersection
+
+        # Line from origin at 45 degrees to XY plane
+        line_point = (0.0, 0.0, 0.0)
+        line_direction = (1.0, 0.0, 1.0)
+
+        # XY plane at z=5
+        plane_point = (0.0, 0.0, 5.0)
+        plane_normal = (0.0, 0.0, 1.0)
+
+        intersects, point = check_plane_intersection(
+            line_point, line_direction, plane_point, plane_normal
+        )
+        assert intersects
+        assert abs(point[0] - 5.0) < 1e-10
+        assert abs(point[1]) < 1e-10
+        assert abs(point[2] - 5.0) < 1e-10
+
+    def test_calculate_closest_points_between_lines_skew(self):
+        """Test closest points between skew lines."""
+        from nichiyou_daiku.core.geometry import calculate_closest_points_between_lines
+
+        # Line 1: along X axis at origin
+        line1_point = (0.0, 0.0, 0.0)
+        line1_dir = (1.0, 0.0, 0.0)
+
+        # Line 2: along Y axis at x=2, z=1
+        line2_point = (2.0, 0.0, 1.0)
+        line2_dir = (0.0, 1.0, 0.0)
+
+        point1, point2 = calculate_closest_points_between_lines(
+            line1_point, line1_dir, line2_point, line2_dir
+        )
+
+        # Closest point on line1 should be at (2, 0, 0)
+        assert abs(point1[0] - 2.0) < 1e-10
+        assert abs(point1[1]) < 1e-10
+        assert abs(point1[2]) < 1e-10
+
+        # Closest point on line2 should be at (2, 0, 1)
+        assert abs(point2[0] - 2.0) < 1e-10
+        assert abs(point2[1]) < 1e-10
+        assert abs(point2[2] - 1.0) < 1e-10
+
+    def test_calculate_closest_points_between_lines_parallel(self):
+        """Test closest points between parallel lines."""
+        from nichiyou_daiku.core.geometry import calculate_closest_points_between_lines
+
+        # Line 1: along X axis at y=0
+        line1_point = (0.0, 0.0, 0.0)
+        line1_dir = (1.0, 0.0, 0.0)
+
+        # Line 2: along X axis at y=1
+        line2_point = (0.0, 1.0, 0.0)
+        line2_dir = (1.0, 0.0, 0.0)
+
+        point1, point2 = calculate_closest_points_between_lines(
+            line1_point, line1_dir, line2_point, line2_dir
+        )
+
+        # Should return the original points since lines are parallel
+        assert point1 == (0.0, 0.0, 0.0)
+        assert point2 == (0.0, 1.0, 0.0)
+
+    def test_calculate_closest_points_between_lines_intersecting(self):
+        """Test closest points between intersecting lines."""
+        from nichiyou_daiku.core.geometry import calculate_closest_points_between_lines
+
+        # Line 1: from (-1, 0, 0) to (1, 0, 0)
+        line1_point = (0.0, 0.0, 0.0)
+        line1_dir = (1.0, 0.0, 0.0)
+
+        # Line 2: from (0, -1, 0) to (0, 1, 0)
+        line2_point = (0.0, 0.0, 0.0)
+        line2_dir = (0.0, 1.0, 0.0)
+
+        point1, point2 = calculate_closest_points_between_lines(
+            line1_point, line1_dir, line2_point, line2_dir
+        )
+
+        # Should both be at the intersection point
+        assert abs(point1[0]) < 1e-10
+        assert abs(point1[1]) < 1e-10
+        assert abs(point1[2]) < 1e-10
+
+        assert abs(point2[0]) < 1e-10
+        assert abs(point2[1]) < 1e-10
+        assert abs(point2[2]) < 1e-10
