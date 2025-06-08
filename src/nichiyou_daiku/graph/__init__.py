@@ -7,7 +7,7 @@ from nichiyou_daiku.graph.woodworking_graph import (
     create_lumber_node,
     create_joint_edge,
     calculate_world_position,
-    calculate_world_rotation,
+    calculate_piece_origin_position,
 )
 
 __all__ = [
@@ -17,5 +17,5 @@ __all__ = [
     "create_lumber_node",
     "create_joint_edge",
     "calculate_world_position",
-    "calculate_world_rotation",
+    "calculate_piece_origin_position",
 ]
