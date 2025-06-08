@@ -8,7 +8,11 @@ This example shows how to:
 
 from nichiyou_daiku.core.lumber import LumberPiece, LumberType
 from nichiyou_daiku.graph.woodworking_graph import WoodworkingGraph
-from nichiyou_daiku.rendering.build123d_converter import GraphToBuild123D
+from nichiyou_daiku.rendering.build123d_converter import (
+    GraphToBuild123D,
+    lumber_to_box,
+    graph_to_assembly,
+)
 
 
 def create_simple_table_frame():
@@ -42,24 +46,40 @@ def main():
     graph = create_simple_table_frame()
     print(f"Graph has {graph.node_count()} pieces")
 
-    print("\nConverting to build123d...")
-    converter = GraphToBuild123D()
+    print("\nDemo 1: Using standalone functions (Task 4.2 & 4.3)")
+    print("=" * 50)
 
-    # Convert individual pieces
-    print("Converting individual pieces:")
+    # Task 4.2: Convert individual piece
+    print("Converting individual piece with lumber_to_box():")
     test_piece = LumberPiece("test", LumberType.LUMBER_2X4, 1000)
-    box = converter.lumber_to_box(test_piece, position=(100, 200, 300))
+    box = lumber_to_box(test_piece, position=(100, 200, 300))
     print(f"  Created box: {box}")
 
-    # Convert entire graph
-    print("\nConverting entire graph to compound:")
-    compound = converter.graph_to_compound(graph)
+    # Task 4.3: Convert entire graph
+    print("\nConverting graph with graph_to_assembly():")
+    compound = graph_to_assembly(graph)
 
     if compound:
+        print(f"  Created compound with assembly")
+    else:
+        print("  No compound created (empty graph)")
+
+    print("\nDemo 2: Using GraphToBuild123D class")
+    print("=" * 50)
+    converter = GraphToBuild123D()
+
+    # Convert using class methods
+    print("Converting with class methods:")
+    box2 = converter.lumber_to_box(test_piece, position=(100, 200, 300))
+    print(f"  Created box: {box2}")
+
+    compound2 = converter.graph_to_compound(graph)
+
+    if compound2:
         print(f"  Created compound with pieces")
         print("\nTo visualize in build123d:")
         print("  from build123d import show")
-        print("  show(compound)")
+        print("  show(compound)  # or show(compound2)")
     else:
         print("  No compound created (empty graph)")
 
