@@ -6,7 +6,7 @@ physically possible and structurally sound assemblies.
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import List, Optional, Set, Dict, Tuple, Union
+from typing import List, Optional, Set, Tuple, Union
 from enum import Enum
 import logging
 
