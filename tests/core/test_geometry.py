@@ -3,7 +3,7 @@
 import pytest
 import numpy as np
 from nichiyou_daiku.core.geometry import (
-    EdgePosition,
+    EdgePoint,
     FaceLocation,
     get_face_normal,
     get_face_tangents,
@@ -14,52 +14,50 @@ from nichiyou_daiku.core.geometry import (
 from nichiyou_daiku.core.lumber import Face
 
 
-class TestEdgePosition:
-    """Test EdgePosition dataclass."""
+class TestEdgePoint:
+    """Test EdgePoint dataclass."""
 
     def test_edge_position_creation(self):
         """Test creating an edge position."""
-        edge = EdgePosition(face1=Face.TOP, face2=Face.FRONT, position=0.5)
+        edge = EdgePoint(face1=Face.TOP, face2=Face.FRONT, position=0.5)
         assert edge.face1 == Face.TOP
         assert edge.face2 == Face.FRONT
         assert edge.position == 0.5
 
     def test_edge_position_default(self):
         """Test edge position with default position."""
-        edge = EdgePosition(face1=Face.LEFT, face2=Face.BACK)
+        edge = EdgePoint(face1=Face.LEFT, face2=Face.BACK)
         assert edge.position == 0.0
 
     def test_edge_position_immutable(self):
         """Test that edge position is immutable."""
-        edge = EdgePosition(Face.TOP, Face.RIGHT, 0.75)
+        edge = EdgePoint(Face.TOP, Face.RIGHT, 0.75)
         with pytest.raises(AttributeError):
             edge.position = 0.25
 
     def test_get_edge_type(self):
         """Test determining edge type from faces."""
-        # Horizontal edges (parallel to length)
-        assert EdgePosition(Face.TOP, Face.RIGHT).get_edge_type() == EdgeType.HORIZONTAL
-        assert (
-            EdgePosition(Face.BOTTOM, Face.LEFT).get_edge_type() == EdgeType.HORIZONTAL
-        )
+        # Length-wise edges (parallel to length/X axis)
+        assert EdgePoint(Face.TOP, Face.RIGHT).get_edge_type() == EdgeType.WIDTH_WISE
+        assert EdgePoint(Face.BOTTOM, Face.LEFT).get_edge_type() == EdgeType.WIDTH_WISE
 
-        # Vertical edges (parallel to height)
-        assert EdgePosition(Face.FRONT, Face.RIGHT).get_edge_type() == EdgeType.VERTICAL
-        assert EdgePosition(Face.BACK, Face.LEFT).get_edge_type() == EdgeType.VERTICAL
+        # Height-wise edges (parallel to height/Z axis)
+        assert EdgePoint(Face.FRONT, Face.RIGHT).get_edge_type() == EdgeType.HEIGHT_WISE
+        assert EdgePoint(Face.BACK, Face.LEFT).get_edge_type() == EdgeType.HEIGHT_WISE
 
-        # Width edges (parallel to width)
-        assert EdgePosition(Face.TOP, Face.FRONT).get_edge_type() == EdgeType.WIDTH
-        assert EdgePosition(Face.BOTTOM, Face.BACK).get_edge_type() == EdgeType.WIDTH
+        # Width-wise edges (parallel to width/Y axis)
+        assert EdgePoint(Face.TOP, Face.FRONT).get_edge_type() == EdgeType.LENGTH_WISE
+        assert EdgePoint(Face.BOTTOM, Face.BACK).get_edge_type() == EdgeType.LENGTH_WISE
 
     def test_get_edge_type_invalid(self):
         """Test that invalid face combinations raise ValueError."""
         # Opposite faces don't form an edge
         with pytest.raises(ValueError, match="do not form a valid edge"):
-            EdgePosition(Face.TOP, Face.BOTTOM).get_edge_type()
+            EdgePoint(Face.TOP, Face.BOTTOM).get_edge_type()
 
         # Same face doesn't form an edge
         with pytest.raises(ValueError, match="do not form a valid edge"):
-            EdgePosition(Face.FRONT, Face.FRONT).get_edge_type()
+            EdgePoint(Face.FRONT, Face.FRONT).get_edge_type()
 
 
 class TestFaceLocation:
@@ -259,12 +257,12 @@ class TestEdgeType:
 
     def test_edge_type_values(self):
         """Test that EdgeType has expected values."""
-        assert EdgeType.HORIZONTAL.value == "horizontal"
-        assert EdgeType.VERTICAL.value == "vertical"
-        assert EdgeType.WIDTH.value == "width"
+        assert EdgeType.LENGTH_WISE.value == "length_wise"
+        assert EdgeType.WIDTH_WISE.value == "width_wise"
+        assert EdgeType.HEIGHT_WISE.value == "height_wise"
 
     def test_edge_type_members(self):
         """Test that all expected edge types exist."""
-        assert hasattr(EdgeType, "HORIZONTAL")
-        assert hasattr(EdgeType, "VERTICAL")
-        assert hasattr(EdgeType, "WIDTH")
+        assert hasattr(EdgeType, "LENGTH_WISE")
+        assert hasattr(EdgeType, "WIDTH_WISE")
+        assert hasattr(EdgeType, "HEIGHT_WISE")

@@ -339,29 +339,29 @@ class TestGraphManipulation:
     def test_extract_subgraph(self):
         """Test extracting a subgraph."""
         graph = WoodworkingGraph()
-        
+
         # Create a simple structure
         lumber1 = LumberPiece("beam1", LumberType.LUMBER_2X4, 1000.0)
         lumber2 = LumberPiece("beam2", LumberType.LUMBER_2X4, 1000.0)
         lumber3 = LumberPiece("beam3", LumberType.LUMBER_2X4, 1000.0)
-        
+
         graph.add_lumber_piece(lumber1)
         graph.add_lumber_piece(lumber2)
         graph.add_lumber_piece(lumber3)
-        
+
         joint = AlignedScrewJoint(
             src_face=Face.TOP,
             dst_face=Face.TOP,
             src_edge_point=EdgePoint(Face.TOP, Face.RIGHT, 0.5),
             dst_edge_point=EdgePoint(Face.TOP, Face.LEFT, 0.5),
         )
-        
+
         graph.add_joint("beam1", "beam2", joint)
         graph.add_joint("beam2", "beam3", joint)
-        
+
         # Extract subgraph with beam1 and beam2
         subgraph = graph.extract_subgraph(["beam1", "beam2"])
-        
+
         assert subgraph.node_count() == 2
         assert subgraph.has_lumber("beam1")
         assert subgraph.has_lumber("beam2")
@@ -373,22 +373,22 @@ class TestGraphManipulation:
         """Test merging two graphs."""
         graph1 = WoodworkingGraph()
         graph2 = WoodworkingGraph()
-        
+
         # Build first graph
         lumber1 = LumberPiece("beam1", LumberType.LUMBER_2X4, 1000.0)
         lumber2 = LumberPiece("beam2", LumberType.LUMBER_2X4, 1000.0)
         graph1.add_lumber_piece(lumber1)
         graph1.add_lumber_piece(lumber2)
-        
+
         # Build second graph
         lumber3 = LumberPiece("beam3", LumberType.LUMBER_2X4, 1000.0)
         lumber4 = LumberPiece("beam4", LumberType.LUMBER_2X4, 1000.0)
         graph2.add_lumber_piece(lumber3)
         graph2.add_lumber_piece(lumber4)
-        
+
         # Merge
         graph1.merge_graph(graph2)
-        
+
         assert graph1.node_count() == 4
         assert graph1.has_lumber("beam1")
         assert graph1.has_lumber("beam2")
@@ -399,44 +399,44 @@ class TestGraphManipulation:
         """Test merging graphs with conflicting IDs."""
         graph1 = WoodworkingGraph()
         graph2 = WoodworkingGraph()
-        
+
         lumber1 = LumberPiece("beam1", LumberType.LUMBER_2X4, 1000.0)
         graph1.add_lumber_piece(lumber1)
         graph2.add_lumber_piece(lumber1)
-        
+
         with pytest.raises(ValueError, match="Conflicting lumber IDs"):
             graph1.merge_graph(graph2)
 
     def test_get_connected_components(self):
         """Test finding connected components."""
         graph = WoodworkingGraph()
-        
+
         # Create two separate structures
         lumber1 = LumberPiece("beam1", LumberType.LUMBER_2X4, 1000.0)
         lumber2 = LumberPiece("beam2", LumberType.LUMBER_2X4, 1000.0)
         lumber3 = LumberPiece("beam3", LumberType.LUMBER_2X4, 1000.0)
         lumber4 = LumberPiece("beam4", LumberType.LUMBER_2X4, 1000.0)
-        
+
         graph.add_lumber_piece(lumber1)
         graph.add_lumber_piece(lumber2)
         graph.add_lumber_piece(lumber3)
         graph.add_lumber_piece(lumber4)
-        
+
         joint = AlignedScrewJoint(
             src_face=Face.TOP,
             dst_face=Face.TOP,
             src_edge_point=EdgePoint(Face.TOP, Face.RIGHT, 0.5),
             dst_edge_point=EdgePoint(Face.TOP, Face.LEFT, 0.5),
         )
-        
+
         # Connect beam1 and beam2
         graph.add_joint("beam1", "beam2", joint)
         # Connect beam3 and beam4
         graph.add_joint("beam3", "beam4", joint)
-        
+
         components = graph.get_connected_components()
         assert len(components) == 2
-        
+
         # Check components contain correct pieces
         component_sets = [set(c) for c in components]
         assert {"beam1", "beam2"} in component_sets
@@ -445,30 +445,30 @@ class TestGraphManipulation:
     def test_find_path(self):
         """Test finding paths between pieces."""
         graph = WoodworkingGraph()
-        
+
         # Create a chain: beam1 -> beam2 -> beam3
         lumber1 = LumberPiece("beam1", LumberType.LUMBER_2X4, 1000.0)
         lumber2 = LumberPiece("beam2", LumberType.LUMBER_2X4, 1000.0)
         lumber3 = LumberPiece("beam3", LumberType.LUMBER_2X4, 1000.0)
-        
+
         graph.add_lumber_piece(lumber1)
         graph.add_lumber_piece(lumber2)
         graph.add_lumber_piece(lumber3)
-        
+
         joint = AlignedScrewJoint(
             src_face=Face.TOP,
             dst_face=Face.TOP,
             src_edge_point=EdgePoint(Face.TOP, Face.RIGHT, 0.5),
             dst_edge_point=EdgePoint(Face.TOP, Face.LEFT, 0.5),
         )
-        
+
         graph.add_joint("beam1", "beam2", joint)
         graph.add_joint("beam2", "beam3", joint)
-        
+
         # Find path
         path = graph.find_path("beam1", "beam3")
         assert path == ["beam1", "beam2", "beam3"]
-        
+
         # No path to isolated piece
         lumber4 = LumberPiece("beam4", LumberType.LUMBER_2X4, 1000.0)
         graph.add_lumber_piece(lumber4)
@@ -477,32 +477,32 @@ class TestGraphManipulation:
     def test_cycle_detection(self):
         """Test cycle detection in graphs."""
         graph = WoodworkingGraph()
-        
+
         # Create a triangle (cycle)
         lumber1 = LumberPiece("beam1", LumberType.LUMBER_2X4, 1000.0)
         lumber2 = LumberPiece("beam2", LumberType.LUMBER_2X4, 1000.0)
         lumber3 = LumberPiece("beam3", LumberType.LUMBER_2X4, 1000.0)
-        
+
         graph.add_lumber_piece(lumber1)
         graph.add_lumber_piece(lumber2)
         graph.add_lumber_piece(lumber3)
-        
+
         joint = AlignedScrewJoint(
             src_face=Face.TOP,
             dst_face=Face.TOP,
             src_edge_point=EdgePoint(Face.TOP, Face.RIGHT, 0.5),
             dst_edge_point=EdgePoint(Face.TOP, Face.LEFT, 0.5),
         )
-        
+
         # No cycle yet
         graph.add_joint("beam1", "beam2", joint)
         graph.add_joint("beam2", "beam3", joint)
         assert not graph.has_cycles()
-        
+
         # Add edge to create cycle
         graph.add_joint("beam3", "beam1", joint)
         assert graph.has_cycles()
-        
+
         # Find the cycle
         cycles = graph.find_cycles()
         assert len(cycles) == 1
@@ -511,26 +511,26 @@ class TestGraphManipulation:
     def test_find_pieces_by_type(self):
         """Test finding pieces by lumber type."""
         graph = WoodworkingGraph()
-        
+
         lumber1 = LumberPiece("beam1", LumberType.LUMBER_2X4, 1000.0)
         lumber2 = LumberPiece("beam2", LumberType.LUMBER_2X4, 800.0)
         lumber3 = LumberPiece("beam3", LumberType.LUMBER_1X4, 1000.0)
         lumber4 = LumberPiece("beam4", LumberType.LUMBER_2X8, 1000.0)
-        
+
         graph.add_lumber_piece(lumber1)
         graph.add_lumber_piece(lumber2)
         graph.add_lumber_piece(lumber3)
         graph.add_lumber_piece(lumber4)
-        
+
         # Find all 2x4s
         two_by_fours = graph.find_pieces_by_type(LumberType.LUMBER_2X4)
         assert len(two_by_fours) == 2
         assert set(two_by_fours) == {"beam1", "beam2"}
-        
+
         # Find 1x4s
         one_by_fours = graph.find_pieces_by_type(LumberType.LUMBER_1X4)
         assert one_by_fours == ["beam3"]
-        
+
         # Find 2x8s
         two_by_eights = graph.find_pieces_by_type(LumberType.LUMBER_2X8)
         assert two_by_eights == ["beam4"]
@@ -538,22 +538,22 @@ class TestGraphManipulation:
     def test_get_assembly_bounds(self):
         """Test calculating assembly bounding box."""
         graph = WoodworkingGraph()
-        
+
         # Empty graph
         bounds = graph.get_assembly_bounds()
         assert bounds == ((0.0, 0.0, 0.0), (0.0, 0.0, 0.0))
-        
+
         # Single piece
         lumber1 = LumberPiece("beam1", LumberType.LUMBER_2X4, 1000.0)
         graph.add_lumber_piece(lumber1)
         bounds = graph.get_assembly_bounds()
         # Origin at (0,0,0), size (38, 89, 1000)
         assert bounds == ((0.0, 0.0, 0.0), (1000.0, 38.0, 89.0))
-        
+
         # Add connected piece
         lumber2 = LumberPiece("beam2", LumberType.LUMBER_2X4, 800.0)
         graph.add_lumber_piece(lumber2)
-        
+
         joint = AlignedScrewJoint(
             src_face=Face.FRONT,
             dst_face=Face.BACK,
@@ -561,7 +561,7 @@ class TestGraphManipulation:
             dst_edge_point=EdgePoint(Face.BACK, Face.TOP, 0.5),
         )
         graph.add_joint("beam1", "beam2", joint)
-        
+
         bounds = graph.get_assembly_bounds()
         # beam2 extends from x=1000 to x=1800
         assert bounds[0] == (0.0, 0.0, 0.0)
@@ -570,15 +570,15 @@ class TestGraphManipulation:
     def test_count_joints_by_face(self):
         """Test counting joints by face type."""
         graph = WoodworkingGraph()
-        
+
         lumber1 = LumberPiece("beam1", LumberType.LUMBER_2X4, 1000.0)
         lumber2 = LumberPiece("beam2", LumberType.LUMBER_2X4, 1000.0)
         lumber3 = LumberPiece("beam3", LumberType.LUMBER_2X4, 1000.0)
-        
+
         graph.add_lumber_piece(lumber1)
         graph.add_lumber_piece(lumber2)
         graph.add_lumber_piece(lumber3)
-        
+
         # Add joints using different faces
         joint_top = AlignedScrewJoint(
             src_face=Face.TOP,
@@ -592,10 +592,10 @@ class TestGraphManipulation:
             src_edge_point=EdgePoint(Face.FRONT, Face.TOP, 0.5),
             dst_edge_point=EdgePoint(Face.BACK, Face.TOP, 0.5),
         )
-        
+
         graph.add_joint("beam1", "beam2", joint_top)
         graph.add_joint("beam2", "beam3", joint_front)
-        
+
         # Count joints
         assert graph.count_joints_by_face(Face.TOP) == 1
         assert graph.count_joints_by_face(Face.BOTTOM) == 1

@@ -201,11 +201,11 @@ class WoodworkingGraph:
         """
         # Create subgraph with NetworkX
         subgraph_nx = self._graph.subgraph(lumber_ids).copy()
-        
+
         # Create new WoodworkingGraph
         subgraph = WoodworkingGraph()
         subgraph._graph = subgraph_nx
-        
+
         return subgraph
 
     def merge_graph(self, other: "WoodworkingGraph") -> None:
@@ -221,7 +221,7 @@ class WoodworkingGraph:
         common_nodes = set(self._graph.nodes()) & set(other._graph.nodes())
         if common_nodes:
             raise ValueError(f"Conflicting lumber IDs: {common_nodes}")
-        
+
         # Merge the graphs
         self._graph = nx.compose(self._graph, other._graph)
 
@@ -296,34 +296,36 @@ class WoodworkingGraph:
         """
         if self.node_count() == 0:
             return ((0.0, 0.0, 0.0), (0.0, 0.0, 0.0))
-        
-        min_x = min_y = min_z = float('inf')
-        max_x = max_y = max_z = float('-inf')
-        
+
+        min_x = min_y = min_z = float("inf")
+        max_x = max_y = max_z = float("-inf")
+
         # Check all lumber pieces with consistent origin per component
         components = self.get_connected_components()
-        
+
         for component in components:
             # Use first node as origin for this component
             component_origin = component[0]
-            
+
             for node_id in component:
                 lumber = self.get_lumber_data(node_id).lumber_piece
                 dims = lumber.get_dimensions()
                 width, height, length = dims
-                
+
                 # Get piece origin relative to component origin
-                origin = calculate_piece_origin_position(self, node_id, origin_id=component_origin)
-                
+                origin = calculate_piece_origin_position(
+                    self, node_id, origin_id=component_origin
+                )
+
                 # Update bounds
                 min_x = min(min_x, origin[0])
                 min_y = min(min_y, origin[1])
                 min_z = min(min_z, origin[2])
-                
+
                 max_x = max(max_x, origin[0] + length)
                 max_y = max(max_y, origin[1] + width)
                 max_z = max(max_z, origin[2] + height)
-        
+
         return ((min_x, min_y, min_z), (max_x, max_y, max_z))
 
     def count_joints_by_face(self, face: Face) -> int:
@@ -393,15 +395,15 @@ def calculate_piece_origin_position(
     if origin_id is None or lumber_id == origin_id:
         # This is the origin piece - its origin is at world origin
         return (0.0, 0.0, 0.0)
-    
+
     # Get the center position for connected pieces
     center_pos = _calculate_piece_center_position_connected(graph, lumber_id, origin_id)
-    
+
     # Get lumber dimensions to calculate offset from center to origin
     lumber = graph.get_lumber_data(lumber_id).lumber_piece
     dims = lumber.get_dimensions()
     width, height, length = dims
-    
+
     # Origin is at left-top of bottom face
     # Center to origin offset: (-length/2, -width/2, -height/2)
     origin_pos = (
@@ -409,10 +411,8 @@ def calculate_piece_origin_position(
         center_pos[1] - width / 2,
         center_pos[2] - height / 2,
     )
-    
+
     return origin_pos
-
-
 
 
 def calculate_world_position(
@@ -438,7 +438,7 @@ def calculate_world_position(
         # Single piece - center at origin
         local_face_center = lumber.get_face_center_local(face)
         return local_face_center
-    
+
     # Get piece center position through graph traversal
     piece_center = _calculate_piece_center_position_connected(
         graph, lumber_id, origin_id
@@ -464,21 +464,21 @@ def _calculate_piece_center_position_connected(
     graph: WoodworkingGraph, lumber_id: str, origin_id: str
 ) -> Position3D:
     """Calculate center position for connected pieces.
-    
+
     For connected pieces, the origin piece has its origin (not center) at (0,0,0).
     """
     # Get origin piece to find its center offset
     origin_lumber = graph.get_lumber_data(origin_id).lumber_piece
     origin_dims = origin_lumber.get_dimensions()
     origin_width, origin_height, origin_length = origin_dims
-    
+
     # Origin piece center is offset from its origin
-    origin_center = (origin_length/2, origin_width/2, origin_height/2)
-    
+    origin_center = (origin_length / 2, origin_width / 2, origin_height / 2)
+
     # If this is the origin piece, return its center
     if lumber_id == origin_id:
         return origin_center
-    
+
     # Find path from origin to target (use undirected for connectivity)
     try:
         undirected = graph._graph.to_undirected()
@@ -524,7 +524,7 @@ def _calculate_piece_center_position_connected(
             )
             # Invert the offset
             dst_offset = (-forward_offset[0], -forward_offset[1], -forward_offset[2])
-        
+
         # Update position
         current_pos = (
             current_pos[0] + dst_offset[0],
@@ -542,13 +542,13 @@ def _calculate_edge_point_world(
     rotation: Rotation3D,
 ) -> Position3D:
     """Calculate world position of an edge point on a lumber piece.
-    
+
     Args:
         lumber: The lumber piece
         edge_point: The edge point to calculate
         origin_pos: World position of lumber origin
         rotation: World rotation of lumber
-        
+
     Returns:
         World position of the edge point
     """
@@ -565,22 +565,22 @@ def _calculate_joint_offset(
     current_rotation: Rotation3D,
 ) -> Position3D:
     """Calculate offset for destination piece center based on joint alignment.
-    
+
     Args:
         src_lumber: Source lumber piece
-        dst_lumber: Destination lumber piece  
+        dst_lumber: Destination lumber piece
         joint: The joint connecting them
         current_rotation: Current world rotation
-        
+
     Returns:
         Offset to apply for destination piece center
     """
     # Get dimensions
     src_dims = src_lumber.get_dimensions()
-    dst_dims = dst_lumber.get_dimensions()  
+    dst_dims = dst_lumber.get_dimensions()
     src_width, src_height, src_length = src_dims
     dst_width, dst_height, dst_length = dst_dims
-    
+
     # Calculate center-to-center offset based on connected faces
     if joint.src_face == Face.FRONT and joint.dst_face == Face.BACK:
         # End-to-end connection along X axis
@@ -588,22 +588,22 @@ def _calculate_joint_offset(
         # src FRONT is at src_center + src_length/2
         # dst BACK is at dst_center - dst_length/2
         # They should align, so: dst_center = src_center + src_length
-        return (src_length/2 + dst_length/2, 0.0, 0.0)
+        return (src_length / 2 + dst_length / 2, 0.0, 0.0)
     elif joint.src_face == Face.BACK and joint.dst_face == Face.FRONT:
         # Reverse connection
-        return (-src_length/2 - dst_length/2, 0.0, 0.0)
+        return (-src_length / 2 - dst_length / 2, 0.0, 0.0)
     elif joint.src_face == Face.RIGHT and joint.dst_face == Face.LEFT:
         # Side-by-side connection along Y axis
-        return (0.0, src_width/2 + dst_width/2, 0.0)
+        return (0.0, src_width / 2 + dst_width / 2, 0.0)
     elif joint.src_face == Face.LEFT and joint.dst_face == Face.RIGHT:
         # Reverse connection
-        return (0.0, -src_width/2 - dst_width/2, 0.0)
+        return (0.0, -src_width / 2 - dst_width / 2, 0.0)
     elif joint.src_face == Face.TOP and joint.dst_face == Face.BOTTOM:
         # Stacked connection along Z axis
-        return (0.0, 0.0, src_height/2 + dst_height/2)
+        return (0.0, 0.0, src_height / 2 + dst_height / 2)
     elif joint.src_face == Face.BOTTOM and joint.dst_face == Face.TOP:
         # Reverse connection
-        return (0.0, 0.0, -src_height/2 - dst_height/2)
+        return (0.0, 0.0, -src_height / 2 - dst_height / 2)
     else:
         # More complex alignment - would need full calculation
         return (0.0, 0.0, 0.0)
