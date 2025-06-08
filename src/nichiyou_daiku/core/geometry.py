@@ -30,8 +30,8 @@ class EdgeType(Enum):
 
 
 @dataclass(frozen=True)
-class EdgePosition:
-    """Position of an edge where two faces meet.
+class EdgePoint:
+    """Point on edge.
 
     Attributes:
         face1: First face forming the edge
