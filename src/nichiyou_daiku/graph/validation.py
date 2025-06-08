@@ -6,7 +6,7 @@ physically possible and structurally sound assemblies.
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import List, Optional, Set, Tuple, Union
+from typing import Dict, List, Optional, Set, Tuple, Union
 from enum import Enum
 import logging
 
@@ -141,7 +141,7 @@ class ValidationReport:
         self, severity: ValidationSeverity
     ) -> List[ValidationIssue]:
         """Get all issues of a specific severity."""
-        issues = []
+        issues: List[ValidationIssue] = []
         for result in self.results:
             if isinstance(result, ValidationError):
                 issues.extend(
@@ -700,7 +700,7 @@ class AssemblyOrderValidator(GraphValidator):
             issues.append(issue)
 
         # Check for duplicates
-        order_counts = {}
+        order_counts: Dict[int, List[Tuple[str, str]]] = {}
         for order, src, dst in ordered_edges:
             if order not in order_counts:
                 order_counts[order] = []
