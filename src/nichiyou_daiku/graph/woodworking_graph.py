@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from typing import List, Tuple, Optional
 import networkx as nx
 
-from nichiyou_daiku.core.lumber import LumberPiece, Face
+from nichiyou_daiku.core.lumber import LumberPiece, Face, LumberType
 from nichiyou_daiku.core.geometry import EdgePoint
 from nichiyou_daiku.connectors.aligned_screw import AlignedScrewJoint
 
@@ -188,6 +188,162 @@ class WoodworkingGraph:
         successors = set(self._graph.successors(lumber_id))
         return list(predecessors | successors)
 
+    # Subgraph operations
+
+    def extract_subgraph(self, lumber_ids: List[str]) -> "WoodworkingGraph":
+        """Extract a subgraph containing only specified lumber pieces.
+
+        Args:
+            lumber_ids: List of lumber IDs to include
+
+        Returns:
+            New WoodworkingGraph with only specified pieces and their joints
+        """
+        # Create subgraph with NetworkX
+        subgraph_nx = self._graph.subgraph(lumber_ids).copy()
+        
+        # Create new WoodworkingGraph
+        subgraph = WoodworkingGraph()
+        subgraph._graph = subgraph_nx
+        
+        return subgraph
+
+    def merge_graph(self, other: "WoodworkingGraph") -> None:
+        """Merge another graph into this one.
+
+        Args:
+            other: Graph to merge in
+
+        Raises:
+            ValueError: If there are conflicting lumber IDs
+        """
+        # Check for conflicts
+        common_nodes = set(self._graph.nodes()) & set(other._graph.nodes())
+        if common_nodes:
+            raise ValueError(f"Conflicting lumber IDs: {common_nodes}")
+        
+        # Merge the graphs
+        self._graph = nx.compose(self._graph, other._graph)
+
+    def get_connected_components(self) -> List[List[str]]:
+        """Get all connected components in the graph.
+
+        Returns:
+            List of components, each component is a list of lumber IDs
+        """
+        # Convert to undirected for component analysis
+        undirected = self._graph.to_undirected()
+        components = list(nx.connected_components(undirected))
+        # Sort each component for deterministic ordering
+        return [sorted(list(component)) for component in components]
+
+    # Path finding and cycle detection
+
+    def find_path(self, start_id: str, end_id: str) -> Optional[List[str]]:
+        """Find a path between two lumber pieces.
+
+        Args:
+            start_id: Starting lumber ID
+            end_id: Ending lumber ID
+
+        Returns:
+            List of lumber IDs forming a path, or None if no path exists
+        """
+        try:
+            return nx.shortest_path(self._graph, start_id, end_id)
+        except nx.NetworkXNoPath:
+            return None
+
+    def has_cycles(self) -> bool:
+        """Check if the graph contains any cycles.
+
+        Returns:
+            True if cycles exist, False otherwise
+        """
+        return not nx.is_directed_acyclic_graph(self._graph)
+
+    def find_cycles(self) -> List[List[str]]:
+        """Find all simple cycles in the graph.
+
+        Returns:
+            List of cycles, each cycle is a list of lumber IDs
+        """
+        return list(nx.simple_cycles(self._graph))
+
+    # Query operations
+
+    def find_pieces_by_type(self, lumber_type: LumberType) -> List[str]:
+        """Find all lumber pieces of a specific type.
+
+        Args:
+            lumber_type: Type of lumber to search for
+
+        Returns:
+            List of lumber IDs matching the type
+        """
+        matching_ids = []
+        for node_id, data in self._graph.nodes(data=True):
+            node_data = data.get("data")
+            if node_data and node_data.lumber_piece.lumber_type == lumber_type:
+                matching_ids.append(node_id)
+        return matching_ids
+
+    def get_assembly_bounds(self) -> Tuple[Position3D, Position3D]:
+        """Calculate the bounding box of the entire assembly.
+
+        Returns:
+            Tuple of (min_corner, max_corner) positions
+        """
+        if self.node_count() == 0:
+            return ((0.0, 0.0, 0.0), (0.0, 0.0, 0.0))
+        
+        min_x = min_y = min_z = float('inf')
+        max_x = max_y = max_z = float('-inf')
+        
+        # Check all lumber pieces with consistent origin per component
+        components = self.get_connected_components()
+        
+        for component in components:
+            # Use first node as origin for this component
+            component_origin = component[0]
+            
+            for node_id in component:
+                lumber = self.get_lumber_data(node_id).lumber_piece
+                dims = lumber.get_dimensions()
+                width, height, length = dims
+                
+                # Get piece origin relative to component origin
+                origin = calculate_piece_origin_position(self, node_id, origin_id=component_origin)
+                
+                # Update bounds
+                min_x = min(min_x, origin[0])
+                min_y = min(min_y, origin[1])
+                min_z = min(min_z, origin[2])
+                
+                max_x = max(max_x, origin[0] + length)
+                max_y = max(max_y, origin[1] + width)
+                max_z = max(max_z, origin[2] + height)
+        
+        return ((min_x, min_y, min_z), (max_x, max_y, max_z))
+
+    def count_joints_by_face(self, face: Face) -> int:
+        """Count how many joints connect to a specific face type.
+
+        Args:
+            face: Face type to count
+
+        Returns:
+            Number of joints using this face
+        """
+        count = 0
+        for _, _, data in self._graph.edges(data=True):
+            edge_data = data.get("data")
+            if edge_data:
+                joint = edge_data.joint
+                if joint.src_face == face or joint.dst_face == face:
+                    count += 1
+        return count
+
 
 # Functional helpers for graph operations
 
@@ -323,9 +479,10 @@ def _calculate_piece_center_position_connected(
     if lumber_id == origin_id:
         return origin_center
     
-    # Find path from origin to target
+    # Find path from origin to target (use undirected for connectivity)
     try:
-        path = nx.shortest_path(graph._graph, origin_id, lumber_id)
+        undirected = graph._graph.to_undirected()
+        path = nx.shortest_path(undirected, origin_id, lumber_id)
     except nx.NetworkXNoPath:
         raise ValueError(f"No path from '{origin_id}' to '{lumber_id}'")
 
@@ -338,18 +495,35 @@ def _calculate_piece_center_position_connected(
         src_id = path[i]
         dst_id = path[i + 1]
 
-        # Get the joint connecting these pieces
-        edge_data = graph.get_joint_data(src_id, dst_id)
-        joint = edge_data.joint
+        # Get the joint connecting these pieces (check both directions)
+        try:
+            edge_data = graph.get_joint_data(src_id, dst_id)
+            joint = edge_data.joint
+            forward = True
+        except KeyError:
+            # Try reverse direction
+            edge_data = graph.get_joint_data(dst_id, src_id)
+            joint = edge_data.joint
+            forward = False
 
         # Get lumber pieces
-        src_lumber = graph.get_lumber_data(src_id).lumber_piece
-        dst_lumber = graph.get_lumber_data(dst_id).lumber_piece
-
-        # Calculate position offset based on joint connection
-        dst_offset = _calculate_joint_offset(
-            src_lumber, dst_lumber, joint, current_rot
-        )
+        if forward:
+            src_lumber = graph.get_lumber_data(src_id).lumber_piece
+            dst_lumber = graph.get_lumber_data(dst_id).lumber_piece
+            # Calculate position offset based on joint connection
+            dst_offset = _calculate_joint_offset(
+                src_lumber, dst_lumber, joint, current_rot
+            )
+        else:
+            # Reverse direction - need to invert the offset calculation
+            src_lumber = graph.get_lumber_data(dst_id).lumber_piece
+            dst_lumber = graph.get_lumber_data(src_id).lumber_piece
+            # Calculate reverse offset
+            forward_offset = _calculate_joint_offset(
+                src_lumber, dst_lumber, joint, current_rot
+            )
+            # Invert the offset
+            dst_offset = (-forward_offset[0], -forward_offset[1], -forward_offset[2])
         
         # Update position
         current_pos = (
