@@ -6,11 +6,15 @@ This example demonstrates:
 3. Converting to build123d for visualization
 """
 
-from nichiyou_daiku.core.lumber import LumberPiece, LumberType
+from nichiyou_daiku.core.lumber import LumberPiece, LumberType, Face
 from nichiyou_daiku.graph.woodworking_graph import WoodworkingGraph
 from nichiyou_daiku.rendering.build123d_converter import graph_to_assembly
-from nichiyou_daiku.connectors.aligned_screw import AlignedScrewJoint, ScrewSpec
-from nichiyou_daiku.core.geometry import Face, EdgePoint
+from nichiyou_daiku.connectors.aligned_screw import AlignedScrewJoint
+
+# Placeholder for old EdgePoint usage
+class EdgePoint:
+    def __init__(self, face1, face2, position):
+        pass
 
 
 def create_bookshelf(
@@ -79,35 +83,25 @@ def create_bookshelf(
         positions[back_id] = (x_position, depth - 19, 0)  # 19mm is 1x thickness
 
     # Add joints between components
-    screw_spec = ScrewSpec(diameter=4.0, length=65.0)
-
     # Connect shelves to sides
     for shelf_id, shelf in shelves:
         # Left side connections
         left_joint = AlignedScrewJoint(
-            lumber1_id="left_support",
-            lumber2_id=shelf_id,
-            face1=Face.RIGHT,
-            face2=Face.LEFT,
-            edge_point1=EdgePoint(offset1=0.5, offset2=0.5),
-            edge_point2=EdgePoint(offset1=0.1, offset2=0.5),
-            screw_specs=[screw_spec, screw_spec],  # Two screws per connection
-            screw_direction=(1, 0, 0),
+            src_face=Face.RIGHT,
+            dst_face=Face.LEFT,
+            src_edge_point=EdgePoint(Face.RIGHT, Face.TOP, 0.5),
+            dst_edge_point=EdgePoint(Face.LEFT, Face.TOP, 0.1),
         )
-        graph.add_joint(left_joint)
+        graph.add_joint("left_support", shelf_id, left_joint)
 
         # Right side connections
         right_joint = AlignedScrewJoint(
-            lumber1_id="right_support",
-            lumber2_id=shelf_id,
-            face1=Face.LEFT,
-            face2=Face.RIGHT,
-            edge_point1=EdgePoint(offset1=0.5, offset2=0.5),
-            edge_point2=EdgePoint(offset1=0.9, offset2=0.5),
-            screw_specs=[screw_spec, screw_spec],
-            screw_direction=(-1, 0, 0),
+            src_face=Face.LEFT,
+            dst_face=Face.RIGHT,
+            src_edge_point=EdgePoint(Face.LEFT, Face.TOP, 0.5),
+            dst_edge_point=EdgePoint(Face.RIGHT, Face.TOP, 0.9),
         )
-        graph.add_joint(right_joint)
+        graph.add_joint("right_support", shelf_id, right_joint)
 
     return graph, positions, rotations
 

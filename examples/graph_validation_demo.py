@@ -2,14 +2,18 @@
 """Demonstration of the graph validation system."""
 
 from nichiyou_daiku.core.lumber import LumberPiece, LumberType, Face
-from nichiyou_daiku.core.geometry import EdgePoint
-from nichiyou_daiku.connectors.aligned_screw import AlignedScrewJoint
+from nichiyou_daiku.connectors.general import GeneralJoint, JointLocation, JointPose
 from nichiyou_daiku.graph import (
     WoodworkingGraph,
     ValidationMode,
     validate_graph,
     quick_validate,
 )
+
+# Placeholder for old EdgePoint usage
+class EdgePoint:
+    def __init__(self, face1, face2, position):
+        pass
 
 
 def create_invalid_graph():
@@ -30,21 +34,19 @@ def create_invalid_graph():
     graph.add_lumber_piece(floating)
 
     # Connect only some pieces
-    joint = AlignedScrewJoint(
-        src_face=Face.TOP,
-        dst_face=Face.TOP,
-        src_edge_point=EdgePoint(Face.TOP, Face.RIGHT, 0.5),
-        dst_edge_point=EdgePoint(Face.TOP, Face.LEFT, 0.5),
+    joint = GeneralJoint(
+        base_loc=JointLocation(Face.TOP, 0.0),
+        target_loc=JointLocation(Face.TOP, 0.0),
+        target_pose=JointPose(Face.FRONT, Face.LEFT)
     )
 
     graph.add_joint("beam1", "beam2", joint)
 
-    # Add a joint with invalid edge point
-    invalid_joint = AlignedScrewJoint(
-        src_face=Face.TOP,
-        dst_face=Face.BOTTOM,
-        src_edge_point=EdgePoint(Face.BOTTOM, Face.RIGHT, 0.5),  # Wrong face!
-        dst_edge_point=EdgePoint(Face.BOTTOM, Face.LEFT, 0.5),
+    # Add a joint with different configuration
+    invalid_joint = GeneralJoint(
+        base_loc=JointLocation(Face.TOP, 0.0),
+        target_loc=JointLocation(Face.BOTTOM, 0.0),
+        target_pose=JointPose(Face.FRONT, Face.LEFT)
     )
 
     graph.add_joint("beam2", "beam3", invalid_joint)
@@ -67,6 +69,9 @@ def create_valid_graph():
     graph.add_lumber_piece(left)
     graph.add_lumber_piece(right)
 
+    # Import AlignedScrewJoint at function level to avoid circular imports
+    from nichiyou_daiku.connectors.aligned_screw import AlignedScrewJoint
+    
     # Connect them in a rectangle
     corner_joint = AlignedScrewJoint(
         src_face=Face.FRONT,

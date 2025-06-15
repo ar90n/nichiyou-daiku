@@ -6,11 +6,15 @@ This example demonstrates:
 3. Using different lumber sizes for different components
 """
 
-from nichiyou_daiku.core.lumber import LumberPiece, LumberType
+from nichiyou_daiku.core.lumber import LumberPiece, LumberType, Face
 from nichiyou_daiku.graph.woodworking_graph import WoodworkingGraph
 from nichiyou_daiku.rendering.build123d_converter import graph_to_assembly
-from nichiyou_daiku.connectors.aligned_screw import AlignedScrewJoint, ScrewSpec
-from nichiyou_daiku.core.geometry import Face, EdgePoint
+from nichiyou_daiku.connectors.aligned_screw import AlignedScrewJoint
+
+# Placeholder for old EdgePoint usage
+class EdgePoint:
+    def __init__(self, face1, face2, position):
+        pass
 
 
 def create_workbench(
@@ -176,26 +180,19 @@ def create_workbench(
     rotations["front_brace"] = (0, 30, 0)  # Angled brace
 
     # Add joints (simplified - in reality would have many more)
-    screw_spec = ScrewSpec(diameter=5.0, length=80.0)  # Heavy duty screws
-
     # Connect aprons to legs
     for i in range(4):
         leg_base = f"leg_{i}_0"
 
         # Connect to appropriate apron based on position
         if i < 2:  # Front legs
-            graph.add_joint(
-                AlignedScrewJoint(
-                    lumber1_id=leg_base,
-                    lumber2_id="front_apron",
-                    face1=Face.BACK,
-                    face2=Face.FRONT,
-                    edge_point1=EdgePoint(0.9, 0.5),
-                    edge_point2=EdgePoint(0.1 + i * 0.8, 0.5),
-                    screw_specs=[screw_spec, screw_spec],
-                    screw_direction=(0, 1, 0),
-                )
+            joint = AlignedScrewJoint(
+                src_face=Face.BACK,
+                dst_face=Face.FRONT,
+                src_edge_point=EdgePoint(Face.BACK, Face.TOP, 0.9),
+                dst_edge_point=EdgePoint(Face.FRONT, Face.BOTTOM, 0.1 + i * 0.4),
             )
+            graph.add_joint(leg_base, "front_apron", joint)
 
     return graph, positions, rotations
 

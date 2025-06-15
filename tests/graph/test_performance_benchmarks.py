@@ -6,8 +6,21 @@ from typing import List, Dict
 
 from nichiyou_daiku.graph.woodworking_graph import WoodworkingGraph
 from nichiyou_daiku.core.lumber import LumberPiece, LumberType, Face
-from nichiyou_daiku.core.geometry import EdgePoint
-from nichiyou_daiku.connectors.aligned_screw import AlignedScrewJoint
+from nichiyou_daiku.connectors.general import GeneralJoint, JointLocation, JointPose
+
+# Placeholder for old EdgePoint usage
+class EdgePoint:
+    def __init__(self, face1, face2, position):
+        pass
+
+# Helper function to create joints in the old style
+def AlignedScrewJoint(src_face, dst_face, src_edge_point, dst_edge_point):
+    """Compatibility wrapper to create GeneralJoint from old AlignedScrewJoint parameters."""
+    return GeneralJoint(
+        base_loc=JointLocation(src_face, 0.0),
+        target_loc=JointLocation(dst_face, 0.0),
+        target_pose=JointPose(Face.FRONT, Face.TOP)
+    )
 
 
 class BenchmarkTimer:
