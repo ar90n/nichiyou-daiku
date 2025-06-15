@@ -9,8 +9,7 @@ from typing import List, Tuple, Optional
 import networkx as nx
 
 from nichiyou_daiku.core.lumber import LumberPiece, Face, LumberType
-from nichiyou_daiku.core.geometry import EdgePoint
-from nichiyou_daiku.connectors.aligned_screw import AlignedScrewJoint
+from nichiyou_daiku.connectors.general import GeneralJoint
 
 
 # Type aliases
@@ -38,7 +37,7 @@ class EdgeData:
         assembly_order: Optional order for assembly sequence
     """
 
-    joint: AlignedScrewJoint
+    joint: GeneralJoint
     assembly_order: Optional[int] = None
 
 
@@ -101,7 +100,7 @@ class WoodworkingGraph:
         self,
         src_id: str,
         dst_id: str,
-        joint: AlignedScrewJoint,
+        joint: GeneralJoint,
         assembly_order: Optional[int] = None,
     ) -> None:
         """Add a joint as an edge in the graph.
@@ -342,7 +341,7 @@ class WoodworkingGraph:
             edge_data = data.get("data")
             if edge_data:
                 joint = edge_data.joint
-                if joint.src_face == face or joint.dst_face == face:
+                if joint.base_loc.face == face or joint.target_loc.face == face:
                     count += 1
         return count
 
@@ -363,7 +362,7 @@ def create_lumber_node(lumber: LumberPiece) -> NodeData:
 
 
 def create_joint_edge(
-    joint: AlignedScrewJoint, assembly_order: Optional[int] = None
+    joint: GeneralJoint, assembly_order: Optional[int] = None
 ) -> EdgeData:
     """Create an edge data instance for a joint.
 
@@ -376,6 +375,9 @@ def create_joint_edge(
     """
     return EdgeData(joint=joint, assembly_order=assembly_order)
 
+
+# OBSOLETE: Position calculation functions below are deprecated with the new joint system
+# They are kept temporarily for backward compatibility with tests
 
 def calculate_piece_origin_position(
     graph: WoodworkingGraph, lumber_id: str, origin_id: Optional[str] = None
@@ -535,33 +537,34 @@ def _calculate_piece_center_position_connected(
     return current_pos
 
 
-def _calculate_edge_point_world(
-    lumber: LumberPiece,
-    edge_point: EdgePoint,
-    origin_pos: Position3D,
-    rotation: Rotation3D,
-) -> Position3D:
-    """Calculate world position of an edge point on a lumber piece.
-
-    Args:
-        lumber: The lumber piece
-        edge_point: The edge point to calculate
-        origin_pos: World position of lumber origin
-        rotation: World rotation of lumber
-
-    Returns:
-        World position of the edge point
-    """
-    # This is a simplified implementation
-    # Full implementation would calculate exact edge position
-    # based on face intersection and parametric position
-    return origin_pos
+# OBSOLETE: EdgePoint-based function - commented out
+# def _calculate_edge_point_world(
+#     lumber: LumberPiece,
+#     edge_point: EdgePoint,
+#     origin_pos: Position3D,
+#     rotation: Rotation3D,
+# ) -> Position3D:
+#     """Calculate world position of an edge point on a lumber piece.
+# 
+#     Args:
+#         lumber: The lumber piece
+#         edge_point: The edge point to calculate
+#         origin_pos: World position of lumber origin
+#         rotation: World rotation of lumber
+# 
+#     Returns:
+#         World position of the edge point
+#     """
+#     # This is a simplified implementation
+#     # Full implementation would calculate exact edge position
+#     # based on face intersection and parametric position
+#     return origin_pos
 
 
 def _calculate_joint_offset(
     src_lumber: LumberPiece,
     dst_lumber: LumberPiece,
-    joint: AlignedScrewJoint,
+    joint: GeneralJoint,
     current_rotation: Rotation3D,
 ) -> Position3D:
     """Calculate offset for destination piece center based on joint alignment.
@@ -581,29 +584,7 @@ def _calculate_joint_offset(
     src_width, src_height, src_length = src_dims
     dst_width, dst_height, dst_length = dst_dims
 
-    # Calculate center-to-center offset based on connected faces
-    if joint.src_face == Face.FRONT and joint.dst_face == Face.BACK:
-        # End-to-end connection along X axis
-        # When connecting FRONT of src to BACK of dst:
-        # src FRONT is at src_center + src_length/2
-        # dst BACK is at dst_center - dst_length/2
-        # They should align, so: dst_center = src_center + src_length
-        return (src_length / 2 + dst_length / 2, 0.0, 0.0)
-    elif joint.src_face == Face.BACK and joint.dst_face == Face.FRONT:
-        # Reverse connection
-        return (-src_length / 2 - dst_length / 2, 0.0, 0.0)
-    elif joint.src_face == Face.RIGHT and joint.dst_face == Face.LEFT:
-        # Side-by-side connection along Y axis
-        return (0.0, src_width / 2 + dst_width / 2, 0.0)
-    elif joint.src_face == Face.LEFT and joint.dst_face == Face.RIGHT:
-        # Reverse connection
-        return (0.0, -src_width / 2 - dst_width / 2, 0.0)
-    elif joint.src_face == Face.TOP and joint.dst_face == Face.BOTTOM:
-        # Stacked connection along Z axis
-        return (0.0, 0.0, src_height / 2 + dst_height / 2)
-    elif joint.src_face == Face.BOTTOM and joint.dst_face == Face.TOP:
-        # Reverse connection
-        return (0.0, 0.0, -src_height / 2 - dst_height / 2)
-    else:
-        # More complex alignment - would need full calculation
-        return (0.0, 0.0, 0.0)
+    # This function is obsolete with the new joint system
+    # The new system uses build123d's RigidJoint for automatic positioning
+    # Return zero offset as a placeholder until this function is removed
+    return (0.0, 0.0, 0.0)
