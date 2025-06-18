@@ -5,45 +5,58 @@ are connected based on face locations and orientations.
 """
 
 from dataclasses import dataclass
-from nichiyou_daiku.core.lumber import Face
+from typing import TypeAlias
+
+from nichiyou_daiku.core.lumber import LumberFace
+from nichiyou_daiku.core.geometry import Millimeters
+
+@dataclass(frozen=True)
+class BaseOffsetValue:
+    value: Millimeters
+
+@dataclass(frozen=True)
+class BaseOffsetMin:
+    pass
+
+@dataclass(frozen=True)
+class BaseOffsetMax:
+    pass
+
+BaseOffset: TypeAlias = BaseOffsetValue | BaseOffsetMin | BaseOffsetMax
+
+@dataclass(frozen=True)
+class TargetAnchorMax:
+    pass
+
+@dataclass(frozen=True)
+class TargetAnchorCenter:
+    pass
+
+@dataclass(frozen=True)
+class TargetAnchorMin:
+    pass
+
+TargetAnchor: TypeAlias = TargetAnchorMax | TargetAnchorCenter | TargetAnchorMin
+
+@dataclass(frozen=True)
+class BasePosition:
+    face: LumberFace
+    offset: BaseOffset
+
+@dataclass(frozen=True)
+class TargetPosition:
+    face: LumberFace
+    anchor: TargetAnchor
 
 
 @dataclass(frozen=True)
-class JointLocation:
-    """Location on a face for joint connection.
-    
-    Attributes:
-        face: The face where the joint is located
-        offset: Offset from face center along the U-axis in mm
-    """
-    face: Face
-    offset: float
-
-
-@dataclass(frozen=True)
-class JointPose:
-    """Orientation of the target piece in a joint.
-    
-    Attributes:
-        aligned: Face whose normal aligns with the base face's joint coordinate system's positive direction
-        aux_aligned: Face used to resolve ambiguity when target face is contained within base face
-    """
-    aligned: Face
-    aux_aligned: Face
+class TargetPose:
+    aligned: LumberFace
+    aux_aligned: LumberFace
 
 
 @dataclass(frozen=True)
 class GeneralJoint:
-    """General joint connecting two lumber pieces.
-    
-    This joint type defines connection between a base face and a target face,
-    with the target's orientation specified by JointPose.
-    
-    Attributes:
-        base_loc: Location on the base piece where joint connects
-        target_loc: Location on the target piece where joint connects
-        target_pose: Orientation of the target piece
-    """
-    base_loc: JointLocation
-    target_loc: JointLocation
-    target_pose: JointPose
+    base_pos: BasePosition
+    target_pos: TargetPosition
+    target_pose: TargetPose

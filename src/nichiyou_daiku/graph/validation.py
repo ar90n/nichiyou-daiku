@@ -12,7 +12,6 @@ import logging
 
 from nichiyou_daiku.graph.woodworking_graph import (
     WoodworkingGraph,
-    calculate_piece_origin_position,
 )
 from nichiyou_daiku.core.lumber import Face
 

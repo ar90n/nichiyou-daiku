@@ -3,7 +3,7 @@
 import pytest
 from nichiyou_daiku.core.lumber import (
     LumberType,
-    LumberSpec,
+    LumberDimensions,
     LumberPiece,
     Face,
 )
@@ -40,13 +40,13 @@ class TestLumberSpec:
 
     def test_lumber_spec_creation(self):
         """Test creating a lumber specification."""
-        spec = LumberSpec(width=19, height=89)
+        spec = LumberDimensions(width=19, height=89)
         assert spec.width == 19
         assert spec.height == 89
 
     def test_lumber_spec_immutable(self):
         """Test that lumber spec is immutable."""
-        spec = LumberSpec(width=19, height=89)
+        spec = LumberDimensions(width=19, height=89)
         with pytest.raises(AttributeError):
             spec.width = 25
 
