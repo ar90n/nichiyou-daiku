@@ -9,25 +9,21 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, NewType, Tuple
 
-# Type aliases for clarity
-Millimeters = NewType("Millimeters", float)
-Position3D = Tuple[float, float, float]
-Rotation3D = Tuple[float, float, float]
-Dimensions3D = Tuple[float, float, float]
+from .geometry import Shape2D, Shape3D
 
 
 class LumberType(Enum):
     """Standard lumber dimensions in inches (nominal size)."""
 
-    LUMBER_1X4 = "1x4"
-    LUMBER_1X8 = "1x8"
-    LUMBER_1X16 = "1x16"
     LUMBER_2X4 = "2x4"
-    LUMBER_2X8 = "2x8"
-    LUMBER_2X16 = "2x16"
+
+    def shape(self) -> Shape2D:
+       return {
+            LumberType.LUMBER_2X4: Shape2D(89.0, 38.0),
+        }[self]
 
 
-class Face(Enum):
+class LumberFace(Enum):
     """Six faces of a rectangular lumber piece."""
 
     TOP = "top"
@@ -37,14 +33,27 @@ class Face(Enum):
     FRONT = "front"
     BACK = "back"
 
+class LumberAxis(Enum):
+    """Axes for lumber piece orientation."""
+    WIDTH = "width"    # Left to right
+    HEIGHT = "height"  # Back to front
+    LENGTH = "length"  # Bottom to top
+
+class LumberPolarity(Enum):
+    """Polarity of lumber piece faces."""
+    FORWARD = "forward"  # Positive direction
+    BACKWARD = "backward"  # Negative direction
 
 @dataclass(frozen=True)
-class LumberSpec:
-    """Specification for lumber cross-section dimensions in millimeters."""
+class LumberDirection:
+    """Direction of a lumber piece along an axis.
 
-    width: float
-    height: float
-
+    Attributes:
+        axis: The axis along which the direction is defined
+        polarity: The polarity of the direction (forward/backward)
+    """
+    axis: LumberAxis
+    polarity: LumberPolarity
 
 @dataclass(frozen=True)
 class LumberPiece:
@@ -63,88 +72,96 @@ class LumberPiece:
     lumber_type: LumberType
     length: float
 
-    def get_dimensions(self) -> Dimensions3D:
-        """Get the dimensions (width, height, length) of the lumber piece.
-
-        Returns:
-            Tuple of (width, height, length) in millimeters
-
-        >>> piece = LumberPiece("test", LumberType.LUMBER_2X4, 1000.0)
-        >>> piece.get_dimensions()
-        (38.0, 89.0, 1000.0)
-        """
-        spec = _get_lumber_spec(self.lumber_type)
-        return (spec.width, spec.height, self.length)
-
-    def get_face_center_local(self, face: Face) -> Position3D:
-        """Get the center of the specified face in local coordinates.
-
-        Local coordinates assume the piece center is at origin (0, 0, 0)
-        with no rotation applied.
-
-        Args:
-            face: The face to get the center of
-
-        Returns:
-            3D position (x, y, z) of the face center in local coordinates
-
-        >>> piece = LumberPiece("test", LumberType.LUMBER_2X4, 1000.0)
-        >>> piece.get_face_center_local(Face.TOP)
-        (0.0, 0.0, 44.5)
-        >>> piece.get_face_center_local(Face.FRONT)
-        (500.0, 0.0, 0.0)
-        """
-        width, height, length = self.get_dimensions()
-        return _get_face_offset(face, width, height, length)
-
-
-# Module-level functions following functional programming approach
-
-
-def _get_lumber_spec(lumber_type: LumberType) -> LumberSpec:
-    """Get the standard specification for a lumber type.
-
-    Actual dimensions in millimeters for nominal inch sizes.
+def rotate_face_90(direction: LumberDirection, face: LumberFace) -> LumberFace:
+    """Rotate a lumber face 90 degrees in the specified direction.
 
     Args:
-        lumber_type: Type of lumber
-
+        direction: The direction to rotate the face
+        face: The original face to rotate
     Returns:
-        LumberSpec with standard dimensions in millimeters
+        The new face after rotation
     """
-    # Actual dimensions for dried lumber (mm)
-    # 1x nominal: 19mm thick, 2x nominal: 38mm thick
-    specs: Dict[LumberType, LumberSpec] = {
-        LumberType.LUMBER_1X4: LumberSpec(19.0, 89.0),  # 3/4" x 3.5"
-        LumberType.LUMBER_1X8: LumberSpec(19.0, 184.0),  # 3/4" x 7.25"
-        LumberType.LUMBER_1X16: LumberSpec(19.0, 387.0),  # 3/4" x 15.25"
-        LumberType.LUMBER_2X4: LumberSpec(38.0, 89.0),  # 1.5" x 3.5"
-        LumberType.LUMBER_2X8: LumberSpec(38.0, 184.0),  # 1.5" x 7.25"
-        LumberType.LUMBER_2X16: LumberSpec(38.0, 387.0),  # 1.5" x 15.25"
+    rotation_map: Dict[Tuple[LumberAxis, LumberPolarity], Dict[LumberFace, LumberFace]] = {
+        (LumberAxis.WIDTH, LumberPolarity.FORWARD): {
+            LumberFace.TOP: LumberFace.BACK,
+            LumberFace.BACK: LumberFace.BOTTOM,
+            LumberFace.BOTTOM: LumberFace.FRONT,
+            LumberFace.FRONT: LumberFace.TOP,
+        },
+        (LumberAxis.WIDTH, LumberPolarity.BACKWARD): {
+            LumberFace.TOP: LumberFace.FRONT,
+            LumberFace.BACK: LumberFace.TOP,
+            LumberFace.BOTTOM: LumberFace.BACK,
+            LumberFace.FRONT: LumberFace.BOTTOM,
+        },
+        (LumberAxis.HEIGHT, LumberPolarity.FORWARD): {
+            LumberFace.TOP: LumberFace.RIGHT,
+            LumberFace.RIGHT: LumberFace.BOTTOM,
+            LumberFace.BOTTOM: LumberFace.LEFT,
+            LumberFace.LEFT: LumberFace.TOP,
+        },
+        (LumberAxis.HEIGHT, LumberPolarity.BACKWARD): {
+            LumberFace.TOP: LumberFace.LEFT,
+            LumberFace.RIGHT: LumberFace.TOP,
+            LumberFace.BOTTOM: LumberFace.RIGHT,
+            LumberFace.LEFT: LumberFace.BOTTOM,
+        },
+        (LumberAxis.LENGTH, LumberPolarity.FORWARD): {
+            LumberFace.RIGHT: LumberFace.BACK,
+            LumberFace.BACK: LumberFace.LEFT,
+            LumberFace.LEFT: LumberFace.FRONT,
+            LumberFace.FRONT: LumberFace.RIGHT,
+        },
+        (LumberAxis.LENGTH, LumberPolarity.BACKWARD): {
+            LumberFace.RIGHT: LumberFace.FRONT,
+            LumberFace.BACK: LumberFace.RIGHT,
+            LumberFace.LEFT: LumberFace.BACK,
+            LumberFace.FRONT: LumberFace.LEFT,
+        },
     }
-    return specs[lumber_type]
 
+    return rotation_map[(direction.axis, direction.polarity)][face]
 
-def _get_face_offset(
-    face: Face, width: float, height: float, length: float
-) -> Position3D:
-    """Calculate the offset from piece center to face center.
+def rotate_face_180(direction: LumberDirection, face: LumberFace) -> LumberFace:
+    """Rotate a lumber face 180 degrees in the specified direction.
 
     Args:
-        face: The face to calculate offset for
-        width: Width of the lumber piece
-        height: Height of the lumber piece
-        length: Length of the lumber piece
-
+        direction: The direction to rotate the face
+        face: The original face to rotate
     Returns:
-        3D offset (dx, dy, dz) from piece center to face center
+        The new face after rotation
     """
-    face_offsets: Dict[Face, Position3D] = {
-        Face.TOP: (0.0, 0.0, height / 2),
-        Face.BOTTOM: (0.0, 0.0, -height / 2),
-        Face.LEFT: (0.0, -width / 2, 0.0),
-        Face.RIGHT: (0.0, width / 2, 0.0),
-        Face.FRONT: (length / 2, 0.0, 0.0),
-        Face.BACK: (-length / 2, 0.0, 0.0),
-    }
-    return face_offsets[face]
+    return rotate_face_90(direction, rotate_face_90(direction, face))
+
+def rotate_face_270(direction: LumberDirection, face: LumberFace) -> LumberFace:
+    """Rotate a lumber face 270 degrees in the specified direction.
+
+    Args:
+        direction: The direction to rotate the face
+        face: The original face to rotate
+    Returns:
+        The new face after rotation
+    """
+    return rotate_face_90(direction, rotate_face_180(direction, face))
+
+def calc_angle(direction: LumberDirection, src: LumberFace, dst: LumberFace) -> float:
+    """Calculate the angle between two faces in a given direction.
+
+    Args:
+        direction: The direction of rotation
+        src: The source face
+        dst: The destination face
+    Returns:
+        The angle in degrees between the two faces
+    """
+    ret = 0.0
+    while src != dst:
+        print(src,dst)
+        src = rotate_face_90(direction, src)
+        ret += 90.0
+    return ret
+
+def get_shape(piece: LumberPiece) -> Shape3D:
+    base_shape = piece.lumber_type.shape()
+
+    return Shape3D(width=base_shape.width, height=base_shape.height, length=piece.length)
