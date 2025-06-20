@@ -1,0 +1,51 @@
+"""Geometric types for woodworking dimensions and coordinates.
+
+This module re-exports all geometric types from their respective modules
+for convenience.
+"""
+
+# Re-export all types from submodules
+from .dimensions import Millimeters, Shape2D, Shape3D
+from .box import Box
+from .face import (
+    Face, 
+    opposite, 
+    cross, 
+    has_same_axis, 
+    is_adjacent,
+    has_bottom_to_top_axis,
+    has_left_to_right_axis,
+    has_back_to_front_axis,
+    face_from_target_to_base_coords,
+)
+from .edge import Edge, EdgePoint
+from .corner import Corner
+from .coordinates import Point3D, Vector3D
+
+# Explicitly define what's exported when using "from geometry import *"
+__all__ = [
+    # From dimensions
+    "Millimeters",
+    "Shape2D", 
+    "Shape3D",
+    # From box
+    "Box",
+    # From face
+    "Face",
+    "opposite",
+    "cross",
+    "has_same_axis",
+    "is_adjacent",
+    "has_bottom_to_top_axis",
+    "has_left_to_right_axis",
+    "has_back_to_front_axis",
+    "face_from_target_to_base_coords",
+    # From edge
+    "Edge",
+    "EdgePoint",
+    # From corner
+    "Corner",
+    # From coordinates
+    "Point3D",
+    "Vector3D",
+]
