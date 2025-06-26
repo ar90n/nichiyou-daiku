@@ -1,0 +1,85 @@
+"""Tests for orientation transformation in connections."""
+
+import pytest
+from nichiyou_daiku.core.connection import Connection, BasePosition, FromTopOffset, Anchor
+from nichiyou_daiku.core.geometry import Edge, EdgePoint, orientation_from_target_to_base_coords, Vector3D, cross as cross_face
+from nichiyou_daiku.core.assembly import Joint, Assembly
+from nichiyou_daiku.core.piece import Piece, PieceType
+from nichiyou_daiku.core.model import Model, PiecePair
+
+
+class TestOrientationTransform:
+    """Test orientation preservation in connections."""
+    
+    def test_should_preserve_orientation_alignment(self):
+        """Should preserve relative orientation when pieces connect."""
+        # Create two pieces
+        vertical = Piece.of(PieceType.PT_2x4, 600.0)
+        horizontal = Piece.of(PieceType.PT_2x4, 400.0)
+        
+        # Create connection - horizontal piece on side of vertical
+        connection = Connection.of(
+            BasePosition(face="left", offset=FromTopOffset(value=1.0)),
+            Anchor(face="right", edge_point=EdgePoint(edge=Edge(lhs="right", rhs="back"), value=1.0))
+        )
+        
+        # Build assembly
+        model = Model.of(
+            [vertical, horizontal],
+            [(PiecePair(base=vertical, target=horizontal), connection)]
+        )
+        assembly = Assembly.of(model)
+        
+        # Get joints - pieces have default IDs p0, p1
+        key = list(assembly.connections.keys())[0]
+        joint1 = assembly.connections[key].joint1
+        joint2 = assembly.connections[key].joint2
+        
+        # Verify face normals are opposite (base face normal = -target face normal)
+        dir1 = joint1.orientation.direction
+        dir2 = joint2.orientation.direction
+        
+        # They should point in opposite directions
+        assert abs(dir1.x + dir2.x) < 1e-6
+        assert abs(dir1.y + dir2.y) < 1e-6
+        assert abs(dir1.z + dir2.z) < 1e-6
+        
+    def test_orientation_from_target_to_base_coords(self):
+        """Test the orientation transformation function directly."""
+        # Test case: top-bottom contact
+        # Target has bottom face with edge (bottom, back)
+        # When transformed to base coordinates where top contacts bottom:
+        target_edge = Edge(lhs="bottom", rhs="back")
+        face, edge = orientation_from_target_to_base_coords(
+            target_face="bottom",      # The face we're transforming
+            target_edge=target_edge,   # The edge on the target
+            base_contact_face="top",   # Base contact face
+            target_contact_face="bottom"  # Target contact face
+        )
+        
+        # Face transformation: bottom -> bottom when top contacts bottom
+        assert face == "bottom"
+        
+        # When base face is top/bottom, the edge transforms normally
+        # This is the extended support case
+        transformed_up = cross_face(edge.lhs, edge.rhs)
+        # For top-bottom contact, the transformation preserves structure
+        # but the exact up direction depends on the transformation
+        
+    def test_edge_alignment_in_connection(self):
+        """Test that edges align properly in connections."""
+        # Create connection where edges should align
+        target = Anchor(
+            face="back",
+            edge_point=EdgePoint(edge=Edge(lhs="back", rhs="left"), value=10)
+        )
+        base = BasePosition(face="front", offset=FromTopOffset(value=10))
+        
+        conn = Connection.of(base, target)
+        
+        # Base edge should include the base face
+        assert base.face in (conn.base.edge_point.edge.lhs, conn.base.edge_point.edge.rhs)
+        
+        # Values should match
+        assert conn.base.edge_point.value == base.offset.value
+        assert conn.target.edge_point.value == target.edge_point.value

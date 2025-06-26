@@ -17,14 +17,14 @@ class TestMillimeters:
 
     # Basic validation is covered in doctests
 
-    def test_should_reject_zero_and_negative_values(self):
-        """Millimeters should reject zero and negative values."""
-        # These should work with direct validation, but fail in Pydantic models
+    def test_should_reject_negative_values(self):
+        """Millimeters should reject negative values but allow zero."""
+        # Valid shapes with positive dimensions
         Shape2D(width=10, height=20)  # This should work
-
-        # Zero should fail
-        with pytest.raises(ValidationError):
-            Shape2D(width=0, height=20)
+        
+        # Zero should now work
+        shape_with_zero = Shape2D(width=0, height=20)
+        assert shape_with_zero.width == 0
 
         # Negative should fail
         with pytest.raises(ValidationError):
@@ -36,22 +36,21 @@ class TestShape2D:
 
     # Basic creation is covered in doctests
 
-    def test_should_validate_positive_dimensions(self):
-        """Should validate that dimensions are positive."""
+    def test_should_validate_non_negative_dimensions(self):
+        """Should validate that dimensions are non-negative."""
         # Valid shape
         shape = Shape2D(width=10.5, height=20.3)
         assert shape.width == 10.5
         assert shape.height == 20.3
+        
+        # Zero width should work
+        shape_zero = Shape2D(width=0, height=20)
+        assert shape_zero.width == 0
 
-        # Invalid width
-        with pytest.raises(ValidationError) as exc_info:
-            Shape2D(width=0, height=20)
-        assert "greater than 0" in str(exc_info.value)
-
-        # Invalid height
+        # Negative height should fail
         with pytest.raises(ValidationError) as exc_info:
             Shape2D(width=10, height=-5)
-        assert "greater than 0" in str(exc_info.value)
+        assert "greater than or equal to 0" in str(exc_info.value)
 
     # Immutability is covered in doctests
 
@@ -61,23 +60,23 @@ class TestShape3D:
 
     # Basic creation is covered in doctests
 
-    def test_should_validate_all_dimensions_positive(self):
-        """Should validate that all dimensions are positive."""
+    def test_should_validate_all_dimensions_non_negative(self):
+        """Should validate that all dimensions are non-negative."""
         # Valid shape
         shape = Shape3D(width=10, height=20, length=30)
         assert shape.width == 10
         assert shape.height == 20
         assert shape.length == 30
+        
+        # Zero dimensions should work
+        shape_zero = Shape3D(width=10, height=0, length=30)
+        assert shape_zero.height == 0
 
-        # Invalid width
+        # Negative width should fail
         with pytest.raises(ValidationError):
             Shape3D(width=-10, height=20, length=30)
 
-        # Invalid height
-        with pytest.raises(ValidationError):
-            Shape3D(width=10, height=0, length=30)
-
-        # Invalid length
+        # Negative length should fail
         with pytest.raises(ValidationError):
             Shape3D(width=10, height=20, length=-30)
 
