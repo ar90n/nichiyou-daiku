@@ -3,18 +3,18 @@
 
 from nichiyou_daiku.core.assembly import (
     Joint,
-    Connection,
+    JointConnection,
     Assembly,
 )
 from nichiyou_daiku.core.piece import Piece, PieceType
 from nichiyou_daiku.core.connection import (
-    Connection as PieceConnection,
+    Connection,
     BasePosition,
     FromTopOffset,
     Anchor,
 )
-from nichiyou_daiku.core.model import Model, BaseTargetPair
-from nichiyou_daiku.core.geometry import Shape3D, Point3D, Vector3D, Face, Edge, EdgePoint, Box
+from nichiyou_daiku.core.model import Model, PiecePair
+from nichiyou_daiku.core.geometry import Shape3D, Point3D, Vector3D, Face, Edge, EdgePoint, Box, Orientation3D
 
 
 class TestBox:
@@ -43,13 +43,15 @@ class TestJoint:
 
     def test_should_support_negative_direction_vectors(self):
         """Should support joints with negative direction vectors."""
-        box = Box(shape=Shape3D(width=38.0, height=89.0, length=500.0))
         position = Point3D(x=0.0, y=0.0, z=100.0)
-        direction = Vector3D(x=-1.0, y=0.0, z=0.0)
+        orientation = Orientation3D.of(
+            direction=Vector3D(x=-1.0, y=0.0, z=0.0),
+            up=Vector3D(x=0.0, y=0.0, z=1.0)
+        )
 
-        joint = Joint(box=box, position=position, direction=direction)
+        joint = Joint(position=position, orientation=orientation)
 
-        assert joint.direction.x == -1.0
+        assert joint.orientation.direction.x == -1.0
 
 
 class TestConnection:
@@ -66,7 +68,7 @@ class TestConnection:
         vertical = Piece.of(PieceType.PT_2x4, 300.0, "vertical")
 
         # Create L-angle piece connection with supported face
-        piece_conn = PieceConnection.of(
+        piece_conn = Connection.of(
             base=BasePosition(face="left", offset=FromTopOffset(value=10)),
             target=Anchor(
                 face="bottom",
@@ -78,7 +80,7 @@ class TestConnection:
         from nichiyou_daiku.core.piece import get_shape
         horizontal_box = Box(shape=get_shape(horizontal))
         vertical_box = Box(shape=get_shape(vertical))
-        connection = Connection.of(horizontal_box, vertical_box, piece_conn)
+        connection = JointConnection.of(horizontal_box, vertical_box, piece_conn)
 
         assert isinstance(connection.joint1, Joint)
         assert isinstance(connection.joint2, Joint)
@@ -94,18 +96,26 @@ class TestAssembly:
         # Create a simple connection
         box1 = Box(shape=Shape3D(width=38.0, height=89.0, length=1000.0))
         joint1 = Joint(
-            position=Point3D(x=0, y=0, z=0), direction=Vector3D(x=0, y=0, z=1)
+            position=Point3D(x=0, y=0, z=0), 
+            orientation=Orientation3D.of(
+                direction=Vector3D(x=0, y=0, z=1),
+                up=Vector3D(x=0, y=1, z=0)
+            )
         )
 
         box2 = Box(shape=Shape3D(width=38.0, height=89.0, length=800.0))
         joint2 = Joint(
             position=Point3D(x=100, y=0, z=0),
-            direction=Vector3D(x=0, y=0, z=-1),
+            orientation=Orientation3D.of(
+                direction=Vector3D(x=0, y=0, z=-1),
+                up=Vector3D(x=0, y=1, z=0)
+            )
         )
 
-        connection = Connection(joint1=joint1, joint2=joint2)
+        connection = JointConnection(joint1=joint1, joint2=joint2)
 
         assembly = Assembly(
+            label="test_assembly",
             boxes={"p1": box1, "p2": box2},
             connections={("p1", "p2"): connection}
         )

@@ -3,7 +3,7 @@
 import pytest
 from pydantic import ValidationError
 
-from nichiyou_daiku.core.model import BaseTargetPair, Model
+from nichiyou_daiku.core.model import PiecePair, Model
 from nichiyou_daiku.core.piece import Piece, PieceType
 from nichiyou_daiku.core.connection import (
     Connection,
@@ -14,8 +14,8 @@ from nichiyou_daiku.core.connection import (
 from nichiyou_daiku.core.geometry import Face, Edge, EdgePoint
 
 
-class TestBaseTargetPair:
-    """Test BaseTargetPair model."""
+class TestPiecePair:
+    """Test PiecePair model."""
 
     # Basic creation is covered in doctests
 
@@ -24,7 +24,7 @@ class TestBaseTargetPair:
         piece1 = Piece.of(PieceType.PT_2x4, 1000.0)
         piece2 = Piece.of(PieceType.PT_2x4, 1000.0)
 
-        pair = BaseTargetPair(base=piece1, target=piece2)
+        pair = PiecePair(base=piece1, target=piece2)
 
         assert pair.base.type == pair.target.type
         assert pair.base.id != pair.target.id  # Different pieces
@@ -94,7 +94,7 @@ class TestModel:
         model = Model.of(
             pieces=[horizontal, vertical],
             connections=[
-                (BaseTargetPair(base=horizontal, target=vertical), l_angle_conn)
+                (PiecePair(base=horizontal, target=vertical), l_angle_conn)
             ],
         )
 
@@ -110,7 +110,7 @@ class TestModel:
         branch2 = Piece.of(PieceType.PT_2x4, 300.0, "branch2")
 
         conn1 = Connection.of(
-            base=BasePosition(face="top", offset=FromTopOffset(value=200)),
+            base=BasePosition(face="left", offset=FromTopOffset(value=200)),
             target=Anchor(
                 face="bottom",
                 edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="front"), value=10),
@@ -118,7 +118,7 @@ class TestModel:
         )
 
         conn2 = Connection.of(
-            base=BasePosition(face="top", offset=FromTopOffset(value=800)),
+            base=BasePosition(face="right", offset=FromTopOffset(value=800)),
             target=Anchor(
                 face="bottom",
                 edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="front"), value=10),
@@ -128,8 +128,8 @@ class TestModel:
         model = Model.of(
             pieces=[main, branch1, branch2],
             connections=[
-                (BaseTargetPair(base=main, target=branch1), conn1),
-                (BaseTargetPair(base=main, target=branch2), conn2),
+                (PiecePair(base=main, target=branch1), conn1),
+                (PiecePair(base=main, target=branch2), conn2),
             ],
         )
 

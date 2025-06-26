@@ -12,7 +12,7 @@ from nichiyou_daiku.core.piece import Piece
 from nichiyou_daiku.core.connection import Connection
 
 
-class BaseTargetPair(BaseModel, frozen=True):
+class PiecePair(BaseModel, frozen=True):
     """A pair of pieces in a connection relationship.
 
     Represents which piece is the base and which is the target
@@ -26,7 +26,7 @@ class BaseTargetPair(BaseModel, frozen=True):
         >>> from nichiyou_daiku.core.piece import Piece, PieceType
         >>> base = Piece.of(PieceType.PT_2x4, 1000.0, "base-1")
         >>> target = Piece.of(PieceType.PT_2x4, 800.0, "target-1")
-        >>> pair = BaseTargetPair(base=base, target=target)
+        >>> pair = PiecePair(base=base, target=target)
         >>> pair.base.id
         'base-1'
         >>> pair.target.id
@@ -51,8 +51,9 @@ class Model(BaseModel, frozen=True):
         >>> from nichiyou_daiku.core.piece import Piece, PieceType
         >>> from nichiyou_daiku.core.connection import (
         ...     Connection, BasePosition, FromTopOffset,
-        ...     TargetAnchor, EdgePosition
+        ...     Anchor
         ... )
+        >>> from nichiyou_daiku.core.geometry import Edge, EdgePoint
         >>> # Create empty model
         >>> empty_model = Model(pieces={}, connections={})
         >>> len(empty_model.pieces)
@@ -60,11 +61,11 @@ class Model(BaseModel, frozen=True):
         >>> # Create model with pieces
         >>> p1 = Piece.of(PieceType.PT_2x4, 1000.0, "p1")
         >>> p2 = Piece.of(PieceType.PT_2x4, 800.0, "p2")
-        >>> conn = Connection(
-        ...     base_pos=BasePosition(face="top", offset=FromTopOffset(value=100)),
-        ...     target_anchor=TargetAnchor(
+        >>> conn = Connection.of(
+        ...     base=BasePosition(face="front", offset=FromTopOffset(value=100)),
+        ...     target=Anchor(
         ...         face="bottom",
-        ...         edge_position=EdgePosition(src="bottom", dst="front", value=50)
+        ...         edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="front"), value=50)
         ...     )
         ... )
         >>> model = Model(
@@ -79,12 +80,14 @@ class Model(BaseModel, frozen=True):
 
     pieces: dict[str, Piece]
     connections: dict[tuple[str, str], Connection]
+    label: str | None = None
 
     @classmethod
     def of(
         cls,
         pieces: Iterable[Piece],
-        connections: Iterable[tuple[BaseTargetPair, Connection]],
+        connections: Iterable[tuple[PiecePair, Connection]],
+        label: str | None = None
     ) -> "Model":
         """Create a Model instance from pieces and connections.
 
@@ -92,7 +95,7 @@ class Model(BaseModel, frozen=True):
 
         Args:
             pieces: Iterable of Piece objects
-            connections: Iterable of (BaseTargetPair, Connection) tuples
+            connections: Iterable of (PiecePair, Connection) tuples
 
         Returns:
             New Model instance
@@ -101,21 +104,22 @@ class Model(BaseModel, frozen=True):
             >>> from nichiyou_daiku.core.piece import Piece, PieceType
             >>> from nichiyou_daiku.core.connection import (
             ...     Connection, BasePosition, FromTopOffset,
-            ...     TargetAnchor, EdgePosition
+            ...     Anchor
             ... )
+            >>> from nichiyou_daiku.core.geometry import Edge, EdgePoint
             >>> piece1 = Piece.of(PieceType.PT_2x4, 1000.0, "piece-1")
             >>> piece2 = Piece.of(PieceType.PT_2x4, 800.0, "piece-2")
-            >>> conn = Connection(
-            ...     base_pos=BasePosition(face="top", offset=FromTopOffset(value=100)),
-            ...     target_anchor=TargetAnchor(
+            >>> conn = Connection.of(
+            ...     base=BasePosition(face="top", offset=FromTopOffset(value=100)),
+            ...     target=Anchor(
             ...         face="bottom",
-            ...         edge_position=EdgePosition(src="bottom", dst="front", value=10)
+            ...         edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="front"), value=10)
             ...     )
             ... )
             >>> model = Model.of(
             ...     pieces=[piece1, piece2],
             ...     connections=[
-            ...         (BaseTargetPair(base=piece1, target=piece2), conn)
+            ...         (PiecePair(base=piece1, target=piece2), conn)
             ...     ]
             ... )
             >>> len(model.pieces)
@@ -127,4 +131,4 @@ class Model(BaseModel, frozen=True):
         connections_dict = {
             (pair.base.id, pair.target.id): conn for pair, conn in connections
         }
-        return cls(pieces=pieces_dict, connections=connections_dict)
+        return cls(pieces=pieces_dict, connections=connections_dict, label=label)

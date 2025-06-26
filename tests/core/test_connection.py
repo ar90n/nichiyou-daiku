@@ -57,13 +57,20 @@ class TestBasePosition:
 
     # Basic creation is covered in doctests
 
-    def test_should_accept_all_face_types(self):
-        """Should accept all valid face types."""
-        faces: list[Face] = ["top", "bottom", "left", "right", "front", "back"]
+    def test_should_accept_only_side_faces(self):
+        """Should accept only side faces (not top/bottom)."""
+        valid_faces: list[Face] = ["left", "right", "front", "back"]
+        invalid_faces: list[Face] = ["top", "bottom"]
 
-        for face in faces:
+        # Test valid faces
+        for face in valid_faces:
             pos = BasePosition(face=face, offset=FromTopOffset(value=10))
             assert pos.face == face
+            
+        # Test invalid faces raise error
+        for face in invalid_faces:
+            with pytest.raises(ValidationError):
+                BasePosition(face=face, offset=FromTopOffset(value=10))
 
     def test_should_accept_both_offset_types(self):
         """Should accept both FromTopOffset and FromBottomOffset."""
@@ -90,16 +97,17 @@ class TestEdgePoint:
         assert edge1.edge.lhs == "top" and edge1.edge.rhs == "front"
         assert edge2.edge.lhs == "left" and edge2.edge.rhs == "bottom"
 
-    def test_should_validate_positive_value(self):
-        """Should validate that value is positive."""
+    def test_should_validate_non_negative_value(self):
+        """Should validate that value is non-negative."""
         # Valid value
         edge_point = EdgePoint(edge=Edge(lhs="front", rhs="right"), value=100)
         assert edge_point.value == 100
+        
+        # Zero should now work
+        edge_point_zero = EdgePoint(edge=Edge(lhs="front", rhs="right"), value=0)
+        assert edge_point_zero.value == 0
 
-        # Invalid values should fail
-        with pytest.raises(ValidationError):
-            EdgePoint(edge=Edge(lhs="front", rhs="right"), value=0)
-
+        # Negative values should fail
         with pytest.raises(ValidationError):
             EdgePoint(edge=Edge(lhs="front", rhs="right"), value=-50)
 
@@ -133,7 +141,7 @@ class TestConnection:
         """Should validate all nested models."""
         # Valid connection
         conn = Connection.of(
-            base=BasePosition(face="top", offset=FromTopOffset(value=50)),
+            base=BasePosition(face="front", offset=FromTopOffset(value=50)),
             target=Anchor(
                 face="bottom",
                 edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="front"), value=10),
@@ -156,8 +164,8 @@ class TestConnection:
         # T-joint example
         t_joint = Connection.of(
             base=BasePosition(
-                face="top",
-                offset=FromTopOffset(value=50),  # Center of top face
+                face="left",
+                offset=FromTopOffset(value=50),  # Center of side face
             ),
             target=Anchor(
                 face="bottom",
@@ -177,5 +185,5 @@ class TestConnection:
             ),
         )
 
-        assert t_joint.base.face == "top"
+        assert t_joint.base.face == "left"
         assert l_angle.base.face == "front"

@@ -16,11 +16,11 @@ from .face import (
     has_bottom_to_top_axis,
     has_left_to_right_axis,
     has_back_to_front_axis,
-    face_from_target_to_base_coords,
+    orientation_from_target_to_base_coords,
 )
 from .edge import Edge, EdgePoint
 from .corner import Corner
-from .coordinates import Point3D, Vector3D
+from .coordinates import Point3D, Vector3D, Orientation3D
 
 # Explicitly define what's exported when using "from geometry import *"
 __all__ = [
@@ -39,7 +39,7 @@ __all__ = [
     "has_bottom_to_top_axis",
     "has_left_to_right_axis",
     "has_back_to_front_axis",
-    "face_from_target_to_base_coords",
+    "orientation_from_target_to_base_coords",
     # From edge
     "Edge",
     "EdgePoint",
@@ -48,4 +48,5 @@ __all__ = [
     # From coordinates
     "Point3D",
     "Vector3D",
+    "Orientation3D",
 ]

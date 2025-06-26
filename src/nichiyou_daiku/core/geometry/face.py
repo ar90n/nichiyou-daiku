@@ -4,7 +4,20 @@ This module provides the Face type and related operations for working with
 the six faces of a rectangular piece of lumber.
 """
 
-from typing import Literal
+from typing import Literal, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .edge import Edge
+
+# Need to import Edge for runtime use as well
+try:
+    from .edge import Edge
+except ImportError:
+    # For doctests, use a simple replacement
+    class Edge:
+        def __init__(self, lhs, rhs):
+            self.lhs = lhs
+            self.rhs = rhs
 
 # Define Face as a Literal type
 Face = Literal["top", "bottom", "left", "right", "front", "back"]
@@ -223,372 +236,79 @@ def is_adjacent(lhs: Face, rhs: Face) -> bool:
     return lhs != rhs and not has_same_axis(lhs, rhs)
 
 
-def face_from_target_to_base_coords(
-    target_face_dir: Face, base_contact_face: Face, target_contact_face: Face
-) -> Face:
-    """Convert a face direction from target piece coordinates to base piece coordinates.
-
-    When base_contact_face touches target_contact_face, this function converts
-    a face direction from the target piece's coordinate system to the base piece's
-    coordinate system.
-
+def orientation_from_target_to_base_coords(
+    target_face: Face, 
+    target_edge: "Edge",
+    base_contact_face: Face, 
+    target_contact_face: Face
+) -> tuple[Face, "Edge"]:
+    """Transform target orientation to base coordinate system.
+    
+    When two pieces connect, this function transforms the target piece's
+    orientation (face and edge) into the base piece's coordinate system.
+    This ensures proper alignment when the pieces are joined.
+    
+    The transformation works by:
+    1. The target contact face becomes opposite to the base contact face
+    2. The edge is transformed using cross product with "top" to maintain
+       consistent orientation across the connection
+    
     Args:
-        target_face_dir: Face direction in target piece coordinates
-        base_contact_face: Face of the base piece that makes contact
-        target_contact_face: Face of the target piece that makes contact
-
+        target_face: Face on the target piece (should be the contact face)
+        target_edge: Edge on the target piece defining orientation
+        base_contact_face: Face on the base piece where connection occurs
+        target_contact_face: Face on the target piece where connection occurs
+        
     Returns:
-        The face direction converted to base piece coordinates
-
+        Tuple of (transformed_face, transformed_edge) in base coordinates
+        
+    Raises:
+        ValueError: If target_face is not part of target_edge
+        
     Examples:
-        >>> face_from_target_to_base_coords("front", "front", "top")
-        'top'
-        >>> face_from_target_to_base_coords("right", "top", "bottom")
-        'left'
-        >>> face_from_target_to_base_coords("top", "left", "right")
-        'top'
+        >>> edge = Edge(lhs="bottom", rhs="back")
+        >>> face, new_edge = orientation_from_target_to_base_coords(
+        ...     target_face="bottom",
+        ...     target_edge=edge,
+        ...     base_contact_face="top", 
+        ...     target_contact_face="bottom"
+        ... )
+        >>> face
+        'bottom'
     """
-    # Define coordinate transformation for each base-target contact combination
-    match (base_contact_face, target_contact_face):
-        # Base TOP contacts Target faces
-        case ("top", "top"):
-            transform = {
-                "top": "bottom",
-                "bottom": "top",
-                "left": "left",
-                "right": "right",
-                "front": "back",
-                "back": "front",
-            }
-        case ("top", "bottom"):
-            transform = {
-                "top": "top",
-                "bottom": "bottom",
-                "left": "right",
-                "right": "left",
-                "front": "front",
-                "back": "back",
-            }
-        case ("top", "left"):
-            transform = {
-                "top": "right",
-                "bottom": "left",
-                "left": "top",
-                "right": "bottom",
-                "front": "front",
-                "back": "back",
-            }
-        case ("top", "right"):
-            transform = {
-                "top": "left",
-                "bottom": "right",
-                "left": "bottom",
-                "right": "top",
-                "front": "back",
-                "back": "front",
-            }
-        case ("top", "front"):
-            transform = {
-                "top": "back",
-                "bottom": "front",
-                "left": "left",
-                "right": "right",
-                "front": "top",
-                "back": "bottom",
-            }
-        case ("top", "back"):
-            transform = {
-                "top": "front",
-                "bottom": "back",
-                "left": "right",
-                "right": "left",
-                "front": "bottom",
-                "back": "top",
-            }
-
-        # Base BOTTOM contacts Target faces
-        case ("bottom", "top"):
-            transform = {
-                "top": "bottom",
-                "bottom": "top",
-                "left": "right",
-                "right": "left",
-                "front": "front",
-                "back": "back",
-            }
-        case ("bottom", "bottom"):
-            transform = {
-                "top": "top",
-                "bottom": "bottom",
-                "left": "left",
-                "right": "right",
-                "front": "back",
-                "back": "front",
-            }
-        case ("bottom", "left"):
-            transform = {
-                "top": "left",
-                "bottom": "right",
-                "left": "bottom",
-                "right": "top",
-                "front": "back",
-                "back": "front",
-            }
-        case ("bottom", "right"):
-            transform = {
-                "top": "right",
-                "bottom": "left",
-                "left": "top",
-                "right": "bottom",
-                "front": "front",
-                "back": "back",
-            }
-        case ("bottom", "front"):
-            transform = {
-                "top": "front",
-                "bottom": "back",
-                "left": "right",
-                "right": "left",
-                "front": "bottom",
-                "back": "top",
-            }
-        case ("bottom", "back"):
-            transform = {
-                "top": "back",
-                "bottom": "front",
-                "left": "left",
-                "right": "right",
-                "front": "top",
-                "back": "bottom",
-            }
-
-        # Base LEFT contacts Target faces
-        case ("left", "top"):
-            transform = {
-                "top": "left",
-                "bottom": "right",
-                "left": "bottom",
-                "right": "top",
-                "front": "back",
-                "back": "front",
-            }
-        case ("left", "bottom"):
-            transform = {
-                "top": "right",
-                "bottom": "left",
-                "left": "top",
-                "right": "bottom",
-                "front": "front",
-                "back": "back",
-            }
-        case ("left", "left"):
-            transform = {
-                "top": "bottom",
-                "bottom": "top",
-                "left": "left",
-                "right": "right",
-                "front": "front",
-                "back": "back",
-            }
-        case ("left", "right"):
-            transform = {
-                "top": "top",
-                "bottom": "bottom",
-                "left": "right",
-                "right": "left",
-                "front": "back",
-                "back": "front",
-            }
-        case ("left", "front"):
-            transform = {
-                "top": "front",
-                "bottom": "back",
-                "left": "right",
-                "right": "left",
-                "front": "left",
-                "back": "right",
-            }
-        case ("left", "back"):
-            transform = {
-                "top": "back",
-                "bottom": "front",
-                "left": "left",
-                "right": "right",
-                "front": "right",
-                "back": "left",
-            }
-
-        # Base RIGHT contacts Target faces
-        case ("right", "top"):
-            transform = {
-                "top": "right",
-                "bottom": "left",
-                "left": "top",
-                "right": "bottom",
-                "front": "front",
-                "back": "back",
-            }
-        case ("right", "bottom"):
-            transform = {
-                "top": "left",
-                "bottom": "right",
-                "left": "bottom",
-                "right": "top",
-                "front": "back",
-                "back": "front",
-            }
-        case ("right", "left"):
-            transform = {
-                "top": "top",
-                "bottom": "bottom",
-                "left": "right",
-                "right": "left",
-                "front": "back",
-                "back": "front",
-            }
-        case ("right", "right"):
-            transform = {
-                "top": "bottom",
-                "bottom": "top",
-                "left": "left",
-                "right": "right",
-                "front": "front",
-                "back": "back",
-            }
-        case ("right", "front"):
-            transform = {
-                "top": "back",
-                "bottom": "front",
-                "left": "left",
-                "right": "right",
-                "front": "right",
-                "back": "left",
-            }
-        case ("right", "back"):
-            transform = {
-                "top": "front",
-                "bottom": "back",
-                "left": "right",
-                "right": "left",
-                "front": "left",
-                "back": "right",
-            }
-
-        # Base FRONT contacts Target faces
-        case ("front", "top"):
-            transform = {
-                "top": "back",
-                "bottom": "front",
-                "left": "left",
-                "right": "right",
-                "front": "top",
-                "back": "bottom",
-            }
-        case ("front", "bottom"):
-            transform = {
-                "top": "front",
-                "bottom": "back",
-                "left": "right",
-                "right": "left",
-                "front": "bottom",
-                "back": "top",
-            }
-        case ("front", "left"):
-            transform = {
-                "top": "top",
-                "bottom": "bottom",
-                "left": "back",
-                "right": "front",
-                "front": "left",
-                "back": "right",
-            }
-        case ("front", "right"):
-            transform = {
-                "top": "bottom",
-                "bottom": "top",
-                "left": "front",
-                "right": "back",
-                "front": "right",
-                "back": "left",
-            }
-        case ("front", "front"):
-            transform = {
-                "top": "top",
-                "bottom": "bottom",
-                "left": "right",
-                "right": "left",
-                "front": "front",
-                "back": "back",
-            }
-        case ("front", "back"):
-            transform = {
-                "top": "bottom",
-                "bottom": "top",
-                "left": "left",
-                "right": "right",
-                "front": "back",
-                "back": "front",
-            }
-
-        # Base BACK contacts Target faces
-        case ("back", "top"):
-            transform = {
-                "top": "front",
-                "bottom": "back",
-                "left": "right",
-                "right": "left",
-                "front": "bottom",
-                "back": "top",
-            }
-        case ("back", "bottom"):
-            transform = {
-                "top": "back",
-                "bottom": "front",
-                "left": "left",
-                "right": "right",
-                "front": "top",
-                "back": "bottom",
-            }
-        case ("back", "left"):
-            transform = {
-                "top": "bottom",
-                "bottom": "top",
-                "left": "front",
-                "right": "back",
-                "front": "right",
-                "back": "left",
-            }
-        case ("back", "right"):
-            transform = {
-                "top": "top",
-                "bottom": "bottom",
-                "left": "back",
-                "right": "front",
-                "front": "left",
-                "back": "right",
-            }
-        case ("back", "front"):
-            transform = {
-                "top": "bottom",
-                "bottom": "top",
-                "left": "left",
-                "right": "right",
-                "front": "back",
-                "back": "front",
-            }
-        case ("back", "back"):
-            transform = {
-                "top": "top",
-                "bottom": "bottom",
-                "left": "right",
-                "right": "left",
-                "front": "front",
-                "back": "back",
-            }
-
-        case _:
-            raise ValueError(
-                f"Invalid face combination: base={base_contact_face}, target={target_contact_face}"
-            )
-
-    return transform[target_face_dir]
+    # Validate that target_face is part of target_edge
+    if target_face not in (target_edge.lhs, target_edge.rhs):
+        raise ValueError(f"Target face {target_face} is not part of the target edge {target_edge}")
+    
+    # For face-to-face contact, the target face in base coords is opposite to base contact
+    target_face_in_base_coords = opposite(base_contact_face)
+    
+    # Special case: when connecting top/bottom faces, preserve the edge faces directly
+    if base_contact_face in ("top", "bottom") and target_contact_face in ("top", "bottom"):
+        # Find the non-contact face in the edge
+        target_pair_face = target_edge.lhs if target_face == target_edge.rhs else target_edge.rhs
+        target_pair_face_in_base_coords = target_pair_face
+    else:
+        # For other connections, use a reference face that's not on the same axis
+        # This avoids the cross(top, top) issue
+        if target_face_in_base_coords in ("top", "bottom"):
+            reference = "front"
+        elif target_face_in_base_coords in ("left", "right"):
+            reference = "top"
+        else:  # front/back
+            reference = "top"
+        
+        if target_face == target_edge.lhs:
+            # Target face is on left side - compute right side using cross product
+            target_pair_face_in_base_coords = cross(reference, target_face_in_base_coords)
+        else:
+            # Target face is on right side - compute left side using cross product
+            target_pair_face_in_base_coords = cross(target_face_in_base_coords, reference)
+    
+    # Reconstruct the edge in base coordinates preserving the relative positions
+    if target_face == target_edge.lhs:
+        target_edge_in_base_coords = Edge(lhs=target_face_in_base_coords, rhs=target_pair_face_in_base_coords)
+    else:
+        target_edge_in_base_coords = Edge(lhs=target_pair_face_in_base_coords, rhs=target_face_in_base_coords)
+    
+    return target_face_in_base_coords, target_edge_in_base_coords

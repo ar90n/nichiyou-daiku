@@ -4,9 +4,10 @@ This module defines the types used to specify how two pieces of lumber
 connect to each other, including positions and orientations.
 """
 
+from typing import Literal
 from pydantic import BaseModel
 
-from nichiyou_daiku.core.geometry import Millimeters, Face, Edge, EdgePoint, cross as cross_face, face_from_target_to_base_coords
+from nichiyou_daiku.core.geometry import Millimeters, Face, Edge, EdgePoint, cross as cross_face, orientation_from_target_to_base_coords
 
 
 class FromTopOffset(BaseModel, frozen=True):
@@ -16,11 +17,15 @@ class FromTopOffset(BaseModel, frozen=True):
         >>> offset = FromTopOffset(value=100.0)
         >>> offset.value
         100.0
-        >>> # Must be positive
+        >>> # Zero is now allowed
+        >>> zero_offset = FromTopOffset(value=0.0)
+        >>> zero_offset.value
+        0.0
+        >>> # Negative values are not allowed
         >>> from pydantic import ValidationError
         >>> import pytest
         >>> with pytest.raises(ValidationError):
-        ...     FromTopOffset(value=0)
+        ...     FromTopOffset(value=-10)
     """
 
     value: Millimeters
@@ -51,30 +56,30 @@ class BasePosition(BaseModel, frozen=True):
     """Position on the base piece where connection occurs.
 
     Attributes:
-        face: Which face of the base piece
-        offset: Distance from face (top or bottom)
+        face: Which face of the base piece (left, right, front, or back)
+        offset: Distance from edge (top or bottom) of the face
 
-    If face is "top" or "bottom", the offset is meaningless because the
-    position is already defined by the face itself. However, it is included
-    for consistency with other position types.
+    The face must be one of the four side faces. Top and bottom faces
+    are not allowed as base positions because they would create ambiguous
+    connection points.
 
     Examples:
         >>> pos = BasePosition(
-        ...     face="top",
+        ...     face="front",
         ...     offset=FromTopOffset(value=50.0)
         ... )
         >>> pos.face
-        'top'
+        'front'
         >>> pos.offset.value
         50.0
-        >>> # Immutable
+        >>> # Only side faces are allowed
         >>> from pydantic import ValidationError
         >>> import pytest
         >>> with pytest.raises(ValidationError):
-        ...     pos.face = "bottom"
+        ...     BasePosition(face="top", offset=FromTopOffset(value=0))
     """
 
-    face: Face
+    face: Literal["left", "right", "front", "back"]
     offset: BaseOffset
 
 class Anchor(BaseModel, frozen=True):
@@ -84,16 +89,16 @@ class Anchor(BaseModel, frozen=True):
 
     Attributes:
         face: Which face of the target piece
-        edge_position: Position along an edge of that face
+        edge_point: Position along an edge of that face
 
     Examples:
-        >>> anchor = TargetAnchor(
+        >>> anchor = Anchor(
         ...     face="bottom",
-        ...     edge_position=EdgePosition(src="bottom", dst="right", value=10.0)
+        ...     edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="right"), value=10.0)
         ... )
         >>> anchor.face
         'bottom'
-        >>> anchor.edge_position.value
+        >>> anchor.edge_point.value
         10.0
     """
 
@@ -122,31 +127,25 @@ class Connection(BaseModel, frozen=True):
             Connection object representing the connection
         """
 
-        # Step 1: Get target edge direction from cross product of edge faces
-        target_edge_dir = cross_face(target.edge_point.edge.lhs, target.edge_point.edge.rhs)
-        
-        # Step 2: Transform target edge direction to base coordinates
-        base_edge_dir = face_from_target_to_base_coords(target_edge_dir, base.face, target.face)
-        
-        # Step 3: Find base pair face using cross product
-        base_pair_face = cross_face(base.face, base_edge_dir)
+        # Transform the target's orientation (face + edge) to base coordinates
+        target_face_in_base_coords, target_edge_in_base_coords = orientation_from_target_to_base_coords(
+            target_face=target.face,
+            target_edge=target.edge_point.edge,
+            base_contact_face=base.face,
+            target_contact_face=target.face
+        )
 
-        if isinstance(base.offset, FromTopOffset):
-            base_edge_point = EdgePoint(
-                edge=Edge(
-                    lhs = base_pair_face,
-                    rhs = base.face
-                ),
-                value=base.offset.value
-            )
-        else:  # FromBottomOffset
-            base_edge_point = EdgePoint(
-                edge=Edge(
-                    lhs = base.face,
-                    rhs = base_pair_face
-                ),
-                value=base.offset.value
-            )
-
-        base_anchor = Anchor(face=base.face, edge_point=base_edge_point)
+        # Find the non-contact face from the transformed edge to form the base edge
+        base_pair_face = target_edge_in_base_coords.lhs if target_face_in_base_coords != target_edge_in_base_coords.lhs else target_edge_in_base_coords.rhs
+        
+        # Determine the correct edge orientation by ensuring cross product gives "top"
+        if cross_face(base.face, base_pair_face) == "top":
+            base_edge = Edge(lhs=base.face, rhs=base_pair_face)
+        else:
+            base_edge = Edge(lhs=base_pair_face, rhs=base.face)
+        
+        base_anchor = Anchor(
+            face=base.face,
+            edge_point=EdgePoint(edge=base_edge, value=base.offset.value)
+        )
         return cls(base=base_anchor, target=target)
