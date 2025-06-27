@@ -28,7 +28,7 @@ async def test_pipeline(
     # Run docstring tests
     doctest_result = python.with_exec([
         "uv", "run", "python", "-m", "doctest",
-        "src/nichiyou_daiku/core/lumber.py",
+        "src/nichiyou_daiku/core/piece.py",
         "-v"
     ])
     
@@ -116,7 +116,7 @@ async def main(
 ) -> None:
     """Main CI pipeline orchestrator."""
     if python_versions is None:
-        python_versions = ["3.11", "3.12"]
+        python_versions = ["3.13"]
     
     config = Config(log_output=sys.stdout)
     

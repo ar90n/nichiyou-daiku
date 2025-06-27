@@ -15,11 +15,11 @@ lint:  ## Run linting checks
 format:  ## Format code with black
 	uv run black src/ tests/
 
-ci-local:  ## Run CI pipeline locally (Python 3.11 only)
+ci-local:  ## Run CI pipeline locally (Python 3.13 only)
 	./run-ci-local.sh
 
 ci-all:  ## Run CI pipeline for all Python versions
-	./run-ci-local.sh "3.11,3.12"
+	./run-ci-local.sh "3.13"
 
 clean:  ## Clean build artifacts
 	rm -rf dist/ build/ *.egg-info

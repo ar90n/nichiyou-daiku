@@ -11,8 +11,8 @@ if ! python -c "import dagger" 2>/dev/null; then
     pip install -r ci/requirements.txt
 fi
 
-# Run CI for Python 3.11 only by default (faster for local testing)
-PYTHON_VERSIONS="${1:-3.11}"
+# Run CI for Python 3.13 only by default (faster for local testing)
+PYTHON_VERSIONS="${1:-3.13}"
 
 echo "🐍 Testing with Python version(s): $PYTHON_VERSIONS"
 
