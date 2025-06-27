@@ -65,7 +65,7 @@ connections.append((
             face="bottom",
             edge_point=EdgePoint(
                 edge=Edge(lhs="back", rhs="bottom"),
-                offset=FromMin(value=0)
+                offset=FromMax(value=0)
             )
         )
     )
@@ -82,7 +82,7 @@ connections.append((
             face="top",
             edge_point=EdgePoint(
                 edge=Edge(lhs="front", rhs="top"),
-                offset=FromMin(value=0)
+                offset=FromMax(value=0)
             )
         )
     )
@@ -100,7 +100,7 @@ connections.append((
             face="bottom",
             edge_point=EdgePoint(
                 edge=Edge(lhs="back", rhs="bottom"),
-                offset=FromMin(value=0)
+                offset=FromMax(value=0)
             )
         )
     )
@@ -117,7 +117,7 @@ connections.append((
             face="top",
             edge_point=EdgePoint(
                 edge=Edge(lhs="front", rhs="top"),
-                offset=FromMin(value=0)
+                offset=FromMax(value=0)
             )
         )
     )
@@ -198,7 +198,7 @@ connections.append((
     Connection.of(
         base=BasePosition(
             face="back",
-            offset=FromMax(value=0)
+            offset=FromMin(value=0)
         ),
         target=Anchor(
             face="top",
@@ -215,7 +215,7 @@ connections.append((
     Connection.of(
         base=BasePosition(
             face="back",
-            offset=FromMax(value=0)
+            offset=FromMin(value=0)
         ),
         target=Anchor(
             face="top",
@@ -254,7 +254,8 @@ model = Model.of(
         apron_front, apron_back, apron_left, apron_right,
         *table_top_pieces
     ],
-    connections=connections
+    connections=connections,
+    label="simple_table"
 )
 
 # Convert to assembly and visualize
