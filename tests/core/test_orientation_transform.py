@@ -2,7 +2,7 @@
 
 import pytest
 from nichiyou_daiku.core.connection import Connection, BasePosition, FromTopOffset, Anchor
-from nichiyou_daiku.core.geometry import Edge, EdgePoint, orientation_from_target_to_base_coords, Vector3D, cross as cross_face
+from nichiyou_daiku.core.geometry import Edge, EdgePoint, Vector3D, cross as cross_face
 from nichiyou_daiku.core.assembly import Joint, Assembly
 from nichiyou_daiku.core.piece import Piece, PieceType
 from nichiyou_daiku.core.model import Model, PiecePair
@@ -43,28 +43,6 @@ class TestOrientationTransform:
         assert abs(dir1.x + dir2.x) < 1e-6
         assert abs(dir1.y + dir2.y) < 1e-6
         assert abs(dir1.z + dir2.z) < 1e-6
-        
-    def test_orientation_from_target_to_base_coords(self):
-        """Test the orientation transformation function directly."""
-        # Test case: top-bottom contact
-        # Target has bottom face with edge (bottom, back)
-        # When transformed to base coordinates where top contacts bottom:
-        target_edge = Edge(lhs="bottom", rhs="back")
-        face, edge = orientation_from_target_to_base_coords(
-            target_face="bottom",      # The face we're transforming
-            target_edge=target_edge,   # The edge on the target
-            base_contact_face="top",   # Base contact face
-            target_contact_face="bottom"  # Target contact face
-        )
-        
-        # Face transformation: bottom -> bottom when top contacts bottom
-        assert face == "bottom"
-        
-        # When base face is top/bottom, the edge transforms normally
-        # This is the extended support case
-        transformed_up = cross_face(edge.lhs, edge.rhs)
-        # For top-bottom contact, the transformation preserves structure
-        # but the exact up direction depends on the transformation
         
     def test_edge_alignment_in_connection(self):
         """Test that edges align properly in connections."""

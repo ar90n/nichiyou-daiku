@@ -162,31 +162,3 @@ class TestOrientationPreservation:
             assert abs(orient.up.y - expected_up.y) < 1e-6
             assert abs(orient.up.z - expected_up.z) < 1e-6
     
-    def test_orientation_alignment_to_top(self):
-        """Test that orientation aligns to TOP for non-top/bottom base faces."""
-        from nichiyou_daiku.core.geometry import orientation_from_target_to_base_coords
-        
-        # Test case: base face is front (up should be TOP)
-        target_edge = Edge(lhs="back", rhs="left")
-        face, edge = orientation_from_target_to_base_coords(
-            target_face="back",
-            target_edge=target_edge,
-            base_contact_face="front",
-            target_contact_face="back"
-        )
-        
-        # The resulting edge should produce up = TOP
-        result_up = cross_face(edge.lhs, edge.rhs)
-        assert result_up == "top", f"Expected up=top, got up={result_up}"
-        
-        # Test another case: base face is left
-        target_edge2 = Edge(lhs="right", rhs="bottom")
-        face2, edge2 = orientation_from_target_to_base_coords(
-            target_face="right",
-            target_edge=target_edge2,
-            base_contact_face="left",
-            target_contact_face="right"
-        )
-        
-        result_up2 = cross_face(edge2.lhs, edge2.rhs)
-        assert result_up2 == "top", f"Expected up=top, got up={result_up2}"
