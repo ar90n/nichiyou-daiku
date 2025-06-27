@@ -4,20 +4,7 @@ This module provides the Face type and related operations for working with
 the six faces of a rectangular piece of lumber.
 """
 
-from typing import Literal, TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from .edge import Edge
-
-# Need to import Edge for runtime use as well
-try:
-    from .edge import Edge
-except ImportError:
-    # For doctests, use a simple replacement
-    class Edge:
-        def __init__(self, lhs, rhs):
-            self.lhs = lhs
-            self.rhs = rhs
+from typing import Literal
 
 # Define Face as a Literal type
 Face = Literal["top", "bottom", "left", "right", "front", "back"]
