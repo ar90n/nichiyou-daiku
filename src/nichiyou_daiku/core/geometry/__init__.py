@@ -16,7 +16,6 @@ from .face import (
     has_bottom_to_top_axis,
     has_left_to_right_axis,
     has_back_to_front_axis,
-    orientation_from_target_to_base_coords,
 )
 from .edge import Edge, EdgePoint
 from .corner import Corner
@@ -39,7 +38,6 @@ __all__ = [
     "has_bottom_to_top_axis",
     "has_left_to_right_axis",
     "has_back_to_front_axis",
-    "orientation_from_target_to_base_coords",
     # From edge
     "Edge",
     "EdgePoint",
