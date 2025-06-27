@@ -5,9 +5,9 @@ of three faces on a lumber piece.
 """
 
 from typing import Literal
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel
 
-from .face import Face, cross, opposite, has_back_to_front_axis, has_left_to_right_axis, has_bottom_to_top_axis
+from .face import Face, cross, has_back_to_front_axis, has_left_to_right_axis, has_bottom_to_top_axis
 from .edge import Edge
 
 
