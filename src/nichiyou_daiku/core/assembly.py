@@ -65,17 +65,17 @@ class JointConnection(BaseModel, frozen=True):
     Examples:
         >>> from nichiyou_daiku.core.piece import Piece, PieceType
         >>> from nichiyou_daiku.core.connection import (
-        ...     Connection, BasePosition, FromTopOffset,
+        ...     Connection, BasePosition,
         ...     Anchor
         ... )
-        >>> from nichiyou_daiku.core.geometry import Edge, EdgePoint
+        >>> from nichiyou_daiku.core.geometry import Edge, EdgePoint, FromMax, FromMin
         >>> base = Piece.of(PieceType.PT_2x4, 1000.0)
         >>> target = Piece.of(PieceType.PT_2x4, 800.0)
         >>> pc = Connection.of(
-        ...     base=BasePosition(face="front", offset=FromTopOffset(value=100)),
+        ...     base=BasePosition(face="front", offset=FromMax(value=100)),
         ...     target=Anchor(
         ...         face="bottom",
-        ...         edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="front"), value=50)
+        ...         edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="front"), offset=FromMin(value=50))
         ...     )
         ... )
         >>> base_box = Box(shape=get_shape(base))
@@ -118,10 +118,10 @@ class Assembly(BaseModel, frozen=True):
         >>> from nichiyou_daiku.core.model import Model, PiecePair
         >>> from nichiyou_daiku.core.piece import Piece, PieceType
         >>> from nichiyou_daiku.core.connection import (
-        ...     Connection, BasePosition, FromTopOffset,
+        ...     Connection, BasePosition,
         ...     Anchor
         ... )
-        >>> from nichiyou_daiku.core.geometry import Edge, EdgePoint
+        >>> from nichiyou_daiku.core.geometry import Edge, EdgePoint, FromMax, FromMin
         >>> # Empty assembly
         >>> empty = Assembly(boxes={}, connections={})
         >>> len(empty.connections)
@@ -130,10 +130,10 @@ class Assembly(BaseModel, frozen=True):
         >>> p1 = Piece.of(PieceType.PT_2x4, 1000.0, "p1")
         >>> p2 = Piece.of(PieceType.PT_2x4, 800.0, "p2")
         >>> pc = Connection.of(
-        ...     base=BasePosition(face="front", offset=FromTopOffset(value=100)),
+        ...     base=BasePosition(face="front", offset=FromMax(value=100)),
         ...     target=Anchor(
         ...         face="bottom",
-        ...         edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="front"), value=50)
+        ...         edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="front"), offset=FromMin(value=50))
         ...     )
         ... )
         >>> model = Model.of(

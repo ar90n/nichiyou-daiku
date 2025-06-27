@@ -7,7 +7,7 @@ connect to each other, including positions and orientations.
 from typing import Literal
 from pydantic import BaseModel
 
-from nichiyou_daiku.core.geometry import Millimeters, Face, Edge, EdgePoint, cross as cross_face, opposite
+from nichiyou_daiku.core.geometry import Millimeters, Face, Edge, EdgePoint, cross as cross_face, opposite, Offset, FromMin
 
 
 def _orientation_from_target_to_base_coords(
@@ -88,48 +88,6 @@ def _orientation_from_target_to_base_coords(
     return target_face_in_base_coords, target_edge_in_base_coords
 
 
-class FromTopOffset(BaseModel, frozen=True):
-    """Offset measured from the top edge of a face.
-
-    Examples:
-        >>> offset = FromTopOffset(value=100.0)
-        >>> offset.value
-        100.0
-        >>> # Zero is now allowed
-        >>> zero_offset = FromTopOffset(value=0.0)
-        >>> zero_offset.value
-        0.0
-        >>> # Negative values are not allowed
-        >>> from pydantic import ValidationError
-        >>> import pytest
-        >>> with pytest.raises(ValidationError):
-        ...     FromTopOffset(value=-10)
-    """
-
-    value: Millimeters
-
-
-class FromBottomOffset(BaseModel, frozen=True):
-    """Offset measured from the bottom edge of a face.
-
-    Examples:
-        >>> offset = FromBottomOffset(value=150.0)
-        >>> offset.value
-        150.0
-        >>> # Different type from FromTopOffset
-        >>> top = FromTopOffset(value=100.0)
-        >>> bottom = FromBottomOffset(value=100.0)
-        >>> type(top) != type(bottom)
-        True
-    """
-
-    value: Millimeters
-
-
-BaseOffset = FromTopOffset | FromBottomOffset
-"""Union type for offset specifications."""
-
-
 class BasePosition(BaseModel, frozen=True):
     """Position on the base piece where connection occurs.
 
@@ -142,9 +100,10 @@ class BasePosition(BaseModel, frozen=True):
     connection points.
 
     Examples:
+        >>> from nichiyou_daiku.core.geometry import FromMax
         >>> pos = BasePosition(
         ...     face="front",
-        ...     offset=FromTopOffset(value=50.0)
+        ...     offset=FromMax(value=50.0)
         ... )
         >>> pos.face
         'front'
@@ -154,11 +113,11 @@ class BasePosition(BaseModel, frozen=True):
         >>> from pydantic import ValidationError
         >>> import pytest
         >>> with pytest.raises(ValidationError):
-        ...     BasePosition(face="top", offset=FromTopOffset(value=0))
+        ...     BasePosition(face="top", offset=FromMax(value=0))
     """
 
     face: Literal["left", "right", "front", "back"]
-    offset: BaseOffset
+    offset: Offset
 
 class Anchor(BaseModel, frozen=True):
     """Anchor point on the target piece.
@@ -172,11 +131,11 @@ class Anchor(BaseModel, frozen=True):
     Examples:
         >>> anchor = Anchor(
         ...     face="bottom",
-        ...     edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="right"), value=10.0)
+        ...     edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="right"), offset=FromMin(value=10.0))
         ... )
         >>> anchor.face
         'bottom'
-        >>> anchor.edge_point.value
+        >>> anchor.edge_point.offset.value
         10.0
     """
 
@@ -224,6 +183,6 @@ class Connection(BaseModel, frozen=True):
         
         base_anchor = Anchor(
             face=base.face,
-            edge_point=EdgePoint(edge=base_edge, value=base.offset.value)
+            edge_point=EdgePoint(edge=base_edge, offset=base.offset)
         )
         return cls(base=base_anchor, target=target)

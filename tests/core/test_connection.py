@@ -4,51 +4,48 @@ import pytest
 from pydantic import ValidationError
 
 from nichiyou_daiku.core.connection import (
-    FromTopOffset,
-    FromBottomOffset,
-    BaseOffset,
     BasePosition,
     Anchor,
     Connection,
 )
-from nichiyou_daiku.core.geometry import Face, Edge, EdgePoint
+from nichiyou_daiku.core.geometry import Face, Edge, EdgePoint, FromMax, FromMin, Offset
 
 
-class TestFromTopOffset:
-    """Test FromTopOffset model."""
+class TestFromMax:
+    """Test FromMax model."""
 
     # Basic creation and validation are covered in doctests
 
     def test_should_support_equality(self):
         """Should support equality comparison."""
-        offset1 = FromTopOffset(value=100.0)
-        offset2 = FromTopOffset(value=100.0)
-        offset3 = FromTopOffset(value=200.0)
+        offset1 = FromMax(value=100.0)
+        offset2 = FromMax(value=100.0)
+        offset3 = FromMax(value=200.0)
 
         assert offset1 == offset2
         assert offset1 != offset3
 
 
-class TestFromBottomOffset:
-    """Test FromBottomOffset model."""
+class TestFromMin:
+    """Test FromMin model."""
 
     # Basic creation, validation, and type comparison are covered in doctests
     # No additional tests needed as doctests cover all functionality
 
 
-class TestBaseOffset:
-    """Test BaseOffset type union."""
+class TestOffset:
+    """Test Offset type union."""
 
-    def test_should_accept_from_top_offset(self):
-        """BaseOffset should accept FromTopOffset."""
-        offset: BaseOffset = FromTopOffset(value=100.0)
-        assert isinstance(offset, FromTopOffset)
+    def test_should_accept_from_max(self):
+        """Offset should accept FromMax."""
+        offset: Offset = FromMax(value=100.0)
+        assert isinstance(offset, FromMax)
         assert offset.value == 100.0
 
-    def test_should_accept_from_bottom_offset(self):
-        """BaseOffset should accept FromBottomOffset."""
-        offset: BaseOffset = FromBottomOffset(value=200.0)
-        assert isinstance(offset, FromBottomOffset)
+    def test_should_accept_from_min(self):
+        """Offset should accept FromMin."""
+        offset: Offset = FromMin(value=200.0)
+        assert isinstance(offset, FromMin)
         assert offset.value == 200.0
 
 
@@ -64,21 +61,21 @@ class TestBasePosition:
 
         # Test valid faces
         for face in valid_faces:
-            pos = BasePosition(face=face, offset=FromTopOffset(value=10))
+            pos = BasePosition(face=face, offset=FromMax(value=10))
             assert pos.face == face
             
         # Test invalid faces raise error
         for face in invalid_faces:
             with pytest.raises(ValidationError):
-                BasePosition(face=face, offset=FromTopOffset(value=10))
+                BasePosition(face=face, offset=FromMax(value=10))
 
     def test_should_accept_both_offset_types(self):
-        """Should accept both FromTopOffset and FromBottomOffset."""
-        pos1 = BasePosition(face="front", offset=FromTopOffset(value=100))
-        pos2 = BasePosition(face="back", offset=FromBottomOffset(value=200))
+        """Should accept both FromMax and FromMin."""
+        pos1 = BasePosition(face="front", offset=FromMax(value=100))
+        pos2 = BasePosition(face="back", offset=FromMin(value=200))
 
-        assert isinstance(pos1.offset, FromTopOffset)
-        assert isinstance(pos2.offset, FromBottomOffset)
+        assert isinstance(pos1.offset, FromMax)
+        assert isinstance(pos2.offset, FromMin)
 
     # Immutability test is covered in doctests
 
@@ -91,8 +88,8 @@ class TestEdgePoint:
     def test_should_validate_edges(self):
         """Should accept valid edge combinations."""
         # Adjacent faces (valid edge)
-        edge1 = EdgePoint(edge=Edge(lhs="top", rhs="front"), value=10)
-        edge2 = EdgePoint(edge=Edge(lhs="left", rhs="bottom"), value=50)
+        edge1 = EdgePoint(edge=Edge(lhs="top", rhs="front"), offset=FromMin(value=10))
+        edge2 = EdgePoint(edge=Edge(lhs="left", rhs="bottom"), offset=FromMin(value=50))
 
         assert edge1.edge.lhs == "top" and edge1.edge.rhs == "front"
         assert edge2.edge.lhs == "left" and edge2.edge.rhs == "bottom"
@@ -100,16 +97,16 @@ class TestEdgePoint:
     def test_should_validate_non_negative_value(self):
         """Should validate that value is non-negative."""
         # Valid value
-        edge_point = EdgePoint(edge=Edge(lhs="front", rhs="right"), value=100)
-        assert edge_point.value == 100
+        edge_point = EdgePoint(edge=Edge(lhs="front", rhs="right"), offset=FromMin(value=100))
+        assert edge_point.offset.value == 100
         
         # Zero should now work
-        edge_point_zero = EdgePoint(edge=Edge(lhs="front", rhs="right"), value=0)
-        assert edge_point_zero.value == 0
+        edge_point_zero = EdgePoint(edge=Edge(lhs="front", rhs="right"), offset=FromMin(value=0))
+        assert edge_point_zero.offset.value == 0
 
         # Negative values should fail
         with pytest.raises(ValidationError):
-            EdgePoint(edge=Edge(lhs="front", rhs="right"), value=-50)
+            EdgePoint(edge=Edge(lhs="front", rhs="right"), offset=FromMin(value=-50))
 
 
 class TestTargetAnchor:
@@ -121,14 +118,14 @@ class TestTargetAnchor:
         """Should validate nested EdgePoint model."""
         # Valid anchor
         anchor = Anchor(
-            face="top", edge_point=EdgePoint(edge=Edge(lhs="top", rhs="left"), value=50)
+            face="top", edge_point=EdgePoint(edge=Edge(lhs="top", rhs="left"), offset=FromMin(value=50))
         )
-        assert anchor.edge_point.value == 50
+        assert anchor.edge_point.offset.value == 50
 
         # Invalid nested model should fail
         with pytest.raises(ValidationError):
             Anchor(
-                face="top", edge_point=EdgePoint(edge=Edge(lhs="top", rhs="left"), value=-10)
+                face="top", edge_point=EdgePoint(edge=Edge(lhs="top", rhs="left"), offset=FromMin(value=-10))
             )
 
 
@@ -141,21 +138,21 @@ class TestConnection:
         """Should validate all nested models."""
         # Valid connection
         conn = Connection.of(
-            base=BasePosition(face="front", offset=FromTopOffset(value=50)),
+            base=BasePosition(face="front", offset=FromMax(value=50)),
             target=Anchor(
                 face="bottom",
-                edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="front"), value=10),
+                edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="front"), offset=FromMin(value=10)),
             ),
         )
-        assert conn.base.edge_point.value == 50
+        assert conn.base.edge_point.offset.value == 50
 
         # Invalid nested model should fail
         with pytest.raises(ValidationError):
             Connection.of(
-                base=BasePosition(face="top", offset=FromTopOffset(value=-10)),
+                base=BasePosition(face="top", offset=FromMax(value=-10)),
                 target=Anchor(
                     face="left",
-                    edge_point=EdgePoint(edge=Edge(lhs="left", rhs="front"), value=10),
+                    edge_point=EdgePoint(edge=Edge(lhs="left", rhs="front"), offset=FromMin(value=10)),
                 ),
             )
 
@@ -165,11 +162,11 @@ class TestConnection:
         t_joint = Connection.of(
             base=BasePosition(
                 face="left",
-                offset=FromTopOffset(value=50),  # Center of side face
+                offset=FromMax(value=50),  # Center of side face
             ),
             target=Anchor(
                 face="bottom",
-                edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="front"), value=10),
+                edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="front"), offset=FromMin(value=10)),
             ),
         )
 
@@ -177,11 +174,11 @@ class TestConnection:
         l_angle = Connection.of(
             base=BasePosition(
                 face="front",
-                offset=FromTopOffset(value=25),  # End face
+                offset=FromMax(value=25),  # End face
             ),
             target=Anchor(
                 face="right",
-                edge_point=EdgePoint(edge=Edge(lhs="right", rhs="bottom"), value=100),
+                edge_point=EdgePoint(edge=Edge(lhs="right", rhs="bottom"), offset=FromMin(value=100)),
             ),
         )
 

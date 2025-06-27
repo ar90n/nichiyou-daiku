@@ -50,10 +50,10 @@ class Model(BaseModel, frozen=True):
     Examples:
         >>> from nichiyou_daiku.core.piece import Piece, PieceType
         >>> from nichiyou_daiku.core.connection import (
-        ...     Connection, BasePosition, FromTopOffset,
+        ...     Connection, BasePosition,
         ...     Anchor
         ... )
-        >>> from nichiyou_daiku.core.geometry import Edge, EdgePoint
+        >>> from nichiyou_daiku.core.geometry import Edge, EdgePoint, FromMax, FromMin
         >>> # Create empty model
         >>> empty_model = Model(pieces={}, connections={})
         >>> len(empty_model.pieces)
@@ -62,10 +62,10 @@ class Model(BaseModel, frozen=True):
         >>> p1 = Piece.of(PieceType.PT_2x4, 1000.0, "p1")
         >>> p2 = Piece.of(PieceType.PT_2x4, 800.0, "p2")
         >>> conn = Connection.of(
-        ...     base=BasePosition(face="front", offset=FromTopOffset(value=100)),
+        ...     base=BasePosition(face="front", offset=FromMax(value=100)),
         ...     target=Anchor(
         ...         face="bottom",
-        ...         edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="front"), value=50)
+        ...         edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="front"), offset=FromMin(value=50))
         ...     )
         ... )
         >>> model = Model(
@@ -103,17 +103,17 @@ class Model(BaseModel, frozen=True):
         Examples:
             >>> from nichiyou_daiku.core.piece import Piece, PieceType
             >>> from nichiyou_daiku.core.connection import (
-            ...     Connection, BasePosition, FromTopOffset,
+            ...     Connection, BasePosition,
             ...     Anchor
             ... )
-            >>> from nichiyou_daiku.core.geometry import Edge, EdgePoint
+            >>> from nichiyou_daiku.core.geometry import Edge, EdgePoint, FromMax, FromMin
             >>> piece1 = Piece.of(PieceType.PT_2x4, 1000.0, "piece-1")
             >>> piece2 = Piece.of(PieceType.PT_2x4, 800.0, "piece-2")
             >>> conn = Connection.of(
-            ...     base=BasePosition(face="top", offset=FromTopOffset(value=100)),
+            ...     base=BasePosition(face="front", offset=FromMax(value=100)),
             ...     target=Anchor(
             ...         face="bottom",
-            ...         edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="front"), value=10)
+            ...         edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="front"), offset=FromMin(value=10))
             ...     )
             ... )
             >>> model = Model.of(

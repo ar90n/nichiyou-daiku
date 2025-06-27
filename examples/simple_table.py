@@ -8,8 +8,8 @@ traditional table construction.
 
 from nichiyou_daiku.core.piece import Piece, PieceType, get_shape
 from nichiyou_daiku.core.model import Model, PiecePair
-from nichiyou_daiku.core.connection import Connection, BasePosition, FromTopOffset, Anchor, FromBottomOffset
-from nichiyou_daiku.core.geometry import Edge, EdgePoint
+from nichiyou_daiku.core.connection import Connection, BasePosition, Anchor
+from nichiyou_daiku.core.geometry import Edge, EdgePoint, FromMax, FromMin
 from nichiyou_daiku.core.assembly import Assembly
 from nichiyou_daiku.shell import assembly_to_build123d
 
@@ -59,13 +59,13 @@ connections.append((
     Connection.of(
         base=BasePosition(
             face="left",
-            offset=FromTopOffset(value=0)
+            offset=FromMax(value=0)
         ),
         target=Anchor(
             face="bottom",
             edge_point=EdgePoint(
                 edge=Edge(lhs="back", rhs="bottom"),
-                value=0.0
+                offset=FromMin(value=0)
             )
         )
     )
@@ -76,13 +76,13 @@ connections.append((
     Connection.of(
         base=BasePosition(
             face="right",
-            offset=FromTopOffset(value=0)
+            offset=FromMax(value=0)
         ),
         target=Anchor(
             face="top",
             edge_point=EdgePoint(
                 edge=Edge(lhs="front", rhs="top"),
-                value=0.0
+                offset=FromMin(value=0)
             )
         )
     )
@@ -94,13 +94,13 @@ connections.append((
     Connection.of(
         base=BasePosition(
             face="left",
-            offset=FromTopOffset(value=0)
+            offset=FromMax(value=0)
         ),
         target=Anchor(
             face="bottom",
             edge_point=EdgePoint(
                 edge=Edge(lhs="back", rhs="bottom"),
-                value=0.0
+                offset=FromMin(value=0)
             )
         )
     )
@@ -111,13 +111,13 @@ connections.append((
     Connection.of(
         base=BasePosition(
             face="right",
-            offset=FromTopOffset(value=0)
+            offset=FromMax(value=0)
         ),
         target=Anchor(
             face="top",
             edge_point=EdgePoint(
                 edge=Edge(lhs="front", rhs="top"),
-                value=0.0
+                offset=FromMin(value=0)
             )
         )
     )
@@ -129,13 +129,13 @@ connections.append((
     Connection.of(
         base=BasePosition(
             face="back",
-            offset=FromBottomOffset(value=APRON_HEIGHT)
+            offset=FromMin(value=APRON_HEIGHT)
         ),
         target=Anchor(
             face="bottom",
             edge_point=EdgePoint(
                 edge=Edge(lhs="front", rhs="bottom"),
-                value=0.0
+                offset=FromMin(value=0)
             )
         )
     )
@@ -146,13 +146,13 @@ connections.append((
     Connection.of(
         base=BasePosition(
             face="front",
-            offset=FromBottomOffset(value=APRON_HEIGHT)
+            offset=FromMin(value=APRON_HEIGHT)
         ),
         target=Anchor(
             face="top",
             edge_point=EdgePoint(
                 edge=Edge(lhs="top", rhs="front"),
-                value=0.0
+                offset=FromMin(value=0)
             )
         )
     )
@@ -164,13 +164,13 @@ connections.append((
     Connection.of(
         base=BasePosition(
             face="back",
-            offset=FromBottomOffset(value=APRON_HEIGHT)
+            offset=FromMin(value=APRON_HEIGHT)
         ),
         target=Anchor(
             face="bottom",
             edge_point=EdgePoint(
                 edge=Edge(lhs="bottom", rhs="back"),
-                value=0.0
+                offset=FromMin(value=0)
             )
         )
     )
@@ -181,13 +181,13 @@ connections.append((
     Connection.of(
         base=BasePosition(
             face="front",
-            offset=FromBottomOffset(value=APRON_HEIGHT)
+            offset=FromMin(value=APRON_HEIGHT)
         ),
         target=Anchor(
             face="top",
             edge_point=EdgePoint(
                 edge=Edge(lhs="back", rhs="top"),
-                value=0.0
+                offset=FromMin(value=0)
             )
         )
     )
@@ -198,13 +198,13 @@ connections.append((
     Connection.of(
         base=BasePosition(
             face="back",
-            offset=FromTopOffset(value=0)
+            offset=FromMax(value=0)
         ),
         target=Anchor(
             face="top",
             edge_point=EdgePoint(
                 edge=Edge(lhs="top", rhs="left"),
-                value=0.0
+                offset=FromMin(value=0)
             )
         )
     )
@@ -215,13 +215,13 @@ connections.append((
     Connection.of(
         base=BasePosition(
             face="back",
-            offset=FromTopOffset(value=0)
+            offset=FromMax(value=0)
         ),
         target=Anchor(
             face="top",
             edge_point=EdgePoint(
                 edge=Edge(lhs="top", rhs="left"),
-                value=0.0
+                offset=FromMin(value=0)
             )
         )
     )
@@ -233,13 +233,13 @@ for i in range(1, table_top_piece_num + 1):
         Connection.of(
             base=BasePosition(
                 face="right",
-                offset=FromBottomOffset(value=(i - 1) * LEG_INSET_WIDTH + i * table_top_piece_interval)
+                offset=FromMin(value=(i - 1) * LEG_INSET_WIDTH + i * table_top_piece_interval)
             ),
             target=Anchor(
                 face="back",
                 edge_point=EdgePoint(
                     edge=Edge(lhs="top", rhs="back"),
-                    value=0
+                    offset=FromMin(value=0)
                 )
             )
         )

@@ -2,9 +2,9 @@
 
 import pytest
 from nichiyou_daiku.core.connection import (
-    Connection, BasePosition, FromTopOffset, FromBottomOffset, Anchor
+    Connection, BasePosition, Anchor
 )
-from nichiyou_daiku.core.geometry import Edge, EdgePoint, cross as cross_face
+from nichiyou_daiku.core.geometry import Edge, EdgePoint, cross as cross_face, FromMax, FromMin
 
 
 class TestCrossProductAlgorithm:
@@ -18,9 +18,9 @@ class TestCrossProductAlgorithm:
         # The algorithm finds an edge that produces this up direction
         target = Anchor(
             face="right",
-            edge_point=EdgePoint(edge=Edge(lhs="right", rhs="bottom"), value=10)
+            edge_point=EdgePoint(edge=Edge(lhs="right", rhs="bottom"), offset=FromMin(value=10))
         )
-        base = BasePosition(face="left", offset=FromTopOffset(value=50))
+        base = BasePosition(face="left", offset=FromMax(value=50))
         
         conn = Connection.of(base, target)
         
@@ -43,32 +43,32 @@ class TestCrossProductAlgorithm:
         # Base pair = cross(front, bottom) = right
         target = Anchor(
             face="back",
-            edge_point=EdgePoint(edge=Edge(lhs="back", rhs="left"), value=20)
+            edge_point=EdgePoint(edge=Edge(lhs="back", rhs="left"), offset=FromMin(value=20))
         )
-        base = BasePosition(face="front", offset=FromTopOffset(value=30))
+        base = BasePosition(face="front", offset=FromMax(value=30))
         
         conn = Connection.of(base, target)
         
-        # For FromTopOffset, edge should be (right, front)
+        # For FromMax, edge should be (right, front)
         assert conn.base.edge_point.edge.lhs == "right"
         assert conn.base.edge_point.edge.rhs == "front"
         
-    def test_from_bottom_offset_reverses_edge(self):
-        """FromBottomOffset should reverse the edge direction."""
-        # Same target but with FromBottomOffset
+    def test_from_min_offset_reverses_edge(self):
+        """FromMin should reverse the edge direction."""
+        # Same target but with FromMin
         target = Anchor(
             face="right",
-            edge_point=EdgePoint(edge=Edge(lhs="right", rhs="bottom"), value=10)
+            edge_point=EdgePoint(edge=Edge(lhs="right", rhs="bottom"), offset=FromMin(value=10))
         )
-        base = BasePosition(face="left", offset=FromBottomOffset(value=50))
+        base = BasePosition(face="left", offset=FromMin(value=50))
         
         conn = Connection.of(base, target)
         
-        # For FromBottomOffset, edge is determined by cross product algorithm
+        # For FromMin, edge is determined by cross product algorithm
         # The edge should include the base face
         assert base.face in (conn.base.edge_point.edge.lhs, conn.base.edge_point.edge.rhs)
         
-        # The edge direction is reversed compared to FromTopOffset
+        # The edge direction is reversed compared to FromMax
         edge_up = cross_face(conn.base.edge_point.edge.lhs, conn.base.edge_point.edge.rhs)
         # The exact up direction depends on the transformation algorithm
         assert edge_up in ["top", "bottom", "left", "right", "front", "back"]
@@ -78,9 +78,9 @@ class TestCrossProductAlgorithm:
         # Complex case: Left-Right contact
         target = Anchor(
             face="right",
-            edge_point=EdgePoint(edge=Edge(lhs="right", rhs="back"), value=15)
+            edge_point=EdgePoint(edge=Edge(lhs="right", rhs="back"), offset=FromMin(value=15))
         )
-        base = BasePosition(face="left", offset=FromTopOffset(value=25))
+        base = BasePosition(face="left", offset=FromMax(value=25))
         
         conn = Connection.of(base, target)
         

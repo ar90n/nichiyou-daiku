@@ -7,7 +7,8 @@ nichiyou-daiku models, such as visualization helpers and pattern generators.
 from typing import List, Tuple
 from nichiyou_daiku.core.piece import Piece, PieceType
 from nichiyou_daiku.core.model import Model, PiecePair
-from nichiyou_daiku.core.connection import Connection, BasePosition, FromTopOffset, Anchor
+from nichiyou_daiku.core.connection import Connection, BasePosition, Anchor
+from nichiyou_daiku.core.geometry import FromMax
 from nichiyou_daiku.core.geometry import Edge, EdgePoint
 from nichiyou_daiku.core.assembly import Assembly
 from nichiyou_daiku.shell import assembly_to_build123d
@@ -69,7 +70,7 @@ def create_grid_frame(
                 Connection.of(
                     base=BasePosition(
                         face="front",
-                        offset=FromTopOffset(value=col * cell_width)
+                        offset=FromMax(value=col * cell_width)
                     ),
                     target=Anchor(
                         face="bottom",
@@ -137,10 +138,10 @@ def create_box_frame(
     connections.append((
         PiecePair(base=vert_fl, target=top_front),
         Connection.of(
-            base=BasePosition(face="front", offset=FromTopOffset(value=0.0)),
+            base=BasePosition(face="front", offset=FromMax(value=0.0)),
             target=Anchor(
                 face="left",
-                edge_point=EdgePoint(edge=Edge(lhs="left", rhs="top"), value=0.0)
+                edge_point=EdgePoint(edge=Edge(lhs="left", rhs="top"), offset=FromMin(value=0.0))
             )
         )
     ))
@@ -148,10 +149,10 @@ def create_box_frame(
     connections.append((
         PiecePair(base=vert_fl, target=top_left),
         Connection.of(
-            base=BasePosition(face="left", offset=FromTopOffset(value=0.0)),
+            base=BasePosition(face="left", offset=FromMax(value=0.0)),
             target=Anchor(
                 face="front", 
-                edge_point=EdgePoint(edge=Edge(lhs="front", rhs="top"), value=0.0)
+                edge_point=EdgePoint(edge=Edge(lhs="front", rhs="top"), offset=FromMin(value=0.0))
             )
         )
     ))

@@ -6,7 +6,8 @@ meet at right angles, like the corner of a picture frame or box.
 
 from nichiyou_daiku.core.piece import Piece, PieceType
 from nichiyou_daiku.core.model import Model, PiecePair
-from nichiyou_daiku.core.connection import Connection, BasePosition, FromTopOffset, Anchor
+from nichiyou_daiku.core.connection import Connection, BasePosition, Anchor
+from nichiyou_daiku.core.geometry import FromMax
 from nichiyou_daiku.core.geometry import Edge, EdgePoint
 from nichiyou_daiku.core.assembly import Assembly
 from nichiyou_daiku.shell import assembly_to_build123d
@@ -24,14 +25,14 @@ connection = Connection.of(
     # Base position: On the left face of piece_b, at the front edge
     base=BasePosition(
         face="left",  # Side face of piece_b
-        offset=FromTopOffset(value=0.0)  # At the very front edge
+        offset=FromMax(value=0.0)  # At the very front edge
     ),
     # Target anchor: On the front end of piece_a
     target=Anchor(
         face="front",  # Front end face of piece_a
         edge_point=EdgePoint(
             edge=Edge(lhs="front", rhs="left"),  # Edge at the corner
-            value=0.0  # At the corner point
+            offset=FromMin(value=0.0)  # At the corner point
         )
     )
 )
