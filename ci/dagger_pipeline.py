@@ -20,9 +20,11 @@ async def test_pipeline(
         .from_(f"python:{python_version}-slim")
         .with_mounted_directory("/src", source_dir)
         .with_workdir("/src")
+        .with_exec(["apt-get", "update", "-qq"])
+        .with_exec(["apt-get", "install", "-y", "--no-install-recommends", "git"])
         .with_exec(["pip", "install", "--upgrade", "pip"])
         .with_exec(["pip", "install", "uv"])
-        .with_exec(["uv", "sync", "--dev"])
+        .with_exec(["uv", "sync", "--dev", "--no-install-project-extras"])
     )
     
     # Run docstring tests
@@ -57,9 +59,11 @@ async def lint_pipeline(
         .from_(f"python:{python_version}-slim")
         .with_mounted_directory("/src", source_dir)
         .with_workdir("/src")
+        .with_exec(["apt-get", "update", "-qq"])
+        .with_exec(["apt-get", "install", "-y", "--no-install-recommends", "git"])
         .with_exec(["pip", "install", "--upgrade", "pip"])
         .with_exec(["pip", "install", "uv"])
-        .with_exec(["uv", "sync", "--dev"])
+        .with_exec(["uv", "sync", "--dev", "--no-install-project-extras"])
     )
     
     # Run black check
@@ -98,9 +102,11 @@ async def build_pipeline(
         .from_(f"python:{python_version}-slim")
         .with_mounted_directory("/src", source_dir)
         .with_workdir("/src")
+        .with_exec(["apt-get", "update", "-qq"])
+        .with_exec(["apt-get", "install", "-y", "--no-install-recommends", "git"])
         .with_exec(["pip", "install", "--upgrade", "pip"])
         .with_exec(["pip", "install", "uv", "build"])
-        .with_exec(["uv", "sync"])
+        .with_exec(["uv", "sync", "--no-install-project-extras"])
     )
     
     # Build the package
