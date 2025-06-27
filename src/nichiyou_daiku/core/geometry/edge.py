@@ -8,6 +8,7 @@ from pydantic import BaseModel
 
 from .face import Face, is_adjacent as is_adjacent_face
 from .dimensions import Millimeters
+from .offset import Offset
 
 
 class Edge(BaseModel, frozen=True):
@@ -43,18 +44,19 @@ class EdgePoint(BaseModel, frozen=True):
     """Point along an edge defined by two faces.
 
     Represents a point along an edge formed by the intersection of two faces.
-    The point is defined by the distance from the origin along the edge direction.
-    The origin is the point where the opposite edge direction intersects with face.
+    The point is defined by an offset from either the minimum or maximum
+    end of the edge.
 
     Attributes:
         edge: The edge defining the point
-        value: Distance from the origin along the edge direction in millimeters
+        offset: Offset from min or max edge end
 
     Examples:
-        >>> edge_point = EdgePoint(edge=Edge(lhs="top", rhs="front"), value=50.0)
-        >>> edge_point.value
+        >>> from nichiyou_daiku.core.geometry import FromMin
+        >>> edge_point = EdgePoint(edge=Edge(lhs="top", rhs="front"), offset=FromMin(value=50.0))
+        >>> edge_point.offset.value
         50.0
     """
 
     edge: Edge
-    value: Millimeters
+    offset: Offset

@@ -6,7 +6,8 @@ demonstrating different ways pieces can be connected together.
 
 from nichiyou_daiku.core.piece import Piece, PieceType
 from nichiyou_daiku.core.model import Model, PiecePair
-from nichiyou_daiku.core.connection import Connection, BasePosition, FromTopOffset, Anchor, FromBottomOffset
+from nichiyou_daiku.core.connection import Connection, BasePosition, Anchor
+from nichiyou_daiku.core.geometry import FromMax, FromMin
 from nichiyou_daiku.core.geometry import Edge, EdgePoint
 from nichiyou_daiku.core.assembly import Assembly
 from nichiyou_daiku.shell import assembly_to_build123d
@@ -26,13 +27,13 @@ upright = Piece.of(PieceType.PT_2x4, 400.0, "t_upright")  # Vertical piece
 t_joint_connection = Connection.of(
     base=BasePosition(
         face="front",  # Front face of horizontal beam
-        offset=FromBottomOffset(value=400.0)  # 400mm from the edge (centered on 800mm beam)
+        offset=FromMin(value=400.0)  # 400mm from the edge (centered on 800mm beam)
     ),
     target=Anchor(
         face="bottom",  # Bottom end of upright
         edge_point=EdgePoint(
             edge=Edge(lhs="bottom", rhs="front"),
-            value=44.5  # Centered on the 89mm width of 2x4
+            offset=FromMin(value=44.5)  # Centered on the 89mm width of 2x4
         )
     )
 )
@@ -55,13 +56,13 @@ second_piece = Piece.of(PieceType.PT_2x4, 300.0, "butt_second")
 butt_joint_connection = Connection.of(
     base=BasePosition(
         face="back",  # Back end of first piece
-        offset=FromBottomOffset(value=0)  # Centered on height
+        offset=FromMin(value=0)  # Centered on height
     ),
     target=Anchor(
         face="front",  # Front end of second piece
         edge_point=EdgePoint(
             edge=Edge(lhs="front", rhs="left"),
-            value=0  # Centered
+            offset=FromMin(value=0)  # Centered
         )
     )
 )
@@ -84,13 +85,13 @@ side_b = Piece.of(PieceType.PT_2x4, 400.0, "corner_b")
 corner_joint_connection = Connection.of(
     base=BasePosition(
         face="back",  # End of first piece
-        offset=FromTopOffset(value=0.0)  # At the edge
+        offset=FromMax(value=0.0)  # At the edge
     ),
     target=Anchor(
         face="left",  # Side of second piece  
         edge_point=EdgePoint(
             edge=Edge(lhs="front", rhs="left"),
-            value=0.0  # At the front edge
+            offset=FromMin(value=0.0)  # At the front edge
         )
     )
 )

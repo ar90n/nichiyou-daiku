@@ -10,8 +10,21 @@ from pydantic import BaseModel, field_validator
 from .box import Box
 from .corner import Corner
 from .edge import EdgePoint, Edge
-from .face import cross as cross_face, Face
+from .face import cross as cross_face, Face, has_back_to_front_axis, has_bottom_to_top_axis, has_left_to_right_axis
+from .offset import evaluate as eval_offset
+from .dimensions import Millimeters
 
+
+def _edge_legnth_of(box: Box, edge: Edge) ->  Millimeters:
+    third_face = cross_face(edge.lhs, edge.rhs)
+    if has_bottom_to_top_axis(third_face):
+        return box.shape.length
+    if has_left_to_right_axis(third_face):
+        return box.shape.width
+    if has_back_to_front_axis(third_face):
+        return box.shape.height
+    
+    raise RuntimeError("Unreachable code reached")
 
 class Point3D(BaseModel, frozen=True):
     """3D point in space.
@@ -97,11 +110,17 @@ class Point3D(BaseModel, frozen=True):
         """
         origin_corner = Corner.origin_of(edge_point.edge)
         origin = cls._of_corner(box, origin_corner)
+
         direction = Vector3D.of(edge_point.edge)
+        offset_length = eval_offset(
+            _edge_legnth_of(box, edge_point.edge),
+            edge_point.offset
+        )
+
         return cls(
-            x=origin.x + direction.x * edge_point.value,
-            y=origin.y + direction.y * edge_point.value,
-            z=origin.z + direction.z * edge_point.value
+            x=origin.x + direction.x * offset_length,
+            y=origin.y + direction.y * offset_length,
+            z=origin.z + direction.z * offset_length
         )
 
 

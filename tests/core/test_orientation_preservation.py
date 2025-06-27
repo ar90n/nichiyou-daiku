@@ -2,10 +2,10 @@
 
 import pytest
 from nichiyou_daiku.core.assembly import Assembly, Joint, Connection as AssemblyConnection
-from nichiyou_daiku.core.connection import Connection, BasePosition, FromTopOffset, Anchor
+from nichiyou_daiku.core.connection import Connection, BasePosition, Anchor
 from nichiyou_daiku.core.geometry import (
     Point3D, Vector3D, Orientation3D, Edge, EdgePoint, Box,
-    cross as cross_face
+    cross as cross_face, FromMax, FromMin
 )
 from nichiyou_daiku.core.model import Model
 from nichiyou_daiku.core.piece import Piece, PieceType
@@ -42,10 +42,10 @@ class TestOrientationPreservation:
         # Base: left face with position
         # Target: right face with edge (right, bottom) -> up = front
         conn = Connection.of(
-            base=BasePosition(face="left", offset=FromTopOffset(value=100)),
+            base=BasePosition(face="left", offset=FromMax(value=100)),
             target=Anchor(
                 face="right",
-                edge_point=EdgePoint(edge=Edge(lhs="right", rhs="bottom"), value=50)
+                edge_point=EdgePoint(edge=Edge(lhs="right", rhs="bottom"), offset=FromMin(value=50))
             )
         )
         
@@ -90,20 +90,20 @@ class TestOrientationPreservation:
         # Connection 1: vertical top to horizontal bottom
         # This tests top-bottom contact with orientation preservation
         conn1 = Connection.of(
-            base=BasePosition(face="front", offset=FromTopOffset(value=50)),
+            base=BasePosition(face="front", offset=FromMax(value=50)),
             target=Anchor(
                 face="bottom",
-                edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="front"), value=100)
+                edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="front"), offset=FromMin(value=100))
             )
         )
         
         # Connection 2: horizontal right to brace left  
         # This tests left-right contact with different orientations
         conn2 = Connection.of(
-            base=BasePosition(face="right", offset=FromTopOffset(value=200)),
+            base=BasePosition(face="right", offset=FromMax(value=200)),
             target=Anchor(
                 face="left",
-                edge_point=EdgePoint(edge=Edge(lhs="left", rhs="top"), value=150)
+                edge_point=EdgePoint(edge=Edge(lhs="left", rhs="top"), offset=FromMin(value=150))
             )
         )
         

@@ -8,10 +8,9 @@ from nichiyou_daiku.core.piece import Piece, PieceType
 from nichiyou_daiku.core.connection import (
     Connection,
     BasePosition,
-    FromTopOffset,
     Anchor,
 )
-from nichiyou_daiku.core.geometry import Face, Edge, EdgePoint
+from nichiyou_daiku.core.geometry import Face, Edge, EdgePoint, FromMax, FromMin
 
 
 class TestPiecePair:
@@ -43,10 +42,10 @@ class TestModel:
         piece2 = Piece.of(PieceType.PT_2x4, 800.0, "p2")
 
         conn = Connection.of(
-            base=BasePosition(face="front", offset=FromTopOffset(value=10)),
+            base=BasePosition(face="front", offset=FromMax(value=10)),
             target=Anchor(
                 face="bottom",
-                edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="right"), value=10),
+                edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="right"), offset=FromMin(value=10)),
             ),
         )
 
@@ -83,10 +82,10 @@ class TestModel:
 
         # Create L-angle connection
         l_angle_conn = Connection.of(
-            base=BasePosition(face="front", offset=FromTopOffset(value=10)),
+            base=BasePosition(face="front", offset=FromMax(value=10)),
             target=Anchor(
                 face="bottom",
-                edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="right"), value=10),
+                edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="right"), offset=FromMin(value=10)),
             ),
         )
 
@@ -110,18 +109,18 @@ class TestModel:
         branch2 = Piece.of(PieceType.PT_2x4, 300.0, "branch2")
 
         conn1 = Connection.of(
-            base=BasePosition(face="left", offset=FromTopOffset(value=200)),
+            base=BasePosition(face="left", offset=FromMax(value=200)),
             target=Anchor(
                 face="bottom",
-                edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="front"), value=10),
+                edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="front"), offset=FromMin(value=10)),
             ),
         )
 
         conn2 = Connection.of(
-            base=BasePosition(face="right", offset=FromTopOffset(value=800)),
+            base=BasePosition(face="right", offset=FromMax(value=800)),
             target=Anchor(
                 face="bottom",
-                edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="front"), value=10),
+                edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="front"), offset=FromMin(value=10)),
             ),
         )
 

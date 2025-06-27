@@ -1,8 +1,8 @@
 """Tests for orientation transformation in connections."""
 
 import pytest
-from nichiyou_daiku.core.connection import Connection, BasePosition, FromTopOffset, Anchor
-from nichiyou_daiku.core.geometry import Edge, EdgePoint, Vector3D, cross as cross_face
+from nichiyou_daiku.core.connection import Connection, BasePosition, Anchor
+from nichiyou_daiku.core.geometry import Edge, EdgePoint, Vector3D, cross as cross_face, FromMax, FromMin
 from nichiyou_daiku.core.assembly import Joint, Assembly
 from nichiyou_daiku.core.piece import Piece, PieceType
 from nichiyou_daiku.core.model import Model, PiecePair
@@ -19,8 +19,8 @@ class TestOrientationTransform:
         
         # Create connection - horizontal piece on side of vertical
         connection = Connection.of(
-            BasePosition(face="left", offset=FromTopOffset(value=1.0)),
-            Anchor(face="right", edge_point=EdgePoint(edge=Edge(lhs="right", rhs="back"), value=1.0))
+            BasePosition(face="left", offset=FromMax(value=1.0)),
+            Anchor(face="right", edge_point=EdgePoint(edge=Edge(lhs="right", rhs="back"), offset=FromMin(value=1.0)))
         )
         
         # Build assembly
@@ -49,9 +49,9 @@ class TestOrientationTransform:
         # Create connection where edges should align
         target = Anchor(
             face="back",
-            edge_point=EdgePoint(edge=Edge(lhs="back", rhs="left"), value=10)
+            edge_point=EdgePoint(edge=Edge(lhs="back", rhs="left"), offset=FromMin(value=10))
         )
-        base = BasePosition(face="front", offset=FromTopOffset(value=10))
+        base = BasePosition(face="front", offset=FromMax(value=10))
         
         conn = Connection.of(base, target)
         
@@ -59,5 +59,5 @@ class TestOrientationTransform:
         assert base.face in (conn.base.edge_point.edge.lhs, conn.base.edge_point.edge.rhs)
         
         # Values should match
-        assert conn.base.edge_point.value == base.offset.value
-        assert conn.target.edge_point.value == target.edge_point.value
+        assert conn.base.edge_point.offset.value == base.offset.value
+        assert conn.target.edge_point.offset.value == target.edge_point.offset.value

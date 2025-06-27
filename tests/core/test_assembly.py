@@ -10,9 +10,9 @@ from nichiyou_daiku.core.piece import Piece, PieceType
 from nichiyou_daiku.core.connection import (
     Connection,
     BasePosition,
-    FromTopOffset,
     Anchor,
 )
+from nichiyou_daiku.core.geometry import FromMax, FromMin
 from nichiyou_daiku.core.model import Model, PiecePair
 from nichiyou_daiku.core.geometry import Shape3D, Point3D, Vector3D, Face, Edge, EdgePoint, Box, Orientation3D
 
@@ -69,10 +69,10 @@ class TestConnection:
 
         # Create L-angle piece connection with supported face
         piece_conn = Connection.of(
-            base=BasePosition(face="left", offset=FromTopOffset(value=10)),
+            base=BasePosition(face="left", offset=FromMax(value=10)),
             target=Anchor(
                 face="bottom",
-                edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="right"), value=10),
+                edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="right"), offset=FromMin(value=10)),
             ),
         )
 
