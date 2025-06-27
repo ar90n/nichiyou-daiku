@@ -15,14 +15,25 @@ from nichiyou_daiku.shell import assembly_to_build123d
 
 from ocp_vscode import show
 
-# Table dimensions (in millimeters)
+
+# ============================================================================
+# TABLE DIMENSIONS
+# ============================================================================
 TABLE_WIDTH = 800.0    # 80cm wide
 TABLE_DEPTH = 600.0    # 60cm deep
 TABLE_HEIGHT = 720.0   # 72cm tall (standard dining table height)
+
+# Calculate insets based on lumber dimensions
 LEG_INSET_DEPTH = get_shape(PieceType.PT_2x4).height
 LEG_INSET_WIDTH = get_shape(PieceType.PT_2x4).width
 
-# Create pieces
+# Apron positioning
+APRON_HEIGHT = 100.0  # Distance from top of leg to apron
+
+# ============================================================================
+# CREATE PIECES
+# ============================================================================
+
 # Four legs
 leg_1 = Piece.of(PieceType.PT_2x4, TABLE_HEIGHT, "leg_1")
 leg_2 = Piece.of(PieceType.PT_2x4, TABLE_HEIGHT, "leg_2")
@@ -30,30 +41,33 @@ leg_3 = Piece.of(PieceType.PT_2x4, TABLE_HEIGHT, "leg_3")
 leg_4 = Piece.of(PieceType.PT_2x4, TABLE_HEIGHT, "leg_4")
 
 # Aprons (horizontal supports between legs)
-# These run between the legs to form the table frame
 apron_front_back_length = TABLE_WIDTH - 2 * LEG_INSET_WIDTH
 apron_left_right_length = TABLE_DEPTH - 2 * LEG_INSET_DEPTH
+
 apron_front = Piece.of(PieceType.PT_2x4, apron_front_back_length, "apron_front")
-apron_back = Piece.of(PieceType.PT_2x4, apron_front_back_length, "apron_back")
-apron_left = Piece.of(PieceType.PT_2x4, apron_left_right_length, "apron_left")
+apron_back  = Piece.of(PieceType.PT_2x4, apron_front_back_length, "apron_back")
+apron_left  = Piece.of(PieceType.PT_2x4, apron_left_right_length, "apron_left")
 apron_right = Piece.of(PieceType.PT_2x4, apron_left_right_length, "apron_right")
 
-# Tabletop
+# Tabletop pieces
 table_top_piece_num = 6
-table_top_piece_interval = (apron_front_back_length - table_top_piece_num * get_shape(PieceType.PT_2x4).width) / (table_top_piece_num + 1)
+table_top_piece_interval = (
+    (apron_front_back_length - table_top_piece_num * get_shape(PieceType.PT_2x4).width) 
+    / (table_top_piece_num + 1)
+)
 table_top_pieces = [
     Piece.of(PieceType.PT_2x4, TABLE_DEPTH, f"table_top_{i + 1}")
     for i in range(table_top_piece_num + 2)
 ]
 
-# Define connections
+# ============================================================================
+# DEFINE CONNECTIONS
+# ============================================================================
 connections = []
 
-# Connect aprons to legs
-# The aprons connect near the top of the legs (just below where tabletop would go)
-APRON_HEIGHT = 100.0  # Distance from top of leg to apron
-
-
+# ----------------------------------------------------------------------------
+# Front Apron Connections (connects leg_1 and leg_2)
+# ----------------------------------------------------------------------------
 connections.append((
     PiecePair(base=leg_1, target=apron_front),
     Connection.of(
@@ -70,7 +84,7 @@ connections.append((
         )
     )
 ))
-# Front apron connects leg_1 and leg_2
+
 connections.append((
     PiecePair(base=leg_2, target=apron_front),
     Connection.of(
@@ -88,7 +102,9 @@ connections.append((
     )
 ))
 
-# Back apron connects leg_3 and leg_4
+# ----------------------------------------------------------------------------
+# Back Apron Connections (connects leg_3 and leg_4)
+# ----------------------------------------------------------------------------
 connections.append((
     PiecePair(base=leg_3, target=apron_back),
     Connection.of(
@@ -123,7 +139,9 @@ connections.append((
     )
 ))
 
-## Left apron connects leg_1 and leg_3
+# ----------------------------------------------------------------------------
+# Left Apron Connections (connects leg_1 and leg_3)
+# ----------------------------------------------------------------------------
 connections.append((
     PiecePair(base=leg_1, target=apron_left),
     Connection.of(
@@ -158,7 +176,9 @@ connections.append((
     )
 ))
 
-# Right apron connects leg_2 and leg_4
+# ----------------------------------------------------------------------------
+# Right Apron Connections (connects leg_2 and leg_4)
+# ----------------------------------------------------------------------------
 connections.append((
     PiecePair(base=leg_2, target=apron_right),
     Connection.of(
@@ -193,6 +213,11 @@ connections.append((
     )
 ))
 
+# ----------------------------------------------------------------------------
+# Tabletop Connections
+# ----------------------------------------------------------------------------
+
+# Edge pieces connect to legs
 connections.append((
     PiecePair(base=table_top_pieces[0], target=leg_1),
     Connection.of(
@@ -227,6 +252,7 @@ connections.append((
     )
 ))
 
+# Middle pieces connect to front apron
 for i in range(1, table_top_piece_num + 1):
     connections.append((
         PiecePair(base=apron_front, target=table_top_pieces[i]),
@@ -246,8 +272,9 @@ for i in range(1, table_top_piece_num + 1):
     ))
 
 
-
-# Create the model
+# ============================================================================
+# BUILD THE MODEL
+# ============================================================================
 model = Model.of(
     pieces=[
         leg_1, leg_2, leg_3, leg_4,
@@ -258,7 +285,9 @@ model = Model.of(
     label="simple_table"
 )
 
-# Convert to assembly and visualize
+# ============================================================================
+# VISUALIZE
+# ============================================================================
 print("Building simple table...")
 assembly = Assembly.of(model)
 
