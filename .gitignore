@@ -195,3 +195,7 @@ cython_debug/
 
 # devcontainer
 .devcontainer
+
+# Claude
+CLAUDE.md
+.claude
