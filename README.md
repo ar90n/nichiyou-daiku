@@ -1,8 +1,10 @@
 # nichiyou-daiku (日曜大工)
 
-[![Quality Assurance](https://github.com/YOUR_USERNAME/nichiyou-daiku/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/nichiyou-daiku/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/YOUR_USERNAME/nichiyou-daiku/branch/main/graph/badge.svg)](https://codecov.io/gh/YOUR_USERNAME/nichiyou-daiku)
+[![Quality Assurance](https://github.com/ar90n/nichiyou-daiku/actions/workflows/ci.yml/badge.svg)](https://github.com/ar90n/nichiyou-daiku/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/ar90n/nichiyou-daiku/branch/main/graph/badge.svg)](https://codecov.io/gh/ar90n/nichiyou-daiku)
 [![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![Built with vibe coding](https://img.shields.io/badge/built%20with-vibe%20coding-ff69b4)
 
 A Python library for designing DIY furniture using standard lumber sizes and simple joinery methods. Create 3D models of your woodworking projects with an intuitive API that represents real-world construction techniques.
 
@@ -72,7 +74,7 @@ This project uses [uv](https://github.com/astral-sh/uv) for dependency managemen
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/nichiyou-daiku.git
+git clone https://github.com/ar90n/nichiyou-daiku.git
 cd nichiyou-daiku
 
 # Install development dependencies
