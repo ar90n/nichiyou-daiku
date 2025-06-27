@@ -8,13 +8,19 @@ authors = [
 ]
 requires-python = ">=3.13"
 dependencies = [
-    "build123d",
     "networkx>=3.4.2",
     "numpy>=2.2.6",
+    "pydantic>=2.11.7",
+]
+
+[project.optional-dependencies]
+viz = [
+    "build123d",
     # NOTE: build123d>=0.9.0 is required for full 3D rendering functionality
     # However, it currently doesn't support ARM64/aarch64 platforms
-    # The renderer will work in mock mode without it
-    "pydantic>=2.11.7",
+]
+all = [
+    "build123d",
 ]
 
 [build-system]
