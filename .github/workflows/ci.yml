@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 env:
-  PYTHON_VERSIONS: "3.11,3.12"
+  PYTHON_VERSIONS: "3.13"
 
 jobs:
   quality-assurance:
@@ -22,7 +22,7 @@ jobs:
       - name: 🐍 Setup Python Environment
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"  # Python version for running Dagger
+          python-version: "3.13"  # Python version for running Dagger
       
       - name: 📦 Install CI Dependencies
         run: |

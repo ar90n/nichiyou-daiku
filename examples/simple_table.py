@@ -302,4 +302,3 @@ print(f"Table frame dimensions: {TABLE_WIDTH}mm x {TABLE_DEPTH}mm")
 print(f"Table height: {TABLE_HEIGHT}mm")
 print(f"Using {len(model.pieces)} pieces with {len(model.connections)} connections")
 print("\nNote: The tabletop would be added on top of this frame structure.")
-# %%
