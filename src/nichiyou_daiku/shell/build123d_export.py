@@ -10,18 +10,16 @@ from typing import Optional, TYPE_CHECKING
 
 import numpy as np
 
-# Lazy import handling for optional dependency
-_BUILD123D_AVAILABLE = False
-_BUILD123D_ERROR = None
-
+# Check if build123d is available
+HAS_BUILD123D = False
 try:
     from build123d import Box, RigidJoint, Compound, Part, Location, Align, fillet, Axis
-    _BUILD123D_AVAILABLE = True
-except ImportError as e:
-    _BUILD123D_ERROR = e
-    # Create placeholder types for type checking
-    if TYPE_CHECKING:
-        from build123d import Box, RigidJoint, Compound, Part, Location, Align, fillet, Axis
+    HAS_BUILD123D = True
+except ImportError:
+    pass
+
+if TYPE_CHECKING:
+    from build123d import Box, RigidJoint, Compound, Part, Location, Align, fillet, Axis
 
 from nichiyou_daiku.core.assembly import Assembly, Joint as NichiyouJoint
 from nichiyou_daiku.core.geometry import Orientation3D, Vector3D, Point3D, Box as NichiyouBox
@@ -164,11 +162,11 @@ def assembly_to_build123d(
         >>> assembly = Assembly(boxes={}, connections={})
         >>> compound = assembly_to_build123d(assembly, fillet_radius=3.0)
     """
-    if not _BUILD123D_AVAILABLE:
+    if not HAS_BUILD123D:
         raise ImportError(
             "build123d is required for 3D visualization. "
-            "Please install it with: pip install build123d"
-        ) from _BUILD123D_ERROR
+            "Please install it with: pip install nichiyou-daiku[viz]"
+        )
     parts = {}
     
     # Create parts for all pieces

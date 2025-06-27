@@ -18,23 +18,20 @@ class TestAssemblyToBuild123d:
         
         # Temporarily set the flag to simulate build123d not being available
         import nichiyou_daiku.shell.build123d_export as export_module
-        original_available = export_module._BUILD123D_AVAILABLE
-        original_error = export_module._BUILD123D_ERROR
+        original_available = export_module.HAS_BUILD123D
         
         try:
-            export_module._BUILD123D_AVAILABLE = False
-            export_module._BUILD123D_ERROR = ImportError("build123d not found")
+            export_module.HAS_BUILD123D = False
             
             from nichiyou_daiku.shell.build123d_export import assembly_to_build123d
             with pytest.raises(ImportError) as exc_info:
                 assembly_to_build123d(assembly)
             
             assert "build123d is required" in str(exc_info.value)
-            assert "pip install build123d" in str(exc_info.value)
+            assert "pip install nichiyou-daiku[viz]" in str(exc_info.value)
         finally:
-            # Restore original values
-            export_module._BUILD123D_AVAILABLE = original_available
-            export_module._BUILD123D_ERROR = original_error
+            # Restore original value
+            export_module.HAS_BUILD123D = original_available
     
     @patch('nichiyou_daiku.shell.build123d_export.Compound')
     def test_should_convert_empty_assembly(self, mock_compound_class):
