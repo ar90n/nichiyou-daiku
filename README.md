@@ -8,7 +8,7 @@ A Python library for designing DIY furniture using standard lumber sizes and sim
 
 ## Features
 
-- 🪵 Support for standard lumber sizes (2x4, 2x6, etc.)
+- 🪵 Support for standard lumber size (2x4)
 - 🔗 Flexible connection system with precise offset control
 - 📐 3D visualization with build123d (optional)
 - 🧩 Piece-oriented design matching real woodworking
