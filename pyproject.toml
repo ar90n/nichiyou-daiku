@@ -1,8 +1,9 @@
 [project]
 name = "nichiyou-daiku"
 version = "0.1.0"
-description = "Add your description here"
+description = "A Python library for designing DIY furniture using standard lumber sizes"
 readme = "README.md"
+license = { text = "MIT" }
 authors = [
     { name = "Masahiro Wada", email = "argon.argon.argon@gmail.com" }
 ]
