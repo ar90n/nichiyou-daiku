@@ -195,6 +195,30 @@ nichiyou-daiku/
 7. Push to the branch (`git push origin feature/amazing-feature`)
 8. Open a Pull Request
 
+### Pull Request Guidelines
+
+To ensure your contributions are properly categorized in release notes, please follow these PR title conventions:
+
+#### PR Title Format
+Your PR title should follow the pattern: `<type>: <description>`
+
+- **feat:** New features or functionality
+  - Example: `feat: Add support for 1x4 lumber sizes`
+- **fix:** Bug fixes
+  - Example: `fix: Correct joint position calculation for angled connections`
+- **docs:** Documentation updates
+  - Example: `docs: Add assembly guide for complex joints`
+- **refactor:** Code restructuring without changing functionality
+  - Example: `refactor: Simplify connection validation logic`
+- **style:** Code style/formatting changes
+  - Example: `style: Apply consistent naming to geometry modules`
+- **chore:** Maintenance tasks, dependency updates
+  - Example: `chore: Update pydantic to 2.12.0`
+- **test:** Test additions or modifications
+  - Example: `test: Add edge cases for corner joint creation`
+
+These prefixes are automatically used by our release automation to categorize changes in release notes.
+
 ### Development Philosophy
 
 - **Test-Driven Development**: Write tests before implementation

@@ -1,0 +1,120 @@
+name-template: 'v$RESOLVED_VERSION 🎯'
+tag-template: 'v$RESOLVED_VERSION'
+
+categories:
+  - title: '🚀 Features'
+    labels:
+      - 'feature'
+      - 'enhancement'
+    collapse-after: 10
+  - title: '🐛 Bug Fixes'
+    labels:
+      - 'fix'
+      - 'bugfix'
+      - 'bug'
+    collapse-after: 10
+  - title: '📚 Documentation'
+    labels:
+      - 'documentation'
+      - 'docs'
+    collapse-after: 10
+  - title: '♻️ Code Refactoring'
+    labels:
+      - 'refactor'
+      - 'refactoring'
+    collapse-after: 10
+  - title: '🎨 Style Changes'
+    labels:
+      - 'style'
+    collapse-after: 10
+  - title: '🔧 Maintenance'
+    labels:
+      - 'chore'
+      - 'dependencies'
+    collapse-after: 10
+  - title: '🧪 Tests'
+    labels:
+      - 'test'
+      - 'tests'
+    collapse-after: 10
+
+change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
+
+change-title-escapes: '\<*_&' # You can add # and @ to disable mentions, and add ` to disable code blocks.
+
+version-resolver:
+  major:
+    labels:
+      - 'major'
+      - 'breaking'
+  minor:
+    labels:
+      - 'minor'
+      - 'feature'
+      - 'enhancement'
+  patch:
+    labels:
+      - 'patch'
+      - 'fix'
+      - 'bugfix'
+      - 'bug'
+      - 'documentation'
+      - 'docs'
+      - 'chore'
+      - 'dependencies'
+      - 'refactor'
+      - 'style'
+      - 'test'
+  default: patch
+
+autolabeler:
+  - label: 'feature'
+    title:
+      - '/^feat:/i'
+  - label: 'fix'
+    title:
+      - '/^fix:/i'
+  - label: 'documentation'
+    title:
+      - '/^docs:/i'
+  - label: 'refactor'
+    title:
+      - '/^refactor:/i'
+  - label: 'style'
+    title:
+      - '/^style:/i'
+  - label: 'chore'
+    title:
+      - '/^chore:/i'
+  - label: 'test'
+    title:
+      - '/^test:/i'
+
+exclude-labels:
+  - 'skip-changelog'
+
+exclude-contributors:
+  - 'dependabot'
+  - 'dependabot[bot]'
+
+template: |
+  ## What's Changed
+
+  $CHANGES
+
+  ## 📦 Installation
+
+  ```bash
+  pip install nichiyou-daiku==$RESOLVED_VERSION
+  
+  # With visualization support
+  pip install "nichiyou-daiku[viz]==$RESOLVED_VERSION"
+  ```
+
+  ## 🔗 Links
+
+  - [Full Changelog](https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION)
+  - [Documentation](https://github.com/$OWNER/$REPOSITORY/blob/v$RESOLVED_VERSION/README.md)
+  - [PyPI Package](https://pypi.org/project/nichiyou-daiku/$RESOLVED_VERSION/)
+
+  **Contributors**: $CONTRIBUTORS
