@@ -138,7 +138,7 @@ def get_shape(value: PieceType | Piece):
         >>> piece = Piece.of(PieceType.PT_2x4, 1000.0)
         >>> shape3d = get_shape(piece)
         >>> shape3d.width
-        38.0
+        89.0
         >>> shape3d.length
         1000.0
     """
@@ -169,9 +169,7 @@ def _get_shape_of_piece_type(piece_type: PieceType) -> Shape2D:
     """
     match piece_type:
         case PieceType.PT_2x4:
-            return Shape2D(
-                width=89.0, height=38.0
-            )  # 2x4 actual dimensions in mm
+            return Shape2D(width=89.0, height=38.0)  # 2x4 actual dimensions in mm
 
 
 def _get_shape_of_piece(piece: Piece) -> Shape3D:

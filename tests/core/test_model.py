@@ -1,8 +1,5 @@
 """Tests for model module."""
 
-import pytest
-from pydantic import ValidationError
-
 from nichiyou_daiku.core.model import PiecePair, Model
 from nichiyou_daiku.core.piece import Piece, PieceType
 from nichiyou_daiku.core.connection import (
@@ -10,7 +7,7 @@ from nichiyou_daiku.core.connection import (
     BasePosition,
     Anchor,
 )
-from nichiyou_daiku.core.geometry import Face, Edge, EdgePoint, FromMax, FromMin
+from nichiyou_daiku.core.geometry import Edge, EdgePoint, FromMax, FromMin
 
 
 class TestPiecePair:
@@ -45,7 +42,9 @@ class TestModel:
             base=BasePosition(face="front", offset=FromMax(value=10)),
             target=Anchor(
                 face="bottom",
-                edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="right"), offset=FromMin(value=10)),
+                edge_point=EdgePoint(
+                    edge=Edge(lhs="bottom", rhs="right"), offset=FromMin(value=10)
+                ),
             ),
         )
 
@@ -85,16 +84,16 @@ class TestModel:
             base=BasePosition(face="front", offset=FromMax(value=10)),
             target=Anchor(
                 face="bottom",
-                edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="right"), offset=FromMin(value=10)),
+                edge_point=EdgePoint(
+                    edge=Edge(lhs="bottom", rhs="right"), offset=FromMin(value=10)
+                ),
             ),
         )
 
         # Create model
         model = Model.of(
             pieces=[horizontal, vertical],
-            connections=[
-                (PiecePair(base=horizontal, target=vertical), l_angle_conn)
-            ],
+            connections=[(PiecePair(base=horizontal, target=vertical), l_angle_conn)],
         )
 
         assert len(model.pieces) == 2
@@ -112,7 +111,9 @@ class TestModel:
             base=BasePosition(face="left", offset=FromMax(value=200)),
             target=Anchor(
                 face="bottom",
-                edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="front"), offset=FromMin(value=10)),
+                edge_point=EdgePoint(
+                    edge=Edge(lhs="bottom", rhs="front"), offset=FromMin(value=10)
+                ),
             ),
         )
 
@@ -120,7 +121,9 @@ class TestModel:
             base=BasePosition(face="right", offset=FromMax(value=800)),
             target=Anchor(
                 face="bottom",
-                edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="front"), offset=FromMin(value=10)),
+                edge_point=EdgePoint(
+                    edge=Edge(lhs="bottom", rhs="front"), offset=FromMin(value=10)
+                ),
             ),
         )
 

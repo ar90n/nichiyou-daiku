@@ -1,4 +1,4 @@
-.PHONY: help test lint format ci-local ci-all clean
+.PHONY: help test lint format ci-local ci-setup clean
 
 help:  ## Show this help message
 	@echo "Available commands:"
@@ -8,18 +8,18 @@ test:  ## Run tests with coverage
 	uv run pytest tests/ --cov=nichiyou_daiku --cov-report=term-missing -v
 
 lint:  ## Run linting checks
-	uv run black --check src/ tests/
+	uv run ruff format --check src/ tests/
 	uv run ruff check src/ tests/
-	uv run mypy src/nichiyou_daiku
+	uv run pyright src/nichiyou_daiku
 
 format:  ## Format code with black
-	uv run black src/ tests/
+	uv run ruff format src/ tests/
+
+ci-setup:  ## Install CI dependencies for local CI runs
+	uv sync --group ci --group dev --all-extras
 
 ci-local:  ## Run CI pipeline locally (Python 3.13 only)
-	./run-ci-local.sh
-
-ci-all:  ## Run CI pipeline for all Python versions
-	./run-ci-local.sh "3.13"
+	uv run python ci/dagger_pipeline.py
 
 clean:  ## Clean build artifacts
 	rm -rf dist/ build/ *.egg-info

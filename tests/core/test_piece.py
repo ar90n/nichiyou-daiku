@@ -1,7 +1,6 @@
 """Tests for piece module."""
 
 import pytest
-from uuid import UUID
 
 from nichiyou_daiku.core.piece import (
     PieceType,
@@ -9,7 +8,6 @@ from nichiyou_daiku.core.piece import (
     get_shape,
 )
 from nichiyou_daiku.core.geometry import Face
-from nichiyou_daiku.core.geometry import Shape2D, Shape3D
 
 
 class TestPieceType:
@@ -36,13 +34,14 @@ class TestPiece:
         # Valid length
         piece = Piece.of(PieceType.PT_2x4, 100.0)
         assert piece.length == 100.0
-        
+
         # Zero length should be allowed now
         piece_zero = Piece(id="test", type=PieceType.PT_2x4, length=0)
         assert piece_zero.length == 0
 
         # Negative length should fail
         from pydantic import ValidationError
+
         with pytest.raises(ValidationError):
             Piece(id="test", type=PieceType.PT_2x4, length=-100)
 
@@ -55,7 +54,7 @@ class TestFace:
         # Test Face literal values
         faces: list[Face] = ["top", "bottom", "left", "right", "front", "back"]
         assert len(faces) == 6
-        
+
         # Test that each is a valid Face string
         for face in faces:
             # This will pass type checking

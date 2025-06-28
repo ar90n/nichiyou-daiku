@@ -27,11 +27,12 @@ jobs:
       - name: 📦 Install CI Dependencies
         run: |
           pip install --upgrade pip
-          pip install -r ci/requirements.txt
+          pip install uv
+          uv sync --group ci
       
       - name: 🚀 Execute Dagger Pipeline
         run: |
-          python ci/dagger_pipeline.py "${{ env.PYTHON_VERSIONS }}"
+          uv run python ci/dagger_pipeline.py "${{ env.PYTHON_VERSIONS }}"
         env:
           DAGGER_CLOUD_TOKEN: ${{ secrets.DAGGER_CLOUD_TOKEN }}
       

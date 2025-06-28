@@ -1,4 +1,3 @@
-# %%
 """Simple table example - A basic four-legged table.
 
 This example demonstrates how to build a simple table structure

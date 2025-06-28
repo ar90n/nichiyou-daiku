@@ -2,6 +2,7 @@ from pydantic import BaseModel
 
 from .dimensions import Millimeters
 
+
 class FromMax(BaseModel, frozen=True):
     """Offset measured from the maximum edge of a dimension.
 

@@ -8,6 +8,7 @@ from nichiyou_daiku.core.connection import (
     Anchor,
     Connection,
 )
+from typing import cast, Literal
 from nichiyou_daiku.core.geometry import Face, Edge, EdgePoint, FromMax, FromMin, Offset
 
 
@@ -61,13 +62,19 @@ class TestBasePosition:
 
         # Test valid faces
         for face in valid_faces:
-            pos = BasePosition(face=face, offset=FromMax(value=10))
+            pos = BasePosition(
+                face=cast(Literal["left", "right", "front", "back"], face),
+                offset=FromMax(value=10),
+            )
             assert pos.face == face
-            
+
         # Test invalid faces raise error
         for face in invalid_faces:
             with pytest.raises(ValidationError):
-                BasePosition(face=face, offset=FromMax(value=10))
+                BasePosition(
+                    face=cast(Literal["left", "right", "front", "back"], face),
+                    offset=FromMax(value=10),
+                )
 
     def test_should_accept_both_offset_types(self):
         """Should accept both FromMax and FromMin."""
@@ -97,11 +104,15 @@ class TestEdgePoint:
     def test_should_validate_non_negative_value(self):
         """Should validate that value is non-negative."""
         # Valid value
-        edge_point = EdgePoint(edge=Edge(lhs="front", rhs="right"), offset=FromMin(value=100))
+        edge_point = EdgePoint(
+            edge=Edge(lhs="front", rhs="right"), offset=FromMin(value=100)
+        )
         assert edge_point.offset.value == 100
-        
+
         # Zero should now work
-        edge_point_zero = EdgePoint(edge=Edge(lhs="front", rhs="right"), offset=FromMin(value=0))
+        edge_point_zero = EdgePoint(
+            edge=Edge(lhs="front", rhs="right"), offset=FromMin(value=0)
+        )
         assert edge_point_zero.offset.value == 0
 
         # Negative values should fail
@@ -118,14 +129,20 @@ class TestTargetAnchor:
         """Should validate nested EdgePoint model."""
         # Valid anchor
         anchor = Anchor(
-            face="top", edge_point=EdgePoint(edge=Edge(lhs="top", rhs="left"), offset=FromMin(value=50))
+            face="top",
+            edge_point=EdgePoint(
+                edge=Edge(lhs="top", rhs="left"), offset=FromMin(value=50)
+            ),
         )
         assert anchor.edge_point.offset.value == 50
 
         # Invalid nested model should fail
         with pytest.raises(ValidationError):
             Anchor(
-                face="top", edge_point=EdgePoint(edge=Edge(lhs="top", rhs="left"), offset=FromMin(value=-10))
+                face="top",
+                edge_point=EdgePoint(
+                    edge=Edge(lhs="top", rhs="left"), offset=FromMin(value=-10)
+                ),
             )
 
 
@@ -141,7 +158,9 @@ class TestConnection:
             base=BasePosition(face="front", offset=FromMax(value=50)),
             target=Anchor(
                 face="bottom",
-                edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="front"), offset=FromMin(value=10)),
+                edge_point=EdgePoint(
+                    edge=Edge(lhs="bottom", rhs="front"), offset=FromMin(value=10)
+                ),
             ),
         )
         assert conn.base.edge_point.offset.value == 50
@@ -149,10 +168,12 @@ class TestConnection:
         # Invalid nested model should fail
         with pytest.raises(ValidationError):
             Connection.of(
-                base=BasePosition(face="top", offset=FromMax(value=-10)),
+                base=BasePosition(face="top", offset=FromMax(value=-10)),  # type: ignore
                 target=Anchor(
                     face="left",
-                    edge_point=EdgePoint(edge=Edge(lhs="left", rhs="front"), offset=FromMin(value=10)),
+                    edge_point=EdgePoint(
+                        edge=Edge(lhs="left", rhs="front"), offset=FromMin(value=10)
+                    ),
                 ),
             )
 
@@ -166,7 +187,9 @@ class TestConnection:
             ),
             target=Anchor(
                 face="bottom",
-                edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="front"), offset=FromMin(value=10)),
+                edge_point=EdgePoint(
+                    edge=Edge(lhs="bottom", rhs="front"), offset=FromMin(value=10)
+                ),
             ),
         )
 
@@ -178,7 +201,9 @@ class TestConnection:
             ),
             target=Anchor(
                 face="right",
-                edge_point=EdgePoint(edge=Edge(lhs="right", rhs="bottom"), offset=FromMin(value=100)),
+                edge_point=EdgePoint(
+                    edge=Edge(lhs="right", rhs="bottom"), offset=FromMin(value=100)
+                ),
             ),
         )
 

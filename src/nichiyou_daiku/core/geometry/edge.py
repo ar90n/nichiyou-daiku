@@ -7,19 +7,18 @@ of two faces on a lumber piece.
 from pydantic import BaseModel
 
 from .face import Face, is_adjacent as is_adjacent_face
-from .dimensions import Millimeters
 from .offset import Offset
 
 
 class Edge(BaseModel, frozen=True):
     """Edge of a face, defined by two faces.
-    
+
     Represents an edge formed by the intersection of two faces. And its direction
     is determined by the right-hand rule.
 
     Attributes:
         lhs: Left-hand side face
-        rhs: Right-hand side face 
+        rhs: Right-hand side face
 
     Examples:
         >>> edge = Edge(lhs="top", rhs="front")
@@ -35,7 +34,9 @@ class Edge(BaseModel, frozen=True):
     def __post_init__(self):
         """Validate that lhs and rhs are adjacent faces."""
         if self.lhs == self.rhs:
-            raise ValueError("Left-hand side and right-hand side faces must be different.")
+            raise ValueError(
+                "Left-hand side and right-hand side faces must be different."
+            )
         if not is_adjacent_face(self.lhs, self.rhs):
             raise ValueError(f"Faces {self.lhs} and {self.rhs} are not adjacent.")
 

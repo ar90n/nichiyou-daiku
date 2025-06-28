@@ -21,23 +21,18 @@ async def test_pipeline(
         .with_mounted_directory("/src", source_dir)
         .with_workdir("/src")
         .with_exec(["apt-get", "update", "-qq"])
-        .with_exec(["apt-get", "install", "-y", "--no-install-recommends", "git"])
+        .with_exec(["apt-get", "install", "-y", "--no-install-recommends", "git", "libgl1-mesa-dev"])
         .with_exec(["pip", "install", "--upgrade", "pip"])
         .with_exec(["pip", "install", "uv"])
-        .with_exec(["uv", "sync", "--dev", "--no-install-project-extras"])
+        .with_exec(["uv", "sync", "--dev", "--all-extras"])
     )
     
-    # Run docstring tests
-    doctest_result = python.with_exec([
-        "uv", "run", "python", "-m", "doctest",
-        "src/nichiyou_daiku/core/piece.py",
-        "-v"
-    ])
-    
     # Run pytest with coverage
-    test_result = doctest_result.with_exec([
+    test_result = python.with_exec([
         "uv", "run", "pytest", 
+        "src/",
         "tests/",
+        "--doctest-modules",
         "--cov=nichiyou_daiku",
         "--cov-report=term-missing",
         "--cov-report=xml",
@@ -60,35 +55,36 @@ async def lint_pipeline(
         .with_mounted_directory("/src", source_dir)
         .with_workdir("/src")
         .with_exec(["apt-get", "update", "-qq"])
-        .with_exec(["apt-get", "install", "-y", "--no-install-recommends", "git"])
+        .with_exec(["apt-get", "install", "-y", "--no-install-recommends", "git", "libgl1-mesa-dev"])
         .with_exec(["pip", "install", "--upgrade", "pip"])
         .with_exec(["pip", "install", "uv"])
-        .with_exec(["uv", "sync", "--dev", "--no-install-project-extras"])
+        .with_exec(["uv", "sync", "--dev", "--all-extras"])
     )
     
-    # Run black check
-    black_check = python.with_exec([
-        "uv", "run", "black", 
+    # Run ruff format
+    format_check = python.with_exec([
+        "uv", "run", "ruff", 
+        "format",
         "--check", 
         "src/", 
         "tests/"
     ])
     
     # Run ruff
-    ruff_check = black_check.with_exec([
+    ruff_check = format_check.with_exec([
         "uv", "run", "ruff", 
         "check", 
         "src/", 
         "tests/"
     ])
     
-    # Run mypy
-    mypy_check = ruff_check.with_exec([
-        "uv", "run", "mypy", 
+    # Run pyright
+    pyright_check = ruff_check.with_exec([
+        "uv", "run", "pyright", 
         "src/nichiyou_daiku"
     ])
     
-    return mypy_check
+    return pyright_check
 
 
 async def build_pipeline(
@@ -106,7 +102,7 @@ async def build_pipeline(
         .with_exec(["apt-get", "install", "-y", "--no-install-recommends", "git"])
         .with_exec(["pip", "install", "--upgrade", "pip"])
         .with_exec(["pip", "install", "uv", "build"])
-        .with_exec(["uv", "sync", "--no-install-project-extras"])
+        .with_exec(["uv", "sync"])
     )
     
     # Build the package
@@ -152,18 +148,18 @@ async def main(
             print(f"\n🐍 Running CI for Python {py_version}")
             
             # Run tests
-            print(f"  📋 Running tests...")
+            print("  📋 Running tests...")
             test_result = await test_pipeline(client, source, py_version)
             test_results.append(test_result)
             
             # Run linting (only on one version to save time)
             if py_version == python_versions[0]:
-                print(f"  🔍 Running linting...")
+                print("  🔍 Running linting...")
                 lint_result = await lint_pipeline(client, source, py_version)
                 lint_results.append(lint_result)
             
             # Build package
-            print(f"  📦 Building package...")
+            print("  📦 Building package...")
             build_result = await build_pipeline(client, source, py_version)
             build_results.append(build_result)
         
