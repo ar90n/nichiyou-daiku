@@ -9,7 +9,6 @@ authors = [
 ]
 requires-python = ">=3.13"
 dependencies = [
-    "networkx>=3.4.2",
     "numpy>=2.2.6",
     "pydantic>=2.11.7",
 ]
@@ -19,9 +18,11 @@ viz = [
     "build123d",
     # NOTE: build123d>=0.9.0 is required for full 3D rendering functionality
     # However, it currently doesn't support ARM64/aarch64 platforms
+    "ocp-vscode>=2.8.5",
 ]
 all = [
     "build123d",
+    "ocp-vscode>=2.8.5",
 ]
 
 [build-system]
@@ -30,17 +31,17 @@ build-backend = "hatchling.build"
 
 [dependency-groups]
 dev = [
-    "black>=25.1.0",
     "hypothesis>=6.135.2",
-    "mypy>=1.16.0",
     "pytest>=8.4.0",
     "pytest-benchmark>=5.1.0",
     "pytest-cov>=6.1.1",
     "ruff>=0.11.13",
-    "types-networkx>=3.5.0.20250531",
     "psutil>=6.1.1",
-    "ocp-vscode>=2.7.1",
     "pyright>=1.1.402",
+]
+ci = [
+    "dagger-io>=0.18.11",
+    "anyio>=4.9.0",
 ]
 
 [tool.uv.sources]

@@ -87,7 +87,7 @@ class Model(BaseModel, frozen=True):
         cls,
         pieces: Iterable[Piece],
         connections: Iterable[tuple[PiecePair, Connection]],
-        label: str | None = None
+        label: str | None = None,
     ) -> "Model":
         """Create a Model instance from pieces and connections.
 

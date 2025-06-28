@@ -11,6 +11,8 @@ from nichiyou_daiku.core.geometry import FromMax, FromMin
 from nichiyou_daiku.core.geometry import Edge, EdgePoint
 from nichiyou_daiku.core.assembly import Assembly
 from nichiyou_daiku.shell import assembly_to_build123d
+from build123d import Location
+from ocp_vscode import show
 
 # We'll create multiple joint examples, showing them separately
 
@@ -109,8 +111,6 @@ corner_joint_model = Model.of(
 print("\nConverting to 3D...")
 
 # You can uncomment the joint you want to visualize:
-from build123d import Location
-from ocp_vscode import show
 
 # T-Joint
 t_assembly = Assembly.of(t_joint_model)

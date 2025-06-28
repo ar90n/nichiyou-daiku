@@ -4,7 +4,6 @@ import pytest
 from pydantic import ValidationError
 
 from nichiyou_daiku.core.geometry import (
-    Millimeters,
     Shape2D,
     Shape3D,
     Point3D,
@@ -21,7 +20,7 @@ class TestMillimeters:
         """Millimeters should reject negative values but allow zero."""
         # Valid shapes with positive dimensions
         Shape2D(width=10, height=20)  # This should work
-        
+
         # Zero should now work
         shape_with_zero = Shape2D(width=0, height=20)
         assert shape_with_zero.width == 0
@@ -42,7 +41,7 @@ class TestShape2D:
         shape = Shape2D(width=10.5, height=20.3)
         assert shape.width == 10.5
         assert shape.height == 20.3
-        
+
         # Zero width should work
         shape_zero = Shape2D(width=0, height=20)
         assert shape_zero.width == 0
@@ -67,7 +66,7 @@ class TestShape3D:
         assert shape.width == 10
         assert shape.height == 20
         assert shape.length == 30
-        
+
         # Zero dimensions should work
         shape_zero = Shape3D(width=10, height=0, length=30)
         assert shape_zero.height == 0

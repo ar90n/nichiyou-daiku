@@ -1,15 +1,18 @@
 """Tests for cross product algorithm in Connection.of."""
 
-import pytest
-from nichiyou_daiku.core.connection import (
-    Connection, BasePosition, Anchor
+from nichiyou_daiku.core.connection import Connection, BasePosition, Anchor
+from nichiyou_daiku.core.geometry import (
+    Edge,
+    EdgePoint,
+    cross as cross_face,
+    FromMax,
+    FromMin,
 )
-from nichiyou_daiku.core.geometry import Edge, EdgePoint, cross as cross_face, FromMax, FromMin
 
 
 class TestCrossProductAlgorithm:
     """Test that Connection.of uses cross product algorithm correctly."""
-    
+
     def test_cross_product_determines_base_pair_face(self):
         """Should use cross product to determine base pair face."""
         # Test case: Top-Bottom contact
@@ -18,23 +21,29 @@ class TestCrossProductAlgorithm:
         # The algorithm finds an edge that produces this up direction
         target = Anchor(
             face="right",
-            edge_point=EdgePoint(edge=Edge(lhs="right", rhs="bottom"), offset=FromMin(value=10))
+            edge_point=EdgePoint(
+                edge=Edge(lhs="right", rhs="bottom"), offset=FromMin(value=10)
+            ),
         )
         base = BasePosition(face="left", offset=FromMax(value=50))
-        
+
         conn = Connection.of(base, target)
-        
+
         # Check that the base edge includes the base face
-        assert base.face in (conn.base.edge_point.edge.lhs, conn.base.edge_point.edge.rhs)
-        
+        assert base.face in (
+            conn.base.edge_point.edge.lhs,
+            conn.base.edge_point.edge.rhs,
+        )
+
         # Check that the edge produces an up direction
         # For side faces, the up direction is determined by cross product
         # and transformed appropriately
-        edge_up = cross_face(conn.base.edge_point.edge.lhs, conn.base.edge_point.edge.rhs)
-        target_up = cross_face(target.edge_point.edge.lhs, target.edge_point.edge.rhs)
+        edge_up = cross_face(
+            conn.base.edge_point.edge.lhs, conn.base.edge_point.edge.rhs
+        )
         # The transformation produces a valid up direction
         assert edge_up in ["top", "bottom", "left", "right", "front", "back"]
-        
+
     def test_cross_product_with_different_faces(self):
         """Should handle various face combinations with cross product."""
         # Test case: Front-Back contact
@@ -43,51 +52,67 @@ class TestCrossProductAlgorithm:
         # Base pair = cross(front, bottom) = right
         target = Anchor(
             face="back",
-            edge_point=EdgePoint(edge=Edge(lhs="back", rhs="left"), offset=FromMin(value=20))
+            edge_point=EdgePoint(
+                edge=Edge(lhs="back", rhs="left"), offset=FromMin(value=20)
+            ),
         )
         base = BasePosition(face="front", offset=FromMax(value=30))
-        
+
         conn = Connection.of(base, target)
-        
+
         # For FromMax, edge should be (right, front)
         assert conn.base.edge_point.edge.lhs == "right"
         assert conn.base.edge_point.edge.rhs == "front"
-        
+
     def test_from_min_offset_reverses_edge(self):
         """FromMin should reverse the edge direction."""
         # Same target but with FromMin
         target = Anchor(
             face="right",
-            edge_point=EdgePoint(edge=Edge(lhs="right", rhs="bottom"), offset=FromMin(value=10))
+            edge_point=EdgePoint(
+                edge=Edge(lhs="right", rhs="bottom"), offset=FromMin(value=10)
+            ),
         )
         base = BasePosition(face="left", offset=FromMin(value=50))
-        
+
         conn = Connection.of(base, target)
-        
+
         # For FromMin, edge is determined by cross product algorithm
         # The edge should include the base face
-        assert base.face in (conn.base.edge_point.edge.lhs, conn.base.edge_point.edge.rhs)
-        
+        assert base.face in (
+            conn.base.edge_point.edge.lhs,
+            conn.base.edge_point.edge.rhs,
+        )
+
         # The edge direction is reversed compared to FromMax
-        edge_up = cross_face(conn.base.edge_point.edge.lhs, conn.base.edge_point.edge.rhs)
+        edge_up = cross_face(
+            conn.base.edge_point.edge.lhs, conn.base.edge_point.edge.rhs
+        )
         # The exact up direction depends on the transformation algorithm
         assert edge_up in ["top", "bottom", "left", "right", "front", "back"]
-        
+
     def test_algorithm_steps_traceable(self):
         """Verify we can trace through the algorithm steps."""
         # Complex case: Left-Right contact
         target = Anchor(
             face="right",
-            edge_point=EdgePoint(edge=Edge(lhs="right", rhs="back"), offset=FromMin(value=15))
+            edge_point=EdgePoint(
+                edge=Edge(lhs="right", rhs="back"), offset=FromMin(value=15)
+            ),
         )
         base = BasePosition(face="left", offset=FromMax(value=25))
-        
+
         conn = Connection.of(base, target)
-        
+
         # Let's verify the algorithm:
         # When base face is left (non-top/bottom), up direction should be TOP
-        edge_up = cross_face(conn.base.edge_point.edge.lhs, conn.base.edge_point.edge.rhs)
+        edge_up = cross_face(
+            conn.base.edge_point.edge.lhs, conn.base.edge_point.edge.rhs
+        )
         assert edge_up == "top", f"Expected up=top for left base face, got {edge_up}"
-        
+
         # The edge should include the base face
-        assert base.face in (conn.base.edge_point.edge.lhs, conn.base.edge_point.edge.rhs)
+        assert base.face in (
+            conn.base.edge_point.edge.lhs,
+            conn.base.edge_point.edge.rhs,
+        )

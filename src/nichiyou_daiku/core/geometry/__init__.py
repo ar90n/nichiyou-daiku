@@ -8,10 +8,10 @@ for convenience.
 from .dimensions import Millimeters, Shape2D, Shape3D
 from .box import Box
 from .face import (
-    Face, 
-    opposite, 
-    cross, 
-    has_same_axis, 
+    Face,
+    opposite,
+    cross,
+    has_same_axis,
     is_adjacent,
     has_bottom_to_top_axis,
     has_left_to_right_axis,
@@ -26,7 +26,7 @@ from .offset import Offset, FromMax, FromMin
 __all__ = [
     # From dimensions
     "Millimeters",
-    "Shape2D", 
+    "Shape2D",
     "Shape3D",
     # From box
     "Box",
@@ -51,5 +51,5 @@ __all__ = [
     # From offset
     "Offset",
     "FromMin",
-    "FromMax"
+    "FromMax",
 ]

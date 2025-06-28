@@ -9,7 +9,8 @@ from pydantic import BaseModel
 from .piece import get_shape
 from .connection import Connection, Anchor
 from .model import Model
-from .geometry import Point3D, Vector3D, Box, Orientation3D
+from .geometry import Point3D, Box, Orientation3D
+
 
 class Joint(BaseModel, frozen=True):
     """A joint point with position and orientation.
@@ -21,7 +22,7 @@ class Joint(BaseModel, frozen=True):
         orientation: Full 3D orientation at the joint
 
     Examples:
-        >>> from nichiyou_daiku.core.geometry import Edge
+        >>> from nichiyou_daiku.core.geometry import Point3D, Vector3D, Orientation3D
         >>> joint = Joint(
         ...     position=Point3D(x=100.0, y=50.0, z=25.0),
         ...     orientation=Orientation3D.of(
@@ -34,6 +35,7 @@ class Joint(BaseModel, frozen=True):
         >>> joint.orientation.direction.z
         1.0
     """
+
     position: Point3D
     orientation: Orientation3D
 
@@ -95,14 +97,8 @@ class JointConnection(BaseModel, frozen=True):
     def of(
         cls, base_box: Box, target_box: Box, piece_connection: Connection
     ) -> "JointConnection":
-        base_joint = Joint.of(
-            box=base_box,
-            anchor=piece_connection.base
-        )
-        target_joint = Joint.of(
-            box=target_box,
-            anchor=piece_connection.target
-        )
+        base_joint = Joint.of(box=base_box, anchor=piece_connection.base)
+        target_joint = Joint.of(box=target_box, anchor=piece_connection.target)
         return cls(joint1=base_joint, joint2=target_joint)
 
 
@@ -123,7 +119,7 @@ class Assembly(BaseModel, frozen=True):
         ... )
         >>> from nichiyou_daiku.core.geometry import Edge, EdgePoint, FromMax, FromMin
         >>> # Empty assembly
-        >>> empty = Assembly(boxes={}, connections={})
+        >>> empty = Assembly(boxes={}, connections={}, label="empty")
         >>> len(empty.connections)
         0
         >>> # Assembly from model
@@ -170,6 +166,7 @@ class Assembly(BaseModel, frozen=True):
         for (base_id, target_id), piece_conn in model.connections.items():
             base_box = boxes[base_id]
             target_box = boxes[target_id]
-            connections[(base_id, target_id)] = JointConnection.of(base_box, target_box, piece_conn)
+            connections[(base_id, target_id)] = JointConnection.of(
+                base_box, target_box, piece_conn
+            )
         return cls(label=model.label, boxes=boxes, connections=connections)
-

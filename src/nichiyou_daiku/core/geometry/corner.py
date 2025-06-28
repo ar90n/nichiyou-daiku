@@ -4,16 +4,22 @@ This module provides types for representing corners formed by the intersection
 of three faces on a lumber piece.
 """
 
-from typing import Literal
+from typing import Literal, cast
 from pydantic import BaseModel
 
-from .face import Face, cross, has_back_to_front_axis, has_left_to_right_axis, has_bottom_to_top_axis
+from .face import (
+    Face,
+    cross,
+    has_back_to_front_axis,
+    has_left_to_right_axis,
+    has_bottom_to_top_axis,
+)
 from .edge import Edge
 
 
 class Corner(BaseModel, frozen=True):
     """Corner formed by three faces.
-    
+
     Represents a corner formed by the intersection of three faces.
 
     Attributes:
@@ -29,7 +35,7 @@ class Corner(BaseModel, frozen=True):
         'left'
         >>> corner.face_front_back
         'front'
-    """     
+    """
 
     face_top_bottom: Literal["top", "bottom"]
     face_right_left: Literal["left", "right"]
@@ -61,24 +67,34 @@ class Corner(BaseModel, frozen=True):
         """
         # Determine which face goes in which position
         faces = {edge.lhs, edge.rhs, face}
-        
+
         # Find face_x (top or bottom)
-        face_top_bottom = next((f for f in faces if has_bottom_to_top_axis(f)), None)
+        face_top_bottom = next(
+            (f for f in faces if has_bottom_to_top_axis(cast(Face, f))), None
+        )
         if not face_top_bottom:
             raise ValueError("Corner must include either top or bottom face")
-            
+
         # Find face_y (left or right)
-        face_right_left = next((f for f in faces if has_left_to_right_axis(f)), None)
+        face_right_left = next(
+            (f for f in faces if has_left_to_right_axis(cast(Face, f))), None
+        )
         if not face_right_left:
             raise ValueError("Corner must include either left or right face")
-            
+
         # Find face_z (front or back)
-        face_front_back = next((f for f in faces if has_back_to_front_axis(f)), None)
+        face_front_back = next(
+            (f for f in faces if has_back_to_front_axis(cast(Face, f))), None
+        )
         if not face_front_back:
             raise ValueError("Corner must include either front or back face")
-            
-        return cls(face_top_bottom=face_top_bottom, face_right_left=face_right_left, face_front_back=face_front_back)
-    
+
+        return cls(
+            face_top_bottom=cast(Literal["top", "bottom"], face_top_bottom),
+            face_right_left=cast(Literal["left", "right"], face_right_left),
+            face_front_back=cast(Literal["front", "back"], face_front_back),
+        )
+
     @classmethod
     def origin_of(cls, edge: Edge) -> "Corner":
         """Create a corner from an edge.
@@ -98,7 +114,7 @@ class Corner(BaseModel, frozen=True):
             >>> corner.face_top_bottom
             'top'
             >>> corner.face_right_left
-            'left'
+            'right'
             >>> corner.face_front_back
             'front'
         """

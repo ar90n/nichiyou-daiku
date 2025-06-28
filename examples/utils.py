@@ -4,14 +4,12 @@ This module provides helper functions for common tasks when working with
 nichiyou-daiku models, such as visualization helpers and pattern generators.
 """
 
-from typing import List, Tuple
 from nichiyou_daiku.core.piece import Piece, PieceType
 from nichiyou_daiku.core.model import Model, PiecePair
 from nichiyou_daiku.core.connection import Connection, BasePosition, Anchor
-from nichiyou_daiku.core.geometry import FromMax
+from nichiyou_daiku.core.geometry import FromMax, FromMin
 from nichiyou_daiku.core.geometry import Edge, EdgePoint
 from nichiyou_daiku.core.assembly import Assembly
-from nichiyou_daiku.shell import assembly_to_build123d
 
 
 def create_grid_frame(
@@ -176,7 +174,7 @@ def visualize_piece_axes(piece: Piece) -> None:
         Requires build123d and ocp_vscode to be installed.
     """
     try:
-        from build123d import Box, Compound, Edge as B123Edge, Color
+        from build123d import Box, Compound, Color
         from ocp_vscode import show
         
         # Create a simple model with just this piece
