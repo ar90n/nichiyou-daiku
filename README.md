@@ -126,11 +126,7 @@ This project uses Dagger for CI/CD pipelines. The Quality Assurance pipeline inc
 #### Running QA Locally
 
 ```bash
-# Quick QA run (Python 3.11 only)
 make ci-local
-
-# Full QA run (all Python versions)
-make ci-all
 ```
 
 #### GitHub Actions
