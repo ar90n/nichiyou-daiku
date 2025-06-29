@@ -180,7 +180,7 @@ def assembly_to_build123d(
 
     Example:
         >>> from nichiyou_daiku.core.assembly import Assembly
-        >>> assembly = Assembly(boxes={}, connections={}, label="example")
+        >>> assembly = Assembly(boxes={}, joints={}, label="example")
         >>> compound = assembly_to_build123d(assembly, fillet_radius=3.0)
     """
     if not HAS_BUILD123D:

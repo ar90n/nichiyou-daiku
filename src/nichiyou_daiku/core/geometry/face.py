@@ -117,11 +117,11 @@ def is_bottom_to_top_axis(face: Face) -> bool:
         True if the face is on the top-to-bottom axis, False otherwise
 
     Examples:
-        >>> has_bottom_to_top_axis("top")
+        >>> is_bottom_to_top_axis("top")
         True
-        >>> has_bottom_to_top_axis("bottom")
+        >>> is_bottom_to_top_axis("bottom")
         True
-        >>> has_bottom_to_top_axis("left")
+        >>> is_bottom_to_top_axis("left")
         False
     """
     return face in ("top", "bottom")
@@ -139,11 +139,11 @@ def is_left_to_right_axis(face: Face) -> bool:
         True if the face is on the left-to-right axis, False otherwise
 
     Examples:
-        >>> has_left_to_right_axis("left")
+        >>> is_left_to_right_axis("left")
         True
-        >>> has_left_to_right_axis("right")
+        >>> is_left_to_right_axis("right")
         True
-        >>> has_left_to_right_axis("front")
+        >>> is_left_to_right_axis("front")
         False
     """
     return face in ("left", "right")
@@ -161,11 +161,11 @@ def is_back_to_front_axis(face: Face) -> bool:
         True if the face is on the front-to-back axis, False otherwise
 
     Examples:
-        >>> has_back_to_front_axis("front")
+        >>> is_back_to_front_axis("front")
         True
-        >>> has_back_to_front_axis("back")
+        >>> is_back_to_front_axis("back")
         True
-        >>> has_back_to_front_axis("top")
+        >>> is_back_to_front_axis("top")
         False
     """
     return face in ("front", "back")
@@ -184,13 +184,13 @@ def is_same_axis(lhs: Face, rhs: Face) -> bool:
         True if the faces are on the same axis, False otherwise
 
     Examples:
-        >>> has_same_axis("top", "bottom")
+        >>> is_same_axis("top", "bottom")
         True
-        >>> has_same_axis("left", "right")
+        >>> is_same_axis("left", "right")
         True
-        >>> has_same_axis("front", "back")
+        >>> is_same_axis("front", "back")
         True
-        >>> has_same_axis("top", "left")
+        >>> is_same_axis("top", "left")
         False
     """
     return (
