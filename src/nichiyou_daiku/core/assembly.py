@@ -7,9 +7,16 @@ This module converts the abstract model representation into concrete
 from pydantic import BaseModel
 
 from .piece import get_shape
-from .connection import Connection, Anchor
+from .connection import Connection, Anchor, as_edge_point
 from .model import Model
-from .geometry import Point3D, Box, Orientation3D
+from .geometry import (
+    Point3D,
+    Box,
+    Orientation3D,
+    cross as cross_face,
+    opposite as opposite_face,
+    Vector3D,
+)
 
 
 class Joint(BaseModel, frozen=True):
@@ -40,7 +47,7 @@ class Joint(BaseModel, frozen=True):
     orientation: Orientation3D
 
     @classmethod
-    def of(cls, box: Box, anchor: Anchor) -> "Joint":
+    def of(cls, box: Box, anchor: Anchor, flip_dir: bool = False) -> "Joint":
         """Create a Joint from a piece shape and anchor point.
 
         Args:
@@ -50,12 +57,19 @@ class Joint(BaseModel, frozen=True):
         Returns:
             Joint with position and orientation based on the anchor
         """
-        position = Point3D.of(box, anchor.edge_point)
-        orientation = Orientation3D.of(anchor.face, anchor.edge_point.edge)
+        up_face = cross_face(anchor.contact_face, anchor.edge_shared_face)
+        if flip_dir:
+            up_face = opposite_face(up_face)
+
+        position = Point3D.of(box, as_edge_point(anchor))
+        orientation = Orientation3D.of(
+            direction=Vector3D.normal_of(anchor.contact_face),
+            up=Vector3D.normal_of(up_face),
+        )
         return cls(position=position, orientation=orientation)
 
 
-class JointConnection(BaseModel, frozen=True):
+class JointPair(BaseModel, frozen=True):
     """3D connection between two pieces using joints.
 
     Contains the joint information for both pieces in the connection.
@@ -66,70 +80,77 @@ class JointConnection(BaseModel, frozen=True):
 
     Examples:
         >>> from nichiyou_daiku.core.piece import Piece, PieceType
-        >>> from nichiyou_daiku.core.connection import (
-        ...     Connection, BasePosition,
-        ...     Anchor
-        ... )
-        >>> from nichiyou_daiku.core.geometry import Edge, EdgePoint, FromMax, FromMin
+        >>> from nichiyou_daiku.core.connection import Connection, Anchor
+        >>> from nichiyou_daiku.core.geometry import FromMax, FromMin
         >>> base = Piece.of(PieceType.PT_2x4, 1000.0)
         >>> target = Piece.of(PieceType.PT_2x4, 800.0)
-        >>> pc = Connection.of(
-        ...     base=BasePosition(face="front", offset=FromMax(value=100)),
-        ...     target=Anchor(
-        ...         face="bottom",
-        ...         edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="front"), offset=FromMin(value=50))
+        >>> pc = Connection(
+        ...     lhs=Anchor(
+        ...         contact_face="front",
+        ...         edge_shared_face="top",
+        ...         offset=FromMax(value=100)
+        ...     ),
+        ...     rhs=Anchor(
+        ...         contact_face="bottom",
+        ...         edge_shared_face="front",
+        ...         offset=FromMin(value=50)
         ...     )
         ... )
         >>> base_box = Box(shape=get_shape(base))
         >>> target_box = Box(shape=get_shape(target))
-        >>> conn = JointConnection.of(base_box, target_box, pc)
-        >>> # Connection has joints with positions and orientations
-        >>> isinstance(conn.joint1.position, Point3D)
+        >>> conn = JointPair.of(base_box, target_box, pc)
+        >>> # JointPair has joints with positions and orientations
+        >>> isinstance(conn.lhs.position, Point3D)
         True
-        >>> isinstance(conn.joint2.orientation, Orientation3D)
+        >>> isinstance(conn.rhs.orientation, Orientation3D)
         True
     """
 
-    joint1: Joint
-    joint2: Joint
+    lhs: Joint
+    rhs: Joint
 
     @classmethod
     def of(
-        cls, base_box: Box, target_box: Box, piece_connection: Connection
-    ) -> "JointConnection":
-        base_joint = Joint.of(box=base_box, anchor=piece_connection.base)
-        target_joint = Joint.of(box=target_box, anchor=piece_connection.target)
-        return cls(joint1=base_joint, joint2=target_joint)
+        cls, lhs_box: Box, rhs_box: Box, piece_connection: Connection
+    ) -> "JointPair":
+        return cls(
+            lhs=Joint.of(box=lhs_box, anchor=piece_connection.lhs),
+            rhs=Joint.of(box=rhs_box, anchor=piece_connection.rhs, flip_dir=True),
+        )
 
 
 class Assembly(BaseModel, frozen=True):
-    """Complete 3D assembly with all connections.
+    """Complete 3D assembly with all joints.
 
     Represents the final assembly ready for 3D visualization.
 
     Attributes:
-        connections: List of all 3D connections
+        boxes: Dictionary mapping piece IDs to their 3D boxes
+        joints: Dictionary mapping piece ID pairs to their joint pairs
+        label: Optional label for the assembly
 
     Examples:
         >>> from nichiyou_daiku.core.model import Model, PiecePair
         >>> from nichiyou_daiku.core.piece import Piece, PieceType
-        >>> from nichiyou_daiku.core.connection import (
-        ...     Connection, BasePosition,
-        ...     Anchor
-        ... )
-        >>> from nichiyou_daiku.core.geometry import Edge, EdgePoint, FromMax, FromMin
+        >>> from nichiyou_daiku.core.connection import Connection, Anchor
+        >>> from nichiyou_daiku.core.geometry import FromMax, FromMin
         >>> # Empty assembly
-        >>> empty = Assembly(boxes={}, connections={}, label="empty")
-        >>> len(empty.connections)
+        >>> empty = Assembly(boxes={}, joints={}, label="empty")
+        >>> len(empty.joints)
         0
         >>> # Assembly from model
         >>> p1 = Piece.of(PieceType.PT_2x4, 1000.0, "p1")
         >>> p2 = Piece.of(PieceType.PT_2x4, 800.0, "p2")
-        >>> pc = Connection.of(
-        ...     base=BasePosition(face="front", offset=FromMax(value=100)),
-        ...     target=Anchor(
-        ...         face="bottom",
-        ...         edge_point=EdgePoint(edge=Edge(lhs="bottom", rhs="front"), offset=FromMin(value=50))
+        >>> pc = Connection(
+        ...     lhs=Anchor(
+        ...         contact_face="front",
+        ...         edge_shared_face="top",
+        ...         offset=FromMax(value=100)
+        ...     ),
+        ...     rhs=Anchor(
+        ...         contact_face="bottom",
+        ...         edge_shared_face="front",
+        ...         offset=FromMin(value=50)
         ...     )
         ... )
         >>> model = Model.of(
@@ -137,12 +158,12 @@ class Assembly(BaseModel, frozen=True):
         ...     connections=[(PiecePair(base=p1, target=p2), pc)]
         ... )
         >>> assembly = Assembly.of(model)
-        >>> len(assembly.connections)
+        >>> len(assembly.joints)
         1
     """
 
     boxes: dict[str, Box]
-    connections: dict[tuple[str, str], JointConnection]
+    joints: dict[tuple[str, str], JointPair]
     label: str | None
 
     @classmethod
@@ -161,12 +182,8 @@ class Assembly(BaseModel, frozen=True):
         boxes = {
             piece.id: Box(shape=get_shape(piece)) for piece in model.pieces.values()
         }
-
-        connections = {}
-        for (base_id, target_id), piece_conn in model.connections.items():
-            base_box = boxes[base_id]
-            target_box = boxes[target_id]
-            connections[(base_id, target_id)] = JointConnection.of(
-                base_box, target_box, piece_conn
-            )
-        return cls(label=model.label, boxes=boxes, connections=connections)
+        joints = {
+            (lhs_id, rhs_id): JointPair.of(boxes[lhs_id], boxes[rhs_id], piece_conn)
+            for (lhs_id, rhs_id), piece_conn in model.connections.items()
+        }
+        return cls(label=model.label, boxes=boxes, joints=joints)

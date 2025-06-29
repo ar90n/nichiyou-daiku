@@ -105,7 +105,7 @@ def cross(lhs: Face, rhs: Face) -> Face:
             raise ValueError(f"Invalid face combination: {lhs}, {rhs}")
 
 
-def has_bottom_to_top_axis(face: Face) -> bool:
+def is_bottom_to_top_axis(face: Face) -> bool:
     """Check if a face is on the top-to-bottom axis.
 
     Determines if the given face is either "top" or "bottom".
@@ -127,7 +127,7 @@ def has_bottom_to_top_axis(face: Face) -> bool:
     return face in ("top", "bottom")
 
 
-def has_left_to_right_axis(face: Face) -> bool:
+def is_left_to_right_axis(face: Face) -> bool:
     """Check if a face is on the left-to-right axis.
 
     Determines if the given face is either "left" or "right".
@@ -149,7 +149,7 @@ def has_left_to_right_axis(face: Face) -> bool:
     return face in ("left", "right")
 
 
-def has_back_to_front_axis(face: Face) -> bool:
+def is_back_to_front_axis(face: Face) -> bool:
     """Check if a face is on the front-to-back axis.
 
     Determines if the given face is either "front" or "back".
@@ -171,7 +171,7 @@ def has_back_to_front_axis(face: Face) -> bool:
     return face in ("front", "back")
 
 
-def has_same_axis(lhs: Face, rhs: Face) -> bool:
+def is_same_axis(lhs: Face, rhs: Face) -> bool:
     """Check if two faces are on the same axis.
 
     Determines if two faces are aligned along the same axis (X, Y, or Z).
@@ -194,9 +194,9 @@ def has_same_axis(lhs: Face, rhs: Face) -> bool:
         False
     """
     return (
-        (has_bottom_to_top_axis(lhs) and has_bottom_to_top_axis(rhs))
-        or (has_left_to_right_axis(lhs) and has_left_to_right_axis(rhs))
-        or (has_back_to_front_axis(lhs) and has_back_to_front_axis(rhs))
+        (is_bottom_to_top_axis(lhs) and is_bottom_to_top_axis(rhs))
+        or (is_left_to_right_axis(lhs) and is_left_to_right_axis(rhs))
+        or (is_back_to_front_axis(lhs) and is_back_to_front_axis(rhs))
     )
 
 
@@ -220,4 +220,8 @@ def is_adjacent(lhs: Face, rhs: Face) -> bool:
         >>> is_adjacent("top", "bottom")
         False
     """
-    return lhs != rhs and not has_same_axis(lhs, rhs)
+    return lhs != rhs and not is_same_axis(lhs, rhs)
+
+
+def is_positive(face: Face) -> bool:
+    return face in ("top", "right", "front")

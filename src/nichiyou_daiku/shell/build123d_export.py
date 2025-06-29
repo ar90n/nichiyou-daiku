@@ -197,17 +197,17 @@ def assembly_to_build123d(
 
     # Build graph from connections
     graph = defaultdict(set)
-    for (base_id, target_id), c in assembly.connections.items():
-        graph[base_id].add(target_id)
+    for (lhs_id, rhs_id), joint_pair in assembly.joints.items():
+        graph[lhs_id].add(rhs_id)
         _create_joint_from(
-            c.joint1,
-            label=f"to_{target_id}",
-            to_part=parts[base_id],
+            joint_pair.lhs,
+            label=f"to_{rhs_id}",
+            to_part=parts[lhs_id],
         )
 
-        graph[target_id].add(base_id)
+        graph[rhs_id].add(lhs_id)
         _create_joint_from(
-            c.joint2, label=f"to_{base_id}", to_part=parts[target_id], flip_dir=True
+            joint_pair.rhs, label=f"to_{lhs_id}", to_part=parts[rhs_id], flip_dir=True
         )
 
     # BFS traversal

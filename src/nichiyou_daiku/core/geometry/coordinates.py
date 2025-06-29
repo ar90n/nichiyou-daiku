@@ -14,9 +14,9 @@ from .edge import EdgePoint, Edge
 from .face import (
     cross as cross_face,
     Face,
-    has_back_to_front_axis,
-    has_bottom_to_top_axis,
-    has_left_to_right_axis,
+    is_back_to_front_axis,
+    is_bottom_to_top_axis,
+    is_left_to_right_axis,
 )
 from .offset import evaluate as eval_offset
 from .dimensions import Millimeters
@@ -24,11 +24,11 @@ from .dimensions import Millimeters
 
 def _edge_legnth_of(box: Box, edge: Edge) -> Millimeters:
     third_face = cross_face(edge.lhs, edge.rhs)
-    if has_bottom_to_top_axis(third_face):
+    if is_bottom_to_top_axis(third_face):
         return box.shape.length
-    if has_left_to_right_axis(third_face):
+    if is_left_to_right_axis(third_face):
         return box.shape.width
-    if has_back_to_front_axis(third_face):
+    if is_back_to_front_axis(third_face):
         return box.shape.height
 
     raise RuntimeError("Unreachable code reached")

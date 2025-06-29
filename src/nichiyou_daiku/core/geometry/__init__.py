@@ -11,11 +11,12 @@ from .face import (
     Face,
     opposite,
     cross,
-    has_same_axis,
+    is_same_axis,
     is_adjacent,
-    has_bottom_to_top_axis,
-    has_left_to_right_axis,
-    has_back_to_front_axis,
+    is_bottom_to_top_axis,
+    is_left_to_right_axis,
+    is_back_to_front_axis,
+    is_positive,
 )
 from .edge import Edge, EdgePoint
 from .corner import Corner
@@ -34,11 +35,12 @@ __all__ = [
     "Face",
     "opposite",
     "cross",
-    "has_same_axis",
+    "is_same_axis",
     "is_adjacent",
-    "has_bottom_to_top_axis",
-    "has_left_to_right_axis",
-    "has_back_to_front_axis",
+    "is_bottom_to_top_axis",
+    "is_left_to_right_axis",
+    "is_back_to_front_axis",
+    "is_positive",
     # From edge
     "Edge",
     "EdgePoint",

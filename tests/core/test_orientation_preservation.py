@@ -4,7 +4,7 @@ from nichiyou_daiku.core.assembly import (
     Assembly,
     Joint,
 )
-from nichiyou_daiku.core.connection import Connection, BasePosition, Anchor
+from nichiyou_daiku.core.connection import Connection, Anchor
 from typing import cast
 from nichiyou_daiku.core.geometry import (
     Point3D,
@@ -45,16 +45,11 @@ class TestOrientationPreservation:
         p2 = Piece.of(PieceType.PT_2x4, 800.0, "target")
 
         # Create connection where orientation matters
-        # Base: left face with position
-        # Target: right face with edge (right, bottom) -> up = front
-        conn = Connection.of(
-            base=BasePosition(face="left", offset=FromMax(value=100)),
-            target=Anchor(
-                face="right",
-                edge_point=EdgePoint(
-                    edge=Edge(lhs="right", rhs="bottom"), offset=FromMin(value=50)
-                ),
-            ),
+        # LHS: left contact face with top edge shared face
+        # RHS: right contact face with bottom edge shared face
+        conn = Connection(
+            lhs=Anchor(contact_face="left", edge_shared_face="top", offset=FromMax(value=100)),
+            rhs=Anchor(contact_face="right", edge_shared_face="bottom", offset=FromMin(value=50)),
         )
 
         # Create model and assembly
@@ -66,13 +61,13 @@ class TestOrientationPreservation:
         assembly = Assembly.of(model)
 
         # Get the connection from assembly
-        asm_conn = assembly.connections[("base", "target")]
+        asm_conn = assembly.joints[("base", "target")]
 
         # Check base joint
-        base_joint = asm_conn.joint1
+        base_joint = asm_conn.lhs
 
         # Check target joint
-        target_joint = asm_conn.joint2
+        target_joint = asm_conn.rhs
 
         # Both should have proper orientations
         assert isinstance(base_joint.orientation, Orientation3D)
@@ -92,28 +87,18 @@ class TestOrientationPreservation:
         p2 = Piece.of(PieceType.PT_2x4, 800.0, "horizontal")
         p3 = Piece.of(PieceType.PT_2x4, 600.0, "brace")
 
-        # Connection 1: vertical top to horizontal bottom
-        # This tests top-bottom contact with orientation preservation
-        conn1 = Connection.of(
-            base=BasePosition(face="front", offset=FromMax(value=50)),
-            target=Anchor(
-                face="bottom",
-                edge_point=EdgePoint(
-                    edge=Edge(lhs="bottom", rhs="front"), offset=FromMin(value=100)
-                ),
-            ),
+        # Connection 1: vertical front to horizontal bottom
+        # This tests front-bottom contact with orientation preservation
+        conn1 = Connection(
+            lhs=Anchor(contact_face="front", edge_shared_face="top", offset=FromMax(value=50)),
+            rhs=Anchor(contact_face="bottom", edge_shared_face="front", offset=FromMin(value=100)),
         )
 
         # Connection 2: horizontal right to brace left
-        # This tests left-right contact with different orientations
-        conn2 = Connection.of(
-            base=BasePosition(face="right", offset=FromMax(value=200)),
-            target=Anchor(
-                face="left",
-                edge_point=EdgePoint(
-                    edge=Edge(lhs="left", rhs="top"), offset=FromMin(value=150)
-                ),
-            ),
+        # This tests right-left contact with different orientations
+        conn2 = Connection(
+            lhs=Anchor(contact_face="right", edge_shared_face="top", offset=FromMax(value=200)),
+            rhs=Anchor(contact_face="left", edge_shared_face="top", offset=FromMin(value=150)),
         )
 
         from nichiyou_daiku.core.model import PiecePair
@@ -128,21 +113,21 @@ class TestOrientationPreservation:
         assembly = Assembly.of(model)
 
         # Verify all connections have proper orientations
-        for conn_key, conn in assembly.connections.items():
-            assert isinstance(conn.joint1.orientation, Orientation3D)
-            assert isinstance(conn.joint2.orientation, Orientation3D)
+        for conn_key, conn in assembly.joints.items():
+            assert isinstance(conn.lhs.orientation, Orientation3D)
+            assert isinstance(conn.rhs.orientation, Orientation3D)
 
             # Check that direction vectors are unit vectors
-            dir1 = conn.joint1.orientation.direction
+            dir1 = conn.lhs.orientation.direction
             dir1_mag = (dir1.x**2 + dir1.y**2 + dir1.z**2) ** 0.5
             assert abs(dir1_mag - 1.0) < 1e-6
 
-            dir2 = conn.joint2.orientation.direction
+            dir2 = conn.rhs.orientation.direction
             dir2_mag = (dir2.x**2 + dir2.y**2 + dir2.z**2) ** 0.5
             assert abs(dir2_mag - 1.0) < 1e-6
 
             # Check that up vectors are unit vectors and orthogonal to direction
-            up1 = conn.joint1.orientation.up
+            up1 = conn.lhs.orientation.up
             up1_mag = (up1.x**2 + up1.y**2 + up1.z**2) ** 0.5
             assert abs(up1_mag - 1.0) < 1e-6
 

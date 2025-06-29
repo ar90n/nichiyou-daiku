@@ -6,9 +6,8 @@ nichiyou-daiku models, such as visualization helpers and pattern generators.
 
 from nichiyou_daiku.core.piece import Piece, PieceType
 from nichiyou_daiku.core.model import Model, PiecePair
-from nichiyou_daiku.core.connection import Connection, BasePosition, Anchor
+from nichiyou_daiku.core.connection import Connection, Anchor
 from nichiyou_daiku.core.geometry import FromMax, FromMin
-from nichiyou_daiku.core.geometry import Edge, EdgePoint
 from nichiyou_daiku.core.assembly import Assembly
 
 
@@ -65,17 +64,16 @@ def create_grid_frame(
             # Connect vertical piece to horizontal piece
             connections.append((
                 PiecePair(base=horizontal, target=vertical),
-                Connection.of(
-                    base=BasePosition(
-                        face="front",
+                Connection(
+                    lhs=Anchor(
+                        contact_face="front",
+                        edge_shared_face="top",
                         offset=FromMax(value=col * cell_width)
                     ),
-                    target=Anchor(
-                        face="bottom",
-                        edge_point=EdgePoint(
-                            edge=Edge(lhs="bottom", rhs="front"),
-                            value=row * cell_height
-                        )
+                    rhs=Anchor(
+                        contact_face="bottom",
+                        edge_shared_face="front",
+                        offset=FromMin(value=row * cell_height)
                     )
                 )
             ))
@@ -135,22 +133,32 @@ def create_box_frame(
     # Front left corner
     connections.append((
         PiecePair(base=vert_fl, target=top_front),
-        Connection.of(
-            base=BasePosition(face="front", offset=FromMax(value=0.0)),
-            target=Anchor(
-                face="left",
-                edge_point=EdgePoint(edge=Edge(lhs="left", rhs="top"), offset=FromMin(value=0.0))
+        Connection(
+            lhs=Anchor(
+                contact_face="front",
+                edge_shared_face="top",
+                offset=FromMax(value=0.0)
+            ),
+            rhs=Anchor(
+                contact_face="left",
+                edge_shared_face="top",
+                offset=FromMin(value=0.0)
             )
         )
     ))
     
     connections.append((
         PiecePair(base=vert_fl, target=top_left),
-        Connection.of(
-            base=BasePosition(face="left", offset=FromMax(value=0.0)),
-            target=Anchor(
-                face="front", 
-                edge_point=EdgePoint(edge=Edge(lhs="front", rhs="top"), offset=FromMin(value=0.0))
+        Connection(
+            lhs=Anchor(
+                contact_face="left",
+                edge_shared_face="top",
+                offset=FromMax(value=0.0)
+            ),
+            rhs=Anchor(
+                contact_face="front",
+                edge_shared_face="top",
+                offset=FromMin(value=0.0)
             )
         )
     ))
@@ -203,7 +211,7 @@ def visualize_piece_axes(piece: Piece) -> None:
         z_axis.color = Color("blue")
         
         # Show all together
-        show(Compound(children=[main_box, x_axis, y_axis, z_axis]), name=f"Piece: {piece.id}")
+        show(Compound(children=[main_box, x_axis, y_axis, z_axis]))
         
         print(f"Piece '{piece.id}' dimensions:")
         print(f"  Length (X): {shape.length}mm")
@@ -226,24 +234,15 @@ def get_connection_summary(model: Model) -> str:
     """
     lines = [f"Model has {len(model.pieces)} pieces and {len(model.connections)} connections:\n"]
     
-    for pair, connection in model.connections.items():
-        base_pos = connection.joint1.position
-        target_pos = connection.joint2.position
+    for (base_id, target_id), connection in model.connections.items():
+        base_piece = model.pieces[base_id]
+        target_piece = model.pieces[target_id]
         
-        lines.append(f"Connection: {pair.target.id} → {pair.base.id}")
-        lines.append(f"  Base position: ({base_pos.x:.1f}, {base_pos.y:.1f}, {base_pos.z:.1f})")
-        lines.append(f"  Target position: ({target_pos.x:.1f}, {target_pos.y:.1f}, {target_pos.z:.1f})")
+        lines.append(f"Connection: {target_piece.id} → {base_piece.id}")
+        lines.append(f"  Base piece: {base_piece.id} (length: {base_piece.length}mm)")
+        lines.append(f"  Target piece: {target_piece.id} (length: {target_piece.length}mm)")
+        lines.append(f"  LHS anchor: contact_face={connection.lhs.contact_face}, edge_shared_face={connection.lhs.edge_shared_face}")
+        lines.append(f"  RHS anchor: contact_face={connection.rhs.contact_face}, edge_shared_face={connection.rhs.edge_shared_face}")
         lines.append("")
     
     return "\n".join(lines)
-
-
-# Example usage
-if __name__ == "__main__":
-    # Create a simple 2x2 grid
-    grid = create_grid_frame(2, 2, 150.0, 150.0)
-    print(get_connection_summary(grid))
-    
-    # Visualize a single piece with axes
-    test_piece = Piece.of(PieceType.PT_2x4, 300.0, "test")
-    visualize_piece_axes(test_piece)

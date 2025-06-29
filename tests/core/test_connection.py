@@ -4,7 +4,6 @@ import pytest
 from pydantic import ValidationError
 
 from nichiyou_daiku.core.connection import (
-    BasePosition,
     Anchor,
     Connection,
 )
@@ -50,39 +49,34 @@ class TestOffset:
         assert offset.value == 200.0
 
 
-class TestBasePosition:
-    """Test BasePosition model."""
+class TestAnchor:
+    """Test Anchor model."""
 
     # Basic creation is covered in doctests
 
-    def test_should_accept_only_side_faces(self):
-        """Should accept only side faces (not top/bottom)."""
-        valid_faces: list[Face] = ["left", "right", "front", "back"]
-        invalid_faces: list[Face] = ["top", "bottom"]
+    def test_should_accept_all_faces(self):
+        """Should accept all face types."""
+        all_faces: list[Face] = ["left", "right", "front", "back", "top", "bottom"]
 
-        # Test valid faces
-        for face in valid_faces:
-            pos = BasePosition(
-                face=cast(Literal["left", "right", "front", "back"], face),
-                offset=FromMax(value=10),
-            )
-            assert pos.face == face
-
-        # Test invalid faces raise error
-        for face in invalid_faces:
-            with pytest.raises(ValidationError):
-                BasePosition(
-                    face=cast(Literal["left", "right", "front", "back"], face),
-                    offset=FromMax(value=10),
-                )
+        # Test all faces
+        for contact_face in all_faces:
+            for edge_shared_face in all_faces:
+                if contact_face != edge_shared_face:
+                    anchor = Anchor(
+                        contact_face=contact_face,
+                        edge_shared_face=edge_shared_face,
+                        offset=FromMax(value=10),
+                    )
+                    assert anchor.contact_face == contact_face
+                    assert anchor.edge_shared_face == edge_shared_face
 
     def test_should_accept_both_offset_types(self):
         """Should accept both FromMax and FromMin."""
-        pos1 = BasePosition(face="front", offset=FromMax(value=100))
-        pos2 = BasePosition(face="back", offset=FromMin(value=200))
+        anchor1 = Anchor(contact_face="front", edge_shared_face="top", offset=FromMax(value=100))
+        anchor2 = Anchor(contact_face="back", edge_shared_face="bottom", offset=FromMin(value=200))
 
-        assert isinstance(pos1.offset, FromMax)
-        assert isinstance(pos2.offset, FromMin)
+        assert isinstance(anchor1.offset, FromMax)
+        assert isinstance(anchor2.offset, FromMin)
 
     # Immutability test is covered in doctests
 
@@ -120,29 +114,27 @@ class TestEdgePoint:
             EdgePoint(edge=Edge(lhs="front", rhs="right"), offset=FromMin(value=-50))
 
 
-class TestTargetAnchor:
-    """Test TargetAnchor model."""
+class TestAnchorValidation:
+    """Test Anchor validation."""
 
     # Basic creation is covered in doctests
 
-    def test_should_validate_nested_models(self):
-        """Should validate nested EdgePoint model."""
+    def test_should_validate_offset_values(self):
+        """Should validate offset values."""
         # Valid anchor
         anchor = Anchor(
-            face="top",
-            edge_point=EdgePoint(
-                edge=Edge(lhs="top", rhs="left"), offset=FromMin(value=50)
-            ),
+            contact_face="top",
+            edge_shared_face="left",
+            offset=FromMin(value=50)
         )
-        assert anchor.edge_point.offset.value == 50
+        assert anchor.offset.value == 50
 
-        # Invalid nested model should fail
+        # Invalid offset should fail
         with pytest.raises(ValidationError):
             Anchor(
-                face="top",
-                edge_point=EdgePoint(
-                    edge=Edge(lhs="top", rhs="left"), offset=FromMin(value=-10)
-                ),
+                contact_face="top",
+                edge_shared_face="left",
+                offset=FromMin(value=-10)
             )
 
 
@@ -154,58 +146,49 @@ class TestConnection:
     def test_should_validate_nested_models(self):
         """Should validate all nested models."""
         # Valid connection
-        conn = Connection.of(
-            base=BasePosition(face="front", offset=FromMax(value=50)),
-            target=Anchor(
-                face="bottom",
-                edge_point=EdgePoint(
-                    edge=Edge(lhs="bottom", rhs="front"), offset=FromMin(value=10)
-                ),
-            ),
+        conn = Connection(
+            lhs=Anchor(contact_face="front", edge_shared_face="top", offset=FromMax(value=50)),
+            rhs=Anchor(contact_face="bottom", edge_shared_face="front", offset=FromMin(value=10)),
         )
-        assert conn.base.edge_point.offset.value == 50
+        assert conn.lhs.offset.value == 50
+        assert conn.rhs.offset.value == 10
 
         # Invalid nested model should fail
         with pytest.raises(ValidationError):
-            Connection.of(
-                base=BasePosition(face="top", offset=FromMax(value=-10)),  # type: ignore
-                target=Anchor(
-                    face="left",
-                    edge_point=EdgePoint(
-                        edge=Edge(lhs="left", rhs="front"), offset=FromMin(value=10)
-                    ),
-                ),
+            Connection(
+                lhs=Anchor(contact_face="top", edge_shared_face="left", offset=FromMax(value=-10)),
+                rhs=Anchor(contact_face="left", edge_shared_face="front", offset=FromMin(value=10)),
             )
 
     def test_should_represent_complex_connections(self):
         """Should be able to represent various connection types."""
         # T-joint example
-        t_joint = Connection.of(
-            base=BasePosition(
-                face="left",
+        t_joint = Connection(
+            lhs=Anchor(
+                contact_face="left",
+                edge_shared_face="top",
                 offset=FromMax(value=50),  # Center of side face
             ),
-            target=Anchor(
-                face="bottom",
-                edge_point=EdgePoint(
-                    edge=Edge(lhs="bottom", rhs="front"), offset=FromMin(value=10)
-                ),
+            rhs=Anchor(
+                contact_face="bottom",
+                edge_shared_face="front",
+                offset=FromMin(value=10),
             ),
         )
 
         # L-angle example
-        l_angle = Connection.of(
-            base=BasePosition(
-                face="front",
+        l_angle = Connection(
+            lhs=Anchor(
+                contact_face="front",
+                edge_shared_face="top",
                 offset=FromMax(value=25),  # End face
             ),
-            target=Anchor(
-                face="right",
-                edge_point=EdgePoint(
-                    edge=Edge(lhs="right", rhs="bottom"), offset=FromMin(value=100)
-                ),
+            rhs=Anchor(
+                contact_face="right",
+                edge_shared_face="bottom",
+                offset=FromMin(value=100),
             ),
         )
 
-        assert t_joint.base.face == "left"
-        assert l_angle.base.face == "front"
+        assert t_joint.lhs.contact_face == "left"
+        assert l_angle.lhs.contact_face == "front"

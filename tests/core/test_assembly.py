@@ -2,15 +2,12 @@
 
 from nichiyou_daiku.core.assembly import (
     Joint,
-    JointConnection,
+    JointPair,
     Assembly,
+    Box,
 )
 from nichiyou_daiku.core.piece import Piece, PieceType
-from nichiyou_daiku.core.connection import (
-    Connection,
-    BasePosition,
-    Anchor,
-)
+from nichiyou_daiku.core.connection import Connection, Anchor
 from nichiyou_daiku.core.geometry import FromMax, FromMin
 from nichiyou_daiku.core.geometry import (
     Shape3D,
@@ -59,12 +56,12 @@ class TestJoint:
         assert joint.orientation.direction.x == -1.0
 
 
-class TestConnection:
-    """Test Connection model."""
+class TestJointPair:
+    """Test JointPair model."""
 
     # Basic creation is covered in doctests
 
-    # Connection.of() method is covered in doctests
+    # JointPair.of() method is covered in doctests
 
     def test_should_represent_l_angle_connection(self):
         """Should be able to represent L-angle connection."""
@@ -72,26 +69,29 @@ class TestConnection:
         horizontal = Piece.of(PieceType.PT_2x4, 400.0, "horizontal")
         vertical = Piece.of(PieceType.PT_2x4, 300.0, "vertical")
 
-        # Create L-angle piece connection with supported face
-        piece_conn = Connection.of(
-            base=BasePosition(face="left", offset=FromMax(value=10)),
-            target=Anchor(
-                face="bottom",
-                edge_point=EdgePoint(
-                    edge=Edge(lhs="bottom", rhs="right"), offset=FromMin(value=10)
-                ),
+        # Create L-angle piece connection
+        piece_conn = Connection(
+            lhs=Anchor(
+                contact_face="left",
+                edge_shared_face="top",
+                offset=FromMax(value=10)
             ),
+            rhs=Anchor(
+                contact_face="bottom",
+                edge_shared_face="right",
+                offset=FromMin(value=10)
+            )
         )
 
-        # Create connection
+        # Create joint pair
         from nichiyou_daiku.core.piece import get_shape
 
         horizontal_box = Box(shape=get_shape(horizontal))
         vertical_box = Box(shape=get_shape(vertical))
-        connection = JointConnection.of(horizontal_box, vertical_box, piece_conn)
+        joint_pair = JointPair.of(horizontal_box, vertical_box, piece_conn)
 
-        assert isinstance(connection.joint1, Joint)
-        assert isinstance(connection.joint2, Joint)
+        assert isinstance(joint_pair.lhs, Joint)
+        assert isinstance(joint_pair.rhs, Joint)
 
 
 class TestAssembly:
@@ -99,8 +99,8 @@ class TestAssembly:
 
     # Basic creation is covered in doctests
 
-    def test_should_create_assembly_with_connections(self):
-        """Should create Assembly with a dict of connections."""
+    def test_should_create_assembly_with_joints(self):
+        """Should create Assembly with a dict of joints."""
         # Create a simple connection
         box1 = Box(shape=Shape3D(width=38.0, height=89.0, length=1000.0))
         joint1 = Joint(
@@ -118,15 +118,15 @@ class TestAssembly:
             ),
         )
 
-        connection = JointConnection(joint1=joint1, joint2=joint2)
+        joint_pair = JointPair(lhs=joint1, rhs=joint2)
 
         assembly = Assembly(
             label="test_assembly",
             boxes={"p1": box1, "p2": box2},
-            connections={("p1", "p2"): connection},
+            joints={("p1", "p2"): joint_pair},
         )
 
-        assert len(assembly.connections) == 1
-        assert assembly.connections[("p1", "p2")] == connection
+        assert len(assembly.joints) == 1
+        assert assembly.joints[("p1", "p2")] == joint_pair
 
     # Assembly.of() method is covered in doctests

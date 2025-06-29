@@ -6,9 +6,8 @@ meet at right angles, like the corner of a picture frame or box.
 
 from nichiyou_daiku.core.piece import Piece, PieceType
 from nichiyou_daiku.core.model import Model, PiecePair
-from nichiyou_daiku.core.connection import Connection, BasePosition, Anchor
-from nichiyou_daiku.core.geometry import FromMax, FromMin
-from nichiyou_daiku.core.geometry import Edge, EdgePoint
+from nichiyou_daiku.core.connection import Connection, Anchor
+from nichiyou_daiku.core.geometry import FromMin
 from nichiyou_daiku.core.assembly import Assembly
 from nichiyou_daiku.shell import assembly_to_build123d
 
@@ -21,20 +20,13 @@ piece_b = Piece.of(PieceType.PT_2x4, 400.0, "corner_piece_b")
 
 # Define the corner connection
 # piece_a's end connects to the side of piece_b
-connection = Connection.of(
-    # Base position: On the left face of piece_b, at the front edge
-    base=BasePosition(
-        face="left",  # Side face of piece_b
-        offset=FromMax(value=0.0)  # At the very front edge
+connection = Connection(
+    lhs=Anchor(
+        contact_face="top", edge_shared_face="front", offset=FromMin(value=0.0)
     ),
-    # Target anchor: On the front end of piece_a
-    target=Anchor(
-        face="front",  # Front end face of piece_a
-        edge_point=EdgePoint(
-            edge=Edge(lhs="front", rhs="left"),  # Edge at the corner
-            offset=FromMin(value=0.0)  # At the corner point
-        )
-    )
+    rhs=Anchor(
+        contact_face="back", edge_shared_face="bottom", offset=FromMin(value=0.0)
+    ),
 )
 
 # Build the model
@@ -43,16 +35,16 @@ model = Model.of(
     connections=[
         (PiecePair(base=piece_a, target=piece_b), connection),
     ],
-    label="corner_angle_joint_example"
+    label="corner_angle_joint_example",
 )
 
-# Convert to 3D assembly
+# Convert to 3D assemblyZ
 assembly = Assembly.of(model)
 
 # Export to build123d for visualization
 compound = assembly_to_build123d(
-    assembly, 
-    fillet_radius=3.0  # 3mm radius for rounded edges
+    assembly,
+    fillet_radius=3.0,  # 3mm radius for rounded edges
 )
 
 # Display in OCP CAD Viewer
