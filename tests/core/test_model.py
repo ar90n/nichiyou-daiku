@@ -6,7 +6,7 @@ from nichiyou_daiku.core.connection import (
     Connection,
     Anchor,
 )
-from nichiyou_daiku.core.geometry import Edge, EdgePoint, FromMax, FromMin
+from nichiyou_daiku.core.geometry import FromMax, FromMin
 
 
 class TestPiecePair:
@@ -38,8 +38,14 @@ class TestModel:
         piece2 = Piece.of(PieceType.PT_2x4, 800.0, "p2")
 
         conn = Connection(
-            lhs=Anchor(contact_face="front", edge_shared_face="top", offset=FromMax(value=10)),
-            rhs=Anchor(contact_face="bottom", edge_shared_face="right", offset=FromMin(value=10)),
+            lhs=Anchor(
+                contact_face="front", edge_shared_face="top", offset=FromMax(value=10)
+            ),
+            rhs=Anchor(
+                contact_face="bottom",
+                edge_shared_face="right",
+                offset=FromMin(value=10),
+            ),
         )
 
         model = Model(
@@ -75,8 +81,14 @@ class TestModel:
 
         # Create L-angle connection
         l_angle_conn = Connection(
-            lhs=Anchor(contact_face="front", edge_shared_face="top", offset=FromMax(value=10)),
-            rhs=Anchor(contact_face="bottom", edge_shared_face="right", offset=FromMin(value=10)),
+            lhs=Anchor(
+                contact_face="front", edge_shared_face="top", offset=FromMax(value=10)
+            ),
+            rhs=Anchor(
+                contact_face="bottom",
+                edge_shared_face="right",
+                offset=FromMin(value=10),
+            ),
         )
 
         # Create model
@@ -97,13 +109,25 @@ class TestModel:
         branch2 = Piece.of(PieceType.PT_2x4, 300.0, "branch2")
 
         conn1 = Connection(
-            lhs=Anchor(contact_face="left", edge_shared_face="top", offset=FromMax(value=200)),
-            rhs=Anchor(contact_face="bottom", edge_shared_face="front", offset=FromMin(value=10)),
+            lhs=Anchor(
+                contact_face="left", edge_shared_face="top", offset=FromMax(value=200)
+            ),
+            rhs=Anchor(
+                contact_face="bottom",
+                edge_shared_face="front",
+                offset=FromMin(value=10),
+            ),
         )
 
         conn2 = Connection(
-            lhs=Anchor(contact_face="right", edge_shared_face="top", offset=FromMax(value=800)),
-            rhs=Anchor(contact_face="bottom", edge_shared_face="front", offset=FromMin(value=10)),
+            lhs=Anchor(
+                contact_face="right", edge_shared_face="top", offset=FromMax(value=800)
+            ),
+            rhs=Anchor(
+                contact_face="bottom",
+                edge_shared_face="front",
+                offset=FromMin(value=10),
+            ),
         )
 
         model = Model.of(

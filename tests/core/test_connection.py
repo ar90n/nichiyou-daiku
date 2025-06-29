@@ -7,7 +7,6 @@ from nichiyou_daiku.core.connection import (
     Anchor,
     Connection,
 )
-from typing import cast, Literal
 from nichiyou_daiku.core.geometry import Face, Edge, EdgePoint, FromMax, FromMin, Offset
 
 
@@ -72,8 +71,12 @@ class TestAnchor:
 
     def test_should_accept_both_offset_types(self):
         """Should accept both FromMax and FromMin."""
-        anchor1 = Anchor(contact_face="front", edge_shared_face="top", offset=FromMax(value=100))
-        anchor2 = Anchor(contact_face="back", edge_shared_face="bottom", offset=FromMin(value=200))
+        anchor1 = Anchor(
+            contact_face="front", edge_shared_face="top", offset=FromMax(value=100)
+        )
+        anchor2 = Anchor(
+            contact_face="back", edge_shared_face="bottom", offset=FromMin(value=200)
+        )
 
         assert isinstance(anchor1.offset, FromMax)
         assert isinstance(anchor2.offset, FromMin)
@@ -123,18 +126,14 @@ class TestAnchorValidation:
         """Should validate offset values."""
         # Valid anchor
         anchor = Anchor(
-            contact_face="top",
-            edge_shared_face="left",
-            offset=FromMin(value=50)
+            contact_face="top", edge_shared_face="left", offset=FromMin(value=50)
         )
         assert anchor.offset.value == 50
 
         # Invalid offset should fail
         with pytest.raises(ValidationError):
             Anchor(
-                contact_face="top",
-                edge_shared_face="left",
-                offset=FromMin(value=-10)
+                contact_face="top", edge_shared_face="left", offset=FromMin(value=-10)
             )
 
 
@@ -147,8 +146,14 @@ class TestConnection:
         """Should validate all nested models."""
         # Valid connection
         conn = Connection(
-            lhs=Anchor(contact_face="front", edge_shared_face="top", offset=FromMax(value=50)),
-            rhs=Anchor(contact_face="bottom", edge_shared_face="front", offset=FromMin(value=10)),
+            lhs=Anchor(
+                contact_face="front", edge_shared_face="top", offset=FromMax(value=50)
+            ),
+            rhs=Anchor(
+                contact_face="bottom",
+                edge_shared_face="front",
+                offset=FromMin(value=10),
+            ),
         )
         assert conn.lhs.offset.value == 50
         assert conn.rhs.offset.value == 10
@@ -156,8 +161,16 @@ class TestConnection:
         # Invalid nested model should fail
         with pytest.raises(ValidationError):
             Connection(
-                lhs=Anchor(contact_face="top", edge_shared_face="left", offset=FromMax(value=-10)),
-                rhs=Anchor(contact_face="left", edge_shared_face="front", offset=FromMin(value=10)),
+                lhs=Anchor(
+                    contact_face="top",
+                    edge_shared_face="left",
+                    offset=FromMax(value=-10),
+                ),
+                rhs=Anchor(
+                    contact_face="left",
+                    edge_shared_face="front",
+                    offset=FromMin(value=10),
+                ),
             )
 
     def test_should_represent_complex_connections(self):

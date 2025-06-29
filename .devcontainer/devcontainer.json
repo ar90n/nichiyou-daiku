@@ -18,8 +18,6 @@
 		"bernhard-42.ocp-cad-viewer",
 		"charliermarsh.ruff",
 		"dbaeumer.vscode-eslint",
-		"github.copilot",
-		"github.copilot-chat",
 		"ms-azuretools.vscode-containers",
 		"ms-azuretools.vscode-docker",
 		"ms-python.debugpy",

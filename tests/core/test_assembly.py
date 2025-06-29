@@ -4,7 +4,6 @@ from nichiyou_daiku.core.assembly import (
     Joint,
     JointPair,
     Assembly,
-    Box,
 )
 from nichiyou_daiku.core.piece import Piece, PieceType
 from nichiyou_daiku.core.connection import Connection, Anchor
@@ -13,8 +12,6 @@ from nichiyou_daiku.core.geometry import (
     Shape3D,
     Point3D,
     Vector3D,
-    Edge,
-    EdgePoint,
     Box,
     Orientation3D,
 )
@@ -72,15 +69,13 @@ class TestJointPair:
         # Create L-angle piece connection
         piece_conn = Connection(
             lhs=Anchor(
-                contact_face="left",
-                edge_shared_face="top",
-                offset=FromMax(value=10)
+                contact_face="left", edge_shared_face="top", offset=FromMax(value=10)
             ),
             rhs=Anchor(
                 contact_face="bottom",
                 edge_shared_face="right",
-                offset=FromMin(value=10)
-            )
+                offset=FromMin(value=10),
+            ),
         )
 
         # Create joint pair
