@@ -10,9 +10,9 @@ from pydantic import BaseModel
 from .face import (
     Face,
     cross,
-    has_back_to_front_axis,
-    has_left_to_right_axis,
-    has_bottom_to_top_axis,
+    is_back_to_front_axis,
+    is_left_to_right_axis,
+    is_bottom_to_top_axis,
 )
 from .edge import Edge
 
@@ -70,21 +70,21 @@ class Corner(BaseModel, frozen=True):
 
         # Find face_x (top or bottom)
         face_top_bottom = next(
-            (f for f in faces if has_bottom_to_top_axis(cast(Face, f))), None
+            (f for f in faces if is_bottom_to_top_axis(cast(Face, f))), None
         )
         if not face_top_bottom:
             raise ValueError("Corner must include either top or bottom face")
 
         # Find face_y (left or right)
         face_right_left = next(
-            (f for f in faces if has_left_to_right_axis(cast(Face, f))), None
+            (f for f in faces if is_left_to_right_axis(cast(Face, f))), None
         )
         if not face_right_left:
             raise ValueError("Corner must include either left or right face")
 
         # Find face_z (front or back)
         face_front_back = next(
-            (f for f in faces if has_back_to_front_axis(cast(Face, f))), None
+            (f for f in faces if is_back_to_front_axis(cast(Face, f))), None
         )
         if not face_front_back:
             raise ValueError("Corner must include either front or back face")

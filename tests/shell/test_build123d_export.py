@@ -3,7 +3,7 @@
 import pytest
 from unittest.mock import Mock, patch, MagicMock
 
-from nichiyou_daiku.core.assembly import Assembly, JointConnection, Joint
+from nichiyou_daiku.core.assembly import Assembly, JointPair, Joint
 from nichiyou_daiku.core.geometry import Box, Shape3D, Point3D, Vector3D, Orientation3D
 
 
@@ -13,7 +13,7 @@ class TestAssemblyToBuild123d:
     def test_should_handle_import_error_gracefully(self):
         """Should raise ImportError with helpful message when build123d not available."""
         # Create minimal assembly
-        assembly = Assembly(boxes={}, connections={}, label="test_assembly")
+        assembly = Assembly(boxes={}, joints={}, label="test_assembly")
 
         # Temporarily set the flag to simulate build123d not being available
         import nichiyou_daiku.shell.build123d_export as export_module
@@ -38,7 +38,7 @@ class TestAssemblyToBuild123d:
     def test_should_convert_empty_assembly(self, mock_compound_class):
         """Should handle empty assembly without errors."""
         # Create empty assembly
-        assembly = Assembly(boxes={}, connections={}, label="test_assembly")
+        assembly = Assembly(boxes={}, joints={}, label="test_assembly")
 
         mock_compound_instance = Mock()
         mock_compound_class.return_value = mock_compound_instance
@@ -71,7 +71,7 @@ class TestAssemblyToBuild123d:
         box2 = Box(shape=Shape3D(width=80.0, height=40.0, length=150.0))
 
         assembly = Assembly(
-            boxes={"p1": box1, "p2": box2}, connections={}, label="test_assembly"
+            boxes={"p1": box1, "p2": box2}, joints={}, label="test_assembly"
         )
 
         # Setup mocks
@@ -201,11 +201,11 @@ class TestAssemblyToBuild123d:
             ),
         )
 
-        connection = JointConnection(joint1=joint1, joint2=joint2)
+        connection = JointPair(lhs=joint1, rhs=joint2)
 
         assembly = Assembly(
             boxes={"base": box1, "target": box2},
-            connections={("base", "target"): connection},
+            joints={("base", "target"): connection},
             label="test_assembly",
         )
 

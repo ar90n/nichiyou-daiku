@@ -2,81 +2,68 @@
 
 from nichiyou_daiku.core.connection import (
     Connection,
-    BasePosition,
     Anchor,
+    as_edge_point,
 )
 from nichiyou_daiku.core.geometry import Edge, EdgePoint, FromMax, FromMin
 
 
 class TestConnectionTransform:
-    """Test Connection.of transformation logic."""
+    """Test Connection transformation logic."""
 
-    def test_should_transform_target_edge_to_base_coordinates(self):
-        """Should correctly transform target edge direction to base coordinates."""
+    def test_should_transform_anchor_to_edge_point(self):
+        """Should correctly transform anchor to edge point."""
 
-        # Case 1: Base left contacts target right
-        # Target edge: (right, bottom)
-        # When left contacts right: right->right, bottom->top
-        # Since base face is "left", edge is adjusted to include it
-        target = Anchor(
-            face="right",
-            edge_point=EdgePoint(
-                edge=Edge(lhs="right", rhs="bottom"), offset=FromMin(value=10)
-            ),
+        # Case 1: Anchor with left contact face and bottom edge shared face
+        anchor = Anchor(
+            contact_face="left",
+            edge_shared_face="bottom",
+            offset=FromMax(value=50)
         )
-        base = BasePosition(face="left", offset=FromMax(value=50))
 
-        conn = Connection.of(base, target)
+        edge_point = as_edge_point(anchor)
 
-        # Base edge must include the base face "left"
-        assert base.face in (
-            conn.base.edge_point.edge.lhs,
-            conn.base.edge_point.edge.rhs,
+        # Edge should include the contact face "left"
+        assert anchor.contact_face in (
+            edge_point.edge.lhs,
+            edge_point.edge.rhs,
         )
-        assert conn.base.edge_point.offset.value == 50
+        assert edge_point.offset.value == 50
 
     def test_should_handle_different_face_contacts(self):
-        """Should handle various base-target face contact combinations."""
+        """Should handle various contact face combinations."""
 
-        # Case 2: Base front contacts target top
-        # Target edge: (top, right)
-        # Edge must include base face "front"
-        target = Anchor(
-            face="top",
-            edge_point=EdgePoint(
-                edge=Edge(lhs="top", rhs="right"), offset=FromMin(value=20)
-            ),
+        # Case 2: Anchor with front contact face and right edge shared face
+        anchor = Anchor(
+            contact_face="front",
+            edge_shared_face="right",
+            offset=FromMax(value=30)
         )
-        base = BasePosition(face="front", offset=FromMax(value=30))
 
-        conn = Connection.of(base, target)
+        edge_point = as_edge_point(anchor)
 
-        # Base edge must include the base face "front"
-        assert base.face in (
-            conn.base.edge_point.edge.lhs,
-            conn.base.edge_point.edge.rhs,
+        # Edge should include the contact face "front"
+        assert anchor.contact_face in (
+            edge_point.edge.lhs,
+            edge_point.edge.rhs,
         )
-        assert conn.base.edge_point.offset.value == 30
+        assert edge_point.offset.value == 30
 
     def test_should_handle_complex_transformations(self):
         """Should handle complex coordinate transformations correctly."""
 
-        # Case 3: Base left contacts target right
-        # Target edge: (right, top)
-        # Edge must include base face "left"
-        target = Anchor(
-            face="right",
-            edge_point=EdgePoint(
-                edge=Edge(lhs="right", rhs="top"), offset=FromMin(value=15)
-            ),
+        # Case 3: Anchor with left contact face and top edge shared face
+        anchor = Anchor(
+            contact_face="left",
+            edge_shared_face="top",
+            offset=FromMax(value=25)
         )
-        base = BasePosition(face="left", offset=FromMax(value=25))
 
-        conn = Connection.of(base, target)
+        edge_point = as_edge_point(anchor)
 
-        # Base edge must include the base face "left"
-        assert base.face in (
-            conn.base.edge_point.edge.lhs,
-            conn.base.edge_point.edge.rhs,
+        # Edge should include the contact face "left"
+        assert anchor.contact_face in (
+            edge_point.edge.lhs,
+            edge_point.edge.rhs,
         )
-        assert conn.base.edge_point.offset.value == 25
+        assert edge_point.offset.value == 25

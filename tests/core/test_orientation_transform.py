@@ -1,6 +1,6 @@
 """Tests for orientation transformation in connections."""
 
-from nichiyou_daiku.core.connection import Connection, BasePosition, Anchor
+from nichiyou_daiku.core.connection import Connection, Anchor
 from nichiyou_daiku.core.geometry import (
     Edge,
     EdgePoint,
@@ -22,14 +22,9 @@ class TestOrientationTransform:
         horizontal = Piece.of(PieceType.PT_2x4, 400.0)
 
         # Create connection - horizontal piece on side of vertical
-        connection = Connection.of(
-            BasePosition(face="left", offset=FromMax(value=1.0)),
-            Anchor(
-                face="right",
-                edge_point=EdgePoint(
-                    edge=Edge(lhs="right", rhs="back"), offset=FromMin(value=1.0)
-                ),
-            ),
+        connection = Connection(
+            lhs=Anchor(contact_face="left", edge_shared_face="back", offset=FromMax(value=1.0)),
+            rhs=Anchor(contact_face="right", edge_shared_face="back", offset=FromMin(value=1.0)),
         )
 
         # Build assembly
@@ -40,9 +35,9 @@ class TestOrientationTransform:
         assembly = Assembly.of(model)
 
         # Get joints - pieces have default IDs p0, p1
-        key = list(assembly.connections.keys())[0]
-        joint1 = assembly.connections[key].joint1
-        joint2 = assembly.connections[key].joint2
+        key = list(assembly.joints.keys())[0]
+        joint1 = assembly.joints[key].lhs
+        joint2 = assembly.joints[key].rhs
 
         # Verify face normals are opposite (base face normal = -target face normal)
         dir1 = joint1.orientation.direction
@@ -56,22 +51,16 @@ class TestOrientationTransform:
     def test_edge_alignment_in_connection(self):
         """Test that edges align properly in connections."""
         # Create connection where edges should align
-        target = Anchor(
-            face="back",
-            edge_point=EdgePoint(
-                edge=Edge(lhs="back", rhs="left"), offset=FromMin(value=10)
-            ),
-        )
-        base = BasePosition(face="front", offset=FromMax(value=10))
-
-        conn = Connection.of(base, target)
-
-        # Base edge should include the base face
-        assert base.face in (
-            conn.base.edge_point.edge.lhs,
-            conn.base.edge_point.edge.rhs,
+        connection = Connection(
+            lhs=Anchor(contact_face="front", edge_shared_face="left", offset=FromMax(value=10)),
+            rhs=Anchor(contact_face="back", edge_shared_face="left", offset=FromMin(value=10)),
         )
 
-        # Values should match
-        assert conn.base.edge_point.offset.value == base.offset.value
-        assert conn.target.edge_point.offset.value == target.edge_point.offset.value
+        # Test that anchors have the expected values
+        assert connection.lhs.contact_face == "front"
+        assert connection.lhs.edge_shared_face == "left"
+        assert connection.lhs.offset.value == 10
+        
+        assert connection.rhs.contact_face == "back"
+        assert connection.rhs.edge_shared_face == "left"
+        assert connection.rhs.offset.value == 10
