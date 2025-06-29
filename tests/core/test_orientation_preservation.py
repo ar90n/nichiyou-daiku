@@ -11,7 +11,6 @@ from nichiyou_daiku.core.geometry import (
     Vector3D,
     Orientation3D,
     Edge,
-    EdgePoint,
     FromMax,
     FromMin,
     Face,
@@ -48,8 +47,14 @@ class TestOrientationPreservation:
         # LHS: left contact face with top edge shared face
         # RHS: right contact face with bottom edge shared face
         conn = Connection(
-            lhs=Anchor(contact_face="left", edge_shared_face="top", offset=FromMax(value=100)),
-            rhs=Anchor(contact_face="right", edge_shared_face="bottom", offset=FromMin(value=50)),
+            lhs=Anchor(
+                contact_face="left", edge_shared_face="top", offset=FromMax(value=100)
+            ),
+            rhs=Anchor(
+                contact_face="right",
+                edge_shared_face="bottom",
+                offset=FromMin(value=50),
+            ),
         )
 
         # Create model and assembly
@@ -90,15 +95,25 @@ class TestOrientationPreservation:
         # Connection 1: vertical front to horizontal bottom
         # This tests front-bottom contact with orientation preservation
         conn1 = Connection(
-            lhs=Anchor(contact_face="front", edge_shared_face="top", offset=FromMax(value=50)),
-            rhs=Anchor(contact_face="bottom", edge_shared_face="front", offset=FromMin(value=100)),
+            lhs=Anchor(
+                contact_face="front", edge_shared_face="top", offset=FromMax(value=50)
+            ),
+            rhs=Anchor(
+                contact_face="bottom",
+                edge_shared_face="front",
+                offset=FromMin(value=100),
+            ),
         )
 
         # Connection 2: horizontal right to brace left
         # This tests right-left contact with different orientations
         conn2 = Connection(
-            lhs=Anchor(contact_face="right", edge_shared_face="top", offset=FromMax(value=200)),
-            rhs=Anchor(contact_face="left", edge_shared_face="top", offset=FromMin(value=150)),
+            lhs=Anchor(
+                contact_face="right", edge_shared_face="top", offset=FromMax(value=200)
+            ),
+            rhs=Anchor(
+                contact_face="left", edge_shared_face="top", offset=FromMin(value=150)
+            ),
         )
 
         from nichiyou_daiku.core.model import PiecePair

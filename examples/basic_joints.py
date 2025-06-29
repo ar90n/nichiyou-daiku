@@ -29,19 +29,19 @@ t_joint_connection = Connection(
     lhs=Anchor(
         contact_face="front",
         edge_shared_face="right",
-        offset=FromMin(value=400.0)  # 400mm from the edge (centered on 800mm beam)
+        offset=FromMin(value=400.0),  # 400mm from the edge (centered on 800mm beam)
     ),
     rhs=Anchor(
         contact_face="bottom",
         edge_shared_face="front",
-        offset=FromMin(value=44.5)  # Centered on the 89mm width of 2x4
-    )
+        offset=FromMin(value=44.5),  # Centered on the 89mm width of 2x4
+    ),
 )
 
 t_joint_model = Model.of(
     pieces=[base_beam, upright],
     connections=[(PiecePair(base=base_beam, target=upright), t_joint_connection)],
-    label="t_joint"
+    label="t_joint",
 )
 
 # ==============================================================================
@@ -55,22 +55,16 @@ second_piece = Piece.of(PieceType.PT_2x4, 300.0, "butt_second")
 
 # Butt Joint: Connect end-to-end
 butt_joint_connection = Connection(
-    lhs=Anchor(
-        contact_face="top",
-        edge_shared_face="left",
-        offset=FromMin(value=0)
-    ),
-    rhs=Anchor(
-        contact_face="bottom",
-        edge_shared_face="left",
-        offset=FromMin(value=0)
-    )
+    lhs=Anchor(contact_face="top", edge_shared_face="left", offset=FromMin(value=0)),
+    rhs=Anchor(contact_face="bottom", edge_shared_face="left", offset=FromMin(value=0)),
 )
 
 butt_joint_model = Model.of(
     pieces=[first_piece, second_piece],
-    connections=[(PiecePair(base=first_piece, target=second_piece), butt_joint_connection)],
-    label="butt_joint"
+    connections=[
+        (PiecePair(base=first_piece, target=second_piece), butt_joint_connection)
+    ],
+    label="butt_joint",
 )
 
 # ==============================================================================
@@ -85,21 +79,17 @@ side_b = Piece.of(PieceType.PT_2x4, 400.0, "corner_b")
 # Corner Joint: Two pieces meeting at 90 degrees
 corner_joint_connection = Connection(
     lhs=Anchor(
-        contact_face="back",
-        edge_shared_face="right",
-        offset=FromMin(value=0.0)
+        contact_face="back", edge_shared_face="right", offset=FromMin(value=0.0)
     ),
     rhs=Anchor(
-        contact_face="left",
-        edge_shared_face="front",
-        offset=FromMin(value=0.0)
-    )
+        contact_face="left", edge_shared_face="front", offset=FromMin(value=0.0)
+    ),
 )
 
 corner_joint_model = Model.of(
     pieces=[side_a, side_b],
     connections=[(PiecePair(base=side_a, target=side_b), corner_joint_connection)],
-    label="corner_joint"
+    label="corner_joint",
 )
 
 # ==============================================================================
@@ -113,11 +103,15 @@ print("\nConverting to 3D...")
 
 # T-Joint
 t_assembly = Assembly.of(t_joint_model)
-t_compound = assembly_to_build123d(t_assembly, fillet_radius=2.0).moved(Location((0, 200, 0)))
+t_compound = assembly_to_build123d(t_assembly, fillet_radius=2.0).moved(
+    Location((0, 200, 0))
+)
 
 # Butt Joint
 butt_assembly = Assembly.of(butt_joint_model)
-butt_compound = assembly_to_build123d(butt_assembly, fillet_radius=2.0).moved(Location((0, -200, 0)))
+butt_compound = assembly_to_build123d(butt_assembly, fillet_radius=2.0).moved(
+    Location((0, -200, 0))
+)
 
 # Corner Joint
 corner_assembly = Assembly.of(corner_joint_model)

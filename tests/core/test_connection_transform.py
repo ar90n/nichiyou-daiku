@@ -1,11 +1,10 @@
 """Tests for Connection.of coordinate transformation logic."""
 
 from nichiyou_daiku.core.connection import (
-    Connection,
     Anchor,
     as_edge_point,
 )
-from nichiyou_daiku.core.geometry import Edge, EdgePoint, FromMax, FromMin
+from nichiyou_daiku.core.geometry import FromMax
 
 
 class TestConnectionTransform:
@@ -16,9 +15,7 @@ class TestConnectionTransform:
 
         # Case 1: Anchor with left contact face and bottom edge shared face
         anchor = Anchor(
-            contact_face="left",
-            edge_shared_face="bottom",
-            offset=FromMax(value=50)
+            contact_face="left", edge_shared_face="bottom", offset=FromMax(value=50)
         )
 
         edge_point = as_edge_point(anchor)
@@ -35,9 +32,7 @@ class TestConnectionTransform:
 
         # Case 2: Anchor with front contact face and right edge shared face
         anchor = Anchor(
-            contact_face="front",
-            edge_shared_face="right",
-            offset=FromMax(value=30)
+            contact_face="front", edge_shared_face="right", offset=FromMax(value=30)
         )
 
         edge_point = as_edge_point(anchor)
@@ -54,9 +49,7 @@ class TestConnectionTransform:
 
         # Case 3: Anchor with left contact face and top edge shared face
         anchor = Anchor(
-            contact_face="left",
-            edge_shared_face="top",
-            offset=FromMax(value=25)
+            contact_face="left", edge_shared_face="top", offset=FromMax(value=25)
         )
 
         edge_point = as_edge_point(anchor)

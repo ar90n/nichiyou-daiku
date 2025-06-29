@@ -21,9 +21,7 @@ piece_b = Piece.of(PieceType.PT_2x4, 400.0, "corner_piece_b")
 # Define the corner connection
 # piece_a's end connects to the side of piece_b
 connection = Connection(
-    lhs=Anchor(
-        contact_face="top", edge_shared_face="front", offset=FromMin(value=0.0)
-    ),
+    lhs=Anchor(contact_face="top", edge_shared_face="front", offset=FromMin(value=0.0)),
     rhs=Anchor(
         contact_face="back", edge_shared_face="bottom", offset=FromMin(value=0.0)
     ),
