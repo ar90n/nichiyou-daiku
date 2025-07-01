@@ -16,6 +16,8 @@ A Python library for designing DIY furniture using standard lumber sizes and sim
 - 🧩 Piece-oriented design matching real woodworking
 - 📊 Graph-based assembly representation
 - 🎯 Type-safe API with full type hints
+- 📋 Resource extraction for bill of materials
+- 📑 Markdown report generation with cut optimization
 
 ## Installation
 
@@ -146,6 +148,8 @@ Check out the `examples/` directory for complete working examples:
 - **`basic_joints.py`** - Different joint types (T-joint, butt joint, corner joint)
 - **`corner_angle.py`** - Complex corner connections with precise angle control
 - **`utils.py`** - Helper functions for creating common structures
+- **`resource_demo.py`** - Demonstrates resource extraction and bill of materials
+- **`report_demo.py`** - Shows report generation with cut optimization
 
 ### Visualizing with build123d
 
@@ -162,6 +166,61 @@ compound = assembly_to_build123d(assembly)
 show(compound)
 ```
 
+### Resource Extraction
+
+Extract bill of materials from your models to understand lumber requirements:
+
+```python
+from nichiyou_daiku.core.resources import extract_resources
+
+# Extract resources from a model
+resources = extract_resources(model)
+
+# Get summary information
+print(resources.pretty_print())
+# Output: piece counts, total lengths by type, volume
+
+# Export as JSON
+json_data = resources.model_dump_json(indent=2)
+
+# Access detailed information
+for piece_type, count in resources.pieces_by_type.items():
+    total_length = resources.total_length_by_type[piece_type]
+    print(f"{piece_type.value}: {count} pieces, {total_length}mm total")
+```
+
+### Report Generation
+
+Generate comprehensive markdown reports with shopping lists and cut optimization:
+
+```python
+from nichiyou_daiku.shell.report_generator import generate_markdown_report
+
+# Generate report with custom standard lengths
+custom_lengths = {
+    PieceType.PT_2x4: [2400.0, 3000.0, 3600.0],  # metric lengths
+    PieceType.PT_1x4: [1800.0, 2400.0, 3000.0],
+}
+
+report = generate_markdown_report(
+    resources,
+    project_name="My Table Project",
+    standard_lengths=custom_lengths,
+    include_cut_diagram=True
+)
+
+# Save report
+with open("project_report.md", "w") as f:
+    f.write(report)
+```
+
+The report includes:
+- Project overview with total materials needed
+- Detailed bill of materials table
+- Shopping list aggregated by lumber type
+- Purchase recommendations with optimal board usage
+- Cut diagrams showing how to minimize waste
+
 ## Project Structure
 
 ```
@@ -173,12 +232,14 @@ nichiyou-daiku/
 │       │   ├── model.py    # Assembly graph model
 │       │   ├── connection.py # Connection specifications
 │       │   ├── assembly.py # 3D assembly generation
+│       │   ├── resources.py # Resource extraction
 │       │   └── geometry/   # Geometric primitives
 │       │       ├── face.py, edge.py, corner.py
 │       │       ├── coordinates.py, dimensions.py
 │       │       └── offset.py
 │       └── shell/          # External integrations
-│           └── build123d_export.py
+│           ├── build123d_export.py
+│           └── report_generator.py
 ├── examples/               # Example projects
 ├── tests/                  # Test suite
 └── ci/                     # CI/CD pipeline (Dagger)
