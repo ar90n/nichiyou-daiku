@@ -92,8 +92,7 @@ class ResourceSummary(BaseModel):
     total_volume: float
 
     model_config = ConfigDict(
-        # Use mode='json' to ensure proper JSON serialization
-        mode="json"
+        # Ensure proper JSON serialization
     )
 
     def pretty_print(self) -> str:
