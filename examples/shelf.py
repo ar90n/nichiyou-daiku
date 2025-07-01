@@ -394,9 +394,57 @@ model = Model.of(
 )
 
 # ============================================================================
+# EXTRACT RESOURCES
+# ============================================================================
+from nichiyou_daiku.core.resources import extract_resources
+from nichiyou_daiku.shell.report_generator import generate_markdown_report
+from nichiyou_daiku.core.piece import PieceType
+
+print("Extracting bill of materials...")
+resources = extract_resources(model)
+
+# Display resource summary
+print("\n" + resources.pretty_print())
+
+# Export to JSON
+json_data = resources.model_dump_json(indent=2)
+print("\nJSON Export (first 500 chars):")
+print(json_data[:500] + "..." if len(json_data) > 500 else json_data)
+
+# Generate comprehensive markdown report
+print("\nGenerating detailed markdown report...")
+
+# Define custom standard lengths for this project
+custom_standard_lengths = {
+    PieceType.PT_2x4: [2440.0, 3000.0, 3600.0],  # 8ft, ~10ft, 12ft
+    PieceType.PT_1x4: [1800.0, 2400.0, 3000.0],  # 6ft, 8ft, 10ft
+}
+
+report = generate_markdown_report(
+    resources,
+    project_name="DIY Shelf Project",
+    standard_lengths=custom_standard_lengths,
+    include_cut_diagram=True
+)
+
+# Save report to file
+report_filename = "shelf_project_report.md"
+with open(report_filename, "w", encoding="utf-8") as f:
+    f.write(report)
+
+print(f"✅ Detailed report saved to: {report_filename}")
+print(f"📋 Report includes cut optimization and purchase recommendations")
+
+# Show a preview of the report
+print("\n" + "="*60)
+print("REPORT PREVIEW:")
+print("="*60)
+print(report[:800] + "\n..." if len(report) > 800 else report)
+
+# ============================================================================
 # VISUALIZE
 # ============================================================================
-print("Building simple table...")
+print("\n\nBuilding 3D visualization...")
 assembly = Assembly.of(model)
 
 # Export with smaller fillet radius for sharper edges
@@ -405,8 +453,6 @@ compound = assembly_to_build123d(assembly, fillet_radius=2.0)
 # Display the result
 show(compound)
 
-print("\nSimple table assembly complete!")
-print(f"Table frame dimensions: {SHELF_WIDTH}mm x {SHELF_DEPTH}mm")
-print(f"Table height: {SHELF_HEIGHT}mm")
+print("\nShelf assembly complete!")
+print(f"Shelf dimensions: {SHELF_WIDTH}mm x {SHELF_DEPTH}mm x {SHELF_HEIGHT}mm")
 print(f"Using {len(model.pieces)} pieces with {len(model.connections)} connections")
-print("\nNote: The tabletop would be added on top of this frame structure.")
