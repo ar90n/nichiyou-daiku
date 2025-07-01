@@ -4,9 +4,12 @@ This package contains modules that interact with external systems,
 following the functional core, imperative shell pattern.
 """
 
-# Only expose assembly_to_build123d if build123d is available
-__all__ = []
+# Always available report generation
+from .report_generator import generate_markdown_report  # noqa: F401
 
+__all__ = ["generate_markdown_report"]
+
+# Only expose assembly_to_build123d if build123d is available
 try:
     from .build123d_export import HAS_BUILD123D
 
