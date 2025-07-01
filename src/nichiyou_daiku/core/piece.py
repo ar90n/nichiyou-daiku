@@ -24,6 +24,7 @@ class PieceType(Enum):
     """
 
     PT_2x4 = "2x4"
+    PT_1x4 = "1x4"
 
     @classmethod
     def of(cls, value: str) -> "PieceType":
@@ -49,8 +50,12 @@ class PieceType(Enum):
             >>> "Unsupported piece type: 2x6" in str(exc.value)
             True
         """
-        if value == "2x4":
-            return cls.PT_2x4
+        ret = {
+            "1x4": cls.PT_1x4,
+            "2x4": cls.PT_2x4,
+        }.get(value)
+        if ret is not None:
+            return ret
 
         raise ValueError(f"Unsupported piece type: {value}")
 
@@ -170,6 +175,13 @@ def _get_shape_of_piece_type(piece_type: PieceType) -> Shape2D:
     match piece_type:
         case PieceType.PT_2x4:
             return Shape2D(width=89.0, height=38.0)  # 2x4 actual dimensions in mm
+        case PieceType.PT_1x4:
+            return Shape2D(width=89.0, height=19.0)  #
+
+    raise RuntimeError(
+        f"Unsupported piece type: {piece_type}. "
+        "Please implement the cross-section dimensions."
+    )
 
 
 def _get_shape_of_piece(piece: Piece) -> Shape3D:
