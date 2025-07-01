@@ -93,6 +93,7 @@ def _optimize_cuts(
         # Find the best board length for remaining pieces
         best_plan = None
         best_waste = float("inf")
+        best_remaining = remaining_pieces
 
         for board_length in sorted_lengths:
             cuts = []
@@ -250,7 +251,6 @@ def _generate_purchase_recommendations(
             total_waste += plan.waste
             total_purchased_length += plan.board_length
 
-        used_length = summary.total_length_by_type[piece_type]
         waste_percentage = (
             (total_waste / total_purchased_length) * 100
             if total_purchased_length > 0

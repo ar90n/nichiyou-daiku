@@ -1,8 +1,6 @@
 """Tests for report generation module."""
 
-import pytest
 from unittest.mock import patch
-from datetime import datetime
 
 from nichiyou_daiku.core.piece import PieceType
 from nichiyou_daiku.core.resources import ResourceSummary, PieceResource
