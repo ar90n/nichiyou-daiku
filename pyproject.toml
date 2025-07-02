@@ -3,7 +3,7 @@ name = "nichiyou-daiku"
 version = "0.1.0"
 description = "A Python library for designing DIY furniture using standard lumber sizes"
 readme = "README.md"
-license = { text = "MIT" }
+license = { text = "Apache-2.0" }
 authors = [
     { name = "Masahiro Wada", email = "argon.argon.argon@gmail.com" }
 ]
