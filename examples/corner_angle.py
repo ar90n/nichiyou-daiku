@@ -13,6 +13,11 @@ from nichiyou_daiku.shell import assembly_to_build123d
 
 from ocp_vscode import show
 
+try:
+    from utils import get_connection_summary
+except ImportError:
+    from examples.utils import get_connection_summary
+
 # Create two 2x4 pieces that will form a corner
 # Both pieces are the same length for a symmetric corner
 piece_a = Piece.of(PieceType.PT_2x4, 400.0, "corner_piece_a")
@@ -36,7 +41,11 @@ model = Model.of(
     label="corner_angle_joint_example",
 )
 
-# Convert to 3D assemblyZ
+# Show connection details
+print("Connection Details:")
+print(get_connection_summary(model))
+
+# Convert to 3D assembly
 assembly = Assembly.of(model)
 
 # Export to build123d for visualization
