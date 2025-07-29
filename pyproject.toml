@@ -11,6 +11,7 @@ requires-python = ">=3.13"
 dependencies = [
     "numpy>=2.2.6",
     "pydantic>=2.11.7",
+    "lark>=1.1.9",  # DSL parsing support
 ]
 
 [project.optional-dependencies]
