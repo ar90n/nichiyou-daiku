@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from lark import Token, Transformer, Tree
+from lark import Token, Transformer
 
 from nichiyou_daiku.core.connection import Anchor, Connection
 from nichiyou_daiku.core.geometry.offset import FromMax, FromMin, Offset
@@ -23,7 +23,7 @@ class DSLTransformer(Transformer):
         """Transform the start rule into a Model."""
         if not self.pieces:
             raise DSLSemanticError("No pieces defined in the DSL")
-        
+
         return Model.of(
             pieces=list(self.pieces.values()),
             connections=self.connections,
@@ -39,7 +39,7 @@ class DSLTransformer(Transformer):
         piece_id = None
         piece_type = None
         props = {}
-        
+
         for item in items:
             if isinstance(item, Token) and item.type == "CNAME":
                 piece_id = str(item)
@@ -50,20 +50,20 @@ class DSLTransformer(Transformer):
                     raise DSLValidationError(f"Invalid piece type: {item}")
             elif isinstance(item, dict):
                 props = item
-        
+
         if piece_type is None:
             raise DSLSemanticError("Piece type is required")
-        
+
         # Extract length from props
         length = props.get("length")
         if length is None:
             raise DSLValidationError("Piece must have a 'length' property")
-        
+
         try:
             length_value = float(length)
         except (TypeError, ValueError):
             raise DSLValidationError(f"Invalid length value: {length}")
-        
+
         # Create piece
         piece = Piece.of(piece_type, length_value, piece_id)
         if piece.id in self.pieces:
@@ -71,7 +71,6 @@ class DSLTransformer(Transformer):
 
         # Store piece
         self.pieces[piece.id] = piece
-
 
     def piece_props(self, items: list[Any]) -> dict[str, Any]:
         """Transform piece properties into a dictionary."""
@@ -97,36 +96,38 @@ class DSLTransformer(Transformer):
         # Extract piece references and anchor properties
         piece_refs = []
         anchor_props_list = []
-        
+
         for item in items:
             if isinstance(item, str):  # piece_ref
                 piece_refs.append(item)
             elif isinstance(item, dict):  # anchor_props
                 anchor_props_list.append(item)
-        
+
         if len(piece_refs) != 2:
             raise DSLSemanticError("Connection must have exactly two piece references")
         if len(anchor_props_list) != 2:
-            raise DSLSemanticError("Connection must have exactly two anchor property sets")
-        
+            raise DSLSemanticError(
+                "Connection must have exactly two anchor property sets"
+            )
+
         # Resolve piece references
         base_id, target_id = piece_refs
         base_piece = self.pieces.get(base_id)
         target_piece = self.pieces.get(target_id)
-        
+
         if base_piece is None:
             raise DSLSemanticError(f"Unknown piece reference: {base_id}")
         if target_piece is None:
             raise DSLSemanticError(f"Unknown piece reference: {target_id}")
-        
+
         # Create anchors
         lhs_anchor = self._create_anchor(anchor_props_list[0])
         rhs_anchor = self._create_anchor(anchor_props_list[1])
-        
+
         # Create connection
         connection = Connection(lhs=lhs_anchor, rhs=rhs_anchor)
         piece_pair = PiecePair(base=base_piece, target=target_piece)
-        
+
         self.connections.append((piece_pair, connection))
 
     def piece_ref(self, items: list[Token]) -> str:
@@ -150,11 +151,11 @@ class DSLTransformer(Transformer):
         """Transform a single anchor property."""
         key = self._unescape_string(items[0])
         value = items[1]
-        
+
         # If the value is an ESCAPED_STRING token, unescape it
-        if hasattr(value, 'type') and value.type == "ESCAPED_STRING":
+        if hasattr(value, "type") and value.type == "ESCAPED_STRING":
             value = self._unescape_string(value)
-        
+
         return {key: value}
 
     def offset_value(self, items: list[Any]) -> Offset:
@@ -163,16 +164,19 @@ class DSLTransformer(Transformer):
         # [Token(FROM_MIN/FROM_MAX, 'FromMin'/'FromMax'), Token(NUMBER, '...')]
         offset_type = None
         value = None
-        
+
         for item in items:
-            if hasattr(item, 'type'):
+            if hasattr(item, "type"):
                 if item.type == "FROM_MIN":
                     offset_type = "FromMin"
                 elif item.type == "FROM_MAX":
                     offset_type = "FromMax"
                 elif item.type == "NUMBER":
                     value = float(item)
-        
+
+        if value is None:
+            raise DSLValidationError("Offset value is required")
+
         if offset_type == "FromMin":
             return FromMin(value=value)
         elif offset_type == "FromMax":
@@ -195,17 +199,17 @@ class DSLTransformer(Transformer):
         contact_face = props.get("contact_face")
         edge_shared_face = props.get("edge_shared_face")
         offset = props.get("offset")
-        
+
         if not contact_face:
             raise DSLValidationError("Anchor must have 'contact_face' property")
         if not edge_shared_face:
             raise DSLValidationError("Anchor must have 'edge_shared_face' property")
         if not offset:
             raise DSLValidationError("Anchor must have 'offset' property")
-        
+
         if not isinstance(offset, Offset):
             raise DSLValidationError(f"Invalid offset type: {type(offset)}")
-        
+
         return Anchor(
             contact_face=contact_face,
             edge_shared_face=edge_shared_face,
@@ -220,7 +224,7 @@ class DSLTransformer(Transformer):
             value = value[1:-1]
         # Handle common escapes
         value = value.replace('\\"', '"')
-        value = value.replace('\\n', '\n')
-        value = value.replace('\\t', '\t')
-        value = value.replace('\\\\', '\\')
+        value = value.replace("\\n", "\n")
+        value = value.replace("\\t", "\t")
+        value = value.replace("\\\\", "\\")
         return value

@@ -1,9 +1,10 @@
 """DSL parser using Lark."""
 
 from lark import Lark, ParseError, UnexpectedInput
+from lark.exceptions import VisitError
 
 from nichiyou_daiku.core.model import Model
-from nichiyou_daiku.dsl.exceptions import DSLSyntaxError
+from nichiyou_daiku.dsl.exceptions import DSLSyntaxError, DSLSemanticError
 from nichiyou_daiku.dsl.grammar import GRAMMAR
 from nichiyou_daiku.dsl.transformer import DSLTransformer
 
@@ -52,6 +53,12 @@ class DSLParser:
             )
         except ParseError as e:
             raise DSLSyntaxError(str(e))
+        except VisitError as e:
+            # Extract the actual error from the VisitError
+            if e.orig_exc and isinstance(e.orig_exc, DSLSemanticError):
+                raise e.orig_exc
+            else:
+                raise DSLSemanticError(str(e))
 
 
 def parse_dsl(dsl_string: str, debug: bool = False) -> Model:

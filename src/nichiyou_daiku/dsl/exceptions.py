@@ -10,7 +10,9 @@ class DSLError(Exception):
 class DSLSyntaxError(DSLError):
     """Raised when the DSL syntax is invalid."""
 
-    def __init__(self, message: str, line: int | None = None, column: int | None = None):
+    def __init__(
+        self, message: str, line: int | None = None, column: int | None = None
+    ):
         self.line = line
         self.column = column
         if line is not None and column is not None:
