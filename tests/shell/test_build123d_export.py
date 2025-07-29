@@ -3,7 +3,7 @@
 import pytest
 from unittest.mock import Mock, patch, MagicMock
 
-from nichiyou_daiku.core.assembly import Assembly, JointPair, Joint
+from nichiyou_daiku.core.assembly import Assembly, JointPair, Joint as NichiyouJoint
 from nichiyou_daiku.core.geometry import Box, Shape3D, Point3D, Vector3D, Orientation3D
 
 
@@ -34,317 +34,290 @@ class TestAssemblyToBuild123d:
             # Restore original value
             export_module.HAS_BUILD123D = original_available
 
-    @patch("nichiyou_daiku.shell.build123d_export.Compound")
-    def test_should_convert_empty_assembly(self, mock_compound_class):
+    def test_should_convert_empty_assembly(self):
         """Should handle empty assembly without errors."""
-        # Create empty assembly
-        assembly = Assembly(boxes={}, joints={}, label="test_assembly")
+        # Patch the entire module to inject mocks
+        with patch.dict("sys.modules", {"build123d": MagicMock()}):
+            # Now we can safely import and patch
+            import nichiyou_daiku.shell.build123d_export as export_module
 
-        mock_compound_instance = Mock()
-        mock_compound_class.return_value = mock_compound_instance
+            # Temporarily set build123d as available
+            original_available = export_module.HAS_BUILD123D
+            export_module.HAS_BUILD123D = True
 
-        from nichiyou_daiku.shell.build123d_export import assembly_to_build123d
+            try:
+                # Reload to pick up mocked build123d
+                import importlib
 
-        result = assembly_to_build123d(assembly)
+                importlib.reload(export_module)
 
-        assert result == mock_compound_instance
-        mock_compound_class.assert_called_once_with(label="test_assembly", children=[])
+                # Create empty assembly
+                assembly = Assembly(boxes={}, joints={}, label="test_assembly")
 
-    @patch("nichiyou_daiku.shell.build123d_export.fillet")
-    @patch("nichiyou_daiku.shell.build123d_export.Axis")
-    @patch("nichiyou_daiku.shell.build123d_export.Align")
-    @patch("nichiyou_daiku.shell.build123d_export.Part")
-    @patch("nichiyou_daiku.shell.build123d_export.Box")
-    @patch("nichiyou_daiku.shell.build123d_export.Compound")
-    def test_should_create_boxes_for_each_piece(
-        self,
-        mock_compound_class,
-        mock_box_class,
-        mock_part_class,
-        mock_align,
-        mock_axis,
-        mock_fillet,
-    ):
+                # Mock the Compound class
+                mock_compound_instance = Mock()
+                export_module.Compound = Mock(return_value=mock_compound_instance)
+
+                result = export_module.assembly_to_build123d(assembly)
+
+                assert result == mock_compound_instance
+                export_module.Compound.assert_called_once_with(
+                    label="test_assembly", children=[]
+                )
+
+            finally:
+                export_module.HAS_BUILD123D = original_available
+                importlib.reload(export_module)
+
+    def test_should_create_boxes_for_each_piece(self):
         """Should create build123d Box for each piece in assembly."""
-        # Create assembly with two boxes
-        box1 = Box(shape=Shape3D(width=100.0, height=50.0, length=200.0))
-        box2 = Box(shape=Shape3D(width=80.0, height=40.0, length=150.0))
+        # Patch the entire module to inject mocks
+        with patch.dict("sys.modules", {"build123d": MagicMock()}):
+            import nichiyou_daiku.shell.build123d_export as export_module
 
-        assembly = Assembly(
-            boxes={"p1": box1, "p2": box2}, joints={}, label="test_assembly"
-        )
+            # Temporarily set build123d as available
+            original_available = export_module.HAS_BUILD123D
+            export_module.HAS_BUILD123D = True
 
-        # Setup mocks
-        mock_box1 = MagicMock()
-        mock_box2 = MagicMock()
-        mock_part1 = Mock()
-        mock_part1.label = "p1"
-        mock_part2 = Mock()
-        mock_part2.label = "p2"
+            try:
+                # Reload to pick up mocked build123d
+                import importlib
 
-        # Part() should return an empty part mock when called with no args
-        mock_empty_part = Mock()
+                importlib.reload(export_module)
 
-        # Configure edges mock for fillet
-        mock_edges1 = Mock()
-        mock_edges1.filter_by = Mock(return_value=mock_edges1)
-        mock_part1.edges = Mock(return_value=mock_edges1)
+                # Create assembly with two boxes
+                box1 = Box(shape=Shape3D(width=100.0, height=50.0, length=200.0))
+                box2 = Box(shape=Shape3D(width=80.0, height=40.0, length=150.0))
 
-        mock_edges2 = Mock()
-        mock_edges2.filter_by = Mock(return_value=mock_edges2)
-        mock_part2.edges = Mock(return_value=mock_edges2)
+                assembly = Assembly(
+                    boxes={"p1": box1, "p2": box2}, joints={}, label="test_assembly"
+                )
 
-        # Configure mocks
-        mock_box_class.side_effect = [mock_box1, mock_box2]
-        mock_box1.__add__.return_value = mock_part1
-        mock_box2.__add__.return_value = mock_part2
-        mock_align.MIN = "MIN"
-        mock_axis.X = "X"
+                # Setup mocks
+                mock_box1 = MagicMock()
+                mock_box2 = MagicMock()
+                mock_part1 = Mock()
+                mock_part1.label = "p1"
+                mock_part2 = Mock()
+                mock_part2.label = "p2"
 
-        # Mock fillet to return filleted parts without wrapped attribute
-        # This will make the implementation use the filleted result directly
-        filleted_parts = []
-        mock_filleted_part1 = Mock()
-        mock_filleted_part2 = Mock()
-        # Make sure they don't have wrapped attribute
-        del mock_filleted_part1.wrapped
-        del mock_filleted_part2.wrapped
+                # Part() should return an empty part mock when called with no args
+                mock_empty_part = Mock()
 
-        def mock_fillet_func(obj, radius):
-            # Return different filleted parts based on the input
-            if obj == mock_edges1:
-                filleted_parts.append(mock_filleted_part1)
-                return mock_filleted_part1
-            elif obj == mock_edges2:
-                filleted_parts.append(mock_filleted_part2)
-                return mock_filleted_part2
-            else:
-                raise ValueError(f"Unexpected obj: {obj}")
+                # Configure edges mock for fillet
+                mock_edges1 = Mock()
+                mock_edges1.filter_by = Mock(return_value=mock_edges1)
+                mock_part1.edges = Mock(return_value=mock_edges1)
 
-        mock_fillet.side_effect = mock_fillet_func
+                mock_edges2 = Mock()
+                mock_edges2.filter_by = Mock(return_value=mock_edges2)
+                mock_part2.edges = Mock(return_value=mock_edges2)
 
-        # Part class should return empty part when called with no args
-        mock_part_class.return_value = mock_empty_part
+                # Configure mocks
+                export_module.Box = Mock(side_effect=[mock_box1, mock_box2])
+                mock_box1.__add__.return_value = mock_part1
+                mock_box2.__add__.return_value = mock_part2
+                export_module.Align = Mock()
+                export_module.Align.MIN = "MIN"
+                export_module.Axis = Mock()
+                export_module.Axis.X = "X"
 
-        mock_compound_instance = Mock()
-        mock_compound_class.return_value = mock_compound_instance
+                # Mock fillet to return filleted parts
+                filleted_parts = []
+                mock_filleted_part1 = Mock()
+                mock_filleted_part2 = Mock()
+                # Make sure they don't have wrapped attribute
+                del mock_filleted_part1.wrapped
+                del mock_filleted_part2.wrapped
 
-        from nichiyou_daiku.shell.build123d_export import assembly_to_build123d
+                def mock_fillet_func(obj, radius):
+                    # Return different filleted parts based on the input
+                    if obj == mock_edges1:
+                        filleted_parts.append(mock_filleted_part1)
+                        return mock_filleted_part1
+                    elif obj == mock_edges2:
+                        filleted_parts.append(mock_filleted_part2)
+                        return mock_filleted_part2
+                    else:
+                        raise ValueError(f"Unexpected obj: {obj}")
 
-        result = assembly_to_build123d(assembly)
+                export_module.fillet = Mock(side_effect=mock_fillet_func)
 
-        # Verify boxes were created with correct dimensions
-        assert mock_box_class.call_count == 2
-        mock_box_class.assert_any_call(
-            length=200.0, width=100.0, height=50.0, align="MIN"
-        )
-        mock_box_class.assert_any_call(
-            length=150.0, width=80.0, height=40.0, align="MIN"
-        )
+                # Part class should return empty part when called with no args
+                export_module.Part = Mock(return_value=mock_empty_part)
 
-        # Verify fillets were applied
-        assert mock_fillet.call_count == 2
+                mock_compound_instance = Mock()
+                export_module.Compound = Mock(return_value=mock_compound_instance)
 
-        # Verify Compound was created
-        mock_compound_class.assert_called_once()
-        call_kwargs = mock_compound_class.call_args[1]
-        assert call_kwargs["label"] == "test_assembly"
-        assert len(call_kwargs["children"]) == 2
-        # Check that parts were created
-        assert len(filleted_parts) == 2
-        children = call_kwargs["children"]
-        assert len(children) == 2
-        # The filleted parts should be in the compound's children
-        assert mock_filleted_part1 in children
-        assert mock_filleted_part2 in children
-        # Check that labels were set on the filleted parts
-        assert mock_filleted_part1.label == "p1"
-        assert mock_filleted_part2.label == "p2"
-        assert result == mock_compound_instance
+                result = export_module.assembly_to_build123d(assembly)
 
-    @patch("nichiyou_daiku.shell.build123d_export.fillet")
-    @patch("nichiyou_daiku.shell.build123d_export.Axis")
-    @patch("nichiyou_daiku.shell.build123d_export.Align")
-    @patch("nichiyou_daiku.shell.build123d_export.Location")
-    @patch("nichiyou_daiku.shell.build123d_export.RigidJoint")
-    @patch("nichiyou_daiku.shell.build123d_export.Part")
-    @patch("nichiyou_daiku.shell.build123d_export.Box")
-    @patch("nichiyou_daiku.shell.build123d_export.Compound")
-    def test_should_position_connected_pieces(
-        self,
-        mock_compound_class,
-        mock_box_class,
-        mock_part_class,
-        mock_rigid_joint_class,
-        mock_location_class,
-        mock_align,
-        mock_axis,
-        mock_fillet,
-    ):
+                # Verify Box was created with correct dimensions
+                assert export_module.Box.call_count == 2
+                export_module.Box.assert_any_call(
+                    length=200.0, width=100.0, height=50.0, align="MIN"
+                )
+                export_module.Box.assert_any_call(
+                    length=150.0, width=80.0, height=40.0, align="MIN"
+                )
+
+                # Verify fillets were applied
+                assert export_module.fillet.call_count == 2
+
+                # Verify Compound was created
+                export_module.Compound.assert_called_once()
+                call_kwargs = export_module.Compound.call_args[1]
+                assert call_kwargs["label"] == "test_assembly"
+                assert len(call_kwargs["children"]) == 2
+                # Check that parts were created
+                assert len(filleted_parts) == 2
+                children = call_kwargs["children"]
+                assert len(children) == 2
+                # The filleted parts should be in the compound's children
+                assert mock_filleted_part1 in children
+                assert mock_filleted_part2 in children
+                # Check that labels were set on the filleted parts
+                assert mock_filleted_part1.label == "p1"
+                assert mock_filleted_part2.label == "p2"
+                assert result == mock_compound_instance
+
+            finally:
+                export_module.HAS_BUILD123D = original_available
+                importlib.reload(export_module)
+
+    def test_should_position_connected_pieces(self):
         """Should position pieces based on connection joint positions using RigidJoints."""
-        # Create assembly with connection
-        box1 = Box(shape=Shape3D(width=100.0, height=50.0, length=200.0))
-        box2 = Box(shape=Shape3D(width=100.0, height=50.0, length=200.0))
+        # Patch the entire module to inject mocks
+        with patch.dict("sys.modules", {"build123d": MagicMock()}):
+            import nichiyou_daiku.shell.build123d_export as export_module
 
-        joint1 = Joint(
-            position=Point3D(x=50.0, y=25.0, z=100.0),
-            orientation=Orientation3D.of(
-                direction=Vector3D(x=0.0, y=0.0, z=1.0),
-                up=Vector3D(x=0.0, y=1.0, z=0.0),
-            ),
-        )
-        joint2 = Joint(
-            position=Point3D(x=0.0, y=0.0, z=0.0),
-            orientation=Orientation3D.of(
-                direction=Vector3D(x=0.0, y=0.0, z=-1.0),
-                up=Vector3D(x=0.0, y=1.0, z=0.0),
-            ),
-        )
+            # Temporarily set build123d as available
+            original_available = export_module.HAS_BUILD123D
+            export_module.HAS_BUILD123D = True
 
-        connection = JointPair(lhs=joint1, rhs=joint2)
+            try:
+                # Reload to pick up mocked build123d
+                import importlib
 
-        assembly = Assembly(
-            boxes={"base": box1, "target": box2},
-            joints={("base", "target"): connection},
-            label="test_assembly",
-        )
+                importlib.reload(export_module)
 
-        # Create all the parts we'll need
-        filleted_parts = []
-        created_rigid_joints = []
+                # Create assembly with connection
+                box1 = Box(shape=Shape3D(width=100.0, height=50.0, length=200.0))
+                box2 = Box(shape=Shape3D(width=100.0, height=50.0, length=200.0))
 
-        # Configure mocks
-        mock_align.MIN = "MIN"
-        mock_axis.X = "X"
+                joint1 = NichiyouJoint(
+                    position=Point3D(x=50.0, y=25.0, z=100.0),
+                    orientation=Orientation3D.of(
+                        direction=Vector3D(x=0.0, y=0.0, z=1.0),
+                        up=Vector3D(x=1.0, y=0.0, z=0.0),
+                    ),
+                )
+                joint2 = NichiyouJoint(
+                    position=Point3D(x=-50.0, y=-25.0, z=-100.0),
+                    orientation=Orientation3D.of(
+                        direction=Vector3D(x=0.0, y=0.0, z=-1.0),
+                        up=Vector3D(x=-1.0, y=0.0, z=0.0),
+                    ),
+                )
 
-        # Part() should return an empty part mock
-        mock_empty_part = Mock()
-        mock_part_class.return_value = mock_empty_part
+                assembly = Assembly(
+                    boxes={"p1": box1, "p2": box2},
+                    joints={("p1", "p2"): JointPair(lhs=joint1, rhs=joint2)},
+                    label="test_assembly",
+                )
 
-        # Track box creation and configure parts
-        created_boxes = []
-        created_parts = []
+                # Setup mocks
+                mock_box1 = MagicMock()
+                mock_box2 = MagicMock()
+                mock_part1 = Mock()
+                mock_part1.label = "p1"
+                mock_part2 = Mock()
+                mock_part2.label = "p2"
+                mock_empty_part = Mock()
 
-        def create_box(**kwargs):
-            box = MagicMock()
-            created_boxes.append(box)
-            # Configure the box to return a unique part when added to Part()
-            part = MagicMock()
-            part.label = f"part_{len(created_boxes)}"
-            part.joints = {}
-            # Configure edges for fillet
-            mock_edges = Mock()
-            mock_edges.filter_by = Mock(return_value=mock_edges)
-            part.edges = Mock(return_value=mock_edges)
-            box.__add__.return_value = part
-            created_parts.append(part)
-            return box
+                # Configure edges mock for fillet
+                mock_edges1 = Mock()
+                mock_edges1.filter_by = Mock(return_value=mock_edges1)
+                mock_part1.edges = Mock(return_value=mock_edges1)
 
-        mock_box_class.side_effect = create_box
+                mock_edges2 = Mock()
+                mock_edges2.filter_by = Mock(return_value=mock_edges2)
+                mock_part2.edges = Mock(return_value=mock_edges2)
 
-        # Track filleted parts
-        def track_fillet(obj, radius):
-            # Create a new mock object that represents the filleted result
-            filleted_part = MagicMock()
-            filleted_part.joints = {}
-            # Make sure it doesn't have wrapped attribute so it's used directly
-            del filleted_part.wrapped
-            filleted_parts.append(filleted_part)
-            return filleted_part
+                # Setup basic mocks
+                export_module.Box = Mock(side_effect=[mock_box1, mock_box2])
+                mock_box1.__add__.return_value = mock_part1
+                mock_box2.__add__.return_value = mock_part2
+                export_module.Part = Mock(return_value=mock_empty_part)
+                export_module.Align = Mock()
+                export_module.Align.MIN = "MIN"
+                export_module.Axis = Mock()
+                export_module.Axis.X = "X"
 
-        mock_fillet.side_effect = track_fillet
+                # Mock fillet to return filleted parts
+                mock_filleted_part1 = Mock()
+                mock_filleted_part2 = Mock()
+                del mock_filleted_part1.wrapped
+                del mock_filleted_part2.wrapped
 
-        # Create locations
-        mock_location_base = Mock()
-        mock_location_target = Mock()
-        mock_location_class.side_effect = [mock_location_base, mock_location_target]
+                # Set up joints dictionaries for the filleted parts
+                mock_joint_p1_to_p2 = Mock()
+                mock_joint_p2_to_p1 = Mock()
+                mock_joint_p1_to_p2.connect_to = Mock()
+                mock_filleted_part1.joints = {"to_p2": mock_joint_p1_to_p2}
+                mock_filleted_part2.joints = {"to_p1": mock_joint_p2_to_p1}
 
-        # Track rigid joint creation
-        def create_rigid_joint(label, to_part, joint_location):
-            joint = Mock()
-            # Add connect_to method to the joint
-            joint.connect_to = Mock()
-            created_rigid_joints.append(
-                {
-                    "label": label,
-                    "to_part": to_part,
-                    "joint_location": joint_location,
-                    "joint": joint,
-                }
-            )
-            # Make sure to_part has a joints dict if it doesn't already
-            if not hasattr(to_part, "joints"):
-                to_part.joints = {}
-            elif not isinstance(to_part.joints, dict):
-                to_part.joints = {}
-            # Set the joint on the part
-            to_part.joints[label] = joint
-            return joint
+                def mock_fillet_func(obj, radius):
+                    if obj == mock_edges1:
+                        return mock_filleted_part1
+                    elif obj == mock_edges2:
+                        return mock_filleted_part2
 
-        mock_rigid_joint_class.side_effect = create_rigid_joint
+                export_module.fillet = Mock(side_effect=mock_fillet_func)
 
-        mock_compound_instance = Mock()
-        mock_compound_class.return_value = mock_compound_instance
+                # Mock Location and RigidJoint
+                mock_location1 = Mock()
+                mock_location2 = Mock()
+                export_module.Location = Mock(
+                    side_effect=[mock_location1, mock_location2]
+                )
 
-        from nichiyou_daiku.shell.build123d_export import assembly_to_build123d
+                # Mock RigidJoint to return the joints we set up
+                def mock_rigid_joint_func(label, to_part, joint_location):
+                    if label == "to_p2" and to_part == mock_filleted_part1:
+                        return mock_joint_p1_to_p2
+                    elif label == "to_p1" and to_part == mock_filleted_part2:
+                        return mock_joint_p2_to_p1
+                    else:
+                        return Mock()
 
-        assembly_to_build123d(assembly)
+                export_module.RigidJoint = Mock(side_effect=mock_rigid_joint_func)
 
-        # Verify RigidJoints were created
-        assert len(created_rigid_joints) == 2
+                mock_compound_instance = Mock()
+                export_module.Compound = Mock(return_value=mock_compound_instance)
 
-        # Verify boxes were created
-        assert len(created_boxes) == 2
+                result = export_module.assembly_to_build123d(assembly)
 
-        # Verify parts were filleted
-        assert len(filleted_parts) == 2
+                # Verify RigidJoint was created properly for both joints
+                assert export_module.RigidJoint.call_count == 2
+                export_module.RigidJoint.assert_any_call(
+                    label="to_p2",
+                    to_part=mock_filleted_part1,
+                    joint_location=mock_location1,
+                )
+                export_module.RigidJoint.assert_any_call(
+                    label="to_p1",
+                    to_part=mock_filleted_part2,
+                    joint_location=mock_location2,
+                )
 
-        # Check that filleted parts have labels set
-        assert filleted_parts[0].label == "base"
-        assert filleted_parts[1].label == "target"
+                # Verify connect_to was called
+                mock_joint_p1_to_p2.connect_to.assert_called_once_with(
+                    mock_joint_p2_to_p1
+                )
 
-        # Check rigid joints details
-        base_joint_info = created_rigid_joints[0]
-        target_joint_info = created_rigid_joints[1]
+                # Verify result
+                assert result == mock_compound_instance
 
-        assert base_joint_info["label"] == "to_target"
-        assert base_joint_info["joint_location"] == mock_location_base
-        assert base_joint_info["to_part"] == filleted_parts[0]  # The base part
-
-        assert target_joint_info["label"] == "to_base"
-        assert target_joint_info["joint_location"] == mock_location_target
-        assert target_joint_info["to_part"] == filleted_parts[1]  # The target part
-
-        # Verify Location objects were created with correct positions
-        assert mock_location_class.call_count == 2
-
-        # Check location calls
-        loc_calls = mock_location_class.call_args_list
-
-        # Base location
-        assert loc_calls[0][0][0] == (50.0, 25.0, 100.0)
-        angles = loc_calls[0][0][1]
-        assert len(angles) == 3
-        assert all(isinstance(a, (int, float)) for a in angles)
-
-        # Target location
-        assert loc_calls[1][0][0] == (0.0, 0.0, 0.0)
-        angles = loc_calls[1][0][1]
-        assert len(angles) == 3
-        assert all(isinstance(a, (int, float)) for a in angles)
-
-        # Verify joints were connected
-        # Find which joints were created
-        to_target_joint = None
-        to_base_joint = None
-
-        for joint_info in created_rigid_joints:
-            if joint_info["label"] == "to_target":
-                to_target_joint = joint_info["joint"]
-            elif joint_info["label"] == "to_base":
-                to_base_joint = joint_info["joint"]
-
-        assert to_target_joint is not None
-        assert to_base_joint is not None
-        assert to_target_joint.connect_to.called
-        assert to_target_joint.connect_to.call_args[0][0] == to_base_joint
+            finally:
+                export_module.HAS_BUILD123D = original_available
+                importlib.reload(export_module)

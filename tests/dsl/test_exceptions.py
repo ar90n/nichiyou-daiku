@@ -54,7 +54,7 @@ class TestDSLExceptions:
         assert issubclass(DSLSyntaxError, DSLError)
         assert issubclass(DSLSemanticError, DSLError)
         assert issubclass(DSLValidationError, DSLError)
-        
+
         # DSLError should inherit from Exception
         assert issubclass(DSLError, Exception)
 
@@ -63,11 +63,11 @@ class TestDSLExceptions:
         # Can catch specific exception
         with pytest.raises(DSLSyntaxError):
             raise DSLSyntaxError("Test")
-        
+
         # Can catch base exception
         with pytest.raises(DSLError):
             raise DSLSyntaxError("Test")
-        
+
         # Can catch Exception
         with pytest.raises(Exception):
             raise DSLValidationError("Test")

@@ -12,6 +12,7 @@ dependencies = [
     "numpy>=2.2.6",
     "pydantic>=2.11.7",
     "lark>=1.1.9",  # DSL parsing support
+    "click>=8.1.7",  # CLI framework
 ]
 
 [project.optional-dependencies]
@@ -25,6 +26,9 @@ all = [
     "build123d",
     "ocp-vscode>=2.8.5",
 ]
+
+[project.scripts]
+nichiyou-dsl = "nichiyou_daiku.cli.dsl_cli:cli"
 
 [build-system]
 requires = ["hatchling"]

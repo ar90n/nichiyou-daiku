@@ -1,0 +1,66 @@
+(leg_1:PT_2x4 {"length": 720})
+(leg_2:PT_2x4 {"length": 720})
+(leg_3:PT_2x4 {"length": 720})
+(leg_4:PT_2x4 {"length": 720})
+
+(apron_front:PT_2x4 {"length": 622})
+(apron_back:PT_2x4 {"length": 622})
+(apron_left:PT_2x4 {"length": 524})
+(apron_right:PT_2x4 {"length": 524})
+
+(table_top_1:PT_2x4 {"length": 600})
+(table_top_2:PT_2x4 {"length": 600})
+(table_top_3:PT_2x4 {"length": 600})
+(table_top_4:PT_2x4 {"length": 600})
+(table_top_5:PT_2x4 {"length": 600})
+(table_top_6:PT_2x4 {"length": 600})
+(table_top_7:PT_2x4 {"length": 600})
+(table_top_8:PT_2x4 {"length": 600})
+
+leg_1 -[{"contact_face": "left", "edge_shared_face": "back", "offset": FromMax(0)}
+        {"contact_face": "bottom", "edge_shared_face": "back", "offset": FromMax(0)}]- apron_front
+
+leg_2 -[{"contact_face": "right", "edge_shared_face": "front", "offset": FromMax(0)}
+        {"contact_face": "top", "edge_shared_face": "front", "offset": FromMax(0)}]- apron_front
+
+leg_3 -[{"contact_face": "left", "edge_shared_face": "back", "offset": FromMax(0)}
+        {"contact_face": "bottom", "edge_shared_face": "back", "offset": FromMax(0)}]- apron_back
+
+leg_4 -[{"contact_face": "right", "edge_shared_face": "front", "offset": FromMax(0)}
+        {"contact_face": "top", "edge_shared_face": "front", "offset": FromMax(0)}]- apron_back
+
+leg_1 -[{"contact_face": "back", "edge_shared_face": "right", "offset": FromMin(100)}
+        {"contact_face": "bottom", "edge_shared_face": "back", "offset": FromMin(0)}]- apron_left
+
+leg_3 -[{"contact_face": "front", "edge_shared_face": "right", "offset": FromMin(100)}
+        {"contact_face": "top", "edge_shared_face": "back", "offset": FromMin(0)}]- apron_left
+
+leg_2 -[{"contact_face": "back", "edge_shared_face": "left", "offset": FromMin(100)}
+        {"contact_face": "bottom", "edge_shared_face": "front", "offset": FromMin(0)}]- apron_right
+
+leg_4 -[{"contact_face": "front", "edge_shared_face": "left", "offset": FromMin(100)}
+        {"contact_face": "top", "edge_shared_face": "front", "offset": FromMin(0)}]- apron_right
+
+table_top_1 -[{"contact_face": "back", "edge_shared_face": "bottom", "offset": FromMin(0)}
+              {"contact_face": "top", "edge_shared_face": "front", "offset": FromMin(0)}]- leg_1
+
+table_top_8 -[{"contact_face": "back", "edge_shared_face": "bottom", "offset": FromMin(0)}
+              {"contact_face": "top", "edge_shared_face": "front", "offset": FromMin(0)}]- leg_2
+
+apron_front -[{"contact_face": "right", "edge_shared_face": "front", "offset": FromMin(12.571)}
+               {"contact_face": "back", "edge_shared_face": "top", "offset": FromMin(0)}]- table_top_2
+
+apron_front -[{"contact_face": "right", "edge_shared_face": "front", "offset": FromMin(114.142)}
+               {"contact_face": "back", "edge_shared_face": "top", "offset": FromMin(0)}]- table_top_3
+
+apron_front -[{"contact_face": "right", "edge_shared_face": "front", "offset": FromMin(215.713)}
+               {"contact_face": "back", "edge_shared_face": "top", "offset": FromMin(0)}]- table_top_4
+
+apron_front -[{"contact_face": "right", "edge_shared_face": "front", "offset": FromMin(317.284)}
+               {"contact_face": "back", "edge_shared_face": "top", "offset": FromMin(0)}]- table_top_5
+
+apron_front -[{"contact_face": "right", "edge_shared_face": "front", "offset": FromMin(418.855)}
+               {"contact_face": "back", "edge_shared_face": "top", "offset": FromMin(0)}]- table_top_6
+
+apron_front -[{"contact_face": "right", "edge_shared_face": "front", "offset": FromMin(520.426)}
+               {"contact_face": "back", "edge_shared_face": "top", "offset": FromMin(0)}]- table_top_7
