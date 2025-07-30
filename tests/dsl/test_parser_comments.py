@@ -53,10 +53,13 @@ class TestCommentSupport:
         // No actual DSL content
         """
         from nichiyou_daiku.dsl.exceptions import DSLSyntaxError
+
         with pytest.raises(DSLSyntaxError) as exc_info:
             parse_dsl(dsl)
         # The grammar expects at least one statement, so this will fail with a syntax error
-        assert "Unexpected token" in str(exc_info.value) or "Expected" in str(exc_info.value)
+        assert "Unexpected token" in str(exc_info.value) or "Expected" in str(
+            exc_info.value
+        )
 
     def test_parse_comment_with_special_characters(self):
         """Test parsing comments with special characters."""
@@ -115,13 +118,13 @@ class TestCommentSupport:
         leg4 -[RF>0 TF>0]- apron_back
         """
         model = parse_dsl(dsl)
-        
+
         # Check pieces
         assert len(model.pieces) == 6
         assert all(f"leg{i}" in model.pieces for i in range(1, 5))
         assert "apron_front" in model.pieces
         assert "apron_back" in model.pieces
-        
+
         # Check connections
         assert len(model.connections) == 4
 
