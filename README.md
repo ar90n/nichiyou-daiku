@@ -247,17 +247,17 @@ right_side -[LT>100 FT<50]- shelf   // Left-Top to Front-Top
 
 ```bash
 # Validate DSL syntax
-nichiyou-dsl validate furniture.nd
+nichiyou-daiku validate furniture.nd
 
 # Generate markdown report
-nichiyou-dsl report furniture.nd -o report.md
+nichiyou-daiku report furniture.nd -o report.md
 
 # View 3D model (requires build123d)
-nichiyou-dsl view furniture.nd
+nichiyou-daiku view furniture.nd
 
 # Export to STL/STEP formats
-nichiyou-dsl export furniture.nd -f stl
-nichiyou-dsl export furniture.nd -o model.step --fillet-radius 10
+nichiyou-daiku export furniture.nd -f stl
+nichiyou-daiku export furniture.nd -o model.step --fillet-radius 10
 ```
 
 See `examples/shelf_with_comments.nd` for a complete example.
