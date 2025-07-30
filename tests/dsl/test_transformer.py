@@ -238,7 +238,7 @@ class TestCompactNotationTransformer:
 
         with pytest.raises(DSLValidationError) as exc_info:
             transformer.compact_offset([invalid_token, num_token])
-        assert "Invalid compact offset type" in str(exc_info.value)
+        assert "Unknown offset type" in str(exc_info.value)
 
     def test_compact_anchor_wrong_component_count(self):
         """Test error when compact anchor has wrong number of components."""
