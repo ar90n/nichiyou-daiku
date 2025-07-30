@@ -33,9 +33,13 @@ COMPACT_FACE: /[TDLRFB]/
 COMPACT_FROM_MIN: "<"
 COMPACT_FROM_MAX: ">"
 
+// Comment support
+COMMENT: "//" /[^\n]*/
+
 %import common.CNAME
 %import common.NUMBER
 %import common.ESCAPED_STRING
 %import common.WS
 %ignore WS
+%ignore COMMENT
 """
