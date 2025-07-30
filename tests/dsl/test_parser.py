@@ -11,7 +11,7 @@ class TestBasicParsing:
 
     def test_parse_single_piece_without_id(self):
         """Test parsing a single piece without an ID."""
-        dsl = '(:PT_2x4 {"length": 1000})'
+        dsl = '(:2x4 {"length": 1000})'
         model = parse_dsl(dsl)
 
         assert len(model.pieces) == 1
@@ -24,7 +24,7 @@ class TestBasicParsing:
 
     def test_parse_single_piece_with_id(self):
         """Test parsing a single piece with a custom ID."""
-        dsl = '(beam1:PT_2x4 {"length": 1500})'
+        dsl = '(beam1:2x4 {"length": 1500})'
         model = parse_dsl(dsl)
 
         assert len(model.pieces) == 1
@@ -36,9 +36,9 @@ class TestBasicParsing:
     def test_parse_multiple_pieces(self):
         """Test parsing multiple pieces."""
         dsl = """
-        (beam1:PT_2x4 {"length": 1000})
-        (beam2:PT_2x4 {"length": 2000})
-        (board1:PT_1x4 {"length": 800})
+        (beam1:2x4 {"length": 1000})
+        (beam2:2x4 {"length": 2000})
+        (board1:1x4 {"length": 800})
         """
         model = parse_dsl(dsl)
 
@@ -56,8 +56,8 @@ class TestBasicParsing:
     def test_parse_piece_with_connection(self):
         """Test parsing pieces with a connection."""
         dsl = """
-        (beam1:PT_2x4 {"length": 1000})
-        (beam2:PT_2x4 {"length": 1000})
+        (beam1:2x4 {"length": 1000})
+        (beam2:2x4 {"length": 1000})
         beam1 -[{"contact_face": "front", "edge_shared_face": "top", "offset": FromMax(100)}
               {"contact_face": "bottom", "edge_shared_face": "front", "offset": FromMin(50)}]- beam2
         """
@@ -86,14 +86,14 @@ class TestSyntaxErrors:
 
     def test_invalid_piece_type(self):
         """Test error on invalid piece type."""
-        dsl = '(beam1:PT_2x6 {"length": 1000})'
+        dsl = '(beam1:2x6 {"length": 1000})'
         with pytest.raises(DSLSyntaxError) as exc_info:
             parse_dsl(dsl)
         assert "Unexpected token" in str(exc_info.value)
 
     def test_missing_length_property(self):
         """Test error when length property is missing."""
-        dsl = "(beam1:PT_2x4 {})"
+        dsl = "(beam1:2x4 {})"
         with pytest.raises(Exception) as exc_info:
             parse_dsl(dsl)
         assert "length" in str(exc_info.value)
@@ -101,8 +101,8 @@ class TestSyntaxErrors:
     def test_malformed_connection(self):
         """Test error on malformed connection syntax."""
         dsl = """
-        (beam1:PT_2x4 {"length": 1000})
-        (beam2:PT_2x4 {"length": 1000})
+        (beam1:2x4 {"length": 1000})
+        (beam2:2x4 {"length": 1000})
         beam1 - beam2
         """
         with pytest.raises(DSLSyntaxError):
@@ -111,8 +111,8 @@ class TestSyntaxErrors:
     def test_duplicate_piece_id(self):
         """Test error on duplicate piece IDs."""
         dsl = """
-        (beam1:PT_2x4 {"length": 1000})
-        (beam1:PT_2x4 {"length": 2000})
+        (beam1:2x4 {"length": 1000})
+        (beam1:2x4 {"length": 2000})
         """
         with pytest.raises(Exception) as exc_info:
             parse_dsl(dsl)
@@ -121,7 +121,7 @@ class TestSyntaxErrors:
     def test_unknown_piece_reference(self):
         """Test error on unknown piece reference in connection."""
         dsl = """
-        (beam1:PT_2x4 {"length": 1000})
+        (beam1:2x4 {"length": 1000})
         beam1 -[{"contact_face": "front", "edge_shared_face": "top", "offset": FromMax(100)}
               {"contact_face": "bottom", "edge_shared_face": "front", "offset": FromMin(50)}]- beam2
         """
@@ -136,8 +136,8 @@ class TestCompactNotation:
     def test_parse_simple_compact_connection(self):
         """Test parsing a simple connection with compact notation."""
         dsl = """
-        (beam1:PT_2x4 {"length": 1000})
-        (beam2:PT_2x4 {"length": 800})
+        (beam1:2x4 {"length": 1000})
+        (beam2:2x4 {"length": 800})
         beam1 -[TF<0 BD<0]- beam2
         """
         model = parse_dsl(dsl)
@@ -162,12 +162,12 @@ class TestCompactNotation:
     def test_parse_compact_with_various_faces(self):
         """Test parsing compact notation with all face types."""
         dsl = """
-        (p1:PT_2x4 {"length": 500})
-        (p2:PT_2x4 {"length": 500})
-        (p3:PT_2x4 {"length": 500})
-        (p4:PT_2x4 {"length": 500})
-        (p5:PT_2x4 {"length": 500})
-        (p6:PT_2x4 {"length": 500})
+        (p1:2x4 {"length": 500})
+        (p2:2x4 {"length": 500})
+        (p3:2x4 {"length": 500})
+        (p4:2x4 {"length": 500})
+        (p5:2x4 {"length": 500})
+        (p6:2x4 {"length": 500})
         
         p1 -[TL<10 DR>20]- p2
         p3 -[FB<30 LT>40]- p4
@@ -199,8 +199,8 @@ class TestCompactNotation:
     def test_parse_mixed_notation_error(self):
         """Test error when mixing compact and JSON notation."""
         dsl = """
-        (beam1:PT_2x4 {"length": 1000})
-        (beam2:PT_2x4 {"length": 800})
+        (beam1:2x4 {"length": 1000})
+        (beam2:2x4 {"length": 800})
         beam1 -[TF<0 {"contact_face": "back", "edge_shared_face": "bottom", "offset": FromMin(0)}]- beam2
         """
         with pytest.raises(DSLSyntaxError):
@@ -209,8 +209,8 @@ class TestCompactNotation:
     def test_parse_invalid_compact_face(self):
         """Test error on invalid compact face notation."""
         dsl = """
-        (beam1:PT_2x4 {"length": 1000})
-        (beam2:PT_2x4 {"length": 800})
+        (beam1:2x4 {"length": 1000})
+        (beam2:2x4 {"length": 800})
         beam1 -[XF<0 BD<0]- beam2
         """
         with pytest.raises(DSLSyntaxError):
@@ -220,8 +220,8 @@ class TestCompactNotation:
     def test_parse_compact_with_float_offset(self):
         """Test parsing compact notation with floating point offsets."""
         dsl = """
-        (beam1:PT_2x4 {"length": 1000})
-        (beam2:PT_2x4 {"length": 800})
+        (beam1:2x4 {"length": 1000})
+        (beam2:2x4 {"length": 800})
         beam1 -[TF<12.5 BD>37.8]- beam2
         """
         model = parse_dsl(dsl)
@@ -243,9 +243,9 @@ class TestEdgeCases:
         """Test that whitespace is properly handled."""
         dsl = """
         
-        (beam1:PT_2x4    {"length": 1000})
+        (beam1:2x4    {"length": 1000})
         
-        (beam2:PT_2x4 {"length":    2000   })
+        (beam2:2x4 {"length":    2000   })
         
         """
         model = parse_dsl(dsl)
@@ -253,14 +253,14 @@ class TestEdgeCases:
 
     def test_string_escaping(self):
         """Test string escaping in properties."""
-        dsl = '(beam1:PT_2x4 {"length": 1000, "note": "Test \\"quoted\\" string"})'
+        dsl = '(beam1:2x4 {"length": 1000, "note": "Test \\"quoted\\" string"})'
         model = parse_dsl(dsl)
         assert len(model.pieces) == 1
         # Note: current implementation only uses length, but parsing should not fail
 
     def test_debug_mode(self):
         """Test parser in debug mode."""
-        dsl = '(beam1:PT_2x4 {"length": 1000})'
+        dsl = '(beam1:2x4 {"length": 1000})'
         # Should not raise an exception
         model = parse_dsl(dsl, debug=True)
         assert len(model.pieces) == 1

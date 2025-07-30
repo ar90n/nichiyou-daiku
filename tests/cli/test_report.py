@@ -16,9 +16,9 @@ def runner():
 def simple_dsl():
     """Simple DSL content for testing."""
     return """
-(leg1:PT_2x4 {"length": 720})
-(leg2:PT_2x4 {"length": 720})
-(apron:PT_1x4 {"length": 600})
+(leg1:2x4 {"length": 720})
+(leg2:2x4 {"length": 720})
+(apron:1x4 {"length": 600})
 
 leg1 -[{"contact_face": "front", "edge_shared_face": "right", "offset": FromMax(100)}
        {"contact_face": "left", "edge_shared_face": "bottom", "offset": FromMin(0)}]- apron
