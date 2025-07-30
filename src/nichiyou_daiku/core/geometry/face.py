@@ -105,8 +105,8 @@ def cross(lhs: Face, rhs: Face) -> Face:
             raise ValueError(f"Invalid face combination: {lhs}, {rhs}")
 
 
-def is_vertical_axis(face: Face) -> bool:
-    """Check if a face is on the vertical axis.
+def is_down_to_top_axis(face: Face) -> bool:
+    """Check if a face is on the down-to-top axis.
 
     Determines if the given face is either "top" or "down".
 
@@ -114,14 +114,14 @@ def is_vertical_axis(face: Face) -> bool:
         face: The face to check
 
     Returns:
-        True if the face is on the vertical axis, False otherwise
+        True if the face is on the down-to-top axis, False otherwise
 
     Examples:
-        >>> is_vertical_axis("top")
+        >>> is_down_to_top_axis("top")
         True
-        >>> is_vertical_axis("down")
+        >>> is_down_to_top_axis("down")
         True
-        >>> is_vertical_axis("left")
+        >>> is_down_to_top_axis("left")
         False
     """
     return face in ("top", "down")
@@ -194,7 +194,7 @@ def is_same_axis(lhs: Face, rhs: Face) -> bool:
         False
     """
     return (
-        (is_vertical_axis(lhs) and is_vertical_axis(rhs))
+        (is_down_to_top_axis(lhs) and is_down_to_top_axis(rhs))
         or (is_left_to_right_axis(lhs) and is_left_to_right_axis(rhs))
         or (is_back_to_front_axis(lhs) and is_back_to_front_axis(rhs))
     )

@@ -15,7 +15,7 @@ from .face import (
     cross as cross_face,
     Face,
     is_back_to_front_axis,
-    is_vertical_axis,
+    is_down_to_top_axis,
     is_left_to_right_axis,
 )
 from .offset import evaluate as eval_offset
@@ -24,7 +24,7 @@ from .dimensions import Millimeters
 
 def _edge_legnth_of(box: Box, edge: Edge) -> Millimeters:
     third_face = cross_face(edge.lhs, edge.rhs)
-    if is_vertical_axis(third_face):
+    if is_down_to_top_axis(third_face):
         return box.shape.length
     if is_left_to_right_axis(third_face):
         return box.shape.width
