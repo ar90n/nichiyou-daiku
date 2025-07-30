@@ -392,7 +392,7 @@ nichiyou-daiku export furniture.nd -f stl
 nichiyou-daiku export furniture.nd -o model.step --fillet-radius 10
 ```
 
-See `examples/shelf_with_comments.nd` for a complete example.
+See the `examples/nd_files/` directory for complete DSL examples.
 
 ## Python API
 
