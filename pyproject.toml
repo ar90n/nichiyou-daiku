@@ -28,7 +28,7 @@ all = [
 ]
 
 [project.scripts]
-nichiyou-dsl = "nichiyou_daiku.cli.dsl_cli:cli"
+nichiyou-daiku = "nichiyou_daiku.cli.dsl_cli:cli"
 
 [build-system]
 requires = ["hatchling"]
