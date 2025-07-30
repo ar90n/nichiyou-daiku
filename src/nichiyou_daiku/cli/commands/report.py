@@ -5,7 +5,7 @@ from typing import Optional
 
 import click
 
-from nichiyou_daiku.cli.utils import read_dsl_file, validate_output_path
+from nichiyou_daiku.cli.utils import read_dsl_file, validate_output_path, CliEcho
 from nichiyou_daiku.dsl import (
     parse_dsl,
     DSLSyntaxError,
@@ -42,54 +42,45 @@ def report(
 
     FILE: Path to .nd file or '-' for stdin
     """
-    quiet = ctx.obj.get("quiet", False)
-    verbose = ctx.obj.get("verbose", False)
+    echo = CliEcho(ctx)
 
     # Read DSL content
     try:
         dsl_content = read_dsl_file(file)
     except click.ClickException as e:
-        if not quiet:
-            click.echo(f"Error: {e}", err=True)
+        echo.error(f"Error: {e}")
         sys.exit(1)
 
     # Parse DSL
     try:
-        if verbose and not quiet:
-            click.echo("Parsing DSL file...")
+        echo.verbose("Parsing DSL file...")
 
         model = parse_dsl(dsl_content)
 
-        if verbose and not quiet:
-            click.echo(
-                f"Found {len(model.pieces)} pieces and {len(model.connections)} connections"
-            )
+        echo.verbose(
+            f"Found {len(model.pieces)} pieces and {len(model.connections)} connections"
+        )
 
     except (DSLSyntaxError, DSLSemanticError, DSLValidationError) as e:
-        if not quiet:
-            click.echo(f"DSL Error: {e}", err=True)
+        echo.error(f"DSL Error: {e}")
         sys.exit(1)
     except Exception as e:
-        if not quiet:
-            click.echo(f"Unexpected error parsing DSL: {e}", err=True)
+        echo.error(f"Unexpected error parsing DSL: {e}")
         sys.exit(1)
 
     # Extract resources
     try:
-        if verbose and not quiet:
-            click.echo("Extracting resources...")
+        echo.verbose("Extracting resources...")
 
         resources = extract_resources(model)
 
     except Exception as e:
-        if not quiet:
-            click.echo(f"Error extracting resources: {e}", err=True)
+        echo.error(f"Error extracting resources: {e}")
         sys.exit(1)
 
     # Generate report
     try:
-        if verbose and not quiet:
-            click.echo("Generating report...")
+        echo.verbose("Generating report...")
 
         report_content = generate_markdown_report(
             resources,
@@ -98,8 +89,7 @@ def report(
         )
 
     except Exception as e:
-        if not quiet:
-            click.echo(f"Error generating report: {e}", err=True)
+        echo.error(f"Error generating report: {e}")
         sys.exit(1)
 
     # Output report
@@ -108,17 +98,14 @@ def report(
 
         if output_path:
             output_path.write_text(report_content, encoding="utf-8")
-            if not quiet:
-                click.echo(f"Report written to: {output_path}")
+            echo.echo(f"Report written to: {output_path}")
         else:
             # Output to stdout
             click.echo(report_content)
 
     except click.ClickException as e:
-        if not quiet:
-            click.echo(f"Output error: {e}", err=True)
+        echo.error(f"Output error: {e}")
         sys.exit(1)
     except Exception as e:
-        if not quiet:
-            click.echo(f"Unexpected error writing output: {e}", err=True)
+        echo.error(f"Unexpected error writing output: {e}")
         sys.exit(1)

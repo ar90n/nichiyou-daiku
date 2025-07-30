@@ -86,3 +86,80 @@ def validate_output_path(output_path: Optional[str]) -> Optional[Path]:
         raise click.ClickException(f"Output path is not a file: {output_path}")
 
     return path
+
+
+def _echo_with_flags(
+    message: str,
+    *,
+    err: bool = False,
+    verbose_only: bool = False,
+    quiet: bool = False,
+    verbose: bool = False,
+    **kwargs,
+) -> None:
+    """Smart echo that respects quiet/verbose flags.
+
+    Args:
+        message: Message to display
+        err: Whether this is an error message (shown even in quiet mode)
+        verbose_only: Only show this message in verbose mode
+        quiet: Current quiet flag state
+        verbose: Current verbose flag state
+        **kwargs: Additional arguments passed to click.echo
+    """
+    if quiet and not err:  # Always show errors even in quiet mode
+        return
+    if verbose_only and not verbose:
+        return
+    click.echo(message, err=err, **kwargs)
+
+
+class CliEcho:
+    """Context-aware echo wrapper for CLI commands."""
+
+    def __init__(self, ctx: click.Context):
+        """Initialize with CLI context.
+
+        Args:
+            ctx: Click context containing quiet/verbose flags
+        """
+        self._quiet = ctx.obj.get("quiet", False)
+        self._verbose = ctx.obj.get("verbose", False)
+
+    def echo(
+        self, message: str, *, err: bool = False, verbose_only: bool = False, **kwargs
+    ) -> None:
+        """Echo with automatic quiet/verbose handling.
+
+        Args:
+            message: Message to display
+            err: Whether this is an error message
+            verbose_only: Only show in verbose mode
+            **kwargs: Additional arguments for click.echo
+        """
+        _echo_with_flags(
+            message,
+            err=err,
+            verbose_only=verbose_only,
+            quiet=self._quiet,
+            verbose=self._verbose,
+            **kwargs,
+        )
+
+    def error(self, message: str, **kwargs) -> None:
+        """Echo error message (shown even in quiet mode).
+
+        Args:
+            message: Error message to display
+            **kwargs: Additional arguments for click.echo
+        """
+        click.echo(message, err=True, **kwargs)
+
+    def verbose(self, message: str, **kwargs) -> None:
+        """Echo verbose message (only shown with --verbose).
+
+        Args:
+            message: Verbose message to display
+            **kwargs: Additional arguments for click.echo
+        """
+        self.echo(message, verbose_only=True, **kwargs)
