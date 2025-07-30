@@ -13,6 +13,20 @@ from nichiyou_daiku.dsl import (
 )
 
 
+def report_validation_error(
+    echo: CliEcho, error_type: str, exception: Exception
+) -> None:
+    """Report validation error with consistent formatting.
+
+    Args:
+        echo: CliEcho instance
+        error_type: Type of error (e.g., "Syntax error", "Semantic error")
+        exception: The exception to report
+    """
+    echo.error(click.style(f"✗ {error_type}", fg="red", bold=True))
+    echo.error(f"\n{exception}")
+
+
 @click.command()
 @click.argument("file", type=str)
 @click.pass_context
@@ -49,21 +63,17 @@ def validate(ctx: click.Context, file: str) -> None:
         sys.exit(0)
 
     except DSLSyntaxError as e:
-        echo.error(click.style("✗ Syntax error", fg="red", bold=True))
-        echo.error(f"\n{e}")
+        report_validation_error(echo, "Syntax error", e)
         sys.exit(1)
 
     except DSLSemanticError as e:
-        echo.error(click.style("✗ Semantic error", fg="red", bold=True))
-        echo.error(f"\n{e}")
+        report_validation_error(echo, "Semantic error", e)
         sys.exit(1)
 
     except DSLValidationError as e:
-        echo.error(click.style("✗ Validation error", fg="red", bold=True))
-        echo.error(f"\n{e}")
+        report_validation_error(echo, "Validation error", e)
         sys.exit(1)
 
     except Exception as e:
-        echo.error(click.style("✗ Unexpected error", fg="red", bold=True))
-        echo.error(f"\n{e}")
+        report_validation_error(echo, "Unexpected error", e)
         sys.exit(1)
