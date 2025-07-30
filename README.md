@@ -6,18 +6,184 @@
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 ![Built with vibe coding](https://img.shields.io/badge/built%20with-vibe%20coding-ff69b4)
 
-A Python library for designing DIY furniture using standard lumber sizes and simple joinery methods. Create 3D models of your woodworking projects with an intuitive API that represents real-world construction techniques.
+A domain-specific CAD system for DIY woodworking, built on the [MO-CAD (Manufacturing Oriented CAD)](https://caddi.tech/archives/4104) concept. Design furniture using a simple DSL that represents real-world construction techniques with standard lumber sizes.
+
+Following the "Worse Is Better" philosophy, nichiyou-daiku prioritizes practical usability over theoretical perfection, making it easy to design and build furniture that can actually be constructed with common tools and materials.
+
+## Quick Example
+
+Design a simple table using our DSL
+
+```dsl
+// Simple Table Design with Comments
+// Author: nichiyou-daiku team
+// Date: 2025-07-30
+
+// Define the four legs of the table
+// Each leg is 720mm tall
+(leg_1:2x4 =720)  // Front left leg
+(leg_2:2x4 =720)  // Front right leg
+(leg_3:2x4 =720)  // Back left leg
+(leg_4:2x4 =720)  // Back right leg
+
+// Define the aprons that connect the legs
+// These provide structural support
+(apron_front:2x4 =622)  // Front apron
+(apron_back:2x4 =622)   // Back apron
+(apron_left:2x4 =524)   // Left side apron
+(apron_right:2x4 =524)  // Right side apron
+
+// Define the table top
+(table_top_1:2x4 =600)
+(table_top_2:2x4 =600)
+(table_top_3:2x4 =600)
+(table_top_4:2x4 =600)
+(table_top_5:2x4 =600)
+(table_top_6:2x4 =600)
+(table_top_7:2x4 =600)
+(table_top_8:2x4 =600)
+
+// Front apron connections
+leg_1 -[LB>0 DB>0]- apron_front
+leg_2 -[RF>0 TF>0]- apron_front
+
+// Back apron connections
+leg_3 -[LB>0 DB>0]- apron_back
+leg_4 -[RF>0 TF>0]- apron_back
+
+// Side apron connections
+leg_1 -[BR<100 DB<0]- apron_left
+leg_3 -[FR<100 TB<0]- apron_left
+leg_2 -[BL<100 DF<0]- apron_right
+leg_4 -[FL<100 TF<0]- apron_right
+
+// Table top connections
+table_top_1 -[BD<0 TF<0]- leg_1
+apron_front -[RF<12.571 BT<0]- table_top_2
+apron_front -[RF<114.142 BT<0]- table_top_3
+apron_front -[RF<215.713 BT<0]- table_top_4
+apron_front -[RF<317.284 BT<0]- table_top_5
+apron_front -[RF<418.855 BT<0]- table_top_6
+apron_front -[RF<520.426 BT<0]- table_top_7
+table_top_8 -[BD<0 TF<0]- leg_2
+```
+
+View results with ocp-viewer
+
+```bash
+$ nichiyou-daiku view example/simple_table_compact.nd
+```
+
+![Simple Table 3D Model](docs/images/simple_table_3d.png)
+
+Generate a report with material list and cut optimization
+
+```bash
+$ nichiyou-daiku report example/simple_table_compact.nd -o table_report.md
+```
+
+The generated report is following.
+
+```markdown
+# Woodworking Project Report
+
+*Generated on 2025-07-30 05:24*
+
+## Project Overview
+
+- **Total Pieces**: 16
+- **Lumber Types**: 1 (2x4)
+- **Total Volume**: 33,725,304 mm³
+- **Estimated Weight**: ~16.9 kg (assuming pine density)
+
+
+## Bill of Materials
+
+| ID | Type | Length (mm) | Width (mm) | Height (mm) | Volume (mm³) |
+|----|------|------------|-----------|------------|-------------|
+| apron_left | 2x4 | 524 | 89 | 38 | 1,772,168 |
+| apron_right | 2x4 | 524 | 89 | 38 | 1,772,168 |
+| table_top_1 | 2x4 | 600 | 89 | 38 | 2,029,200 |
+| table_top_2 | 2x4 | 600 | 89 | 38 | 2,029,200 |
+| table_top_3 | 2x4 | 600 | 89 | 38 | 2,029,200 |
+| table_top_4 | 2x4 | 600 | 89 | 38 | 2,029,200 |
+| table_top_5 | 2x4 | 600 | 89 | 38 | 2,029,200 |
+| table_top_6 | 2x4 | 600 | 89 | 38 | 2,029,200 |
+| table_top_7 | 2x4 | 600 | 89 | 38 | 2,029,200 |
+| table_top_8 | 2x4 | 600 | 89 | 38 | 2,029,200 |
+| apron_front | 2x4 | 622 | 89 | 38 | 2,103,604 |
+| apron_back | 2x4 | 622 | 89 | 38 | 2,103,604 |
+| leg_1 | 2x4 | 720 | 89 | 38 | 2,435,040 |
+| leg_2 | 2x4 | 720 | 89 | 38 | 2,435,040 |
+| leg_3 | 2x4 | 720 | 89 | 38 | 2,435,040 |
+| leg_4 | 2x4 | 720 | 89 | 38 | 2,435,040 |
+
+
+## Shopping List
+
+### Lumber Required
+
+- **2x4**: 16 pieces, total 10.0 meters
+
+
+## Purchase Recommendations
+
+### 2x4 Lumber (Available: 2440mm, 3050mm, 3660mm)
+Optimal purchase
+- 3 × 2440mm boards
+- 1 × 3660mm boards
+Total waste: 1008mm (9.2%)
+
+## Optimized Cut List
+
+### 2x4 Boards
+
+**Board 1** (3660mm):
+- Cut 720mm → leg_1
+- Cut 720mm → leg_2
+- Cut 720mm → leg_3
+- Cut 720mm → leg_4
+- Cut 622mm → apron_front
+- Waste: 158mm
+
+**Board 2** (2440mm):
+- Cut 622mm → apron_back
+- Cut 600mm → table_top_1
+- Cut 600mm → table_top_2
+- Cut 600mm → table_top_3
+- Waste: 18mm
+
+**Board 3** (2440mm):
+- Cut 600mm → table_top_4
+- Cut 600mm → table_top_5
+- Cut 600mm → table_top_6
+- Cut 600mm → table_top_7
+- Waste: 40mm
+
+**Board 4** (2440mm):
+- Cut 600mm → table_top_8
+- Cut 524mm → apron_left
+- Cut 524mm → apron_right
+- Waste: 792mm
+```
 
 ## Features
 
-- 🪵 Support for standard lumber size (2x4 and 1x4)
+### DSL & CLI Tools
+- 📝 Simple, readable DSL for furniture design
+- 🛠️ Command-line tools for validation, reporting, and 3D export
+- 📊 Automatic bill of materials generation
+- 📐 Cut optimization to minimize waste
+- 📑 Markdown reports with shopping lists
+- 🎯 Export to STL/STEP for 3D printing or CNC
+
+### Core Library
+- 🪵 Support for standard lumber sizes (2x4 and 1x4)
 - 🔗 Flexible connection system with precise offset control
 - 📐 3D visualization with build123d (optional)
 - 🧩 Piece-oriented design matching real woodworking
 - 📊 Graph-based assembly representation
-- 🎯 Type-safe API with full type hints
-- 📋 Resource extraction for bill of materials
-- 📑 Markdown report generation with cut optimization
+- 🎯 Type-safe Python API with full type hints
 
 ## Installation
 
@@ -32,41 +198,7 @@ pip install "nichiyou-daiku[viz]"
 uv pip install -e ".[viz]"
 ```
 
-> **Note**: The visualization feature requires build123d, which currently has limited support for ARM64/aarch64 platforms. Core functionality works on all platforms.
-
-## Quick Start
-
-```python
-from nichiyou_daiku.core.piece import Piece, PieceType
-from nichiyou_daiku.core.model import Model, PiecePair
-from nichiyou_daiku.core.connection import Connection, BasePosition, Anchor
-from nichiyou_daiku.core.geometry import Face, Edge, EdgePoint, FromMin
-
-# Create lumber pieces
-horizontal_beam = Piece.of(PieceType.PT_2x4, 800.0, "beam")
-vertical_post = Piece.of(PieceType.PT_2x4, 400.0, "post")
-
-# Define how pieces connect
-connection = Connection.of(
-    base=BasePosition(
-        face="front",  # Connect to front face of beam
-        offset=FromMin(value=400.0)  # 400mm from edge
-    ),
-    target=Anchor(
-        face="down",  # Bottom of post connects to beam
-        edge_point=EdgePoint(
-            edge=Edge(lhs="down", rhs="front"),
-            offset=FromMin(value=44.5)  # Centered on post
-        )
-    )
-)
-
-# Create a model with connected pieces
-model = Model.of(
-    pieces=[horizontal_beam, vertical_post],
-    connections=[(PiecePair(base=horizontal_beam, target=vertical_post), connection)]
-)
-```
+> **Note** The visualization feature requires build123d, which currently has limited support for ARM64/aarch64 platforms. Core functionality works on all platforms.
 
 ## Development
 
@@ -117,7 +249,7 @@ make lint
 
 ### Quality Assurance
 
-This project uses Dagger for CI/CD pipelines. The Quality Assurance pipeline includes:
+This project uses Dagger for CI/CD pipelines. The Quality Assurance pipeline includes
 
 - ✅ **Testing**: pytest with 90% minimum coverage + docstring tests
 - 🎨 **Code Formatting**: black code formatter
@@ -133,7 +265,7 @@ make ci-local
 
 #### GitHub Actions
 
-The Quality Assurance pipeline automatically runs on:
+The Quality Assurance pipeline automatically runs on
 - Push to main branch
 - Pull requests
 - Manual workflow dispatch
@@ -142,7 +274,7 @@ See the [ci/](ci/) directory for pipeline implementation details.
 
 ## Examples
 
-Check out the `examples/` directory for complete working examples:
+Check out the `examples/` directory for complete working examples
 
 - **`simple_table.py`** - A basic four-legged table demonstrating fundamental connections
 - **`basic_joints.py`** - Different joint types (T-joint, butt joint, corner joint)
@@ -168,7 +300,7 @@ show(compound)
 
 ### Resource Extraction
 
-Extract bill of materials from your models to understand lumber requirements:
+Extract bill of materials from your models to understand lumber requirements
 
 ```python
 from nichiyou_daiku.core.resources import extract_resources
@@ -223,7 +355,7 @@ The report includes:
 
 ### DSL Support (Domain-Specific Language)
 
-nichiyou-daiku supports a Cypher-inspired DSL for more concise model definitions:
+nichiyou-daiku supports a Cypher-inspired DSL for more concise model definitions
 
 ```dsl
 // Simple shelf design with comments
@@ -261,6 +393,41 @@ nichiyou-daiku export furniture.nd -o model.step --fillet-radius 10
 ```
 
 See `examples/shelf_with_comments.nd` for a complete example.
+
+## Python API
+
+For programmatic access, you can use the Python API directly
+
+```python
+from nichiyou_daiku.core.piece import Piece, PieceType
+from nichiyou_daiku.core.model import Model, PiecePair
+from nichiyou_daiku.core.connection import Connection, Anchor
+from nichiyou_daiku.core.geometry import FromMin, FromMax
+
+# Create lumber pieces
+horizontal_beam = Piece.of(PieceType.PT_2x4, 800.0, "beam")
+vertical_post = Piece.of(PieceType.PT_2x4, 400.0, "post")
+
+# Define connection using the simplified API
+connection = Connection(
+    lhs=Anchor(
+        contact_face="top",
+        edge_shared_face="front",
+        offset=FromMin(value=100)
+    ),
+    rhs=Anchor(
+        contact_face="down",
+        edge_shared_face="front",
+        offset=FromMin(value=50)
+    )
+)
+
+# Create a model with connected pieces
+model = Model.of(
+    pieces=[horizontal_beam, vertical_post],
+    connections=[(PiecePair(base=horizontal_beam, target=vertical_post), connection)]
+)
+```
 
 ## Project Structure
 
@@ -310,10 +477,10 @@ nichiyou-daiku/
 
 ### Pull Request Guidelines
 
-To ensure your contributions are properly categorized in release notes, please follow these PR title conventions:
+To ensure your contributions are properly categorized in release notes, please follow these PR title conventions
 
 #### PR Title Format
-Your PR title should follow the pattern: `<type>: <description>`
+Your PR title should follow the pattern `<type>: <description>`
 
 - **feat:** New features or functionality
   - Example: `feat: Add support for 1x4 lumber sizes`
