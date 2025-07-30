@@ -34,16 +34,13 @@ class TestExportCommand:
             leg1 -[LB>0 DB>0]- apron
             leg2 -[RF>0 TF>0]- apron
             """)
-            
+
             output_file = Path(tmpdir) / "output.stl"
-            
-            result = runner.invoke(cli, [
-                "export",
-                str(dsl_file),
-                "-o", str(output_file),
-                "-f", "stl"
-            ])
-            
+
+            result = runner.invoke(
+                cli, ["export", str(dsl_file), "-o", str(output_file), "-f", "stl"]
+            )
+
             assert result.exit_code == 0
             assert output_file.exists()
             assert output_file.stat().st_size > 0
@@ -57,16 +54,13 @@ class TestExportCommand:
             dsl_file.write_text("""
             (beam:2x4 =1000)
             """)
-            
+
             output_file = Path(tmpdir) / "output.step"
-            
-            result = runner.invoke(cli, [
-                "export",
-                str(dsl_file),
-                "-o", str(output_file),
-                "-f", "step"
-            ])
-            
+
+            result = runner.invoke(
+                cli, ["export", str(dsl_file), "-o", str(output_file), "-f", "step"]
+            )
+
             assert result.exit_code == 0
             assert output_file.exists()
             assert output_file.stat().st_size > 0
@@ -80,24 +74,20 @@ class TestExportCommand:
             dsl_file.write_text("""
             (beam:2x4 =1000)
             """)
-            
+
             # Test STL auto-detection
             output_stl = Path(tmpdir) / "output.stl"
-            result = runner.invoke(cli, [
-                "export",
-                str(dsl_file),
-                "-o", str(output_stl)
-            ])
+            result = runner.invoke(
+                cli, ["export", str(dsl_file), "-o", str(output_stl)]
+            )
             assert result.exit_code == 0
             assert output_stl.exists()
-            
+
             # Test STEP auto-detection
             output_step = Path(tmpdir) / "output.step"
-            result = runner.invoke(cli, [
-                "export",
-                str(dsl_file),
-                "-o", str(output_step)
-            ])
+            result = runner.invoke(
+                cli, ["export", str(dsl_file), "-o", str(output_step)]
+            )
             assert result.exit_code == 0
             assert output_step.exists()
 
@@ -107,13 +97,9 @@ class TestExportCommand:
         with tempfile.TemporaryDirectory() as tmpdir:
             dsl_file = Path(tmpdir) / "test.nd"
             dsl_file.write_text("(beam:2x4 =1000)")
-            
-            result = runner.invoke(cli, [
-                "export",
-                str(dsl_file),
-                "-f", "invalid"
-            ])
-            
+
+            result = runner.invoke(cli, ["export", str(dsl_file), "-f", "invalid"])
+
             assert result.exit_code != 0
             assert "Invalid value" in result.output or "is not one of" in result.output
 
@@ -123,27 +109,24 @@ class TestExportCommand:
         with tempfile.TemporaryDirectory() as tmpdir:
             dsl_file = Path(tmpdir) / "invalid.nd"
             dsl_file.write_text("invalid dsl content")
-            
-            result = runner.invoke(cli, [
-                "export",
-                str(dsl_file),
-                "-f", "stl"
-            ])
-            
+
+            result = runner.invoke(cli, ["export", str(dsl_file), "-f", "stl"])
+
             assert result.exit_code != 0
-            assert "error" in result.output.lower() or "invalid" in result.output.lower()
+            assert (
+                "error" in result.output.lower() or "invalid" in result.output.lower()
+            )
 
     def test_export_nonexistent_file(self):
         """Test export with non-existent file."""
         runner = CliRunner()
-        result = runner.invoke(cli, [
-            "export",
-            "nonexistent.nd",
-            "-f", "stl"
-        ])
-        
+        result = runner.invoke(cli, ["export", "nonexistent.nd", "-f", "stl"])
+
         assert result.exit_code != 0
-        assert "not found" in result.output.lower() or "does not exist" in result.output.lower()
+        assert (
+            "not found" in result.output.lower()
+            or "does not exist" in result.output.lower()
+        )
 
     def test_export_fillet_radius_option(self):
         """Test export with custom fillet radius."""
@@ -151,31 +134,43 @@ class TestExportCommand:
         with tempfile.TemporaryDirectory() as tmpdir:
             dsl_file = Path(tmpdir) / "test.nd"
             dsl_file.write_text("(beam:2x4 =1000)")
-            
+
             output_file = Path(tmpdir) / "output.stl"
-            
+
             # Test with custom fillet radius
-            result = runner.invoke(cli, [
-                "export",
-                str(dsl_file),
-                "-o", str(output_file),
-                "-f", "stl",
-                "--fillet-radius", "10"
-            ])
-            
+            result = runner.invoke(
+                cli,
+                [
+                    "export",
+                    str(dsl_file),
+                    "-o",
+                    str(output_file),
+                    "-f",
+                    "stl",
+                    "--fillet-radius",
+                    "10",
+                ],
+            )
+
             assert result.exit_code == 0
             assert output_file.exists()
-            
+
             # Test with no fillet (radius=0)
             output_file2 = Path(tmpdir) / "output_no_fillet.stl"
-            result = runner.invoke(cli, [
-                "export",
-                str(dsl_file),
-                "-o", str(output_file2),
-                "-f", "stl",
-                "--fillet-radius", "0"
-            ])
-            
+            result = runner.invoke(
+                cli,
+                [
+                    "export",
+                    str(dsl_file),
+                    "-o",
+                    str(output_file2),
+                    "-f",
+                    "stl",
+                    "--fillet-radius",
+                    "0",
+                ],
+            )
+
             assert result.exit_code == 0
             assert output_file2.exists()
 
@@ -185,20 +180,17 @@ class TestExportCommand:
         with tempfile.TemporaryDirectory() as tmpdir:
             dsl_file = Path(tmpdir) / "test.nd"
             dsl_file.write_text("(beam:2x4 =1000)")
-            
+
             # Monkey patch to simulate missing build123d
             import nichiyou_daiku.shell.build123d_export as export_module
+
             original_has_build123d = export_module.HAS_BUILD123D
-            
+
             try:
                 export_module.HAS_BUILD123D = False
-                
-                result = runner.invoke(cli, [
-                    "export",
-                    str(dsl_file),
-                    "-f", "stl"
-                ])
-                
+
+                result = runner.invoke(cli, ["export", str(dsl_file), "-f", "stl"])
+
                 assert result.exit_code != 0
                 assert "build123d" in result.output.lower()
                 assert "install" in result.output.lower()
@@ -212,39 +204,35 @@ class TestExportCommand:
             # Create test file in current directory
             dsl_file = Path("furniture.nd")
             dsl_file.write_text("(beam:2x4 =1000)")
-            
-            result = runner.invoke(cli, [
-                "export",
-                "furniture.nd",
-                "-f", "stl"
-            ])
-            
+
+            result = runner.invoke(cli, ["export", "furniture.nd", "-f", "stl"])
+
             assert result.exit_code == 0
             # Should create furniture.stl in same directory
             expected_output = Path("furniture.stl")
             assert expected_output.exists()
 
-    @pytest.mark.parametrize("format,extension", [
-        ("stl", ".stl"),
-        ("step", ".step"),
-        ("stp", ".stp"),
-    ])
+    @pytest.mark.parametrize(
+        "format,extension",
+        [
+            ("stl", ".stl"),
+            ("step", ".step"),
+            ("stp", ".stp"),
+        ],
+    )
     def test_export_format_aliases(self, format, extension):
         """Test export with various format aliases."""
         runner = CliRunner()
         with tempfile.TemporaryDirectory() as tmpdir:
             dsl_file = Path(tmpdir) / "test.nd"
             dsl_file.write_text("(beam:2x4 =1000)")
-            
+
             output_file = Path(tmpdir) / f"output{extension}"
-            
-            result = runner.invoke(cli, [
-                "export",
-                str(dsl_file),
-                "-o", str(output_file),
-                "-f", format
-            ])
-            
+
+            result = runner.invoke(
+                cli, ["export", str(dsl_file), "-o", str(output_file), "-f", format]
+            )
+
             # step/stp should be treated as same format
             if format in ["step", "stp"]:
                 assert result.exit_code == 0
