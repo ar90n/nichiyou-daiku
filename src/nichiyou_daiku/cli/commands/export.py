@@ -6,7 +6,7 @@ from typing import Optional
 
 import click
 
-from nichiyou_daiku.cli.utils import read_dsl_file
+from nichiyou_daiku.cli.utils import read_dsl_file, CliEcho
 from nichiyou_daiku.core.assembly import Assembly
 from nichiyou_daiku.dsl import parse_dsl
 from nichiyou_daiku.shell.build123d_export import assembly_to_build123d, HAS_BUILD123D
@@ -48,12 +48,13 @@ def export(
         nichiyou-daiku export table.nd -o table.step
         nichiyou-daiku export chair.nd --fillet-radius 10
     """
+    echo = CliEcho(ctx)
+
     # Check if build123d is available
     if not HAS_BUILD123D:
-        click.echo(
+        echo.error(
             "Error: build123d is required for 3D export.\n"
-            "Please install it with: uv add nichiyou-daiku[viz]",
-            err=True,
+            "Please install it with: uv add nichiyou-daiku[viz]"
         )
         sys.exit(1)
 
@@ -71,10 +72,9 @@ def export(
         elif suffix in [".step", ".stp"]:
             export_format = "step"
         else:
-            click.echo(
+            echo.error(
                 f"Error: Cannot detect format from extension '{suffix}'. "
-                "Please specify format with -f option.",
-                err=True,
+                "Please specify format with -f option."
             )
             sys.exit(1)
     elif format and not output:
@@ -88,10 +88,7 @@ def export(
         output_path = input_file.with_suffix(ext)
     else:
         # Neither specified
-        click.echo(
-            "Error: Either output file (-o) or format (-f) must be specified.",
-            err=True,
-        )
+        echo.error("Error: Either output file (-o) or format (-f) must be specified.")
         sys.exit(1)
 
     # Normalize format
@@ -103,21 +100,21 @@ def export(
         dsl_content = read_dsl_file(str(input_file))
         model = parse_dsl(dsl_content)
     except Exception as e:
-        click.echo(f"Error parsing DSL file: {e}", err=True)
+        echo.error(f"Error parsing DSL file: {e}")
         sys.exit(1)
 
     # Create assembly
     try:
         assembly = Assembly.of(model)
     except Exception as e:
-        click.echo(f"Error creating assembly: {e}", err=True)
+        echo.error(f"Error creating assembly: {e}")
         sys.exit(1)
 
     # Convert to build123d
     try:
         compound = assembly_to_build123d(assembly, fillet_radius=fillet_radius)
     except Exception as e:
-        click.echo(f"Error converting to 3D model: {e}", err=True)
+        echo.error(f"Error converting to 3D model: {e}")
         sys.exit(1)
 
     # Export to file
@@ -130,10 +127,10 @@ def export(
         elif export_format == "step":
             export_step(compound, str(output_path))
         else:
-            click.echo(f"Error: Unsupported format '{export_format}'", err=True)
+            echo.error(f"Error: Unsupported format '{export_format}'")
             sys.exit(1)
 
-        click.echo(f"Successfully exported to: {output_path}")
+        echo.echo(f"Successfully exported to: {output_path}")
     except Exception as e:
-        click.echo(f"Error exporting file: {e}", err=True)
+        echo.error(f"Error exporting file: {e}")
         sys.exit(1)
