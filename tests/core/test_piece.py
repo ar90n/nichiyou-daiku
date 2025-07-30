@@ -52,7 +52,7 @@ class TestFace:
     def test_should_have_all_six_faces(self):
         """Should support all six faces of a rectangular piece."""
         # Test Face literal values
-        faces: list[Face] = ["top", "bottom", "left", "right", "front", "back"]
+        faces: list[Face] = ["top", "down", "left", "right", "front", "back"]
         assert len(faces) == 6
 
         # Test that each is a valid Face string
@@ -60,7 +60,7 @@ class TestFace:
             # This will pass type checking
             f: Face = face
             assert isinstance(f, str)
-            assert f in ["top", "bottom", "left", "right", "front", "back"]
+            assert f in ["top", "down", "left", "right", "front", "back"]
 
 
 class TestGetShape:

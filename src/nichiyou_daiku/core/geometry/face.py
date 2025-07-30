@@ -7,13 +7,13 @@ the six faces of a rectangular piece of lumber.
 from typing import Literal
 
 # Define Face as a Literal type
-Face = Literal["top", "bottom", "left", "right", "front", "back"]
+Face = Literal["top", "down", "left", "right", "front", "back"]
 """The six faces of a rectangular piece of lumber.
 
 Represents the six faces of a rectangular piece of lumber, used for
 specifying connections and orientations.
 
-- top/bottom: faces perpendicular to X axis
+- top/down: faces perpendicular to X axis
 - left/right: faces perpendicular to Y axis  
 - front/back: faces perpendicular to Z axis
 
@@ -21,7 +21,7 @@ Examples:
     >>> face: Face = "top"
     >>> face
     'top'
-    >>> faces: list[Face] = ["top", "bottom", "left", "right", "front", "back"]
+    >>> faces: list[Face] = ["top", "down", "left", "right", "front", "back"]
     >>> "top" in faces
     True
 """
@@ -40,7 +40,7 @@ def opposite(face: Face) -> Face:
 
     Examples:
         >>> opposite("top")
-        'bottom'
+        'down'
         >>> opposite("left")
         'right'
         >>> opposite("front")
@@ -48,8 +48,8 @@ def opposite(face: Face) -> Face:
     """
     match face:
         case "top":
-            return "bottom"
-        case "bottom":
+            return "down"
+        case "down":
             return "top"
         case "left":
             return "right"
@@ -77,15 +77,15 @@ def cross(lhs: Face, rhs: Face) -> Face:
     Examples:
         >>> cross("top", "front")
         'left'
-        >>> cross("left", "bottom")
+        >>> cross("left", "down")
         'back'
     """
     # Normalize the faces to canonical orientation
-    if lhs in ("bottom", "left", "back"):
+    if lhs in ("down", "left", "back"):
         lhs, rhs = rhs, opposite(lhs)
-    if lhs in ("bottom", "left", "back"):
+    if lhs in ("down", "left", "back"):
         lhs, rhs = rhs, opposite(lhs)
-    if rhs in ("bottom", "left", "back"):
+    if rhs in ("down", "left", "back"):
         lhs, rhs = opposite(rhs), lhs
 
     match (lhs, rhs):
@@ -98,33 +98,33 @@ def cross(lhs: Face, rhs: Face) -> Face:
         case ("top", "right"):
             return "front"
         case ("front", "right"):
-            return "bottom"
+            return "down"
         case ("right", "front"):
             return "top"
         case _:
             raise ValueError(f"Invalid face combination: {lhs}, {rhs}")
 
 
-def is_bottom_to_top_axis(face: Face) -> bool:
-    """Check if a face is on the top-to-bottom axis.
+def is_vertical_axis(face: Face) -> bool:
+    """Check if a face is on the vertical axis.
 
-    Determines if the given face is either "top" or "bottom".
+    Determines if the given face is either "top" or "down".
 
     Args:
         face: The face to check
 
     Returns:
-        True if the face is on the top-to-bottom axis, False otherwise
+        True if the face is on the vertical axis, False otherwise
 
     Examples:
-        >>> is_bottom_to_top_axis("top")
+        >>> is_vertical_axis("top")
         True
-        >>> is_bottom_to_top_axis("bottom")
+        >>> is_vertical_axis("down")
         True
-        >>> is_bottom_to_top_axis("left")
+        >>> is_vertical_axis("left")
         False
     """
-    return face in ("top", "bottom")
+    return face in ("top", "down")
 
 
 def is_left_to_right_axis(face: Face) -> bool:
@@ -184,7 +184,7 @@ def is_same_axis(lhs: Face, rhs: Face) -> bool:
         True if the faces are on the same axis, False otherwise
 
     Examples:
-        >>> is_same_axis("top", "bottom")
+        >>> is_same_axis("top", "down")
         True
         >>> is_same_axis("left", "right")
         True
@@ -194,7 +194,7 @@ def is_same_axis(lhs: Face, rhs: Face) -> bool:
         False
     """
     return (
-        (is_bottom_to_top_axis(lhs) and is_bottom_to_top_axis(rhs))
+        (is_vertical_axis(lhs) and is_vertical_axis(rhs))
         or (is_left_to_right_axis(lhs) and is_left_to_right_axis(rhs))
         or (is_back_to_front_axis(lhs) and is_back_to_front_axis(rhs))
     )
@@ -217,7 +217,7 @@ def is_adjacent(lhs: Face, rhs: Face) -> bool:
         True
         >>> is_adjacent("left", "back")
         True
-        >>> is_adjacent("top", "bottom")
+        >>> is_adjacent("top", "down")
         False
     """
     return lhs != rhs and not is_same_axis(lhs, rhs)

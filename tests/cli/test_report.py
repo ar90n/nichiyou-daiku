@@ -21,7 +21,7 @@ def simple_dsl():
 (apron:1x4 {"length": 600})
 
 leg1 -[{"contact_face": "front", "edge_shared_face": "right", "offset": FromMax(100)}
-       {"contact_face": "left", "edge_shared_face": "bottom", "offset": FromMin(0)}]- apron
+       {"contact_face": "left", "edge_shared_face": "down", "offset": FromMin(0)}]- apron
 """
 
 

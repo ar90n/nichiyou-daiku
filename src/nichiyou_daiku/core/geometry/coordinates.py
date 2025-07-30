@@ -15,7 +15,7 @@ from .face import (
     cross as cross_face,
     Face,
     is_back_to_front_axis,
-    is_bottom_to_top_axis,
+    is_vertical_axis,
     is_left_to_right_axis,
 )
 from .offset import evaluate as eval_offset
@@ -24,7 +24,7 @@ from .dimensions import Millimeters
 
 def _edge_legnth_of(box: Box, edge: Edge) -> Millimeters:
     third_face = cross_face(edge.lhs, edge.rhs)
-    if is_bottom_to_top_axis(third_face):
+    if is_vertical_axis(third_face):
         return box.shape.length
     if is_left_to_right_axis(third_face):
         return box.shape.width
@@ -94,8 +94,8 @@ class Point3D(BaseModel, frozen=True):
         Returns:
             Point3D at the specified corner
         """
-        # X-axis is length (top/bottom faces)
-        x = 0.0 if corner.face_top_bottom == "bottom" else box.shape.length
+        # X-axis is length (top/down faces)
+        x = 0.0 if corner.face_top_down == "down" else box.shape.length
         # Y-axis is width (left/right faces)
         y = 0.0 if corner.face_right_left == "left" else box.shape.width
         # Z-axis is height (front/back faces)
@@ -189,7 +189,7 @@ class Vector3D(BaseModel, frozen=True):
         Returns a unit vector pointing outward from the specified face.
 
         Args:
-            face: The face to get the normal for (e.g., "top", "bottom", "left", "right", "front", "back")
+            face: The face to get the normal for (e.g., "top", "down", "left", "right", "front", "back")
 
         Returns:
             Vector3D representing the normal direction
@@ -202,7 +202,7 @@ class Vector3D(BaseModel, frozen=True):
         match face:
             case "top":
                 return cls(x=1.0, y=0.0, z=0.0)
-            case "bottom":
+            case "down":
                 return cls(x=-1.0, y=0.0, z=0.0)
             case "left":
                 return cls(x=0.0, y=-1.0, z=0.0)

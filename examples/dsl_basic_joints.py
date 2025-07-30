@@ -23,7 +23,7 @@ t_joint_dsl = """
 (t_upright:PT_2x4 {"length": 400})
 
 t_base -[{"contact_face": "front", "edge_shared_face": "right", "offset": FromMin(400)}
-         {"contact_face": "bottom", "edge_shared_face": "front", "offset": FromMin(44.5)}]- t_upright
+         {"contact_face": "down", "edge_shared_face": "front", "offset": FromMin(44.5)}]- t_upright
 """
 
 t_joint_model = parse_dsl(t_joint_dsl)
@@ -39,7 +39,7 @@ butt_joint_dsl = """
 (butt_second:PT_2x4 {"length": 300})
 
 butt_first -[{"contact_face": "top", "edge_shared_face": "left", "offset": FromMin(0)}
-             {"contact_face": "bottom", "edge_shared_face": "left", "offset": FromMin(0)}]- butt_second
+             {"contact_face": "down", "edge_shared_face": "left", "offset": FromMin(0)}]- butt_second
 """
 
 butt_joint_model = parse_dsl(butt_joint_dsl)

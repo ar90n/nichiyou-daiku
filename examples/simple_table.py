@@ -74,7 +74,7 @@ connections.append(
                 contact_face="left", edge_shared_face="back", offset=FromMax(value=0)
             ),
             rhs=Anchor(
-                contact_face="bottom", edge_shared_face="back", offset=FromMax(value=0)
+                contact_face="down", edge_shared_face="back", offset=FromMax(value=0)
             ),
         ),
     )
@@ -105,7 +105,7 @@ connections.append(
                 contact_face="left", edge_shared_face="back", offset=FromMax(value=0)
             ),
             rhs=Anchor(
-                contact_face="bottom", edge_shared_face="back", offset=FromMax(value=0)
+                contact_face="down", edge_shared_face="back", offset=FromMax(value=0)
             ),
         ),
     )
@@ -138,7 +138,7 @@ connections.append(
                 offset=FromMin(value=APRON_HEIGHT),
             ),
             rhs=Anchor(
-                contact_face="bottom", edge_shared_face="back", offset=FromMin(value=0)
+                contact_face="down", edge_shared_face="back", offset=FromMin(value=0)
             ),
         ),
     )
@@ -173,7 +173,7 @@ connections.append(
                 offset=FromMin(value=APRON_HEIGHT),
             ),
             rhs=Anchor(
-                contact_face="bottom", edge_shared_face="front", offset=FromMin(value=0)
+                contact_face="down", edge_shared_face="front", offset=FromMin(value=0)
             ),
         ),
     )
@@ -205,7 +205,7 @@ connections.append(
         PiecePair(base=table_top_pieces[0], target=leg_1),
         Connection(
             lhs=Anchor(
-                contact_face="back", edge_shared_face="bottom", offset=FromMin(value=0)
+                contact_face="back", edge_shared_face="down", offset=FromMin(value=0)
             ),
             rhs=Anchor(
                 contact_face="top", edge_shared_face="front", offset=FromMin(value=0)
@@ -219,7 +219,7 @@ connections.append(
         PiecePair(base=table_top_pieces[-1], target=leg_2),
         Connection(
             lhs=Anchor(
-                contact_face="back", edge_shared_face="bottom", offset=FromMin(value=0)
+                contact_face="back", edge_shared_face="down", offset=FromMin(value=0)
             ),
             rhs=Anchor(
                 contact_face="top", edge_shared_face="front", offset=FromMin(value=0)

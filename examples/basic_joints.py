@@ -32,7 +32,7 @@ t_joint_connection = Connection(
         offset=FromMin(value=400.0),  # 400mm from the edge (centered on 800mm beam)
     ),
     rhs=Anchor(
-        contact_face="bottom",
+        contact_face="down",
         edge_shared_face="front",
         offset=FromMin(value=44.5),  # Centered on the 89mm width of 2x4
     ),
@@ -56,7 +56,7 @@ second_piece = Piece.of(PieceType.PT_2x4, 300.0, "butt_second")
 # Butt Joint: Connect end-to-end
 butt_joint_connection = Connection(
     lhs=Anchor(contact_face="top", edge_shared_face="left", offset=FromMin(value=0)),
-    rhs=Anchor(contact_face="bottom", edge_shared_face="left", offset=FromMin(value=0)),
+    rhs=Anchor(contact_face="down", edge_shared_face="left", offset=FromMin(value=0)),
 )
 
 butt_joint_model = Model.of(

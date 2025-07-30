@@ -62,33 +62,33 @@ table_dsl = f"""
 (table_top_8:PT_2x4 {{"length": {TABLE_DEPTH}}})
 
 leg_1 -[{{"contact_face": "left", "edge_shared_face": "back", "offset": FromMax(0)}}
-        {{"contact_face": "bottom", "edge_shared_face": "back", "offset": FromMax(0)}}]- apron_front
+        {{"contact_face": "down", "edge_shared_face": "back", "offset": FromMax(0)}}]- apron_front
 
 leg_2 -[{{"contact_face": "right", "edge_shared_face": "front", "offset": FromMax(0)}}
         {{"contact_face": "top", "edge_shared_face": "front", "offset": FromMax(0)}}]- apron_front
 
 leg_3 -[{{"contact_face": "left", "edge_shared_face": "back", "offset": FromMax(0)}}
-        {{"contact_face": "bottom", "edge_shared_face": "back", "offset": FromMax(0)}}]- apron_back
+        {{"contact_face": "down", "edge_shared_face": "back", "offset": FromMax(0)}}]- apron_back
 
 leg_4 -[{{"contact_face": "right", "edge_shared_face": "front", "offset": FromMax(0)}}
         {{"contact_face": "top", "edge_shared_face": "front", "offset": FromMax(0)}}]- apron_back
 
 leg_1 -[{{"contact_face": "back", "edge_shared_face": "right", "offset": FromMin({APRON_HEIGHT})}}
-        {{"contact_face": "bottom", "edge_shared_face": "back", "offset": FromMin(0)}}]- apron_left
+        {{"contact_face": "down", "edge_shared_face": "back", "offset": FromMin(0)}}]- apron_left
 
 leg_3 -[{{"contact_face": "front", "edge_shared_face": "right", "offset": FromMin({APRON_HEIGHT})}}
         {{"contact_face": "top", "edge_shared_face": "back", "offset": FromMin(0)}}]- apron_left
 
 leg_2 -[{{"contact_face": "back", "edge_shared_face": "left", "offset": FromMin({APRON_HEIGHT})}}
-        {{"contact_face": "bottom", "edge_shared_face": "front", "offset": FromMin(0)}}]- apron_right
+        {{"contact_face": "down", "edge_shared_face": "front", "offset": FromMin(0)}}]- apron_right
 
 leg_4 -[{{"contact_face": "front", "edge_shared_face": "left", "offset": FromMin({APRON_HEIGHT})}}
         {{"contact_face": "top", "edge_shared_face": "front", "offset": FromMin(0)}}]- apron_right
 
-table_top_1 -[{{"contact_face": "back", "edge_shared_face": "bottom", "offset": FromMin(0)}}
+table_top_1 -[{{"contact_face": "back", "edge_shared_face": "down", "offset": FromMin(0)}}
               {{"contact_face": "top", "edge_shared_face": "front", "offset": FromMin(0)}}]- leg_1
 
-table_top_8 -[{{"contact_face": "back", "edge_shared_face": "bottom", "offset": FromMin(0)}}
+table_top_8 -[{{"contact_face": "back", "edge_shared_face": "down", "offset": FromMin(0)}}
               {{"contact_face": "top", "edge_shared_face": "front", "offset": FromMin(0)}}]- leg_2
 """
 

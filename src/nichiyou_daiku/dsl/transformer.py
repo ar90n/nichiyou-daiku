@@ -18,7 +18,7 @@ class DSLTransformer(Transformer):
     # Face mapping for compact notation
     FACE_MAPPING = {
         "T": "top",
-        "D": "bottom",
+        "D": "down",
         "L": "left",
         "R": "right",
         "F": "front",

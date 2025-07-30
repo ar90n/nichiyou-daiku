@@ -153,7 +153,7 @@ class TestExtractResources:
                 contact_face="front", edge_shared_face="top", offset=FromMax(value=100)
             ),
             rhs=Anchor(
-                contact_face="bottom",
+                contact_face="down",
                 edge_shared_face="front",
                 offset=FromMin(value=50),
             ),

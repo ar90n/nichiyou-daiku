@@ -22,7 +22,7 @@ corner_dsl = """
 (corner_piece_b:PT_2x4 {"length": 400})
 
 corner_piece_a -[{"contact_face": "top", "edge_shared_face": "front", "offset": FromMin(0)}
-                 {"contact_face": "back", "edge_shared_face": "bottom", "offset": FromMin(0)}]- corner_piece_b
+                 {"contact_face": "back", "edge_shared_face": "down", "offset": FromMin(0)}]- corner_piece_b
 """
 
 # Parse the DSL to create a model

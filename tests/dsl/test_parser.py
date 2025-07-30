@@ -59,7 +59,7 @@ class TestBasicParsing:
         (beam1:2x4 {"length": 1000})
         (beam2:2x4 {"length": 1000})
         beam1 -[{"contact_face": "front", "edge_shared_face": "top", "offset": FromMax(100)}
-              {"contact_face": "bottom", "edge_shared_face": "front", "offset": FromMin(50)}]- beam2
+              {"contact_face": "down", "edge_shared_face": "front", "offset": FromMin(50)}]- beam2
         """
         model = parse_dsl(dsl)
 
@@ -76,7 +76,7 @@ class TestBasicParsing:
         assert connection.lhs.edge_shared_face == "top"
         assert connection.lhs.offset.value == 100.0
 
-        assert connection.rhs.contact_face == "bottom"
+        assert connection.rhs.contact_face == "down"
         assert connection.rhs.edge_shared_face == "front"
         assert connection.rhs.offset.value == 50.0
 
@@ -123,7 +123,7 @@ class TestSyntaxErrors:
         dsl = """
         (beam1:2x4 {"length": 1000})
         beam1 -[{"contact_face": "front", "edge_shared_face": "top", "offset": FromMax(100)}
-              {"contact_face": "bottom", "edge_shared_face": "front", "offset": FromMin(50)}]- beam2
+              {"contact_face": "down", "edge_shared_face": "front", "offset": FromMin(50)}]- beam2
         """
         with pytest.raises(Exception) as exc_info:
             parse_dsl(dsl)
@@ -156,7 +156,7 @@ class TestCompactNotation:
         assert connection.lhs.offset.value == 0.0
 
         assert connection.rhs.contact_face == "back"
-        assert connection.rhs.edge_shared_face == "bottom"
+        assert connection.rhs.edge_shared_face == "down"
         assert connection.rhs.offset.value == 0.0
 
     def test_parse_compact_with_various_faces(self):
@@ -183,7 +183,7 @@ class TestCompactNotation:
         assert conn1.lhs.contact_face == "top"
         assert conn1.lhs.edge_shared_face == "left"
         assert conn1.lhs.offset.value == 10.0
-        assert conn1.rhs.contact_face == "bottom"
+        assert conn1.rhs.contact_face == "down"
         assert conn1.rhs.edge_shared_face == "right"
         assert conn1.rhs.offset.value == 20.0
 
@@ -201,7 +201,7 @@ class TestCompactNotation:
         dsl = """
         (beam1:2x4 {"length": 1000})
         (beam2:2x4 {"length": 800})
-        beam1 -[TF<0 {"contact_face": "back", "edge_shared_face": "bottom", "offset": FromMin(0)}]- beam2
+        beam1 -[TF<0 {"contact_face": "back", "edge_shared_face": "down", "offset": FromMin(0)}]- beam2
         """
         with pytest.raises(DSLSyntaxError):
             parse_dsl(dsl)

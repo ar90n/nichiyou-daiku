@@ -53,9 +53,9 @@ connection = Connection.of(
         offset=FromMin(value=400.0)  # 400mm from edge
     ),
     target=Anchor(
-        face="bottom",  # Bottom of post connects to beam
+        face="down",  # Bottom of post connects to beam
         edge_point=EdgePoint(
-            edge=Edge(lhs="bottom", rhs="front"),
+            edge=Edge(lhs="down", rhs="front"),
             offset=FromMin(value=44.5)  # Centered on post
         )
     )

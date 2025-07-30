@@ -12,7 +12,7 @@ from .face import (
     cross,
     is_back_to_front_axis,
     is_left_to_right_axis,
-    is_bottom_to_top_axis,
+    is_vertical_axis,
 )
 from .edge import Edge
 
@@ -23,13 +23,13 @@ class Corner(BaseModel, frozen=True):
     Represents a corner formed by the intersection of three faces.
 
     Attributes:
-        face_x: Face in the X direction (must be top or bottom)
+        face_x: Face in the X direction (must be top or down)
         face_y: Face in the Y direction (must be left or right)
         face_z: Face in the Z direction (must be front or back)
 
     Examples:
-        >>> corner = Corner(face_top_bottom="top", face_right_left="left", face_front_back="front")
-        >>> corner.face_top_bottom
+        >>> corner = Corner(face_top_down="top", face_right_left="left", face_front_back="front")
+        >>> corner.face_top_down
         'top'
         >>> corner.face_right_left
         'left'
@@ -37,7 +37,7 @@ class Corner(BaseModel, frozen=True):
         'front'
     """
 
-    face_top_bottom: Literal["top", "bottom"]
+    face_top_down: Literal["top", "down"]
     face_right_left: Literal["left", "right"]
     face_front_back: Literal["front", "back"]
 
@@ -58,7 +58,7 @@ class Corner(BaseModel, frozen=True):
         Examples:
             >>> edge = Edge(lhs="top", rhs="front")
             >>> corner = Corner.of("left", edge)
-            >>> corner.face_top_bottom
+            >>> corner.face_top_down
             'top'
             >>> corner.face_right_left
             'left'
@@ -68,12 +68,12 @@ class Corner(BaseModel, frozen=True):
         # Determine which face goes in which position
         faces = {edge.lhs, edge.rhs, face}
 
-        # Find face_x (top or bottom)
-        face_top_bottom = next(
-            (f for f in faces if is_bottom_to_top_axis(cast(Face, f))), None
+        # Find face_x (top or down)
+        face_top_down = next(
+            (f for f in faces if is_vertical_axis(cast(Face, f))), None
         )
-        if not face_top_bottom:
-            raise ValueError("Corner must include either top or bottom face")
+        if not face_top_down:
+            raise ValueError("Corner must include either top or down face")
 
         # Find face_y (left or right)
         face_right_left = next(
@@ -90,7 +90,7 @@ class Corner(BaseModel, frozen=True):
             raise ValueError("Corner must include either front or back face")
 
         return cls(
-            face_top_bottom=cast(Literal["top", "bottom"], face_top_bottom),
+            face_top_down=cast(Literal["top", "down"], face_top_down),
             face_right_left=cast(Literal["left", "right"], face_right_left),
             face_front_back=cast(Literal["front", "back"], face_front_back),
         )
@@ -111,7 +111,7 @@ class Corner(BaseModel, frozen=True):
         Examples:
             >>> edge = Edge(lhs="top", rhs="front")
             >>> corner = Corner.origin_of(edge)
-            >>> corner.face_top_bottom
+            >>> corner.face_top_down
             'top'
             >>> corner.face_right_left
             'right'

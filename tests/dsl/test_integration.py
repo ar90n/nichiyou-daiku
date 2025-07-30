@@ -62,7 +62,7 @@ class TestCompactNotationIntegration:
 
         # All legs should connect to the bottom of the top
         for (base_id, target_id), conn in model.connections.items():
-            assert conn.lhs.contact_face == "bottom"
+            assert conn.lhs.contact_face == "down"
             assert conn.rhs.contact_face == "top"
 
     def test_mixed_notation_in_same_dsl(self):
@@ -74,7 +74,7 @@ class TestCompactNotationIntegration:
         
         p1 -[TF<0 BD<0]- p2
         p2 -[{"contact_face": "right", "edge_shared_face": "top", "offset": FromMax(100)}
-              {"contact_face": "left", "edge_shared_face": "bottom", "offset": FromMin(50)}]- p3
+              {"contact_face": "left", "edge_shared_face": "down", "offset": FromMin(50)}]- p3
         """
 
         model = parse_dsl(dsl)
@@ -136,7 +136,7 @@ class TestCompactPieceIntegration:
         
         p1 -[TF<0 BD<0]- p2
         p3 -[{"contact_face": "right", "edge_shared_face": "top", "offset": FromMax(100)}
-              {"contact_face": "left", "edge_shared_face": "bottom", "offset": FromMin(50)}]- p4
+              {"contact_face": "left", "edge_shared_face": "down", "offset": FromMin(50)}]- p4
         """
 
         model = parse_dsl(dsl)
@@ -189,16 +189,16 @@ class TestDSLIntegration:
         (leg3:2x4 {"length": 700})
         (leg4:2x4 {"length": 700})
         
-        top -[{"contact_face": "bottom", "edge_shared_face": "left", "offset": FromMin(50)}
+        top -[{"contact_face": "down", "edge_shared_face": "left", "offset": FromMin(50)}
               {"contact_face": "top", "edge_shared_face": "front", "offset": FromMin(0)}]- leg1
               
-        top -[{"contact_face": "bottom", "edge_shared_face": "right", "offset": FromMax(50)}
+        top -[{"contact_face": "down", "edge_shared_face": "right", "offset": FromMax(50)}
               {"contact_face": "top", "edge_shared_face": "front", "offset": FromMin(0)}]- leg2
               
-        top -[{"contact_face": "bottom", "edge_shared_face": "left", "offset": FromMin(50)}
+        top -[{"contact_face": "down", "edge_shared_face": "left", "offset": FromMin(50)}
               {"contact_face": "top", "edge_shared_face": "back", "offset": FromMax(0)}]- leg3
               
-        top -[{"contact_face": "bottom", "edge_shared_face": "right", "offset": FromMax(50)}
+        top -[{"contact_face": "down", "edge_shared_face": "right", "offset": FromMax(50)}
               {"contact_face": "top", "edge_shared_face": "back", "offset": FromMax(0)}]- leg4
         """
 
@@ -230,7 +230,7 @@ class TestDSLIntegration:
         frame1 -[{"contact_face": "right", "edge_shared_face": "top", "offset": FromMin(100)}
                 {"contact_face": "left", "edge_shared_face": "top", "offset": FromMin(100)}]- frame2
                 
-        frame1 -[{"contact_face": "front", "edge_shared_face": "bottom", "offset": FromMin(50)}
+        frame1 -[{"contact_face": "front", "edge_shared_face": "down", "offset": FromMin(50)}
                 {"contact_face": "back", "edge_shared_face": "left", "offset": FromMin(0)}]- panel1
         """
 
@@ -255,7 +255,7 @@ class TestDSLIntegration:
         (beam3:2x4 {"length": 1000})
         
         beam1 -[{"contact_face": "front", "edge_shared_face": "top", "offset": FromMin(0)}
-                {"contact_face": "back", "edge_shared_face": "bottom", "offset": FromMax(0)}]- beam2
+                {"contact_face": "back", "edge_shared_face": "down", "offset": FromMax(0)}]- beam2
                 
         beam2 -[{"contact_face": "right", "edge_shared_face": "front", "offset": FromMin(100)}
                 {"contact_face": "left", "edge_shared_face": "back", "offset": FromMax(100)}]- beam3
@@ -279,7 +279,7 @@ class TestDSLIntegration:
         (beam1:2x4 {"length": 1000})
         (beam2:2x4 {"length": 2000})
         beam1 -[{"contact_face": "front", "edge_shared_face": "top", "offset": FromMax(100)}
-                {"contact_face": "bottom", "edge_shared_face": "front", "offset": FromMin(50)}]- beam2
+                {"contact_face": "down", "edge_shared_face": "front", "offset": FromMin(50)}]- beam2
         """
 
         # Parse DSL
@@ -299,7 +299,7 @@ class TestDSLIntegration:
                 contact_face="front", edge_shared_face="top", offset=FromMax(value=100)
             ),
             rhs=Anchor(
-                contact_face="bottom",
+                contact_face="down",
                 edge_shared_face="front",
                 offset=FromMin(value=50),
             ),
@@ -325,14 +325,14 @@ class TestDSLIntegration:
     def test_whitespace_flexibility(self):
         """Test that DSL is flexible with whitespace."""
         # Compact version
-        dsl_compact = '(a:2x4{"length":1000})(b:2x4{"length":1000})a-[{"contact_face":"front","edge_shared_face":"top","offset":FromMax(100)}{"contact_face":"bottom","edge_shared_face":"front","offset":FromMin(50)}]-b'
+        dsl_compact = '(a:2x4{"length":1000})(b:2x4{"length":1000})a-[{"contact_face":"front","edge_shared_face":"top","offset":FromMax(100)}{"contact_face":"down","edge_shared_face":"front","offset":FromMin(50)}]-b'
 
         # Spaced version
         dsl_spaced = """
         ( a : 2x4 { "length" : 1000 } )
         ( b : 2x4 { "length" : 1000 } )
         a -[ { "contact_face" : "front" , "edge_shared_face" : "top" , "offset" : FromMax( 100 ) }
-             { "contact_face" : "bottom" , "edge_shared_face" : "front" , "offset" : FromMin( 50 ) } ]- b
+             { "contact_face" : "down" , "edge_shared_face" : "front" , "offset" : FromMin( 50 ) } ]- b
         """
 
         model_compact = parse_dsl(dsl_compact)

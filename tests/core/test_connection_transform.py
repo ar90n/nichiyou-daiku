@@ -15,7 +15,7 @@ class TestConnectionTransform:
 
         # Case 1: Anchor with left contact face and bottom edge shared face
         anchor = Anchor(
-            contact_face="left", edge_shared_face="bottom", offset=FromMax(value=50)
+            contact_face="left", edge_shared_face="down", offset=FromMax(value=50)
         )
 
         edge_point = as_edge_point(anchor)
