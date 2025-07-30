@@ -6,6 +6,95 @@ from nichiyou_daiku.core.piece import PieceType
 from nichiyou_daiku.dsl import parse_dsl
 
 
+class TestCompactNotationIntegration:
+    """Integration tests for compact notation DSL."""
+
+    def test_simple_structure_with_compact_notation(self):
+        """Test parsing a simple structure using compact notation."""
+        dsl = """
+        (beam1:PT_2x4 {"length": 1000})
+        (beam2:PT_2x4 {"length": 800})
+        (beam3:PT_2x4 {"length": 600})
+        
+        beam1 -[TF<0 BD<0]- beam2
+        beam2 -[RB>50 LT<100]- beam3
+        """
+        
+        model = parse_dsl(dsl)
+        
+        assert isinstance(model, Model)
+        assert len(model.pieces) == 3
+        assert len(model.connections) == 2
+        
+        # Check first connection
+        conn1 = model.connections[("beam1", "beam2")]
+        assert conn1.lhs.contact_face == "top"
+        assert conn1.lhs.edge_shared_face == "front"
+        assert isinstance(conn1.lhs.offset, FromMin)
+        assert conn1.lhs.offset.value == 0.0
+        
+        # Check second connection
+        conn2 = model.connections[("beam2", "beam3")]
+        assert conn2.lhs.contact_face == "right"
+        assert conn2.lhs.edge_shared_face == "back"
+        assert isinstance(conn2.lhs.offset, FromMax)
+        assert conn2.lhs.offset.value == 50.0
+
+    def test_complex_table_with_compact_notation(self):
+        """Test a more complex table structure with compact notation."""
+        dsl = """
+        (top:PT_2x4 {"length": 1200})
+        (leg1:PT_2x4 {"length": 700})
+        (leg2:PT_2x4 {"length": 700})
+        (leg3:PT_2x4 {"length": 700})
+        (leg4:PT_2x4 {"length": 700})
+        
+        top -[DL<50 TF<0]- leg1
+        top -[DR>50 TF<0]- leg2
+        top -[DL<50 TB>0]- leg3
+        top -[DR>50 TB>0]- leg4
+        """
+        
+        model = parse_dsl(dsl)
+        
+        assert len(model.pieces) == 5
+        assert len(model.connections) == 4
+        
+        # All legs should connect to the bottom of the top
+        for (base_id, target_id), conn in model.connections.items():
+            assert conn.lhs.contact_face == "bottom"
+            assert conn.rhs.contact_face == "top"
+
+    def test_mixed_notation_in_same_dsl(self):
+        """Test using both compact and traditional notation in same DSL."""
+        dsl = """
+        (p1:PT_2x4 {"length": 500})
+        (p2:PT_2x4 {"length": 500})
+        (p3:PT_2x4 {"length": 500})
+        
+        p1 -[TF<0 BD<0]- p2
+        p2 -[{"contact_face": "right", "edge_shared_face": "top", "offset": FromMax(100)}
+              {"contact_face": "left", "edge_shared_face": "bottom", "offset": FromMin(50)}]- p3
+        """
+        
+        model = parse_dsl(dsl)
+        
+        assert len(model.pieces) == 3
+        assert len(model.connections) == 2
+        
+        # First connection uses compact notation
+        conn1 = model.connections[("p1", "p2")]
+        assert conn1.lhs.contact_face == "top"
+        assert conn1.rhs.contact_face == "back"
+        
+        # Second connection uses traditional notation
+        conn2 = model.connections[("p2", "p3")]
+        assert conn2.lhs.contact_face == "right"
+        assert conn2.lhs.offset.value == 100.0
+        assert conn2.rhs.contact_face == "left"
+        assert conn2.rhs.offset.value == 50.0
+
+
 class TestDSLIntegration:
     """Integration tests for complete DSL workflows."""
 

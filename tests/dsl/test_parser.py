@@ -130,6 +130,107 @@ class TestSyntaxErrors:
         assert "Unknown piece reference" in str(exc_info.value)
 
 
+class TestCompactNotation:
+    """Test compact notation parsing functionality."""
+
+    def test_parse_simple_compact_connection(self):
+        """Test parsing a simple connection with compact notation."""
+        dsl = """
+        (beam1:PT_2x4 {"length": 1000})
+        (beam2:PT_2x4 {"length": 800})
+        beam1 -[TF<0 BD<0]- beam2
+        """
+        model = parse_dsl(dsl)
+        
+        assert len(model.pieces) == 2
+        assert len(model.connections) == 1
+        
+        # Check the connection was created correctly
+        conn_key = ("beam1", "beam2")
+        assert conn_key in model.connections
+        connection = model.connections[conn_key]
+        
+        # Check anchors were transformed correctly
+        assert connection.lhs.contact_face == "top"
+        assert connection.lhs.edge_shared_face == "front"
+        assert connection.lhs.offset.value == 0.0
+        
+        assert connection.rhs.contact_face == "back"
+        assert connection.rhs.edge_shared_face == "bottom"
+        assert connection.rhs.offset.value == 0.0
+
+    def test_parse_compact_with_various_faces(self):
+        """Test parsing compact notation with all face types."""
+        dsl = """
+        (p1:PT_2x4 {"length": 500})
+        (p2:PT_2x4 {"length": 500})
+        (p3:PT_2x4 {"length": 500})
+        (p4:PT_2x4 {"length": 500})
+        (p5:PT_2x4 {"length": 500})
+        (p6:PT_2x4 {"length": 500})
+        
+        p1 -[TL<10 DR>20]- p2
+        p3 -[FB<30 LT>40]- p4
+        p5 -[RD<50 BF>60]- p6
+        """
+        model = parse_dsl(dsl)
+        
+        assert len(model.pieces) == 6
+        assert len(model.connections) == 3
+        
+        # Check first connection (T/L and D/R)
+        conn1 = model.connections[("p1", "p2")]
+        assert conn1.lhs.contact_face == "top"
+        assert conn1.lhs.edge_shared_face == "left"
+        assert conn1.lhs.offset.value == 10.0
+        assert conn1.rhs.contact_face == "bottom"
+        assert conn1.rhs.edge_shared_face == "right"
+        assert conn1.rhs.offset.value == 20.0
+        
+        # Check second connection (F/B and L/T)
+        conn2 = model.connections[("p3", "p4")]
+        assert conn2.lhs.contact_face == "front"
+        assert conn2.lhs.edge_shared_face == "back"
+        assert conn2.lhs.offset.value == 30.0
+        assert conn2.rhs.contact_face == "left"
+        assert conn2.rhs.edge_shared_face == "top"
+        assert conn2.rhs.offset.value == 40.0
+
+    def test_parse_mixed_notation_error(self):
+        """Test error when mixing compact and JSON notation."""
+        dsl = """
+        (beam1:PT_2x4 {"length": 1000})
+        (beam2:PT_2x4 {"length": 800})
+        beam1 -[TF<0 {"contact_face": "back", "edge_shared_face": "bottom", "offset": FromMin(0)}]- beam2
+        """
+        with pytest.raises(DSLSyntaxError):
+            parse_dsl(dsl)
+
+    def test_parse_invalid_compact_face(self):
+        """Test error on invalid compact face notation."""
+        dsl = """
+        (beam1:PT_2x4 {"length": 1000})
+        (beam2:PT_2x4 {"length": 800})
+        beam1 -[XF<0 BD<0]- beam2
+        """
+        with pytest.raises(DSLSyntaxError):
+            parse_dsl(dsl)
+        # Should fail at parse time due to regex not matching
+
+    def test_parse_compact_with_float_offset(self):
+        """Test parsing compact notation with floating point offsets."""
+        dsl = """
+        (beam1:PT_2x4 {"length": 1000})
+        (beam2:PT_2x4 {"length": 800})
+        beam1 -[TF<12.5 BD>37.8]- beam2
+        """
+        model = parse_dsl(dsl)
+        
+        connection = model.connections[("beam1", "beam2")]
+        assert connection.lhs.offset.value == 12.5
+        assert connection.rhs.offset.value == 37.8
+
+
 class TestEdgeCases:
     """Test edge cases and special scenarios."""
 
