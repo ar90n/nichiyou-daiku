@@ -6,6 +6,7 @@ from nichiyou_daiku.cli.utils import setup_logging
 from nichiyou_daiku.cli.commands.validate import validate
 from nichiyou_daiku.cli.commands.report import report
 from nichiyou_daiku.cli.commands.view import view
+from nichiyou_daiku.cli.commands.export import export
 
 
 @click.group()
@@ -33,6 +34,7 @@ def cli(ctx: click.Context, debug: bool, verbose: bool, quiet: bool) -> None:
 cli.add_command(validate)
 cli.add_command(report)
 cli.add_command(view)
+cli.add_command(export)
 
 
 if __name__ == "__main__":
