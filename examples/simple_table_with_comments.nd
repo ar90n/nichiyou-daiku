@@ -1,0 +1,51 @@
+// Simple Table Design with Comments
+// Author: nichiyou-daiku team
+// Date: 2025-07-30
+
+// Define the four legs of the table
+// Each leg is 720mm tall
+(leg1:2x4 =720)  // Front left leg
+(leg2:2x4 =720)  // Front right leg
+(leg3:2x4 =720)  // Back left leg
+(leg4:2x4 =720)  // Back right leg
+
+// Define the aprons that connect the legs
+// These provide structural support
+(apron_front:2x4 =600)  // Front apron
+(apron_back:2x4 =600)   // Back apron
+(apron_left:2x4 =400)   // Left side apron
+(apron_right:2x4 =400)  // Right side apron
+
+// Define the table top
+(top:2x4 {"length": 800})  // Main table surface
+
+// Front apron connections
+// Connect the front legs to the front apron
+leg1 -[LB>50 DB>50]- apron_front  // Left side of front apron
+leg2 -[RB<50 DB>50]- apron_front  // Right side of front apron
+
+// Back apron connections
+leg3 -[LF>50 DF>50]- apron_back   // Left side of back apron
+leg4 -[RF<50 DF>50]- apron_back   // Right side of back apron
+
+// Side apron connections
+// Connect the side aprons to the legs
+leg1 -[BL>50 DL>50]- apron_left   // Front of left apron
+leg3 -[FL<50 DL>50]- apron_left   // Back of left apron
+leg2 -[BR<50 DR>50]- apron_right  // Front of right apron
+leg4 -[FR>50 DR>50]- apron_right  // Back of right apron
+
+// Table top connections
+// The table top sits on the aprons
+apron_front -[TF<100 DF<50]- top  // Front edge
+apron_back -[TB<100 DB>50]- top   // Back edge
+apron_left -[TL<100 DL>50]- top   // Left edge
+apron_right -[TR<100 DR<50]- top  // Right edge
+
+// Notes:
+// - All measurements are in millimeters
+// - The table is approximately 800mm x 600mm x 720mm (L x W x H)
+// - Uses standard 2x4 lumber throughout
+// - Connections use compact notation: Face + Face + Offset
+//   where Face is T(op), D(own), L(eft), R(ight), F(ront), B(ack)
+//   and Offset is <value (from min) or >value (from max)
