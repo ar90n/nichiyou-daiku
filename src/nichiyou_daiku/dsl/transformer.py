@@ -1,5 +1,6 @@
 """AST transformer for converting Lark parse trees to nichiyou-daiku models."""
 
+from dataclasses import dataclass, field
 from typing import Any, cast
 
 from lark import Token, Transformer
@@ -10,6 +11,23 @@ from nichiyou_daiku.core.geometry.offset import FromMax, FromMin, Offset
 from nichiyou_daiku.core.model import Model, PiecePair
 from nichiyou_daiku.core.piece import Piece, PieceType
 from nichiyou_daiku.dsl.exceptions import DSLSemanticError, DSLValidationError
+
+
+@dataclass
+class PieceComponents:
+    """Components parsed from a piece definition."""
+    piece_id: str | None = None
+    piece_type: PieceType | None = None
+    props: dict[str, Any] = field(default_factory=dict)
+    length_value: float | None = None
+
+
+@dataclass
+class ConnectionComponents:
+    """Components parsed from a connection definition."""
+    piece_refs: list[str] = field(default_factory=list)
+    anchor_props_list: list[dict] = field(default_factory=list)
+    compact_anchor_list: list[Anchor] = field(default_factory=list)
 
 
 class DSLTransformer(Transformer):
@@ -46,45 +64,74 @@ class DSLTransformer(Transformer):
 
     def piece_def(self, items: list[Any]) -> None:
         """Transform a piece definition."""
-        # Parse piece definition components
-        piece_id = None
-        piece_type = None
-        props = {}
-        length_value = None
+        components = self._parse_piece_components(items)
+        piece = self._create_piece_from_components(components)
+        self._register_piece(piece)
 
+    def _parse_piece_components(self, items: list[Any]) -> PieceComponents:
+        """Parse items into piece components."""
+        components = PieceComponents()
+        
         for item in items:
-            if isinstance(item, Token) and item.type == "CNAME":
-                piece_id = str(item)
-            elif isinstance(item, Token) and item.type == "PIECE_TYPE":
-                try:
-                    piece_type = PieceType.of(str(item))
-                except ValueError:
-                    raise DSLValidationError(f"Invalid piece type: {item}")
-            elif isinstance(item, dict):
-                props = item
-            elif isinstance(item, float) or isinstance(item, int):
-                # Direct length value from compact notation
-                length_value = float(item)
+            # Early continue for unknown types
+            if not isinstance(item, (Token, dict, float, int)):
+                continue
+                
+            if isinstance(item, Token):
+                match item.type:
+                    case "CNAME":
+                        components.piece_id = str(item)
+                    case "PIECE_TYPE":
+                        components.piece_type = self._parse_piece_type(item)
+                    case _:
+                        continue
+                continue
+                
+            if isinstance(item, dict):
+                components.props = item
+                continue
+                
+            if isinstance(item, (float, int)):
+                components.length_value = float(item)
+                continue
+        
+        return components
 
-        if piece_type is None:
+    def _parse_piece_type(self, token: Token) -> PieceType:
+        """Parse a piece type token."""
+        try:
+            return PieceType.of(str(token))
+        except ValueError:
+            raise DSLValidationError(f"Invalid piece type: {token}")
+
+    def _create_piece_from_components(self, components: PieceComponents) -> Piece:
+        """Create a Piece from parsed components."""
+        # Early return for missing piece type
+        if components.piece_type is None:
             raise DSLSemanticError("Piece type is required")
+        
+        length = self._extract_length(components)
+        return Piece.of(components.piece_type, length, components.piece_id)
 
-        # Extract length - either from props or direct value
-        if length_value is None:
-            length = props.get("length")
-            if length is None:
-                raise DSLValidationError("Piece must have a 'length' property")
-            try:
-                length_value = float(length)
-            except (TypeError, ValueError):
-                raise DSLValidationError(f"Invalid length value: {length}")
+    def _extract_length(self, components: PieceComponents) -> float:
+        """Extract length from components."""
+        # Compact notation length takes precedence
+        if components.length_value is not None:
+            return components.length_value
+        
+        # Extract from props
+        if "length" not in components.props:
+            raise DSLValidationError("Piece must have a 'length' property")
+        
+        try:
+            return float(components.props["length"])
+        except (TypeError, ValueError):
+            raise DSLValidationError(f"Invalid length value: {components.props['length']}")
 
-        # Create piece
-        piece = Piece.of(piece_type, length_value, piece_id)
+    def _register_piece(self, piece: Piece) -> None:
+        """Register a piece, checking for duplicates."""
         if piece.id in self.pieces:
-            raise DSLSemanticError(f"Duplicate piece ID: {piece_id}")
-
-        # Store piece
+            raise DSLSemanticError(f"Duplicate piece ID: {piece.id}")
         self.pieces[piece.id] = piece
 
     def piece_props(self, items: list[Any]) -> dict[str, Any]:
@@ -113,58 +160,103 @@ class DSLTransformer(Transformer):
 
     def connection_def(self, items: list[Any]) -> None:
         """Transform a connection definition."""
-        # Extract piece references and anchor properties
-        piece_refs = []
-        anchor_props_list = []
-        compact_anchor_list = []
+        components = self._parse_connection_components(items)
+        self._validate_connection_components(components)
+        
+        anchors = self._create_anchors_from_components(components)
+        pieces = self._resolve_piece_references(components.piece_refs)
+        
+        self._register_connection(pieces, anchors)
 
+    def _parse_connection_components(self, items: list[Any]) -> ConnectionComponents:
+        """Parse items into connection components."""
+        components = ConnectionComponents()
+        
         for item in items:
-            if isinstance(item, str):  # piece_ref
-                piece_refs.append(item)
-            elif isinstance(item, dict):  # anchor_props (JSON format)
-                anchor_props_list.append(item)
-            elif isinstance(item, Anchor):  # Already transformed compact anchor
-                compact_anchor_list.append(item)
+            # Early continue pattern
+            if isinstance(item, str):
+                components.piece_refs.append(item)
+                continue
+                
+            if isinstance(item, dict):
+                components.anchor_props_list.append(item)
+                continue
+                
+            if isinstance(item, Anchor):
+                components.compact_anchor_list.append(item)
+                continue
+        
+        return components
 
-        if len(piece_refs) != 2:
+    def _validate_connection_components(self, components: ConnectionComponents) -> None:
+        """Validate connection components."""
+        # Early return for piece reference validation
+        if len(components.piece_refs) != 2:
             raise DSLSemanticError("Connection must have exactly two piece references")
-
-        # Determine which format was used
-        if anchor_props_list and not compact_anchor_list:
-            # Traditional JSON format
-            if len(anchor_props_list) != 2:
-                raise DSLSemanticError(
-                    "Connection must have exactly two anchor property sets"
-                )
-            lhs_anchor = self._create_anchor(anchor_props_list[0])
-            rhs_anchor = self._create_anchor(anchor_props_list[1])
-        elif compact_anchor_list and not anchor_props_list:
-            # Compact format
-            if len(compact_anchor_list) != 2:
-                raise DSLSemanticError(
-                    "Connection must have exactly two compact anchor definitions"
-                )
-            lhs_anchor = compact_anchor_list[0]
-            rhs_anchor = compact_anchor_list[1]
-        else:
+        
+        # Check format mixing
+        has_json = bool(components.anchor_props_list)
+        has_compact = bool(components.compact_anchor_list)
+        
+        if has_json and has_compact:
             raise DSLSemanticError(
                 "Connection must use either JSON format or compact format, not both"
             )
+        
+        if has_json and len(components.anchor_props_list) != 2:
+            raise DSLSemanticError(
+                "Connection must have exactly two anchor property sets"
+            )
+        
+        if has_compact and len(components.compact_anchor_list) != 2:
+            raise DSLSemanticError(
+                "Connection must have exactly two compact anchor definitions"
+            )
+        
+        if not has_json and not has_compact:
+            raise DSLSemanticError("Connection must have anchor definitions")
 
-        # Resolve piece references
+    def _create_anchors_from_components(
+        self, components: ConnectionComponents
+    ) -> tuple[Anchor, Anchor]:
+        """Create anchors from components."""
+        # Early return for JSON format
+        if components.anchor_props_list:
+            return (
+                self._create_anchor(components.anchor_props_list[0]),
+                self._create_anchor(components.anchor_props_list[1])
+            )
+        
+        # Compact format
+        return (
+            components.compact_anchor_list[0],
+            components.compact_anchor_list[1]
+        )
+
+    def _resolve_piece_references(self, piece_refs: list[str]) -> tuple[Piece, Piece]:
+        """Resolve piece references to actual pieces."""
         base_id, target_id = piece_refs
+        
         base_piece = self.pieces.get(base_id)
-        target_piece = self.pieces.get(target_id)
-
         if base_piece is None:
             raise DSLSemanticError(f"Unknown piece reference: {base_id}")
+        
+        target_piece = self.pieces.get(target_id)
         if target_piece is None:
             raise DSLSemanticError(f"Unknown piece reference: {target_id}")
+        
+        return base_piece, target_piece
 
-        # Create connection
+    def _register_connection(
+        self, pieces: tuple[Piece, Piece], anchors: tuple[Anchor, Anchor]
+    ) -> None:
+        """Register a connection between pieces."""
+        base_piece, target_piece = pieces
+        lhs_anchor, rhs_anchor = anchors
+        
         connection = Connection(lhs=lhs_anchor, rhs=rhs_anchor)
         piece_pair = PiecePair(base=base_piece, target=target_piece)
-
+        
         self.connections.append((piece_pair, connection))
 
     def piece_ref(self, items: list[Token]) -> str:
@@ -197,29 +289,40 @@ class DSLTransformer(Transformer):
 
     def offset_value(self, items: list[Any]) -> Offset:
         """Transform an offset value."""
-        # With the updated grammar, items will contain:
-        # [Token(FROM_MIN/FROM_MAX, 'FromMin'/'FromMax'), Token(NUMBER, '...')]
         offset_type = None
         value = None
-
+        
         for item in items:
-            if hasattr(item, "type"):
-                if item.type == "FROM_MIN":
+            # Early continue for non-Token items
+            if not isinstance(item, Token):
+                continue
+                
+            match item.type:
+                case "FROM_MIN":
                     offset_type = "FromMin"
-                elif item.type == "FROM_MAX":
+                case "FROM_MAX":
                     offset_type = "FromMax"
-                elif item.type == "NUMBER":
+                case "NUMBER":
                     value = float(item)
-
+        
+        # Early return for validation errors
         if value is None:
             raise DSLValidationError("Offset value is required")
-
-        if offset_type == "FromMin":
-            return FromMin(value=value)
-        elif offset_type == "FromMax":
-            return FromMax(value=value)
-        else:
+        
+        if offset_type is None:
             raise DSLValidationError(f"Invalid offset type in items: {items}")
+        
+        return self._create_offset(offset_type, value)
+
+    def _create_offset(self, offset_type: str, value: float) -> Offset:
+        """Create an Offset instance based on type."""
+        match offset_type:
+            case "FromMin":
+                return FromMin(value=value)
+            case "FromMax":
+                return FromMax(value=value)
+            case _:
+                raise DSLValidationError(f"Unknown offset type: {offset_type}")
 
     def value(self, items: list[Any]) -> Any:
         """Transform a value (string, number, or offset)."""
@@ -268,74 +371,63 @@ class DSLTransformer(Transformer):
 
     def compact_anchor_props(self, items: list[Any]) -> Anchor:
         """Transform compact anchor properties into an Anchor object."""
-        # items should contain: [contact_face, edge_shared_face, offset]
+        # Early return for validation
         if len(items) != 3:
             raise DSLValidationError(
                 f"Compact anchor must have exactly 3 components, got {len(items)}"
             )
-
-        contact_face_token = items[0]
-        edge_shared_face_token = items[1]
-        offset = items[2]  # Already transformed by compact_offset
-
-        # Map compact face notation to full names
-        if (
-            not isinstance(contact_face_token, Token)
-            or contact_face_token.type != "COMPACT_FACE"
-        ):
-            raise DSLValidationError(
-                f"Invalid contact face token: {contact_face_token}"
-            )
-        if (
-            not isinstance(edge_shared_face_token, Token)
-            or edge_shared_face_token.type != "COMPACT_FACE"
-        ):
-            raise DSLValidationError(
-                f"Invalid edge shared face token: {edge_shared_face_token}"
-            )
-
-        contact_face_char = str(contact_face_token)
-        edge_shared_face_char = str(edge_shared_face_token)
-
-        if contact_face_char not in self.FACE_MAPPING:
-            raise DSLValidationError(
-                f"Invalid compact face notation: {contact_face_char}"
-            )
-        if edge_shared_face_char not in self.FACE_MAPPING:
-            raise DSLValidationError(
-                f"Invalid compact face notation: {edge_shared_face_char}"
-            )
-
-        contact_face = cast(Face, self.FACE_MAPPING[contact_face_char])
-        edge_shared_face = cast(Face, self.FACE_MAPPING[edge_shared_face_char])
-
+        
+        contact_face = self._parse_compact_face(items[0], "contact")
+        edge_shared_face = self._parse_compact_face(items[1], "edge_shared")
+        offset = items[2]
+        
         if not isinstance(offset, Offset):
             raise DSLValidationError(f"Invalid offset type: {type(offset)}")
-
+        
         return Anchor(
-            contact_face=contact_face, edge_shared_face=edge_shared_face, offset=offset
+            contact_face=contact_face,
+            edge_shared_face=edge_shared_face,
+            offset=offset
         )
+
+    def _parse_compact_face(self, token: Any, context: str) -> Face:
+        """Parse a compact face token."""
+        # Early return for invalid token
+        if not isinstance(token, Token) or token.type != "COMPACT_FACE":
+            raise DSLValidationError(f"Invalid {context} face token: {token}")
+        
+        face_char = str(token)
+        if face_char not in self.FACE_MAPPING:
+            raise DSLValidationError(f"Invalid compact face notation: {face_char}")
+        
+        return cast(Face, self.FACE_MAPPING[face_char])
 
     def compact_offset(self, items: list[Any]) -> Offset:
         """Transform compact offset notation into an Offset object."""
-        # items should contain: [COMPACT_FROM_MIN/COMPACT_FROM_MAX, NUMBER]
+        # Early return for validation
         if len(items) != 2:
             raise DSLValidationError(
                 f"Compact offset must have exactly 2 components, got {len(items)}"
             )
-
+        
         offset_type_token = items[0]
         number_token = items[1]
-
+        
+        # Validate number token
         if not isinstance(number_token, Token) or number_token.type != "NUMBER":
             raise DSLValidationError(f"Invalid number token: {number_token}")
-
+        
         value = float(number_token)
-
-        if isinstance(offset_type_token, Token):
-            if offset_type_token.type == "COMPACT_FROM_MIN":
+        
+        # Early return for invalid token type
+        if not isinstance(offset_type_token, Token):
+            raise DSLValidationError(f"Invalid compact offset type: {offset_type_token}")
+        
+        # Use match for cleaner offset type handling
+        match offset_type_token.type:
+            case "COMPACT_FROM_MIN":
                 return FromMin(value=value)
-            elif offset_type_token.type == "COMPACT_FROM_MAX":
+            case "COMPACT_FROM_MAX":
                 return FromMax(value=value)
-
-        raise DSLValidationError(f"Invalid compact offset type: {offset_type_token}")
+            case _:
+                raise DSLValidationError(f"Unknown offset type: {offset_type_token.type}")
