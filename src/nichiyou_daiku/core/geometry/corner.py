@@ -12,7 +12,7 @@ from .face import (
     cross,
     is_back_to_front_axis,
     is_left_to_right_axis,
-    is_vertical_axis,
+    is_down_to_top_axis,
 )
 from .edge import Edge
 
@@ -70,7 +70,7 @@ class Corner(BaseModel, frozen=True):
 
         # Find face_x (top or down)
         face_top_down = next(
-            (f for f in faces if is_vertical_axis(cast(Face, f))), None
+            (f for f in faces if is_down_to_top_axis(cast(Face, f))), None
         )
         if not face_top_down:
             raise ValueError("Corner must include either top or down face")
