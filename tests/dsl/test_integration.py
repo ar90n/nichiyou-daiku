@@ -12,9 +12,9 @@ class TestCompactNotationIntegration:
     def test_simple_structure_with_compact_notation(self):
         """Test parsing a simple structure using compact notation."""
         dsl = """
-        (beam1:PT_2x4 {"length": 1000})
-        (beam2:PT_2x4 {"length": 800})
-        (beam3:PT_2x4 {"length": 600})
+        (beam1:2x4 {"length": 1000})
+        (beam2:2x4 {"length": 800})
+        (beam3:2x4 {"length": 600})
         
         beam1 -[TF<0 BD<0]- beam2
         beam2 -[RB>50 LT<100]- beam3
@@ -43,11 +43,11 @@ class TestCompactNotationIntegration:
     def test_complex_table_with_compact_notation(self):
         """Test a more complex table structure with compact notation."""
         dsl = """
-        (top:PT_2x4 {"length": 1200})
-        (leg1:PT_2x4 {"length": 700})
-        (leg2:PT_2x4 {"length": 700})
-        (leg3:PT_2x4 {"length": 700})
-        (leg4:PT_2x4 {"length": 700})
+        (top:2x4 {"length": 1200})
+        (leg1:2x4 {"length": 700})
+        (leg2:2x4 {"length": 700})
+        (leg3:2x4 {"length": 700})
+        (leg4:2x4 {"length": 700})
         
         top -[DL<50 TF<0]- leg1
         top -[DR>50 TF<0]- leg2
@@ -68,9 +68,9 @@ class TestCompactNotationIntegration:
     def test_mixed_notation_in_same_dsl(self):
         """Test using both compact and traditional notation in same DSL."""
         dsl = """
-        (p1:PT_2x4 {"length": 500})
-        (p2:PT_2x4 {"length": 500})
-        (p3:PT_2x4 {"length": 500})
+        (p1:2x4 {"length": 500})
+        (p2:2x4 {"length": 500})
+        (p3:2x4 {"length": 500})
         
         p1 -[TF<0 BD<0]- p2
         p2 -[{"contact_face": "right", "edge_shared_face": "top", "offset": FromMax(100)}
@@ -101,11 +101,11 @@ class TestDSLIntegration:
     def test_simple_table_structure(self):
         """Test parsing a simple table structure."""
         dsl = """
-        (top:PT_2x4 {"length": 1200})
-        (leg1:PT_2x4 {"length": 700})
-        (leg2:PT_2x4 {"length": 700})
-        (leg3:PT_2x4 {"length": 700})
-        (leg4:PT_2x4 {"length": 700})
+        (top:2x4 {"length": 1200})
+        (leg1:2x4 {"length": 700})
+        (leg2:2x4 {"length": 700})
+        (leg3:2x4 {"length": 700})
+        (leg4:2x4 {"length": 700})
         
         top -[{"contact_face": "bottom", "edge_shared_face": "left", "offset": FromMin(50)}
               {"contact_face": "top", "edge_shared_face": "front", "offset": FromMin(0)}]- leg1
@@ -140,10 +140,10 @@ class TestDSLIntegration:
     def test_mixed_piece_types(self):
         """Test parsing with mixed piece types."""
         dsl = """
-        (frame1:PT_2x4 {"length": 1000})
-        (frame2:PT_2x4 {"length": 1000})
-        (panel1:PT_1x4 {"length": 500})
-        (panel2:PT_1x4 {"length": 500})
+        (frame1:2x4 {"length": 1000})
+        (frame2:2x4 {"length": 1000})
+        (panel1:1x4 {"length": 500})
+        (panel2:1x4 {"length": 500})
         
         frame1 -[{"contact_face": "right", "edge_shared_face": "top", "offset": FromMin(100)}
                 {"contact_face": "left", "edge_shared_face": "top", "offset": FromMin(100)}]- frame2
@@ -168,9 +168,9 @@ class TestDSLIntegration:
     def test_complex_offset_patterns(self):
         """Test various offset patterns."""
         dsl = """
-        (beam1:PT_2x4 {"length": 1000})
-        (beam2:PT_2x4 {"length": 1000})
-        (beam3:PT_2x4 {"length": 1000})
+        (beam1:2x4 {"length": 1000})
+        (beam2:2x4 {"length": 1000})
+        (beam3:2x4 {"length": 1000})
         
         beam1 -[{"contact_face": "front", "edge_shared_face": "top", "offset": FromMin(0)}
                 {"contact_face": "back", "edge_shared_face": "bottom", "offset": FromMax(0)}]- beam2
@@ -194,8 +194,8 @@ class TestDSLIntegration:
     def test_model_api_compatibility(self):
         """Test that DSL-generated models are compatible with the Model API."""
         dsl = """
-        (beam1:PT_2x4 {"length": 1000})
-        (beam2:PT_2x4 {"length": 2000})
+        (beam1:2x4 {"length": 1000})
+        (beam2:2x4 {"length": 2000})
         beam1 -[{"contact_face": "front", "edge_shared_face": "top", "offset": FromMax(100)}
                 {"contact_face": "bottom", "edge_shared_face": "front", "offset": FromMin(50)}]- beam2
         """
@@ -243,12 +243,12 @@ class TestDSLIntegration:
     def test_whitespace_flexibility(self):
         """Test that DSL is flexible with whitespace."""
         # Compact version
-        dsl_compact = '(a:PT_2x4{"length":1000})(b:PT_2x4{"length":1000})a-[{"contact_face":"front","edge_shared_face":"top","offset":FromMax(100)}{"contact_face":"bottom","edge_shared_face":"front","offset":FromMin(50)}]-b'
+        dsl_compact = '(a:2x4{"length":1000})(b:2x4{"length":1000})a-[{"contact_face":"front","edge_shared_face":"top","offset":FromMax(100)}{"contact_face":"bottom","edge_shared_face":"front","offset":FromMin(50)}]-b'
 
         # Spaced version
         dsl_spaced = """
-        ( a : PT_2x4 { "length" : 1000 } )
-        ( b : PT_2x4 { "length" : 1000 } )
+        ( a : 2x4 { "length" : 1000 } )
+        ( b : 2x4 { "length" : 1000 } )
         a -[ { "contact_face" : "front" , "edge_shared_face" : "top" , "offset" : FromMax( 100 ) }
              { "contact_face" : "bottom" , "edge_shared_face" : "front" , "offset" : FromMin( 50 ) } ]- b
         """

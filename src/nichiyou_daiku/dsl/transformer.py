@@ -56,8 +56,8 @@ class DSLTransformer(Transformer):
                 piece_id = str(item)
             elif isinstance(item, Token) and item.type == "PIECE_TYPE":
                 try:
-                    piece_type = PieceType[str(item)]
-                except KeyError:
+                    piece_type = PieceType.of(str(item))
+                except ValueError:
                     raise DSLValidationError(f"Invalid piece type: {item}")
             elif isinstance(item, dict):
                 props = item

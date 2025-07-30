@@ -16,8 +16,8 @@ def runner():
 def valid_dsl():
     """Valid DSL content."""
     return """
-(piece1:PT_2x4 {"length": 1000})
-(piece2:PT_1x4 {"length": 800})
+(piece1:2x4 {"length": 1000})
+(piece2:1x4 {"length": 800})
 
 piece1 -[{"contact_face": "top", "edge_shared_face": "front", "offset": FromMin(0)}
          {"contact_face": "bottom", "edge_shared_face": "left", "offset": FromMax(100)}]- piece2
@@ -36,7 +36,7 @@ def invalid_syntax_dsl():
 def invalid_semantic_dsl():
     """DSL with semantic error."""
     return """
-(piece1:PT_2x4 {"length": 1000})
+(piece1:2x4 {"length": 1000})
 
 piece1 -[{"contact_face": "top", "edge_shared_face": "front", "offset": FromMin(0)}
          {"contact_face": "bottom", "edge_shared_face": "left", "offset": FromMax(100)}]- unknown_piece

@@ -6,7 +6,7 @@ start: statement+
 statement: piece_def | connection_def
 
 piece_def: "(" CNAME? ":" PIECE_TYPE piece_props ")"
-PIECE_TYPE: "PT_1x4" | "PT_2x4"
+PIECE_TYPE: "1x4" | "2x4"
 piece_props: "{" prop_list? "}"
 prop_list: prop ("," prop)*
 prop: ESCAPED_STRING ":" value

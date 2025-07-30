@@ -1,4 +1,4 @@
-(corner_piece_a:PT_2x4 {"length": 400})
-(corner_piece_b:PT_2x4 {"length": 400})
+(corner_piece_a:2x4 {"length": 400})
+(corner_piece_b:2x4 {"length": 400})
 
 corner_piece_a -[TF<0 BD<0]- corner_piece_b

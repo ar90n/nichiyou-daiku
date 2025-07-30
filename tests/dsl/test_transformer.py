@@ -32,7 +32,7 @@ class TestTransformerPieceHandling:
 
         # Simulate piece definition with ID
         transformer.piece_def(
-            [Token("CNAME", "beam1"), Token("PIECE_TYPE", "PT_2x4"), {"length": 1000.0}]
+            [Token("CNAME", "beam1"), Token("PIECE_TYPE", "2x4"), {"length": 1000.0}]
         )
 
         assert "beam1" in transformer.pieces
@@ -46,7 +46,7 @@ class TestTransformerPieceHandling:
         transformer = DSLTransformer()
 
         # Simulate piece definition without ID
-        transformer.piece_def([Token("PIECE_TYPE", "PT_2x4"), {"length": 1000.0}])
+        transformer.piece_def([Token("PIECE_TYPE", "2x4"), {"length": 1000.0}])
 
         # Should have one piece with auto-generated ID
         assert len(transformer.pieces) == 1
