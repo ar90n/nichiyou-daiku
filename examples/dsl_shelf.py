@@ -1,3 +1,4 @@
+# %%
 """Shelf example using DSL - A two-level shelf unit.
 
 This example demonstrates how to build a shelf with two levels
@@ -124,14 +125,14 @@ leg_left_front -[BL<0 DF<0]- top_apron_front
 # Add bottom table top piece connections
 for i in range(table_top_piece_num):
     offset = i * (get_shape(PieceType.PT_1x4).width + table_top_piece_interval)
-    shelf_dsl += f"bottom_table_top_apron_front -[BR>{offset:.3f} BT>0]- bottom_table_top_{i}\n"
-    shelf_dsl += f"bottom_table_top_apron_back -[BL>{offset:.3f} BD>0]- bottom_table_top_{i}\n"
+    shelf_dsl += f"bottom_table_top_apron_front -[FR>{offset:.3f} FT>0]- bottom_table_top_{i}\n"
+    shelf_dsl += f"bottom_table_top_apron_back -[FL>{offset:.3f} FD>0]- bottom_table_top_{i}\n"
 
 # Add top table top piece connections
 for i in range(table_top_piece_num):
     offset = i * (get_shape(PieceType.PT_1x4).width + table_top_piece_interval)
-    shelf_dsl += f"top_table_top_apron_front -[BR>{offset:.3f} BT>0]- top_table_top_{i}\n"
-    shelf_dsl += f"top_table_top_apron_back -[BL>{offset:.3f} BD>0]- top_table_top_{i}\n"
+    shelf_dsl += f"top_table_top_apron_front -[FR>{offset:.3f} FT>0]- top_table_top_{i}\n"
+    shelf_dsl += f"top_table_top_apron_back -[FL>{offset:.3f} FD>0]- top_table_top_{i}\n"
 
 # Parse DSL to create model
 print("Parsing shelf DSL...")
@@ -185,3 +186,4 @@ show(compound)
 print("\nShelf assembly complete!")
 print(f"Shelf dimensions: {SHELF_WIDTH}mm x {SHELF_DEPTH}mm x {SHELF_HEIGHT}mm")
 print(f"Using {len(model.pieces)} pieces with {len(model.connections)} connections")
+# %%

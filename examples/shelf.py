@@ -1,3 +1,4 @@
+# %%
 from nichiyou_daiku.core.piece import Piece, PieceType, get_shape
 from nichiyou_daiku.core.model import Model, PiecePair
 from nichiyou_daiku.core.connection import Connection, Anchor
@@ -456,3 +457,5 @@ show(compound)
 print("\nShelf assembly complete!")
 print(f"Shelf dimensions: {SHELF_WIDTH}mm x {SHELF_DEPTH}mm x {SHELF_HEIGHT}mm")
 print(f"Using {len(model.pieces)} pieces with {len(model.connections)} connections")
+
+# %%
