@@ -261,6 +261,68 @@ class TestCompactNotationTransformer:
         assert "3 components" in str(exc_info.value)
 
 
+class TestCompactPieceTransformer:
+    """Test transformer handling of compact piece notation."""
+
+    def test_compact_length_transformation(self):
+        """Test transformation of compact length notation."""
+        from lark import Token
+        
+        transformer = DSLTransformer()
+        
+        # Test compact_length method
+        result = transformer.compact_length([Token("NUMBER", "1500")])
+        assert result == 1500.0
+        
+        # Test with decimal
+        result = transformer.compact_length([Token("NUMBER", "1500.75")])
+        assert result == 1500.75
+    
+    def test_piece_def_with_compact_length(self):
+        """Test piece definition transformation with compact length."""
+        from lark import Token
+        
+        transformer = DSLTransformer()
+        
+        # Simulate piece_def with compact length
+        items = [
+            Token("CNAME", "beam1"),
+            Token("PIECE_TYPE", "2x4"),
+            1500.0  # Direct length value from compact_length
+        ]
+        
+        transformer.piece_def(items)
+        
+        assert "beam1" in transformer.pieces
+        piece = transformer.pieces["beam1"]
+        assert piece.type == PieceType.PT_2x4
+        assert piece.length == 1500.0
+    
+    def test_piece_def_mixed_format(self):
+        """Test that both JSON and compact formats work."""
+        from lark import Token
+        
+        transformer = DSLTransformer()
+        
+        # First piece with compact notation
+        transformer.piece_def([
+            Token("CNAME", "beam1"),
+            Token("PIECE_TYPE", "2x4"),
+            1000.0
+        ])
+        
+        # Second piece with JSON notation
+        transformer.piece_def([
+            Token("CNAME", "beam2"),
+            Token("PIECE_TYPE", "2x4"),
+            {"length": 2000}
+        ])
+        
+        assert len(transformer.pieces) == 2
+        assert transformer.pieces["beam1"].length == 1000.0
+        assert transformer.pieces["beam2"].length == 2000.0
+
+
 class TestTransformerModelGeneration:
     """Test transformer model generation."""
 

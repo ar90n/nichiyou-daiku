@@ -50,6 +50,7 @@ class DSLTransformer(Transformer):
         piece_id = None
         piece_type = None
         props = {}
+        length_value = None
 
         for item in items:
             if isinstance(item, Token) and item.type == "CNAME":
@@ -61,19 +62,22 @@ class DSLTransformer(Transformer):
                     raise DSLValidationError(f"Invalid piece type: {item}")
             elif isinstance(item, dict):
                 props = item
+            elif isinstance(item, float) or isinstance(item, int):
+                # Direct length value from compact notation
+                length_value = float(item)
 
         if piece_type is None:
             raise DSLSemanticError("Piece type is required")
 
-        # Extract length from props
-        length = props.get("length")
-        if length is None:
-            raise DSLValidationError("Piece must have a 'length' property")
-
-        try:
-            length_value = float(length)
-        except (TypeError, ValueError):
-            raise DSLValidationError(f"Invalid length value: {length}")
+        # Extract length - either from props or direct value
+        if length_value is None:
+            length = props.get("length")
+            if length is None:
+                raise DSLValidationError("Piece must have a 'length' property")
+            try:
+                length_value = float(length)
+            except (TypeError, ValueError):
+                raise DSLValidationError(f"Invalid length value: {length}")
 
         # Create piece
         piece = Piece.of(piece_type, length_value, piece_id)
@@ -101,6 +105,11 @@ class DSLTransformer(Transformer):
         key = self._unescape_string(items[0])
         value = items[1]
         return {key: value}
+
+    def compact_length(self, items: list[Any]) -> float:
+        """Transform compact length notation (=NUMBER)."""
+        # items[0] should be the NUMBER token
+        return float(items[0])
 
     def connection_def(self, items: list[Any]) -> None:
         """Transform a connection definition."""

@@ -95,6 +95,88 @@ class TestCompactNotationIntegration:
         assert conn2.rhs.offset.value == 50.0
 
 
+class TestCompactPieceIntegration:
+    """Integration tests for compact piece notation."""
+    
+    def test_full_project_with_compact_pieces(self):
+        """Test a complete project using compact piece notation."""
+        dsl = """
+        (leg1:2x4 =720)
+        (leg2:2x4 =720)
+        (leg3:2x4 =720)
+        (leg4:2x4 =720)
+        
+        (apron_front:2x4 =600)
+        (apron_back:2x4 =600)
+        
+        leg1 -[LB>0 DB>0]- apron_front
+        leg2 -[RF>0 TF>0]- apron_front
+        leg3 -[LB>0 DB>0]- apron_back
+        leg4 -[RF>0 TF>0]- apron_back
+        """
+        
+        model = parse_dsl(dsl)
+        
+        assert len(model.pieces) == 6
+        assert len(model.connections) == 4
+        
+        # Check all pieces have correct lengths
+        for i in range(1, 5):
+            assert model.pieces[f"leg{i}"].length == 720.0
+        assert model.pieces["apron_front"].length == 600.0
+        assert model.pieces["apron_back"].length == 600.0
+    
+    def test_mixed_notation_pieces_and_connections(self):
+        """Test mixing compact and traditional notation for both pieces and connections."""
+        dsl = """
+        (p1:2x4 =1000)
+        (p2:2x4 {"length": 1200})
+        (p3:1x4 =800)
+        (p4:1x4 {"length": 600})
+        
+        p1 -[TF<0 BD<0]- p2
+        p3 -[{"contact_face": "right", "edge_shared_face": "top", "offset": FromMax(100)}
+              {"contact_face": "left", "edge_shared_face": "bottom", "offset": FromMin(50)}]- p4
+        """
+        
+        model = parse_dsl(dsl)
+        
+        assert len(model.pieces) == 4
+        assert len(model.connections) == 2
+        
+        # Check pieces
+        assert model.pieces["p1"].length == 1000.0
+        assert model.pieces["p2"].length == 1200.0
+        assert model.pieces["p3"].length == 800.0
+        assert model.pieces["p4"].length == 600.0
+        
+        # Check both connection types work
+        assert ("p1", "p2") in model.connections
+        assert ("p3", "p4") in model.connections
+    
+    def test_compact_pieces_with_decimal_lengths(self):
+        """Test compact notation with decimal lengths."""
+        dsl = """
+        (beam1:2x4 =1000.5)
+        (beam2:2x4 =999.75)
+        (beam3:2x4 =1001.25)
+        
+        beam1 -[TF<10.5 BD>20.25]- beam2
+        beam2 -[RB<30.333 LT>40.667]- beam3
+        """
+        
+        model = parse_dsl(dsl)
+        
+        assert model.pieces["beam1"].length == 1000.5
+        assert model.pieces["beam2"].length == 999.75
+        assert model.pieces["beam3"].length == 1001.25
+        
+        # Check connections preserve decimal offsets
+        conn1 = model.connections[("beam1", "beam2")]
+        assert conn1.lhs.offset.value == 10.5
+        assert conn1.rhs.offset.value == 20.25
+
+
 class TestDSLIntegration:
     """Integration tests for complete DSL workflows."""
 

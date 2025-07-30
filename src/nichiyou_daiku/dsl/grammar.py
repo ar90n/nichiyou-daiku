@@ -5,9 +5,10 @@ start: statement+
 
 statement: piece_def | connection_def
 
-piece_def: "(" CNAME? ":" PIECE_TYPE piece_props ")"
+piece_def: "(" CNAME? ":" PIECE_TYPE (piece_props | compact_length) ")"
 PIECE_TYPE: "1x4" | "2x4"
 piece_props: "{" prop_list? "}"
+compact_length: "=" NUMBER
 prop_list: prop ("," prop)*
 prop: ESCAPED_STRING ":" value
 
