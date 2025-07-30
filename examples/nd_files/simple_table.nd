@@ -1,13 +1,22 @@
-(leg_1:2x4 {"length": 720})
-(leg_2:2x4 {"length": 720})
-(leg_3:2x4 {"length": 720})
-(leg_4:2x4 {"length": 720})
+// Simple Table Design with Comments
+// Author: nichiyou-daiku team
+// Date: 2025-07-30
 
-(apron_front:2x4 {"length": 622})
-(apron_back:2x4 {"length": 622})
-(apron_left:2x4 {"length": 524})
-(apron_right:2x4 {"length": 524})
+// Define the four legs of the table
+// Each leg is 720mm tall
+(leg_1:2x4 {"length": 720})  // Front left leg
+(leg_2:2x4 {"length": 720})  // Front right leg
+(leg_3:2x4 {"length": 720})  // Back left leg
+(leg_4:2x4 {"length": 720})  // Back right leg
 
+// Define the aprons that connect the legs
+// These provide structural support
+(apron_front:2x4 {"length": 622})  // Front apron
+(apron_back:2x4 {"length": 622})   // Back apron
+(apron_left:2x4 {"length": 524})   // Left side apron
+(apron_right:2x4 {"length": 524})  // Right side apron
+
+// Define the table top
 (table_top_1:2x4 {"length": 600})
 (table_top_2:2x4 {"length": 600})
 (table_top_3:2x4 {"length": 600})
@@ -17,50 +26,42 @@
 (table_top_7:2x4 {"length": 600})
 (table_top_8:2x4 {"length": 600})
 
+// Front apron connections
 leg_1 -[{"contact_face": "left", "edge_shared_face": "back", "offset": FromMax(0)}
         {"contact_face": "down", "edge_shared_face": "back", "offset": FromMax(0)}]- apron_front
-
 leg_2 -[{"contact_face": "right", "edge_shared_face": "front", "offset": FromMax(0)}
         {"contact_face": "top", "edge_shared_face": "front", "offset": FromMax(0)}]- apron_front
 
+// Back apron connections
 leg_3 -[{"contact_face": "left", "edge_shared_face": "back", "offset": FromMax(0)}
         {"contact_face": "down", "edge_shared_face": "back", "offset": FromMax(0)}]- apron_back
-
 leg_4 -[{"contact_face": "right", "edge_shared_face": "front", "offset": FromMax(0)}
         {"contact_face": "top", "edge_shared_face": "front", "offset": FromMax(0)}]- apron_back
 
+// Side apron connections
 leg_1 -[{"contact_face": "back", "edge_shared_face": "right", "offset": FromMin(100)}
         {"contact_face": "down", "edge_shared_face": "back", "offset": FromMin(0)}]- apron_left
-
 leg_3 -[{"contact_face": "front", "edge_shared_face": "right", "offset": FromMin(100)}
         {"contact_face": "top", "edge_shared_face": "back", "offset": FromMin(0)}]- apron_left
-
 leg_2 -[{"contact_face": "back", "edge_shared_face": "left", "offset": FromMin(100)}
         {"contact_face": "down", "edge_shared_face": "front", "offset": FromMin(0)}]- apron_right
-
 leg_4 -[{"contact_face": "front", "edge_shared_face": "left", "offset": FromMin(100)}
         {"contact_face": "top", "edge_shared_face": "front", "offset": FromMin(0)}]- apron_right
 
+// Table top connections
 table_top_1 -[{"contact_face": "back", "edge_shared_face": "down", "offset": FromMin(0)}
               {"contact_face": "top", "edge_shared_face": "front", "offset": FromMin(0)}]- leg_1
-
-table_top_8 -[{"contact_face": "back", "edge_shared_face": "down", "offset": FromMin(0)}
-              {"contact_face": "top", "edge_shared_face": "front", "offset": FromMin(0)}]- leg_2
-
 apron_front -[{"contact_face": "right", "edge_shared_face": "front", "offset": FromMin(12.571)}
                {"contact_face": "back", "edge_shared_face": "top", "offset": FromMin(0)}]- table_top_2
-
 apron_front -[{"contact_face": "right", "edge_shared_face": "front", "offset": FromMin(114.142)}
                {"contact_face": "back", "edge_shared_face": "top", "offset": FromMin(0)}]- table_top_3
-
 apron_front -[{"contact_face": "right", "edge_shared_face": "front", "offset": FromMin(215.713)}
                {"contact_face": "back", "edge_shared_face": "top", "offset": FromMin(0)}]- table_top_4
-
 apron_front -[{"contact_face": "right", "edge_shared_face": "front", "offset": FromMin(317.284)}
                {"contact_face": "back", "edge_shared_face": "top", "offset": FromMin(0)}]- table_top_5
-
 apron_front -[{"contact_face": "right", "edge_shared_face": "front", "offset": FromMin(418.855)}
                {"contact_face": "back", "edge_shared_face": "top", "offset": FromMin(0)}]- table_top_6
-
 apron_front -[{"contact_face": "right", "edge_shared_face": "front", "offset": FromMin(520.426)}
                {"contact_face": "back", "edge_shared_face": "top", "offset": FromMin(0)}]- table_top_7
+table_top_8 -[{"contact_face": "back", "edge_shared_face": "down", "offset": FromMin(0)}
+              {"contact_face": "top", "edge_shared_face": "front", "offset": FromMin(0)}]- leg_2
