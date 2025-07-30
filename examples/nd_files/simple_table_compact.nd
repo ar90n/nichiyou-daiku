@@ -1,0 +1,38 @@
+(leg_1:PT_2x4 {"length": 720})
+(leg_2:PT_2x4 {"length": 720})
+(leg_3:PT_2x4 {"length": 720})
+(leg_4:PT_2x4 {"length": 720})
+
+(apron_front:PT_2x4 {"length": 622})
+(apron_back:PT_2x4 {"length": 622})
+(apron_left:PT_2x4 {"length": 524})
+(apron_right:PT_2x4 {"length": 524})
+
+(table_top_1:PT_2x4 {"length": 600})
+(table_top_2:PT_2x4 {"length": 600})
+(table_top_3:PT_2x4 {"length": 600})
+(table_top_4:PT_2x4 {"length": 600})
+(table_top_5:PT_2x4 {"length": 600})
+(table_top_6:PT_2x4 {"length": 600})
+(table_top_7:PT_2x4 {"length": 600})
+(table_top_8:PT_2x4 {"length": 600})
+
+leg_1 -[LB>0 DB>0]- apron_front
+leg_2 -[RF>0 TF>0]- apron_front
+leg_3 -[LB>0 DB>0]- apron_back
+leg_4 -[RF>0 TF>0]- apron_back
+
+leg_1 -[BR<100 DB<0]- apron_left
+leg_3 -[FR<100 TB<0]- apron_left
+leg_2 -[BL<100 DF<0]- apron_right
+leg_4 -[FL<100 TF<0]- apron_right
+
+table_top_1 -[BD<0 TF<0]- leg_1
+table_top_8 -[BD<0 TF<0]- leg_2
+
+apron_front -[RF<12.571 BT<0]- table_top_2
+apron_front -[RF<114.142 BT<0]- table_top_3
+apron_front -[RF<215.713 BT<0]- table_top_4
+apron_front -[RF<317.284 BT<0]- table_top_5
+apron_front -[RF<418.855 BT<0]- table_top_6
+apron_front -[RF<520.426 BT<0]- table_top_7

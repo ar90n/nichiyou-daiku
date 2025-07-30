@@ -1,10 +1,11 @@
 """AST transformer for converting Lark parse trees to nichiyou-daiku models."""
 
-from typing import Any
+from typing import Any, cast
 
 from lark import Token, Transformer
 
 from nichiyou_daiku.core.connection import Anchor, Connection
+from nichiyou_daiku.core.geometry.face import Face
 from nichiyou_daiku.core.geometry.offset import FromMax, FromMin, Offset
 from nichiyou_daiku.core.model import Model, PiecePair
 from nichiyou_daiku.core.piece import Piece, PieceType
@@ -13,6 +14,16 @@ from nichiyou_daiku.dsl.exceptions import DSLSemanticError, DSLValidationError
 
 class DSLTransformer(Transformer):
     """Transform Lark parse trees into nichiyou-daiku models."""
+
+    # Face mapping for compact notation
+    FACE_MAPPING = {
+        'T': 'top',
+        'D': 'bottom',
+        'L': 'left',
+        'R': 'right',
+        'F': 'front',
+        'B': 'back'
+    }
 
     def __init__(self):
         super().__init__()
@@ -96,18 +107,39 @@ class DSLTransformer(Transformer):
         # Extract piece references and anchor properties
         piece_refs = []
         anchor_props_list = []
+        compact_anchor_list = []
 
         for item in items:
             if isinstance(item, str):  # piece_ref
                 piece_refs.append(item)
-            elif isinstance(item, dict):  # anchor_props
+            elif isinstance(item, dict):  # anchor_props (JSON format)
                 anchor_props_list.append(item)
+            elif isinstance(item, Anchor):  # Already transformed compact anchor
+                compact_anchor_list.append(item)
 
         if len(piece_refs) != 2:
             raise DSLSemanticError("Connection must have exactly two piece references")
-        if len(anchor_props_list) != 2:
+        
+        # Determine which format was used
+        if anchor_props_list and not compact_anchor_list:
+            # Traditional JSON format
+            if len(anchor_props_list) != 2:
+                raise DSLSemanticError(
+                    "Connection must have exactly two anchor property sets"
+                )
+            lhs_anchor = self._create_anchor(anchor_props_list[0])
+            rhs_anchor = self._create_anchor(anchor_props_list[1])
+        elif compact_anchor_list and not anchor_props_list:
+            # Compact format
+            if len(compact_anchor_list) != 2:
+                raise DSLSemanticError(
+                    "Connection must have exactly two compact anchor definitions"
+                )
+            lhs_anchor = compact_anchor_list[0]
+            rhs_anchor = compact_anchor_list[1]
+        else:
             raise DSLSemanticError(
-                "Connection must have exactly two anchor property sets"
+                "Connection must use either JSON format or compact format, not both"
             )
 
         # Resolve piece references
@@ -119,10 +151,6 @@ class DSLTransformer(Transformer):
             raise DSLSemanticError(f"Unknown piece reference: {base_id}")
         if target_piece is None:
             raise DSLSemanticError(f"Unknown piece reference: {target_id}")
-
-        # Create anchors
-        lhs_anchor = self._create_anchor(anchor_props_list[0])
-        rhs_anchor = self._create_anchor(anchor_props_list[1])
 
         # Create connection
         connection = Connection(lhs=lhs_anchor, rhs=rhs_anchor)
@@ -228,3 +256,65 @@ class DSLTransformer(Transformer):
         value = value.replace("\\t", "\t")
         value = value.replace("\\\\", "\\")
         return value
+
+    def compact_anchor_props(self, items: list[Any]) -> Anchor:
+        """Transform compact anchor properties into an Anchor object."""
+        # items should contain: [contact_face, edge_shared_face, offset]
+        if len(items) != 3:
+            raise DSLValidationError(
+                f"Compact anchor must have exactly 3 components, got {len(items)}"
+            )
+        
+        contact_face_token = items[0]
+        edge_shared_face_token = items[1]
+        offset = items[2]  # Already transformed by compact_offset
+        
+        # Map compact face notation to full names
+        if not isinstance(contact_face_token, Token) or contact_face_token.type != "COMPACT_FACE":
+            raise DSLValidationError(f"Invalid contact face token: {contact_face_token}")
+        if not isinstance(edge_shared_face_token, Token) or edge_shared_face_token.type != "COMPACT_FACE":
+            raise DSLValidationError(f"Invalid edge shared face token: {edge_shared_face_token}")
+            
+        contact_face_char = str(contact_face_token)
+        edge_shared_face_char = str(edge_shared_face_token)
+        
+        if contact_face_char not in self.FACE_MAPPING:
+            raise DSLValidationError(f"Invalid compact face notation: {contact_face_char}")
+        if edge_shared_face_char not in self.FACE_MAPPING:
+            raise DSLValidationError(f"Invalid compact face notation: {edge_shared_face_char}")
+            
+        contact_face = cast(Face, self.FACE_MAPPING[contact_face_char])
+        edge_shared_face = cast(Face, self.FACE_MAPPING[edge_shared_face_char])
+        
+        if not isinstance(offset, Offset):
+            raise DSLValidationError(f"Invalid offset type: {type(offset)}")
+        
+        return Anchor(
+            contact_face=contact_face,
+            edge_shared_face=edge_shared_face,
+            offset=offset
+        )
+    
+    def compact_offset(self, items: list[Any]) -> Offset:
+        """Transform compact offset notation into an Offset object."""
+        # items should contain: [COMPACT_FROM_MIN/COMPACT_FROM_MAX, NUMBER]
+        if len(items) != 2:
+            raise DSLValidationError(
+                f"Compact offset must have exactly 2 components, got {len(items)}"
+            )
+        
+        offset_type_token = items[0]
+        number_token = items[1]
+        
+        if not isinstance(number_token, Token) or number_token.type != "NUMBER":
+            raise DSLValidationError(f"Invalid number token: {number_token}")
+            
+        value = float(number_token)
+        
+        if isinstance(offset_type_token, Token):
+            if offset_type_token.type == "COMPACT_FROM_MIN":
+                return FromMin(value=value)
+            elif offset_type_token.type == "COMPACT_FROM_MAX":
+                return FromMax(value=value)
+        
+        raise DSLValidationError(f"Invalid compact offset type: {offset_type_token}")

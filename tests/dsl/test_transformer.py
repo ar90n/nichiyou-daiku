@@ -5,6 +5,7 @@ from lark import Token
 
 from nichiyou_daiku.core.geometry.offset import FromMax, FromMin
 from nichiyou_daiku.core.piece import PieceType
+from nichiyou_daiku.core.connection import Anchor
 from nichiyou_daiku.dsl.exceptions import DSLSemanticError, DSLValidationError
 from nichiyou_daiku.dsl.transformer import DSLTransformer
 
@@ -155,6 +156,109 @@ class TestTransformerConnectionHandling:
         with pytest.raises(DSLValidationError) as exc_info:
             transformer._create_anchor(props)
         assert "offset" in str(exc_info.value)
+
+
+class TestCompactNotationTransformer:
+    """Test compact notation transformation."""
+
+    def test_compact_offset_transformation(self):
+        """Test compact offset notation transformation."""
+        transformer = DSLTransformer()
+        
+        # Test FromMin
+        min_token = Token("COMPACT_FROM_MIN", "<")
+        num_token = Token("NUMBER", "100")
+        offset = transformer.compact_offset([min_token, num_token])
+        assert isinstance(offset, FromMin)
+        assert offset.value == 100.0
+        
+        # Test FromMax
+        max_token = Token("COMPACT_FROM_MAX", ">")
+        num_token = Token("NUMBER", "50.5")
+        offset = transformer.compact_offset([max_token, num_token])
+        assert isinstance(offset, FromMax)
+        assert offset.value == 50.5
+
+    def test_compact_anchor_props_transformation(self):
+        """Test compact anchor properties transformation."""
+        transformer = DSLTransformer()
+        
+        # Create test tokens
+        contact_face = Token("COMPACT_FACE", "T")
+        edge_face = Token("COMPACT_FACE", "F")
+        offset = FromMin(value=0.0)
+        
+        anchor = transformer.compact_anchor_props([contact_face, edge_face, offset])
+        
+        assert isinstance(anchor, Anchor)
+        assert anchor.contact_face == "top"
+        assert anchor.edge_shared_face == "front"
+        assert anchor.offset.value == 0.0
+
+    def test_all_face_mappings(self):
+        """Test all compact face notation mappings."""
+        transformer = DSLTransformer()
+        
+        face_tests = [
+            ("T", "top"),
+            ("D", "bottom"),
+            ("L", "left"),
+            ("R", "right"),
+            ("F", "front"),
+            ("B", "back")
+        ]
+        
+        for compact, full in face_tests:
+            token = Token("COMPACT_FACE", compact)
+            offset = FromMin(value=0.0)
+            anchor = transformer.compact_anchor_props([token, token, offset])
+            assert anchor.contact_face == full
+            assert anchor.edge_shared_face == full
+
+    def test_invalid_compact_face_error(self):
+        """Test error on invalid compact face notation."""
+        transformer = DSLTransformer()
+        
+        # Invalid face character
+        invalid_face = Token("COMPACT_FACE", "X")
+        valid_face = Token("COMPACT_FACE", "T")
+        offset = FromMin(value=0.0)
+        
+        with pytest.raises(DSLValidationError) as exc_info:
+            transformer.compact_anchor_props([invalid_face, valid_face, offset])
+        assert "Invalid compact face notation: X" in str(exc_info.value)
+
+    def test_invalid_compact_offset_type(self):
+        """Test error on invalid compact offset type."""
+        transformer = DSLTransformer()
+        
+        # Invalid offset type token
+        invalid_token = Token("INVALID", "?")
+        num_token = Token("NUMBER", "100")
+        
+        with pytest.raises(DSLValidationError) as exc_info:
+            transformer.compact_offset([invalid_token, num_token])
+        assert "Invalid compact offset type" in str(exc_info.value)
+
+    def test_compact_anchor_wrong_component_count(self):
+        """Test error when compact anchor has wrong number of components."""
+        transformer = DSLTransformer()
+        
+        # Too few components
+        with pytest.raises(DSLValidationError) as exc_info:
+            transformer.compact_anchor_props([Token("COMPACT_FACE", "T")])
+        assert "3 components" in str(exc_info.value)
+        
+        # Too many components
+        offset = FromMin(value=0.0)
+        with pytest.raises(DSLValidationError) as exc_info:
+            transformer.compact_anchor_props([
+                Token("COMPACT_FACE", "T"),
+                Token("COMPACT_FACE", "F"),
+                offset,
+                Token("EXTRA", "X")
+            ])
+        assert "3 components" in str(exc_info.value)
 
 
 class TestTransformerModelGeneration:
