@@ -221,6 +221,47 @@ The report includes:
 - Purchase recommendations with optimal board usage
 - Cut diagrams showing how to minimize waste
 
+### DSL Support (Domain-Specific Language)
+
+nichiyou-daiku supports a Cypher-inspired DSL for more concise model definitions:
+
+```dsl
+// Simple shelf design with comments
+(left_side:2x4 =800)    // 800mm tall
+(right_side:2x4 =800)
+(shelf:2x4 =600)        // 600mm wide shelf
+
+// Connections using compact notation
+left_side -[RT>100 FT<50]- shelf    // Right-Top to Front-Top
+right_side -[LT>100 FT<50]- shelf   // Left-Top to Front-Top
+```
+
+#### DSL Features
+
+- **Comments**: Single-line comments with `//`
+- **Compact piece syntax**: `(id:type =length)` instead of JSON
+- **Compact connection syntax**: `[FF<100 TD>50]` for face+offset pairs
+- **Face abbreviations**: T(op), D(own), L(eft), R(ight), F(ront), B(ack)
+
+#### DSL CLI Tools
+
+```bash
+# Validate DSL syntax
+nichiyou-dsl validate furniture.nd
+
+# Generate markdown report
+nichiyou-dsl report furniture.nd -o report.md
+
+# View 3D model (requires build123d)
+nichiyou-dsl view furniture.nd
+
+# Export to STL/STEP formats
+nichiyou-dsl export furniture.nd -f stl
+nichiyou-dsl export furniture.nd -o model.step --fillet-radius 10
+```
+
+See `examples/shelf_with_comments.nd` for a complete example.
+
 ## Project Structure
 
 ```
@@ -237,10 +278,21 @@ nichiyou-daiku/
 │       │       ├── face.py, edge.py, corner.py
 │       │       ├── coordinates.py, dimensions.py
 │       │       └── offset.py
+│       ├── dsl/            # DSL parser and transformer
+│       │   ├── parser.py   # Lark-based DSL parser
+│       │   ├── grammar.py  # DSL grammar definition
+│       │   └── transformer.py # AST to model conversion
+│       ├── cli/            # Command-line interface
+│       │   ├── dsl_cli.py  # Main CLI entry point
+│       │   └── commands/   # CLI commands
+│       │       ├── validate.py, report.py
+│       │       ├── view.py, export.py
 │       └── shell/          # External integrations
 │           ├── build123d_export.py
 │           └── report_generator.py
 ├── examples/               # Example projects
+│   ├── *.py               # Python examples
+│   └── *.nd               # DSL examples
 ├── tests/                  # Test suite
 └── ci/                     # CI/CD pipeline (Dagger)
 ```
