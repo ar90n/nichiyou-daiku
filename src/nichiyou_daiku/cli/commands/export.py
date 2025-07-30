@@ -12,6 +12,23 @@ from nichiyou_daiku.dsl import parse_dsl
 from nichiyou_daiku.shell.build123d_export import assembly_to_build123d, HAS_BUILD123D
 
 
+def detect_format_from_extension(suffix: str) -> Optional[str]:
+    """Detect export format from file extension.
+
+    Args:
+        suffix: File extension (e.g., '.stl', '.step')
+
+    Returns:
+        Format string ('stl' or 'step') or None if unknown
+    """
+    suffix_lower = suffix.lower()
+    if suffix_lower == ".stl":
+        return "stl"
+    elif suffix_lower in [".step", ".stp"]:
+        return "step"
+    return None
+
+
 @click.command()
 @click.argument("input_file", type=click.Path(exists=True, path_type=Path))
 @click.option(
@@ -66,14 +83,10 @@ def export(
     elif output and not format:
         # Output specified, detect format from extension
         output_path = output
-        suffix = output.suffix.lower()
-        if suffix == ".stl":
-            export_format = "stl"
-        elif suffix in [".step", ".stp"]:
-            export_format = "step"
-        else:
+        export_format = detect_format_from_extension(output.suffix)
+        if export_format is None:
             echo.error(
-                f"Error: Cannot detect format from extension '{suffix}'. "
+                f"Error: Cannot detect format from extension '{output.suffix}'. "
                 "Please specify format with -f option."
             )
             sys.exit(1)

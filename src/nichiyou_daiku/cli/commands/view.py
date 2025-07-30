@@ -14,6 +14,46 @@ from nichiyou_daiku.dsl import (
 from nichiyou_daiku.core.assembly import Assembly
 
 
+def try_ocp_vscode_viewer(compound, echo: CliEcho) -> bool:
+    """Try to display model using OCP VSCode viewer.
+
+    Args:
+        compound: The 3D model to display
+        echo: CliEcho instance for output
+
+    Returns:
+        True if viewer was successfully used, False otherwise
+    """
+    try:
+        from ocp_vscode import show
+
+        echo.echo("Displaying in VS Code OCP CAD Viewer...")
+        show(compound)
+        return True
+    except ImportError:
+        return False
+
+
+def try_jupyter_cadquery_viewer(compound, echo: CliEcho) -> bool:
+    """Try to display model using Jupyter CadQuery viewer.
+
+    Args:
+        compound: The 3D model to display
+        echo: CliEcho instance for output
+
+    Returns:
+        True if viewer was successfully used, False otherwise
+    """
+    try:
+        from jupyter_cadquery import show as jcq_show
+
+        echo.echo("Displaying in Jupyter CadQuery...")
+        jcq_show(compound)
+        return True
+    except ImportError:
+        return False
+
+
 @click.command()
 @click.argument("file", type=str)
 @click.option(
@@ -70,28 +110,10 @@ def view(ctx: click.Context, file: str, fillet_radius: float) -> None:
         compound = assembly_to_build123d(assembly, fillet_radius=fillet_radius)
 
         # Try different viewers
-        viewer_found = False
+        viewer_found = try_ocp_vscode_viewer(compound, echo)
 
-        # Try ocp_vscode first
-        try:
-            from ocp_vscode import show
-
-            echo.echo("Displaying in VS Code OCP CAD Viewer...")
-            show(compound)
-            viewer_found = True
-        except ImportError:
-            pass
-
-        # Try jupyter_cadquery if available
         if not viewer_found:
-            try:
-                from jupyter_cadquery import show as jcq_show
-
-                echo.echo("Displaying in Jupyter CadQuery...")
-                jcq_show(compound)
-                viewer_found = True
-            except ImportError:
-                pass
+            viewer_found = try_jupyter_cadquery_viewer(compound, echo)
 
         if not viewer_found:
             echo.error("No 3D viewer found. Install ocp-vscode or jupyter-cadquery.")
