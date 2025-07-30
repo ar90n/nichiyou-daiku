@@ -127,7 +127,7 @@ for leg_pos, apron_pos in [
                         offset=BOTTOM_APRON_HEIGHT,
                     ),
                     rhs=Anchor(
-                        contact_face="bottom",
+                        contact_face="down",
                         edge_shared_face="right",
                         offset=FromMin(value=0),
                     ),
@@ -142,7 +142,7 @@ for leg_pos, apron_pos in [
                         offset=TOP_APRON_HEIGHT,
                     ),
                     rhs=Anchor(
-                        contact_face="bottom",
+                        contact_face="down",
                         edge_shared_face="right",
                         offset=FromMax(value=0),
                     ),
@@ -233,7 +233,7 @@ connections.extend(
                     offset=FromMin(value=BOTTOM_APRON_HEIGHT.value + 150.0),
                 ),
                 rhs=Anchor(
-                    contact_face="bottom",
+                    contact_face="down",
                     edge_shared_face="front",
                     offset=FromMax(value=0),
                 ),
@@ -248,7 +248,7 @@ connections.extend(
                     offset=FromMax(value=0),
                 ),
                 rhs=Anchor(
-                    contact_face="bottom",
+                    contact_face="down",
                     edge_shared_face="front",
                     offset=FromMax(value=0),
                 ),
@@ -263,7 +263,7 @@ connections.extend(
                     offset=FromMin(value=BOTTOM_APRON_HEIGHT.value + 150.0),
                 ),
                 rhs=Anchor(
-                    contact_face="bottom",
+                    contact_face="down",
                     edge_shared_face="back",
                     offset=FromMax(value=0),
                 ),
@@ -278,7 +278,7 @@ connections.extend(
                     offset=FromMax(value=0),
                 ),
                 rhs=Anchor(
-                    contact_face="bottom",
+                    contact_face="down",
                     edge_shared_face="back",
                     offset=FromMax(value=0),
                 ),
@@ -293,7 +293,7 @@ connections.extend(
                     offset=FromMax(value=0),
                 ),
                 rhs=Anchor(
-                    contact_face="bottom",
+                    contact_face="down",
                     edge_shared_face="front",
                     offset=FromMax(value=0),
                 ),
@@ -347,7 +347,7 @@ def _connect_top_pieces(
                     ),
                     rhs=Anchor(
                         contact_face="back",
-                        edge_shared_face="bottom",
+                        edge_shared_face="down",
                         offset=FromMin(value=0),
                     ),
                 ),

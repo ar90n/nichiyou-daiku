@@ -201,7 +201,7 @@ class TestCompactNotationTransformer:
 
         face_tests = [
             ("T", "top"),
-            ("D", "bottom"),
+            ("D", "down"),
             ("L", "left"),
             ("R", "right"),
             ("F", "front"),

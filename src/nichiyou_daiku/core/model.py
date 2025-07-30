@@ -65,7 +65,7 @@ class Model(BaseModel, frozen=True):
         ...         offset=FromMax(value=100)
         ...     ),
         ...     rhs=Anchor(
-        ...         contact_face="bottom",
+        ...         contact_face="down",
         ...         edge_shared_face="front",
         ...         offset=FromMin(value=50)
         ...     )
@@ -115,7 +115,7 @@ class Model(BaseModel, frozen=True):
             ...         offset=FromMax(value=100)
             ...     ),
             ...     rhs=Anchor(
-            ...         contact_face="bottom",
+            ...         contact_face="down",
             ...         edge_shared_face="front",
             ...         offset=FromMin(value=10)
             ...     )

@@ -55,7 +55,7 @@ class TestAnchor:
 
     def test_should_accept_all_faces(self):
         """Should accept all face types."""
-        all_faces: list[Face] = ["left", "right", "front", "back", "top", "bottom"]
+        all_faces: list[Face] = ["left", "right", "front", "back", "top", "down"]
 
         # Test all faces
         for contact_face in all_faces:
@@ -75,7 +75,7 @@ class TestAnchor:
             contact_face="front", edge_shared_face="top", offset=FromMax(value=100)
         )
         anchor2 = Anchor(
-            contact_face="back", edge_shared_face="bottom", offset=FromMin(value=200)
+            contact_face="back", edge_shared_face="down", offset=FromMin(value=200)
         )
 
         assert isinstance(anchor1.offset, FromMax)
@@ -93,10 +93,10 @@ class TestEdgePoint:
         """Should accept valid edge combinations."""
         # Adjacent faces (valid edge)
         edge1 = EdgePoint(edge=Edge(lhs="top", rhs="front"), offset=FromMin(value=10))
-        edge2 = EdgePoint(edge=Edge(lhs="left", rhs="bottom"), offset=FromMin(value=50))
+        edge2 = EdgePoint(edge=Edge(lhs="left", rhs="down"), offset=FromMin(value=50))
 
         assert edge1.edge.lhs == "top" and edge1.edge.rhs == "front"
-        assert edge2.edge.lhs == "left" and edge2.edge.rhs == "bottom"
+        assert edge2.edge.lhs == "left" and edge2.edge.rhs == "down"
 
     def test_should_validate_non_negative_value(self):
         """Should validate that value is non-negative."""
@@ -150,7 +150,7 @@ class TestConnection:
                 contact_face="front", edge_shared_face="top", offset=FromMax(value=50)
             ),
             rhs=Anchor(
-                contact_face="bottom",
+                contact_face="down",
                 edge_shared_face="front",
                 offset=FromMin(value=10),
             ),
@@ -183,7 +183,7 @@ class TestConnection:
                 offset=FromMax(value=50),  # Center of side face
             ),
             rhs=Anchor(
-                contact_face="bottom",
+                contact_face="down",
                 edge_shared_face="front",
                 offset=FromMin(value=10),
             ),
@@ -198,7 +198,7 @@ class TestConnection:
             ),
             rhs=Anchor(
                 contact_face="right",
-                edge_shared_face="bottom",
+                edge_shared_face="down",
                 offset=FromMin(value=100),
             ),
         )

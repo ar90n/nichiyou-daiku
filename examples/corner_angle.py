@@ -28,7 +28,7 @@ piece_b = Piece.of(PieceType.PT_2x4, 400.0, "corner_piece_b")
 connection = Connection(
     lhs=Anchor(contact_face="top", edge_shared_face="front", offset=FromMin(value=0.0)),
     rhs=Anchor(
-        contact_face="back", edge_shared_face="bottom", offset=FromMin(value=0.0)
+        contact_face="back", edge_shared_face="down", offset=FromMin(value=0.0)
     ),
 )
 

@@ -52,7 +52,7 @@ class TestOrientationPreservation:
             ),
             rhs=Anchor(
                 contact_face="right",
-                edge_shared_face="bottom",
+                edge_shared_face="down",
                 offset=FromMin(value=50),
             ),
         )
@@ -99,7 +99,7 @@ class TestOrientationPreservation:
                 contact_face="front", edge_shared_face="top", offset=FromMax(value=50)
             ),
             rhs=Anchor(
-                contact_face="bottom",
+                contact_face="down",
                 edge_shared_face="front",
                 offset=FromMin(value=100),
             ),
@@ -168,7 +168,7 @@ class TestOrientationPreservation:
             ),
             (
                 "left",
-                Edge(lhs="left", rhs="bottom"),
+                Edge(lhs="left", rhs="down"),
                 Vector3D(x=0, y=-1, z=0),
                 Vector3D(x=0, y=0, z=-1),
             ),

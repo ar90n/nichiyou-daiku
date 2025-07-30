@@ -72,7 +72,7 @@ def create_grid_frame(
                             offset=FromMax(value=col * cell_width),
                         ),
                         rhs=Anchor(
-                            contact_face="bottom",
+                            contact_face="down",
                             edge_shared_face="front",
                             offset=FromMin(value=row * cell_height),
                         ),

@@ -42,7 +42,7 @@ class TestModel:
                 contact_face="front", edge_shared_face="top", offset=FromMax(value=10)
             ),
             rhs=Anchor(
-                contact_face="bottom",
+                contact_face="down",
                 edge_shared_face="right",
                 offset=FromMin(value=10),
             ),
@@ -85,7 +85,7 @@ class TestModel:
                 contact_face="front", edge_shared_face="top", offset=FromMax(value=10)
             ),
             rhs=Anchor(
-                contact_face="bottom",
+                contact_face="down",
                 edge_shared_face="right",
                 offset=FromMin(value=10),
             ),
@@ -113,7 +113,7 @@ class TestModel:
                 contact_face="left", edge_shared_face="top", offset=FromMax(value=200)
             ),
             rhs=Anchor(
-                contact_face="bottom",
+                contact_face="down",
                 edge_shared_face="front",
                 offset=FromMin(value=10),
             ),
@@ -124,7 +124,7 @@ class TestModel:
                 contact_face="right", edge_shared_face="top", offset=FromMax(value=800)
             ),
             rhs=Anchor(
-                contact_face="bottom",
+                contact_face="down",
                 edge_shared_face="front",
                 offset=FromMin(value=10),
             ),

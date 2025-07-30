@@ -20,7 +20,7 @@ def valid_dsl():
 (piece2:1x4 {"length": 800})
 
 piece1 -[{"contact_face": "top", "edge_shared_face": "front", "offset": FromMin(0)}
-         {"contact_face": "bottom", "edge_shared_face": "left", "offset": FromMax(100)}]- piece2
+         {"contact_face": "down", "edge_shared_face": "left", "offset": FromMax(100)}]- piece2
 """
 
 
@@ -39,7 +39,7 @@ def invalid_semantic_dsl():
 (piece1:2x4 {"length": 1000})
 
 piece1 -[{"contact_face": "top", "edge_shared_face": "front", "offset": FromMin(0)}
-         {"contact_face": "bottom", "edge_shared_face": "left", "offset": FromMax(100)}]- unknown_piece
+         {"contact_face": "down", "edge_shared_face": "left", "offset": FromMax(100)}]- unknown_piece
 """
 
 
