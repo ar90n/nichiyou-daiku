@@ -49,5 +49,10 @@ ci = [
     "anyio>=4.9.0",
 ]
 
+[tool.coverage.run]
+omit = [
+    "src/nichiyou_daiku/cli/commands/view.py",
+]
+
 [tool.uv.sources]
 build123d = { git = "https://github.com/gumyr/build123d" }
