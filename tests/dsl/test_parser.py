@@ -141,20 +141,20 @@ class TestCompactNotation:
         beam1 -[TF<0 BD<0]- beam2
         """
         model = parse_dsl(dsl)
-        
+
         assert len(model.pieces) == 2
         assert len(model.connections) == 1
-        
+
         # Check the connection was created correctly
         conn_key = ("beam1", "beam2")
         assert conn_key in model.connections
         connection = model.connections[conn_key]
-        
+
         # Check anchors were transformed correctly
         assert connection.lhs.contact_face == "top"
         assert connection.lhs.edge_shared_face == "front"
         assert connection.lhs.offset.value == 0.0
-        
+
         assert connection.rhs.contact_face == "back"
         assert connection.rhs.edge_shared_face == "bottom"
         assert connection.rhs.offset.value == 0.0
@@ -174,10 +174,10 @@ class TestCompactNotation:
         p5 -[RD<50 BF>60]- p6
         """
         model = parse_dsl(dsl)
-        
+
         assert len(model.pieces) == 6
         assert len(model.connections) == 3
-        
+
         # Check first connection (T/L and D/R)
         conn1 = model.connections[("p1", "p2")]
         assert conn1.lhs.contact_face == "top"
@@ -186,7 +186,7 @@ class TestCompactNotation:
         assert conn1.rhs.contact_face == "bottom"
         assert conn1.rhs.edge_shared_face == "right"
         assert conn1.rhs.offset.value == 20.0
-        
+
         # Check second connection (F/B and L/T)
         conn2 = model.connections[("p3", "p4")]
         assert conn2.lhs.contact_face == "front"
@@ -225,7 +225,7 @@ class TestCompactNotation:
         beam1 -[TF<12.5 BD>37.8]- beam2
         """
         model = parse_dsl(dsl)
-        
+
         connection = model.connections[("beam1", "beam2")]
         assert connection.lhs.offset.value == 12.5
         assert connection.rhs.offset.value == 37.8
@@ -238,12 +238,12 @@ class TestCompactPieceNotation:
         """Test parsing a piece with compact length notation."""
         dsl = "(beam1:2x4 =1000)"
         model = parse_dsl(dsl)
-        
+
         assert len(model.pieces) == 1
         piece = model.pieces["beam1"]
         assert piece.type == PieceType.PT_2x4
         assert piece.length == 1000.0
-    
+
     def test_parse_multiple_compact_pieces(self):
         """Test parsing multiple pieces with compact notation."""
         dsl = """
@@ -252,23 +252,23 @@ class TestCompactPieceNotation:
         (board1:1x4 =600)
         """
         model = parse_dsl(dsl)
-        
+
         assert len(model.pieces) == 3
         assert model.pieces["beam1"].length == 1000.0
         assert model.pieces["beam2"].length == 800.0
         assert model.pieces["board1"].length == 600.0
-    
+
     def test_parse_compact_piece_without_id(self):
         """Test parsing compact piece without ID."""
         dsl = "(:2x4 =1500)"
         model = parse_dsl(dsl)
-        
+
         assert len(model.pieces) == 1
         piece = list(model.pieces.values())[0]
         assert piece.length == 1500.0
         # ID should be auto-generated
         assert len(piece.id) == 36
-    
+
     def test_parse_mixed_piece_notation(self):
         """Test parsing with both compact and JSON notation."""
         dsl = """
@@ -277,12 +277,12 @@ class TestCompactPieceNotation:
         (beam3:2x4 =1500)
         """
         model = parse_dsl(dsl)
-        
+
         assert len(model.pieces) == 3
         assert model.pieces["beam1"].length == 1000.0
         assert model.pieces["beam2"].length == 2000.0
         assert model.pieces["beam3"].length == 1500.0
-    
+
     def test_parse_compact_piece_with_float(self):
         """Test parsing compact notation with floating point lengths."""
         dsl = """
@@ -290,10 +290,10 @@ class TestCompactPieceNotation:
         (beam2:2x4 =800.75)
         """
         model = parse_dsl(dsl)
-        
+
         assert model.pieces["beam1"].length == 1000.5
         assert model.pieces["beam2"].length == 800.75
-    
+
     def test_parse_compact_piece_with_connection(self):
         """Test parsing compact pieces with connections."""
         dsl = """
@@ -302,7 +302,7 @@ class TestCompactPieceNotation:
         beam1 -[TF<0 BD<0]- beam2
         """
         model = parse_dsl(dsl)
-        
+
         assert len(model.pieces) == 2
         assert len(model.connections) == 1
         assert model.pieces["beam1"].length == 1000.0

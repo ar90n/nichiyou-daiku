@@ -19,20 +19,20 @@ class TestCompactNotationIntegration:
         beam1 -[TF<0 BD<0]- beam2
         beam2 -[RB>50 LT<100]- beam3
         """
-        
+
         model = parse_dsl(dsl)
-        
+
         assert isinstance(model, Model)
         assert len(model.pieces) == 3
         assert len(model.connections) == 2
-        
+
         # Check first connection
         conn1 = model.connections[("beam1", "beam2")]
         assert conn1.lhs.contact_face == "top"
         assert conn1.lhs.edge_shared_face == "front"
         assert isinstance(conn1.lhs.offset, FromMin)
         assert conn1.lhs.offset.value == 0.0
-        
+
         # Check second connection
         conn2 = model.connections[("beam2", "beam3")]
         assert conn2.lhs.contact_face == "right"
@@ -54,12 +54,12 @@ class TestCompactNotationIntegration:
         top -[DL<50 TB>0]- leg3
         top -[DR>50 TB>0]- leg4
         """
-        
+
         model = parse_dsl(dsl)
-        
+
         assert len(model.pieces) == 5
         assert len(model.connections) == 4
-        
+
         # All legs should connect to the bottom of the top
         for (base_id, target_id), conn in model.connections.items():
             assert conn.lhs.contact_face == "bottom"
@@ -76,17 +76,17 @@ class TestCompactNotationIntegration:
         p2 -[{"contact_face": "right", "edge_shared_face": "top", "offset": FromMax(100)}
               {"contact_face": "left", "edge_shared_face": "bottom", "offset": FromMin(50)}]- p3
         """
-        
+
         model = parse_dsl(dsl)
-        
+
         assert len(model.pieces) == 3
         assert len(model.connections) == 2
-        
+
         # First connection uses compact notation
         conn1 = model.connections[("p1", "p2")]
         assert conn1.lhs.contact_face == "top"
         assert conn1.rhs.contact_face == "back"
-        
+
         # Second connection uses traditional notation
         conn2 = model.connections[("p2", "p3")]
         assert conn2.lhs.contact_face == "right"
@@ -97,7 +97,7 @@ class TestCompactNotationIntegration:
 
 class TestCompactPieceIntegration:
     """Integration tests for compact piece notation."""
-    
+
     def test_full_project_with_compact_pieces(self):
         """Test a complete project using compact piece notation."""
         dsl = """
@@ -114,18 +114,18 @@ class TestCompactPieceIntegration:
         leg3 -[LB>0 DB>0]- apron_back
         leg4 -[RF>0 TF>0]- apron_back
         """
-        
+
         model = parse_dsl(dsl)
-        
+
         assert len(model.pieces) == 6
         assert len(model.connections) == 4
-        
+
         # Check all pieces have correct lengths
         for i in range(1, 5):
             assert model.pieces[f"leg{i}"].length == 720.0
         assert model.pieces["apron_front"].length == 600.0
         assert model.pieces["apron_back"].length == 600.0
-    
+
     def test_mixed_notation_pieces_and_connections(self):
         """Test mixing compact and traditional notation for both pieces and connections."""
         dsl = """
@@ -138,22 +138,22 @@ class TestCompactPieceIntegration:
         p3 -[{"contact_face": "right", "edge_shared_face": "top", "offset": FromMax(100)}
               {"contact_face": "left", "edge_shared_face": "bottom", "offset": FromMin(50)}]- p4
         """
-        
+
         model = parse_dsl(dsl)
-        
+
         assert len(model.pieces) == 4
         assert len(model.connections) == 2
-        
+
         # Check pieces
         assert model.pieces["p1"].length == 1000.0
         assert model.pieces["p2"].length == 1200.0
         assert model.pieces["p3"].length == 800.0
         assert model.pieces["p4"].length == 600.0
-        
+
         # Check both connection types work
         assert ("p1", "p2") in model.connections
         assert ("p3", "p4") in model.connections
-    
+
     def test_compact_pieces_with_decimal_lengths(self):
         """Test compact notation with decimal lengths."""
         dsl = """
@@ -164,13 +164,13 @@ class TestCompactPieceIntegration:
         beam1 -[TF<10.5 BD>20.25]- beam2
         beam2 -[RB<30.333 LT>40.667]- beam3
         """
-        
+
         model = parse_dsl(dsl)
-        
+
         assert model.pieces["beam1"].length == 1000.5
         assert model.pieces["beam2"].length == 999.75
         assert model.pieces["beam3"].length == 1001.25
-        
+
         # Check connections preserve decimal offsets
         conn1 = model.connections[("beam1", "beam2")]
         assert conn1.lhs.offset.value == 10.5

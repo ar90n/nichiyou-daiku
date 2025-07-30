@@ -164,14 +164,14 @@ class TestCompactNotationTransformer:
     def test_compact_offset_transformation(self):
         """Test compact offset notation transformation."""
         transformer = DSLTransformer()
-        
+
         # Test FromMin
         min_token = Token("COMPACT_FROM_MIN", "<")
         num_token = Token("NUMBER", "100")
         offset = transformer.compact_offset([min_token, num_token])
         assert isinstance(offset, FromMin)
         assert offset.value == 100.0
-        
+
         # Test FromMax
         max_token = Token("COMPACT_FROM_MAX", ">")
         num_token = Token("NUMBER", "50.5")
@@ -182,14 +182,14 @@ class TestCompactNotationTransformer:
     def test_compact_anchor_props_transformation(self):
         """Test compact anchor properties transformation."""
         transformer = DSLTransformer()
-        
+
         # Create test tokens
         contact_face = Token("COMPACT_FACE", "T")
         edge_face = Token("COMPACT_FACE", "F")
         offset = FromMin(value=0.0)
-        
+
         anchor = transformer.compact_anchor_props([contact_face, edge_face, offset])
-        
+
         assert isinstance(anchor, Anchor)
         assert anchor.contact_face == "top"
         assert anchor.edge_shared_face == "front"
@@ -198,16 +198,16 @@ class TestCompactNotationTransformer:
     def test_all_face_mappings(self):
         """Test all compact face notation mappings."""
         transformer = DSLTransformer()
-        
+
         face_tests = [
             ("T", "top"),
             ("D", "bottom"),
             ("L", "left"),
             ("R", "right"),
             ("F", "front"),
-            ("B", "back")
+            ("B", "back"),
         ]
-        
+
         for compact, full in face_tests:
             token = Token("COMPACT_FACE", compact)
             offset = FromMin(value=0.0)
@@ -218,12 +218,12 @@ class TestCompactNotationTransformer:
     def test_invalid_compact_face_error(self):
         """Test error on invalid compact face notation."""
         transformer = DSLTransformer()
-        
+
         # Invalid face character
         invalid_face = Token("COMPACT_FACE", "X")
         valid_face = Token("COMPACT_FACE", "T")
         offset = FromMin(value=0.0)
-        
+
         with pytest.raises(DSLValidationError) as exc_info:
             transformer.compact_anchor_props([invalid_face, valid_face, offset])
         assert "Invalid compact face notation: X" in str(exc_info.value)
@@ -231,11 +231,11 @@ class TestCompactNotationTransformer:
     def test_invalid_compact_offset_type(self):
         """Test error on invalid compact offset type."""
         transformer = DSLTransformer()
-        
+
         # Invalid offset type token
         invalid_token = Token("INVALID", "?")
         num_token = Token("NUMBER", "100")
-        
+
         with pytest.raises(DSLValidationError) as exc_info:
             transformer.compact_offset([invalid_token, num_token])
         assert "Invalid compact offset type" in str(exc_info.value)
@@ -243,21 +243,23 @@ class TestCompactNotationTransformer:
     def test_compact_anchor_wrong_component_count(self):
         """Test error when compact anchor has wrong number of components."""
         transformer = DSLTransformer()
-        
+
         # Too few components
         with pytest.raises(DSLValidationError) as exc_info:
             transformer.compact_anchor_props([Token("COMPACT_FACE", "T")])
         assert "3 components" in str(exc_info.value)
-        
+
         # Too many components
         offset = FromMin(value=0.0)
         with pytest.raises(DSLValidationError) as exc_info:
-            transformer.compact_anchor_props([
-                Token("COMPACT_FACE", "T"),
-                Token("COMPACT_FACE", "F"),
-                offset,
-                Token("EXTRA", "X")
-            ])
+            transformer.compact_anchor_props(
+                [
+                    Token("COMPACT_FACE", "T"),
+                    Token("COMPACT_FACE", "F"),
+                    offset,
+                    Token("EXTRA", "X"),
+                ]
+            )
         assert "3 components" in str(exc_info.value)
 
 
@@ -267,57 +269,53 @@ class TestCompactPieceTransformer:
     def test_compact_length_transformation(self):
         """Test transformation of compact length notation."""
         from lark import Token
-        
+
         transformer = DSLTransformer()
-        
+
         # Test compact_length method
         result = transformer.compact_length([Token("NUMBER", "1500")])
         assert result == 1500.0
-        
+
         # Test with decimal
         result = transformer.compact_length([Token("NUMBER", "1500.75")])
         assert result == 1500.75
-    
+
     def test_piece_def_with_compact_length(self):
         """Test piece definition transformation with compact length."""
         from lark import Token
-        
+
         transformer = DSLTransformer()
-        
+
         # Simulate piece_def with compact length
         items = [
             Token("CNAME", "beam1"),
             Token("PIECE_TYPE", "2x4"),
-            1500.0  # Direct length value from compact_length
+            1500.0,  # Direct length value from compact_length
         ]
-        
+
         transformer.piece_def(items)
-        
+
         assert "beam1" in transformer.pieces
         piece = transformer.pieces["beam1"]
         assert piece.type == PieceType.PT_2x4
         assert piece.length == 1500.0
-    
+
     def test_piece_def_mixed_format(self):
         """Test that both JSON and compact formats work."""
         from lark import Token
-        
+
         transformer = DSLTransformer()
-        
+
         # First piece with compact notation
-        transformer.piece_def([
-            Token("CNAME", "beam1"),
-            Token("PIECE_TYPE", "2x4"),
-            1000.0
-        ])
-        
+        transformer.piece_def(
+            [Token("CNAME", "beam1"), Token("PIECE_TYPE", "2x4"), 1000.0]
+        )
+
         # Second piece with JSON notation
-        transformer.piece_def([
-            Token("CNAME", "beam2"),
-            Token("PIECE_TYPE", "2x4"),
-            {"length": 2000}
-        ])
-        
+        transformer.piece_def(
+            [Token("CNAME", "beam2"), Token("PIECE_TYPE", "2x4"), {"length": 2000}]
+        )
+
         assert len(transformer.pieces) == 2
         assert transformer.pieces["beam1"].length == 1000.0
         assert transformer.pieces["beam2"].length == 2000.0

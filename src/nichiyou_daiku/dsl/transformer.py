@@ -17,12 +17,12 @@ class DSLTransformer(Transformer):
 
     # Face mapping for compact notation
     FACE_MAPPING = {
-        'T': 'top',
-        'D': 'bottom',
-        'L': 'left',
-        'R': 'right',
-        'F': 'front',
-        'B': 'back'
+        "T": "top",
+        "D": "bottom",
+        "L": "left",
+        "R": "right",
+        "F": "front",
+        "B": "back",
     }
 
     def __init__(self):
@@ -128,7 +128,7 @@ class DSLTransformer(Transformer):
 
         if len(piece_refs) != 2:
             raise DSLSemanticError("Connection must have exactly two piece references")
-        
+
         # Determine which format was used
         if anchor_props_list and not compact_anchor_list:
             # Traditional JSON format
@@ -273,37 +273,49 @@ class DSLTransformer(Transformer):
             raise DSLValidationError(
                 f"Compact anchor must have exactly 3 components, got {len(items)}"
             )
-        
+
         contact_face_token = items[0]
         edge_shared_face_token = items[1]
         offset = items[2]  # Already transformed by compact_offset
-        
+
         # Map compact face notation to full names
-        if not isinstance(contact_face_token, Token) or contact_face_token.type != "COMPACT_FACE":
-            raise DSLValidationError(f"Invalid contact face token: {contact_face_token}")
-        if not isinstance(edge_shared_face_token, Token) or edge_shared_face_token.type != "COMPACT_FACE":
-            raise DSLValidationError(f"Invalid edge shared face token: {edge_shared_face_token}")
-            
+        if (
+            not isinstance(contact_face_token, Token)
+            or contact_face_token.type != "COMPACT_FACE"
+        ):
+            raise DSLValidationError(
+                f"Invalid contact face token: {contact_face_token}"
+            )
+        if (
+            not isinstance(edge_shared_face_token, Token)
+            or edge_shared_face_token.type != "COMPACT_FACE"
+        ):
+            raise DSLValidationError(
+                f"Invalid edge shared face token: {edge_shared_face_token}"
+            )
+
         contact_face_char = str(contact_face_token)
         edge_shared_face_char = str(edge_shared_face_token)
-        
+
         if contact_face_char not in self.FACE_MAPPING:
-            raise DSLValidationError(f"Invalid compact face notation: {contact_face_char}")
+            raise DSLValidationError(
+                f"Invalid compact face notation: {contact_face_char}"
+            )
         if edge_shared_face_char not in self.FACE_MAPPING:
-            raise DSLValidationError(f"Invalid compact face notation: {edge_shared_face_char}")
-            
+            raise DSLValidationError(
+                f"Invalid compact face notation: {edge_shared_face_char}"
+            )
+
         contact_face = cast(Face, self.FACE_MAPPING[contact_face_char])
         edge_shared_face = cast(Face, self.FACE_MAPPING[edge_shared_face_char])
-        
+
         if not isinstance(offset, Offset):
             raise DSLValidationError(f"Invalid offset type: {type(offset)}")
-        
+
         return Anchor(
-            contact_face=contact_face,
-            edge_shared_face=edge_shared_face,
-            offset=offset
+            contact_face=contact_face, edge_shared_face=edge_shared_face, offset=offset
         )
-    
+
     def compact_offset(self, items: list[Any]) -> Offset:
         """Transform compact offset notation into an Offset object."""
         # items should contain: [COMPACT_FROM_MIN/COMPACT_FROM_MAX, NUMBER]
@@ -311,19 +323,19 @@ class DSLTransformer(Transformer):
             raise DSLValidationError(
                 f"Compact offset must have exactly 2 components, got {len(items)}"
             )
-        
+
         offset_type_token = items[0]
         number_token = items[1]
-        
+
         if not isinstance(number_token, Token) or number_token.type != "NUMBER":
             raise DSLValidationError(f"Invalid number token: {number_token}")
-            
+
         value = float(number_token)
-        
+
         if isinstance(offset_type_token, Token):
             if offset_type_token.type == "COMPACT_FROM_MIN":
                 return FromMin(value=value)
             elif offset_type_token.type == "COMPACT_FROM_MAX":
                 return FromMax(value=value)
-        
+
         raise DSLValidationError(f"Invalid compact offset type: {offset_type_token}")
