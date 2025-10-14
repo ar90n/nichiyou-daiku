@@ -317,11 +317,60 @@ def _generate_cut_list(
     return "\n".join(lines)
 
 
+def _generate_anchor_details(summary: ResourceSummary) -> str:
+    """Generate anchor position details for each piece.
+
+    Args:
+        summary: Resource summary data
+
+    Returns:
+        Markdown formatted anchor details section
+    """
+    lines = [
+        "## Anchor Details",
+        "",
+    ]
+
+    # Filter pieces that have anchors and sort by ID
+    pieces_with_anchors = [p for p in summary.pieces if p.anchors]
+    pieces_with_anchors.sort(key=lambda p: p.id)
+
+    if not pieces_with_anchors:
+        # No pieces with anchors, return empty section indicator
+        lines.append("*No anchor points in this project.*")
+        lines.append("")
+        return "\n".join(lines)
+
+    for piece in pieces_with_anchors:
+        # Piece header with type and length
+        lines.extend([f"### {piece.id} ({piece.type.value}, {piece.length:.0f}mm)", ""])
+
+        # Table header
+        lines.extend(
+            [
+                "| Contact Face | Edge Face | Offset |",
+                "|--------------|-----------|--------|",
+            ]
+        )
+
+        # Table rows
+        for anchor in piece.anchors:
+            lines.append(
+                f"| {anchor.contact_face} | {anchor.edge_shared_face} | "
+                f"{anchor.offset_type} {anchor.offset_value:.1f}mm |"
+            )
+
+        lines.append("")
+
+    return "\n".join(lines)
+
+
 def generate_markdown_report(
     resource_summary: ResourceSummary,
     project_name: str = "Woodworking Project",
     standard_lengths: Optional[Dict[PieceType, List[float]]] = None,
     include_cut_diagram: bool = True,
+    include_anchor_details: bool = True,
 ) -> str:
     """Generate a complete markdown report from ResourceSummary.
 
@@ -331,6 +380,7 @@ def generate_markdown_report(
         standard_lengths: Dict mapping PieceType to available lengths in mm.
                         If None, uses sensible defaults.
         include_cut_diagram: Whether to include cut list section
+        include_anchor_details: Whether to include anchor details section
 
     Returns:
         Complete markdown report as string
@@ -364,6 +414,11 @@ def generate_markdown_report(
 
     sections.append(_generate_overview_section(resource_summary, project_name))
     sections.append(_generate_bill_of_materials(resource_summary))
+
+    # Add anchor details after BOM, before shopping list
+    if include_anchor_details:
+        sections.append(_generate_anchor_details(resource_summary))
+
     sections.append(_generate_shopping_list(resource_summary))
     sections.append(
         _generate_purchase_recommendations(resource_summary, standard_lengths)

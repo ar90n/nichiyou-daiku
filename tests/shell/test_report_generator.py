@@ -3,7 +3,7 @@
 from unittest.mock import patch
 
 from nichiyou_daiku.core.piece import PieceType
-from nichiyou_daiku.core.resources import ResourceSummary, PieceResource
+from nichiyou_daiku.core.resources import ResourceSummary, PieceResource, AnchorInfo
 from nichiyou_daiku.shell.report_generator import (
     CutPlan,
     _get_default_standard_lengths,
@@ -13,6 +13,7 @@ from nichiyou_daiku.shell.report_generator import (
     _generate_shopping_list,
     _generate_purchase_recommendations,
     _generate_cut_list,
+    _generate_anchor_details,
     generate_markdown_report,
 )
 
@@ -429,3 +430,260 @@ class TestGenerateMarkdownReport:
         assert "# Empty Project Report" in report
         assert "Total Pieces**: 0" in report
         assert "Lumber Types**: 0" in report
+
+
+class TestGenerateAnchorDetails:
+    """Test anchor details generation."""
+
+    def test_should_generate_anchor_details(self):
+        """Should generate anchor details table for pieces with anchors."""
+        anchors = [
+            AnchorInfo(
+                contact_face="front",
+                edge_shared_face="top",
+                offset_type="FromMax",
+                offset_value=100.0,
+            ),
+            AnchorInfo(
+                contact_face="back",
+                edge_shared_face="left",
+                offset_type="FromMin",
+                offset_value=50.0,
+            ),
+        ]
+
+        pieces = [
+            PieceResource(
+                id="leg1",
+                type=PieceType.PT_2x4,
+                length=750.0,
+                width=89.0,
+                height=38.0,
+                volume=0,
+                anchors=anchors,
+            ),
+            PieceResource(
+                id="top1",
+                type=PieceType.PT_1x4,
+                length=1200.0,
+                width=89.0,
+                height=19.0,
+                volume=0,
+                anchors=[],  # No anchors
+            ),
+        ]
+
+        summary = ResourceSummary(
+            pieces=pieces,
+            total_pieces=2,
+            pieces_by_type={PieceType.PT_2x4: 1, PieceType.PT_1x4: 1},
+            total_length_by_type={PieceType.PT_2x4: 750.0, PieceType.PT_1x4: 1200.0},
+            total_volume=0,
+        )
+
+        anchor_details = _generate_anchor_details(summary)
+
+        assert "## Anchor Details" in anchor_details
+        assert "### leg1 (2x4, 750mm)" in anchor_details
+        assert "| Contact Face | Edge Face | Offset |" in anchor_details
+        assert "| front | top | FromMax 100.0mm |" in anchor_details
+        assert "| back | left | FromMin 50.0mm |" in anchor_details
+        # top1 should not appear (no anchors)
+        assert "### top1" not in anchor_details
+
+    def test_should_handle_no_anchors(self):
+        """Should handle pieces with no anchors gracefully."""
+        pieces = [
+            PieceResource(
+                id="leg1",
+                type=PieceType.PT_2x4,
+                length=750.0,
+                width=89.0,
+                height=38.0,
+                volume=0,
+                anchors=[],
+            )
+        ]
+
+        summary = ResourceSummary(
+            pieces=pieces,
+            total_pieces=1,
+            pieces_by_type={PieceType.PT_2x4: 1},
+            total_length_by_type={PieceType.PT_2x4: 750.0},
+            total_volume=0,
+        )
+
+        anchor_details = _generate_anchor_details(summary)
+
+        assert "## Anchor Details" in anchor_details
+        assert "*No anchor points in this project.*" in anchor_details
+
+    def test_should_sort_pieces_by_id(self):
+        """Should sort pieces by ID in anchor details."""
+        pieces = [
+            PieceResource(
+                id="z_piece",
+                type=PieceType.PT_2x4,
+                length=750.0,
+                width=89.0,
+                height=38.0,
+                volume=0,
+                anchors=[
+                    AnchorInfo(
+                        contact_face="front",
+                        edge_shared_face="top",
+                        offset_type="FromMax",
+                        offset_value=100.0,
+                    )
+                ],
+            ),
+            PieceResource(
+                id="a_piece",
+                type=PieceType.PT_2x4,
+                length=800.0,
+                width=89.0,
+                height=38.0,
+                volume=0,
+                anchors=[
+                    AnchorInfo(
+                        contact_face="down",
+                        edge_shared_face="back",
+                        offset_type="FromMin",
+                        offset_value=50.0,
+                    )
+                ],
+            ),
+        ]
+
+        summary = ResourceSummary(
+            pieces=pieces,
+            total_pieces=2,
+            pieces_by_type={PieceType.PT_2x4: 2},
+            total_length_by_type={PieceType.PT_2x4: 1550.0},
+            total_volume=0,
+        )
+
+        anchor_details = _generate_anchor_details(summary)
+
+        # Check that a_piece appears before z_piece
+        a_pos = anchor_details.find("### a_piece")
+        z_pos = anchor_details.find("### z_piece")
+        assert a_pos > 0
+        assert z_pos > 0
+        assert a_pos < z_pos
+
+
+class TestGenerateMarkdownReportWithAnchors:
+    """Test markdown report generation with anchor details."""
+
+    def test_should_include_anchor_details_by_default(self):
+        """Should include anchor details section by default."""
+        pieces = [
+            PieceResource(
+                id="test",
+                type=PieceType.PT_2x4,
+                length=1000.0,
+                width=89.0,
+                height=38.0,
+                volume=0,
+                anchors=[
+                    AnchorInfo(
+                        contact_face="front",
+                        edge_shared_face="top",
+                        offset_type="FromMax",
+                        offset_value=100.0,
+                    )
+                ],
+            )
+        ]
+
+        summary = ResourceSummary(
+            pieces=pieces,
+            total_pieces=1,
+            pieces_by_type={PieceType.PT_2x4: 1},
+            total_length_by_type={PieceType.PT_2x4: 1000.0},
+            total_volume=0,
+        )
+
+        report = generate_markdown_report(summary, "Test Project")
+
+        assert "## Anchor Details" in report
+        assert "### test (2x4, 1000mm)" in report
+        assert "| front | top | FromMax 100.0mm |" in report
+
+    def test_should_exclude_anchor_details_when_requested(self):
+        """Should exclude anchor details when include_anchor_details=False."""
+        pieces = [
+            PieceResource(
+                id="test",
+                type=PieceType.PT_2x4,
+                length=1000.0,
+                width=89.0,
+                height=38.0,
+                volume=0,
+                anchors=[
+                    AnchorInfo(
+                        contact_face="front",
+                        edge_shared_face="top",
+                        offset_type="FromMax",
+                        offset_value=100.0,
+                    )
+                ],
+            )
+        ]
+
+        summary = ResourceSummary(
+            pieces=pieces,
+            total_pieces=1,
+            pieces_by_type={PieceType.PT_2x4: 1},
+            total_length_by_type={PieceType.PT_2x4: 1000.0},
+            total_volume=0,
+        )
+
+        report = generate_markdown_report(
+            summary, "Test Project", include_anchor_details=False
+        )
+
+        assert "## Anchor Details" not in report
+        assert "## Bill of Materials" in report  # Other sections still present
+
+    def test_should_place_anchor_details_after_bom(self):
+        """Should place anchor details section after BOM and before shopping list."""
+        pieces = [
+            PieceResource(
+                id="test",
+                type=PieceType.PT_2x4,
+                length=1000.0,
+                width=89.0,
+                height=38.0,
+                volume=0,
+                anchors=[
+                    AnchorInfo(
+                        contact_face="front",
+                        edge_shared_face="top",
+                        offset_type="FromMax",
+                        offset_value=100.0,
+                    )
+                ],
+            )
+        ]
+
+        summary = ResourceSummary(
+            pieces=pieces,
+            total_pieces=1,
+            pieces_by_type={PieceType.PT_2x4: 1},
+            total_length_by_type={PieceType.PT_2x4: 1000.0},
+            total_volume=0,
+        )
+
+        report = generate_markdown_report(summary, "Test Project")
+
+        # Check order of sections
+        bom_pos = report.find("## Bill of Materials")
+        anchor_pos = report.find("## Anchor Details")
+        shopping_pos = report.find("## Shopping List")
+
+        assert bom_pos > 0
+        assert anchor_pos > 0
+        assert shopping_pos > 0
+        assert bom_pos < anchor_pos < shopping_pos

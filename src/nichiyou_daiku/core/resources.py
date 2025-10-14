@@ -10,6 +10,38 @@ from pydantic import BaseModel, ConfigDict
 
 from nichiyou_daiku.core.model import Model
 from nichiyou_daiku.core.piece import PieceType, get_shape
+from nichiyou_daiku.core.geometry.offset import FromMin, FromMax
+
+
+class AnchorInfo(BaseModel):
+    """Anchor position information for a piece (for fabrication).
+
+    Represents a connection point on a piece, specified by the contact face,
+    edge shared face, and offset from the edge.
+
+    Attributes:
+        contact_face: The face where connection occurs (e.g., "front", "down")
+        edge_shared_face: The face that defines the edge position (e.g., "top", "front")
+        offset_type: Type of offset ("FromMin" or "FromMax")
+        offset_value: Offset distance in millimeters
+
+    Examples:
+        >>> anchor = AnchorInfo(
+        ...     contact_face="front",
+        ...     edge_shared_face="top",
+        ...     offset_type="FromMax",
+        ...     offset_value=100.0
+        ... )
+        >>> anchor.contact_face
+        'front'
+        >>> anchor.offset_value
+        100.0
+    """
+
+    contact_face: str
+    edge_shared_face: str
+    offset_type: str  # "FromMin" or "FromMax"
+    offset_value: float  # mm
 
 
 class PieceResource(BaseModel):
@@ -22,6 +54,7 @@ class PieceResource(BaseModel):
         width: Actual width in millimeters
         height: Actual height in millimeters
         volume: Calculated volume in cubic millimeters
+        anchors: List of anchor positions on this piece
 
     Examples:
         >>> from nichiyou_daiku.core.piece import PieceType
@@ -37,6 +70,8 @@ class PieceResource(BaseModel):
         <PieceType.PT_2x4: '2x4'>
         >>> resource.volume
         2536500.0
+        >>> len(resource.anchors)
+        0
     """
 
     id: str
@@ -45,6 +80,7 @@ class PieceResource(BaseModel):
     width: float  # mm
     height: float  # mm
     volume: float  # mm³
+    anchors: list[AnchorInfo] = []
 
 
 class ResourceSummary(BaseModel):
@@ -146,7 +182,7 @@ def extract_resources(model: Model) -> ResourceSummary:
 
     Analyzes a woodworking model and produces a comprehensive summary
     of all lumber pieces required, including their dimensions and
-    aggregated statistics.
+    aggregated statistics. Also extracts anchor positions for fabrication.
 
     Args:
         model: The woodworking model to analyze
@@ -175,6 +211,41 @@ def extract_resources(model: Model) -> ResourceSummary:
         >>> resources.total_length_by_type[PieceType.PT_1x4]
         600.0
     """
+    # Extract anchor information from connections
+    piece_anchors: Dict[str, list[AnchorInfo]] = {}
+
+    for (base_id, target_id), connection in model.connections.items():
+        # Add lhs anchor to base piece
+        if base_id not in piece_anchors:
+            piece_anchors[base_id] = []
+
+        lhs_anchor = connection.lhs
+        offset_type = type(lhs_anchor.offset).__name__
+        piece_anchors[base_id].append(
+            AnchorInfo(
+                contact_face=lhs_anchor.contact_face,
+                edge_shared_face=lhs_anchor.edge_shared_face,
+                offset_type=offset_type,
+                offset_value=lhs_anchor.offset.value,
+            )
+        )
+
+        # Add rhs anchor to target piece
+        if target_id not in piece_anchors:
+            piece_anchors[target_id] = []
+
+        rhs_anchor = connection.rhs
+        offset_type = type(rhs_anchor.offset).__name__
+        piece_anchors[target_id].append(
+            AnchorInfo(
+                contact_face=rhs_anchor.contact_face,
+                edge_shared_face=rhs_anchor.edge_shared_face,
+                offset_type=offset_type,
+                offset_value=rhs_anchor.offset.value,
+            )
+        )
+
+    # Extract piece resources
     pieces_list = []
     pieces_by_type: Dict[PieceType, int] = {}
     total_length_by_type: Dict[PieceType, float] = {}
@@ -187,7 +258,7 @@ def extract_resources(model: Model) -> ResourceSummary:
         # Calculate volume
         volume = shape.width * shape.height * shape.length
 
-        # Create resource entry
+        # Create resource entry with anchors
         resource = PieceResource(
             id=piece.id,
             type=piece.type,
@@ -195,6 +266,7 @@ def extract_resources(model: Model) -> ResourceSummary:
             width=shape.width,
             height=shape.height,
             volume=volume,
+            anchors=piece_anchors.get(piece.id, []),
         )
         pieces_list.append(resource)
 

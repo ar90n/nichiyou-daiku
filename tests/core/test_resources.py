@@ -9,6 +9,7 @@ from nichiyou_daiku.core.piece import Piece, PieceType
 from nichiyou_daiku.core.connection import Connection, Anchor
 from nichiyou_daiku.core.geometry import FromMax, FromMin
 from nichiyou_daiku.core.resources import (
+    AnchorInfo,
     PieceResource,
     ResourceSummary,
     extract_resources,
@@ -239,3 +240,146 @@ class TestExtractResources:
         # Check that piece types are properly serialized
         piece_data = data["pieces"][0]
         assert piece_data["type"] == "2x4" or piece_data["type"] == "1x4"
+
+    def test_should_extract_anchors_from_connections(self):
+        """Should extract anchor information from model connections."""
+        # Create pieces
+        p1 = Piece.of(PieceType.PT_2x4, 1000.0, "piece-1")
+        p2 = Piece.of(PieceType.PT_2x4, 800.0, "piece-2")
+
+        # Create connection
+        conn = Connection(
+            lhs=Anchor(
+                contact_face="front", edge_shared_face="top", offset=FromMax(value=100.0)
+            ),
+            rhs=Anchor(
+                contact_face="down",
+                edge_shared_face="front",
+                offset=FromMin(value=50.0),
+            ),
+        )
+
+        model = Model.of(
+            pieces=[p1, p2], connections=[(PiecePair(base=p1, target=p2), conn)]
+        )
+
+        # Extract resources
+        resources = extract_resources(model)
+
+        # Check piece-1 has lhs anchor
+        piece1 = next(p for p in resources.pieces if p.id == "piece-1")
+        assert len(piece1.anchors) == 1
+        assert piece1.anchors[0].contact_face == "front"
+        assert piece1.anchors[0].edge_shared_face == "top"
+        assert piece1.anchors[0].offset_type == "FromMax"
+        assert piece1.anchors[0].offset_value == 100.0
+
+        # Check piece-2 has rhs anchor
+        piece2 = next(p for p in resources.pieces if p.id == "piece-2")
+        assert len(piece2.anchors) == 1
+        assert piece2.anchors[0].contact_face == "down"
+        assert piece2.anchors[0].edge_shared_face == "front"
+        assert piece2.anchors[0].offset_type == "FromMin"
+        assert piece2.anchors[0].offset_value == 50.0
+
+    def test_should_extract_multiple_anchors_per_piece(self):
+        """Should handle pieces with multiple connections."""
+        # Create three pieces
+        p1 = Piece.of(PieceType.PT_2x4, 1000.0, "piece-1")
+        p2 = Piece.of(PieceType.PT_2x4, 800.0, "piece-2")
+        p3 = Piece.of(PieceType.PT_2x4, 600.0, "piece-3")
+
+        # Create two connections both involving piece-1
+        conn1 = Connection(
+            lhs=Anchor(contact_face="front", edge_shared_face="top", offset=FromMax(value=100.0)),
+            rhs=Anchor(contact_face="down", edge_shared_face="front", offset=FromMin(value=50.0)),
+        )
+        conn2 = Connection(
+            lhs=Anchor(contact_face="back", edge_shared_face="left", offset=FromMin(value=25.0)),
+            rhs=Anchor(contact_face="right", edge_shared_face="down", offset=FromMax(value=75.0)),
+        )
+
+        model = Model.of(
+            pieces=[p1, p2, p3],
+            connections=[
+                (PiecePair(base=p1, target=p2), conn1),
+                (PiecePair(base=p1, target=p3), conn2),
+            ],
+        )
+
+        # Extract resources
+        resources = extract_resources(model)
+
+        # Check piece-1 has two anchors
+        piece1 = next(p for p in resources.pieces if p.id == "piece-1")
+        assert len(piece1.anchors) == 2
+
+        # First anchor
+        assert piece1.anchors[0].contact_face == "front"
+        assert piece1.anchors[0].offset_type == "FromMax"
+        assert piece1.anchors[0].offset_value == 100.0
+
+        # Second anchor
+        assert piece1.anchors[1].contact_face == "back"
+        assert piece1.anchors[1].offset_type == "FromMin"
+        assert piece1.anchors[1].offset_value == 25.0
+
+        # Other pieces have one anchor each
+        piece2 = next(p for p in resources.pieces if p.id == "piece-2")
+        assert len(piece2.anchors) == 1
+
+        piece3 = next(p for p in resources.pieces if p.id == "piece-3")
+        assert len(piece3.anchors) == 1
+
+    def test_should_handle_pieces_without_anchors(self):
+        """Should handle pieces that have no connections."""
+        # Create model with pieces but no connections
+        p1 = Piece.of(PieceType.PT_2x4, 1000.0, "piece-1")
+        p2 = Piece.of(PieceType.PT_2x4, 800.0, "piece-2")
+
+        model = Model.of(pieces=[p1, p2], connections=[])
+
+        # Extract resources
+        resources = extract_resources(model)
+
+        # Both pieces should have empty anchor lists
+        piece1 = next(p for p in resources.pieces if p.id == "piece-1")
+        assert len(piece1.anchors) == 0
+
+        piece2 = next(p for p in resources.pieces if p.id == "piece-2")
+        assert len(piece2.anchors) == 0
+
+
+class TestAnchorInfo:
+    """Test AnchorInfo model."""
+
+    def test_should_create_anchor_info(self):
+        """Should create AnchorInfo with all properties."""
+        anchor = AnchorInfo(
+            contact_face="front",
+            edge_shared_face="top",
+            offset_type="FromMax",
+            offset_value=100.0,
+        )
+
+        assert anchor.contact_face == "front"
+        assert anchor.edge_shared_face == "top"
+        assert anchor.offset_type == "FromMax"
+        assert anchor.offset_value == 100.0
+
+    def test_should_serialize_anchor_info_to_json(self):
+        """Should serialize AnchorInfo to JSON."""
+        anchor = AnchorInfo(
+            contact_face="down",
+            edge_shared_face="front",
+            offset_type="FromMin",
+            offset_value=50.0,
+        )
+
+        json_str = anchor.model_dump_json()
+        data = json.loads(json_str)
+
+        assert data["contact_face"] == "down"
+        assert data["edge_shared_face"] == "front"
+        assert data["offset_type"] == "FromMin"
+        assert data["offset_value"] == 50.0

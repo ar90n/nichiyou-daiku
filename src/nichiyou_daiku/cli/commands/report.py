@@ -30,6 +30,11 @@ from nichiyou_daiku.shell import generate_markdown_report
     default=True,
     help="Include cut diagram in report",
 )
+@click.option(
+    "--include-anchor-details/--no-anchor-details",
+    default=True,
+    help="Include anchor details in report",
+)
 @click.pass_context
 def report(
     ctx: click.Context,
@@ -37,6 +42,7 @@ def report(
     output: Optional[str],
     project_name: str,
     include_cut_diagram: bool,
+    include_anchor_details: bool,
 ) -> None:
     """Generate a markdown report from DSL file.
 
@@ -86,6 +92,7 @@ def report(
             resources,
             project_name=project_name,
             include_cut_diagram=include_cut_diagram,
+            include_anchor_details=include_anchor_details,
         )
 
     except Exception as e:
