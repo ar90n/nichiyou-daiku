@@ -17,7 +17,7 @@ class TestAssemblyToBuild123d:
         # Create minimal model and assembly
         model = Model.of(pieces=[], connections=[])
         assembly = Assembly(
-            model=model, boxes={}, joints={}, joint_pairs=[], pilot_holes={}, label="test_assembly"
+            model=model, boxes={}, joints={}, joint_pairs=[], label="test_assembly"
         )
 
         # Temporarily set the flag to simulate build123d not being available
@@ -65,7 +65,6 @@ class TestAssemblyToBuild123d:
                     boxes={},
                     joints={},
                     joint_pairs=[],
-                    pilot_holes={},
                     label="test_assembly",
                 )
 
@@ -112,7 +111,6 @@ class TestAssemblyToBuild123d:
                     boxes={"p1": box1, "p2": box2},
                     joints={},
                     joint_pairs=[],
-                    pilot_holes={},
                     label="test_assembly",
                 )
 
@@ -265,7 +263,6 @@ class TestAssemblyToBuild123d:
                     boxes={"p1": box1, "p2": box2},
                     joints={"joint1": joint1, "joint2": joint2},
                     joint_pairs=[("joint1", "joint2")],
-                    pilot_holes={},
                     label="test_assembly",
                 )
 
