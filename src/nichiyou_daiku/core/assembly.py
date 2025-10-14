@@ -4,6 +4,7 @@ This module converts the abstract model representation into concrete
 3D assembly information with positions and orientations.
 """
 
+import uuid
 from pydantic import BaseModel
 
 from .piece import get_shape
@@ -70,12 +71,14 @@ class Joint(BaseModel, frozen=True):
     Represents one half of a connection between pieces.
 
     Attributes:
+        id: Unique identifier for this joint
         position: 3D position of the joint
         orientation: Full 3D orientation at the joint
 
     Examples:
         >>> from nichiyou_daiku.core.geometry import Point3D, Vector3D, Orientation3D
         >>> joint = Joint(
+        ...     id="test-joint-id",
         ...     position=Point3D(x=100.0, y=50.0, z=25.0),
         ...     orientation=Orientation3D.of(
         ...         direction=Vector3D(x=0.0, y=0.0, z=1.0),
@@ -88,16 +91,19 @@ class Joint(BaseModel, frozen=True):
         1.0
     """
 
+    id: str
     position: Point3D
     orientation: Orientation3D
 
     @classmethod
-    def of(cls, box: Box, anchor: Anchor, flip_dir: bool = False) -> "Joint":
+    def of(cls, box: Box, anchor: Anchor, flip_dir: bool = False, joint_id: str | None = None) -> "Joint":
         """Create a Joint from a piece shape and anchor point.
 
         Args:
             box: The 3D box of the piece
             anchor: Anchor point defining position and orientation
+            flip_dir: Whether to flip the direction (for rhs joints)
+            joint_id: Optional joint ID (generates UUID if not provided)
 
         Returns:
             Joint with position and orientation based on the anchor
@@ -111,7 +117,11 @@ class Joint(BaseModel, frozen=True):
             direction=Vector3D.normal_of(anchor.contact_face),
             up=Vector3D.normal_of(up_face),
         )
-        return cls(position=position, orientation=orientation)
+
+        if joint_id is None:
+            joint_id = str(uuid.uuid4())
+
+        return cls(id=joint_id, position=position, orientation=orientation)
 
 
 class JointPair(BaseModel, frozen=True):
@@ -199,8 +209,9 @@ class Assembly(BaseModel, frozen=True):
     Attributes:
         model: The source model with piece and connection definitions
         boxes: Dictionary mapping piece IDs to their 3D boxes
-        joints: Dictionary mapping piece ID pairs to their joint pairs
-        pilot_holes: Dictionary mapping piece IDs to lists of (SurfacePoint, Hole) tuples
+        joints: Dictionary mapping joint IDs to Joint objects
+        joint_pairs: List of joint ID pairs representing connections
+        pilot_holes: Dictionary mapping joint IDs to Hole specifications
         label: Optional label for the assembly
 
     Examples:
@@ -229,13 +240,14 @@ class Assembly(BaseModel, frozen=True):
         ... )
         >>> assembly = Assembly.of(model)
         >>> len(assembly.joints)
-        1
+        2
     """
 
     model: Model
     boxes: dict[str, Box]
-    joints: dict[tuple[str, str], JointPair]
-    pilot_holes: dict[str, list[tuple[SurfacePoint, Hole]]]
+    joints: dict[str, Joint]
+    joint_pairs: list[tuple[str, str]]
+    pilot_holes: dict[str, Hole]
     label: str | None
 
     @classmethod
@@ -255,33 +267,45 @@ class Assembly(BaseModel, frozen=True):
         boxes = {
             piece.id: Box(shape=get_shape(piece)) for piece in model.pieces.values()
         }
-        joints = {
-            (lhs_id, rhs_id): JointPair.of(boxes[lhs_id], boxes[rhs_id], piece_conn)
-            for (lhs_id, rhs_id), piece_conn in model.connections.items()
-        }
 
-        # Generate pilot holes for screw connections
-        pilot_holes: dict[str, list[tuple[SurfacePoint, Hole]]] = {}
+        # Create joints with unique IDs
+        joints: dict[str, Joint] = {}
+        joint_pairs: list[tuple[str, str]] = []
+        pilot_holes: dict[str, Hole] = {}
+
         for (lhs_id, rhs_id), connection in model.connections.items():
+            # Create lhs joint
+            lhs_joint = Joint.of(
+                box=boxes[lhs_id],
+                anchor=connection.lhs,
+                flip_dir=False
+            )
+            joints[lhs_joint.id] = lhs_joint
+
+            # Create rhs joint
+            rhs_joint = Joint.of(
+                box=boxes[rhs_id],
+                anchor=connection.rhs,
+                flip_dir=True
+            )
+            joints[rhs_joint.id] = rhs_joint
+
+            # Record the pairing
+            joint_pairs.append((lhs_joint.id, rhs_joint.id))
+
+            # Generate pilot holes for screw connections
             if connection.type == ConnectionType.SCREW:
-                lhs_holes, rhs_holes = _calculate_pilot_holes_for_connection(
-                    boxes[lhs_id], boxes[rhs_id], connection
-                )
-
-                if lhs_holes:
-                    if lhs_id not in pilot_holes:
-                        pilot_holes[lhs_id] = []
-                    pilot_holes[lhs_id].extend(lhs_holes)
-
-                if rhs_holes:
-                    if rhs_id not in pilot_holes:
-                        pilot_holes[rhs_id] = []
-                    pilot_holes[rhs_id].extend(rhs_holes)
+                # TODO: Determine proper hole specifications
+                # For now, use default values
+                default_hole = Hole(diameter=3.0, depth=None)
+                pilot_holes[lhs_joint.id] = default_hole
+                pilot_holes[rhs_joint.id] = default_hole
 
         return cls(
             model=model,
             label=model.label,
             boxes=boxes,
             joints=joints,
+            joint_pairs=joint_pairs,
             pilot_holes=pilot_holes,
         )

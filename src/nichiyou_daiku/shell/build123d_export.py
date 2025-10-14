@@ -195,22 +195,44 @@ def assembly_to_build123d(
         if piece_id not in parts:
             parts[piece_id] = _create_piece_from(piece_id, box, fillet_radius)
 
-    # Build graph from connections
+    # Build mapping from model connections to joint pairs
+    # We need to match the order: model.connections gives us (lhs_piece_id, rhs_piece_id)
+    # and assembly.joint_pairs gives us joint IDs in the same order
+    joint_pair_to_pieces: dict[tuple[str, str], tuple[str, str]] = {}
+    for i, ((lhs_piece_id, rhs_piece_id), _) in enumerate(assembly.model.connections.items()):
+        if i < len(assembly.joint_pairs):
+            lhs_joint_id, rhs_joint_id = assembly.joint_pairs[i]
+            joint_pair_to_pieces[(lhs_joint_id, rhs_joint_id)] = (lhs_piece_id, rhs_piece_id)
+
+    # Build graph and create joints on parts
     graph = defaultdict(set)
-    for (lhs_id, rhs_id), joint_pair in assembly.joints.items():
-        graph[lhs_id].add(rhs_id)
+    for lhs_joint_id, rhs_joint_id in assembly.joint_pairs:
+        piece_pair = joint_pair_to_pieces.get((lhs_joint_id, rhs_joint_id))
+        if piece_pair is None:
+            continue
+
+        lhs_piece_id, rhs_piece_id = piece_pair
+
+        graph[lhs_piece_id].add(rhs_piece_id)
+        graph[rhs_piece_id].add(lhs_piece_id)
+
+        # Create joints on parts
+        lhs_joint = assembly.joints[lhs_joint_id]
+        rhs_joint = assembly.joints[rhs_joint_id]
+
         _create_joint_from(
-            joint_pair.lhs,
-            label=f"to_{rhs_id}",
-            to_part=parts[lhs_id],
+            lhs_joint,
+            label=f"to_{rhs_joint_id}",
+            to_part=parts[lhs_piece_id],
         )
 
-        graph[rhs_id].add(lhs_id)
         _create_joint_from(
-            joint_pair.rhs, label=f"to_{lhs_id}", to_part=parts[rhs_id], flip_dir=True
+            rhs_joint,
+            label=f"to_{lhs_joint_id}",
+            to_part=parts[rhs_piece_id],
         )
 
-    # BFS traversal
+    # BFS traversal to connect joints
     visited = set()
     processed_edges = set()
 
@@ -223,21 +245,37 @@ def assembly_to_build123d(
         visited.add(start_piece)
 
         while queue:
-            current_id = queue.popleft()
+            current_piece_id = queue.popleft()
 
-            # Process all neighbors
-            for neighbor_id in graph[current_id]:
-                # Skip if this edge already processed
-                if (current_id, neighbor_id) in processed_edges:
+            # Process all joint pairs
+            for lhs_joint_id, rhs_joint_id in assembly.joint_pairs:
+                piece_pair = joint_pair_to_pieces.get((lhs_joint_id, rhs_joint_id))
+                if piece_pair is None:
                     continue
-                processed_edges.add((current_id, neighbor_id))
-                processed_edges.add((neighbor_id, current_id))
 
-                _connect(parts, current_id, neighbor_id)
+                lhs_piece_id, rhs_piece_id = piece_pair
+                edge_key = (lhs_joint_id, rhs_joint_id)
 
-                # Add neighbor to queue if not visited
-                if neighbor_id not in visited:
-                    visited.add(neighbor_id)
-                    queue.append(neighbor_id)
+                # Skip if already processed
+                if edge_key in processed_edges:
+                    continue
+
+                # Check if this edge involves the current piece
+                if lhs_piece_id == current_piece_id or rhs_piece_id == current_piece_id:
+                    processed_edges.add(edge_key)
+                    processed_edges.add((rhs_joint_id, lhs_joint_id))
+
+                    # Connect the joints
+                    lhs_joint_obj = parts[lhs_piece_id].joints[f"to_{rhs_joint_id}"]
+                    rhs_joint_obj = parts[rhs_piece_id].joints[f"to_{lhs_joint_id}"]
+                    lhs_joint_obj.connect_to(rhs_joint_obj)
+
+                    # Add unvisited piece to queue
+                    if lhs_piece_id not in visited:
+                        visited.add(lhs_piece_id)
+                        queue.append(lhs_piece_id)
+                    if rhs_piece_id not in visited:
+                        visited.add(rhs_piece_id)
+                        queue.append(rhs_piece_id)
 
     return Compound(label=assembly.label or "assembly", children=list(parts.values()))
