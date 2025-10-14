@@ -1,16 +1,15 @@
-"""Resource extraction from woodworking models.
+"""Resource extraction from woodworking assemblies.
 
 This module provides functionality to extract and summarize the resources
-(lumber pieces) required for a woodworking project from a Model.
+(lumber pieces) required for a woodworking project from an Assembly.
 """
 
 from typing import Dict
 
 from pydantic import BaseModel, ConfigDict
 
-from nichiyou_daiku.core.model import Model
+from nichiyou_daiku.core.assembly import Assembly
 from nichiyou_daiku.core.piece import PieceType, get_shape
-from nichiyou_daiku.core.geometry.offset import FromMin, FromMax
 
 
 class AnchorInfo(BaseModel):
@@ -177,21 +176,22 @@ class ResourceSummary(BaseModel):
         return "\n".join(lines)
 
 
-def extract_resources(model: Model) -> ResourceSummary:
-    """Extract all required resources from a Model.
+def extract_resources(assembly: Assembly) -> ResourceSummary:
+    """Extract all required resources from an Assembly.
 
-    Analyzes a woodworking model and produces a comprehensive summary
+    Analyzes a woodworking assembly and produces a comprehensive summary
     of all lumber pieces required, including their dimensions and
     aggregated statistics. Also extracts anchor positions for fabrication.
 
     Args:
-        model: The woodworking model to analyze
+        assembly: The woodworking assembly to analyze
 
     Returns:
         ResourceSummary containing detailed piece information and statistics
 
     Examples:
         >>> from nichiyou_daiku.core.model import Model
+        >>> from nichiyou_daiku.core.assembly import Assembly
         >>> from nichiyou_daiku.core.piece import Piece, PieceType
         >>> pieces = [
         ...     Piece.of(PieceType.PT_2x4, 1000.0, "p1"),
@@ -199,7 +199,8 @@ def extract_resources(model: Model) -> ResourceSummary:
         ...     Piece.of(PieceType.PT_1x4, 600.0, "p3")
         ... ]
         >>> model = Model.of(pieces=pieces, connections=[])
-        >>> resources = extract_resources(model)
+        >>> assembly = Assembly.of(model)
+        >>> resources = extract_resources(assembly)
         >>> resources.total_pieces
         3
         >>> resources.pieces_by_type[PieceType.PT_2x4]
@@ -211,17 +212,17 @@ def extract_resources(model: Model) -> ResourceSummary:
         >>> resources.total_length_by_type[PieceType.PT_1x4]
         600.0
     """
-    # Extract anchor information from connections
+    # Extract anchor information from connections via model
     piece_anchors: Dict[str, list[AnchorInfo]] = {}
 
-    for (base_id, target_id), connection in model.connections.items():
+    for (lhs_id, rhs_id), connection in assembly.model.connections.items():
         # Add lhs anchor to base piece
-        if base_id not in piece_anchors:
-            piece_anchors[base_id] = []
+        if lhs_id not in piece_anchors:
+            piece_anchors[lhs_id] = []
 
         lhs_anchor = connection.lhs
         offset_type = type(lhs_anchor.offset).__name__
-        piece_anchors[base_id].append(
+        piece_anchors[lhs_id].append(
             AnchorInfo(
                 contact_face=lhs_anchor.contact_face,
                 edge_shared_face=lhs_anchor.edge_shared_face,
@@ -231,12 +232,12 @@ def extract_resources(model: Model) -> ResourceSummary:
         )
 
         # Add rhs anchor to target piece
-        if target_id not in piece_anchors:
-            piece_anchors[target_id] = []
+        if rhs_id not in piece_anchors:
+            piece_anchors[rhs_id] = []
 
         rhs_anchor = connection.rhs
         offset_type = type(rhs_anchor.offset).__name__
-        piece_anchors[target_id].append(
+        piece_anchors[rhs_id].append(
             AnchorInfo(
                 contact_face=rhs_anchor.contact_face,
                 edge_shared_face=rhs_anchor.edge_shared_face,
@@ -245,13 +246,13 @@ def extract_resources(model: Model) -> ResourceSummary:
             )
         )
 
-    # Extract piece resources
+    # Extract piece resources from model
     pieces_list = []
     pieces_by_type: Dict[PieceType, int] = {}
     total_length_by_type: Dict[PieceType, float] = {}
     total_volume = 0.0
 
-    for piece in model.pieces.values():
+    for piece in assembly.model.pieces.values():
         # Get the 3D shape with actual dimensions
         shape = get_shape(piece)
 

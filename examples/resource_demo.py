@@ -2,7 +2,8 @@
 
 from nichiyou_daiku.core.model import Model
 from nichiyou_daiku.core.piece import Piece, PieceType
-from nichiyou_daiku.core.resources import extract_resources
+from nichiyou_daiku.core.assembly import Assembly
+from nichiyou_daiku.shell import extract_resources
 
 # Create a simple furniture model
 pieces = [
@@ -29,9 +30,10 @@ pieces = [
 # Create model (connections not needed for resource extraction)
 model = Model.of(pieces=pieces, connections=[], label="Simple Table")
 
-# Extract resources
+# Create assembly and extract resources
 print("=== Resource Extraction Demo ===\n")
-resources = extract_resources(model)
+assembly = Assembly.of(model)
+resources = extract_resources(assembly)
 
 # Display pretty print summary
 print(resources.pretty_print())

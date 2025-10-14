@@ -9,7 +9,7 @@ from typing import Dict, List, Optional, Tuple
 from datetime import datetime
 
 from nichiyou_daiku.core.piece import PieceType
-from nichiyou_daiku.core.resources import ResourceSummary, PieceResource
+from .resources import ResourceSummary, PieceResource
 
 
 @dataclass
@@ -387,7 +387,7 @@ def generate_markdown_report(
 
     Examples:
         >>> from nichiyou_daiku.core.piece import PieceType
-        >>> from nichiyou_daiku.core.resources import ResourceSummary, PieceResource
+        >>> from nichiyou_daiku.shell.resources import ResourceSummary, PieceResource
         >>> pieces = [
         ...     PieceResource(id="test", type=PieceType.PT_2x4, length=1000.0,
         ...                  width=89.0, height=38.0, volume=3382000.0)

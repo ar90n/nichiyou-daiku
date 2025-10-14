@@ -12,8 +12,11 @@ class TestAssemblyToBuild123d:
 
     def test_should_handle_import_error_gracefully(self):
         """Should raise ImportError with helpful message when build123d not available."""
-        # Create minimal assembly
-        assembly = Assembly(boxes={}, joints={}, label="test_assembly")
+        from nichiyou_daiku.core.model import Model
+
+        # Create minimal model and assembly
+        model = Model.of(pieces=[], connections=[])
+        assembly = Assembly(model=model, boxes={}, joints={}, label="test_assembly")
 
         # Temporarily set the flag to simulate build123d not being available
         import nichiyou_daiku.shell.build123d_export as export_module
@@ -51,8 +54,13 @@ class TestAssemblyToBuild123d:
 
                 importlib.reload(export_module)
 
-                # Create empty assembly
-                assembly = Assembly(boxes={}, joints={}, label="test_assembly")
+                from nichiyou_daiku.core.model import Model
+
+                # Create empty model and assembly
+                model = Model.of(pieces=[], connections=[])
+                assembly = Assembly(
+                    model=model, boxes={}, joints={}, label="test_assembly"
+                )
 
                 # Mock the Compound class
                 mock_compound_instance = Mock()
@@ -85,12 +93,18 @@ class TestAssemblyToBuild123d:
 
                 importlib.reload(export_module)
 
+                from nichiyou_daiku.core.model import Model
+
                 # Create assembly with two boxes
                 box1 = Box(shape=Shape3D(width=100.0, height=50.0, length=200.0))
                 box2 = Box(shape=Shape3D(width=80.0, height=40.0, length=150.0))
 
+                model = Model.of(pieces=[], connections=[])
                 assembly = Assembly(
-                    boxes={"p1": box1, "p2": box2}, joints={}, label="test_assembly"
+                    model=model,
+                    boxes={"p1": box1, "p2": box2},
+                    joints={},
+                    label="test_assembly",
                 )
 
                 # Setup mocks
@@ -200,6 +214,8 @@ class TestAssemblyToBuild123d:
 
                 importlib.reload(export_module)
 
+                from nichiyou_daiku.core.model import Model
+
                 # Create assembly with connection
                 box1 = Box(shape=Shape3D(width=100.0, height=50.0, length=200.0))
                 box2 = Box(shape=Shape3D(width=100.0, height=50.0, length=200.0))
@@ -219,7 +235,9 @@ class TestAssemblyToBuild123d:
                     ),
                 )
 
+                model = Model.of(pieces=[], connections=[])
                 assembly = Assembly(
+                    model=model,
                     boxes={"p1": box1, "p2": box2},
                     joints={("p1", "p2"): JointPair(lhs=joint1, rhs=joint2)},
                     label="test_assembly",

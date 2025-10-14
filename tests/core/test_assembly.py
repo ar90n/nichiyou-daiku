@@ -9,7 +9,6 @@ from nichiyou_daiku.core.piece import Piece, PieceType
 from nichiyou_daiku.core.connection import Connection, Anchor
 from nichiyou_daiku.core.geometry import FromMax, FromMin
 from nichiyou_daiku.core.geometry import (
-    Shape3D,
     Point3D,
     Vector3D,
     Box,
@@ -96,32 +95,31 @@ class TestAssembly:
 
     def test_should_create_assembly_with_joints(self):
         """Should create Assembly with a dict of joints."""
-        # Create a simple connection
-        box1 = Box(shape=Shape3D(width=38.0, height=89.0, length=1000.0))
-        joint1 = Joint(
-            position=Point3D(x=0, y=0, z=0),
-            orientation=Orientation3D.of(
-                direction=Vector3D(x=0, y=0, z=1), up=Vector3D(x=0, y=1, z=0)
+        from nichiyou_daiku.core.model import Model, PiecePair
+
+        # Create pieces and connection
+        p1 = Piece.of(PieceType.PT_2x4, 1000.0, "p1")
+        p2 = Piece.of(PieceType.PT_2x4, 800.0, "p2")
+
+        conn = Connection(
+            lhs=Anchor(
+                contact_face="front", edge_shared_face="top", offset=FromMax(value=100)
+            ),
+            rhs=Anchor(
+                contact_face="down", edge_shared_face="front", offset=FromMin(value=50)
             ),
         )
 
-        box2 = Box(shape=Shape3D(width=38.0, height=89.0, length=800.0))
-        joint2 = Joint(
-            position=Point3D(x=100, y=0, z=0),
-            orientation=Orientation3D.of(
-                direction=Vector3D(x=0, y=0, z=-1), up=Vector3D(x=0, y=1, z=0)
-            ),
-        )
-
-        joint_pair = JointPair(lhs=joint1, rhs=joint2)
-
-        assembly = Assembly(
+        model = Model.of(
+            pieces=[p1, p2],
+            connections=[(PiecePair(base=p1, target=p2), conn)],
             label="test_assembly",
-            boxes={"p1": box1, "p2": box2},
-            joints={("p1", "p2"): joint_pair},
         )
+
+        assembly = Assembly.of(model)
 
         assert len(assembly.joints) == 1
-        assert assembly.joints[("p1", "p2")] == joint_pair
+        assert ("p1", "p2") in assembly.joints
+        assert isinstance(assembly.joints[("p1", "p2")], JointPair)
 
     # Assembly.of() method is covered in doctests

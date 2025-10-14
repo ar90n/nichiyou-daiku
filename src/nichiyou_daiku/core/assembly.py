@@ -125,6 +125,7 @@ class Assembly(BaseModel, frozen=True):
     Represents the final assembly ready for 3D visualization.
 
     Attributes:
+        model: The source model with piece and connection definitions
         boxes: Dictionary mapping piece IDs to their 3D boxes
         joints: Dictionary mapping piece ID pairs to their joint pairs
         label: Optional label for the assembly
@@ -134,10 +135,6 @@ class Assembly(BaseModel, frozen=True):
         >>> from nichiyou_daiku.core.piece import Piece, PieceType
         >>> from nichiyou_daiku.core.connection import Connection, Anchor
         >>> from nichiyou_daiku.core.geometry import FromMax, FromMin
-        >>> # Empty assembly
-        >>> empty = Assembly(boxes={}, joints={}, label="empty")
-        >>> len(empty.joints)
-        0
         >>> # Assembly from model
         >>> p1 = Piece.of(PieceType.PT_2x4, 1000.0, "p1")
         >>> p2 = Piece.of(PieceType.PT_2x4, 800.0, "p2")
@@ -162,6 +159,7 @@ class Assembly(BaseModel, frozen=True):
         1
     """
 
+    model: Model
     boxes: dict[str, Box]
     joints: dict[tuple[str, str], JointPair]
     label: str | None
@@ -186,4 +184,4 @@ class Assembly(BaseModel, frozen=True):
             (lhs_id, rhs_id): JointPair.of(boxes[lhs_id], boxes[rhs_id], piece_conn)
             for (lhs_id, rhs_id), piece_conn in model.connections.items()
         }
-        return cls(label=model.label, boxes=boxes, joints=joints)
+        return cls(model=model, label=model.label, boxes=boxes, joints=joints)

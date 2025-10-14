@@ -2,8 +2,8 @@
 
 from nichiyou_daiku.core.model import Model
 from nichiyou_daiku.core.piece import Piece, PieceType
-from nichiyou_daiku.core.resources import extract_resources
-from nichiyou_daiku.shell.report_generator import generate_markdown_report
+from nichiyou_daiku.core.assembly import Assembly
+from nichiyou_daiku.shell import extract_resources, generate_markdown_report
 
 # Create a simple table model
 pieces = [
@@ -29,9 +29,10 @@ pieces = [
 # Create model
 model = Model.of(pieces=pieces, connections=[], label="Simple Dining Table")
 
-# Extract resources
+# Create assembly and extract resources
 print("=== Report Generation Demo ===\n")
-resources = extract_resources(model)
+assembly = Assembly.of(model)
+resources = extract_resources(assembly)
 
 # Define custom standard lengths (metric)
 custom_standard_lengths = {

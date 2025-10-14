@@ -7,8 +7,9 @@ import pytest
 from nichiyou_daiku.core.model import Model, PiecePair
 from nichiyou_daiku.core.piece import Piece, PieceType
 from nichiyou_daiku.core.connection import Connection, Anchor
+from nichiyou_daiku.core.assembly import Assembly
 from nichiyou_daiku.core.geometry import FromMax, FromMin
-from nichiyou_daiku.core.resources import (
+from nichiyou_daiku.shell.resources import (
     AnchorInfo,
     PieceResource,
     ResourceSummary,
@@ -164,8 +165,9 @@ class TestExtractResources:
             pieces=[p1, p2], connections=[(PiecePair(base=p1, target=p2), conn)]
         )
 
-        # Extract resources
-        resources = extract_resources(model)
+        # Create assembly and extract resources
+        assembly = Assembly.of(model)
+        resources = extract_resources(assembly)
 
         # Verify results
         assert resources.total_pieces == 2
@@ -191,7 +193,8 @@ class TestExtractResources:
         ]
 
         model = Model.of(pieces=pieces, connections=[])
-        resources = extract_resources(model)
+        assembly = Assembly.of(model)
+        resources = extract_resources(assembly)
 
         assert resources.total_pieces == 5
         assert resources.pieces_by_type[PieceType.PT_2x4] == 2
@@ -209,7 +212,8 @@ class TestExtractResources:
     def test_should_handle_empty_model(self):
         """Should handle model with no pieces."""
         model = Model.of(pieces=[], connections=[])
-        resources = extract_resources(model)
+        assembly = Assembly.of(model)
+        resources = extract_resources(assembly)
 
         assert resources.total_pieces == 0
         assert len(resources.pieces) == 0
@@ -226,8 +230,9 @@ class TestExtractResources:
         ]
         model = Model.of(pieces=pieces, connections=[])
 
-        # Extract resources
-        resources = extract_resources(model)
+        # Create assembly and extract resources
+        assembly = Assembly.of(model)
+        resources = extract_resources(assembly)
 
         # Serialize to JSON
         json_str = resources.model_dump_json(indent=2)
@@ -250,7 +255,9 @@ class TestExtractResources:
         # Create connection
         conn = Connection(
             lhs=Anchor(
-                contact_face="front", edge_shared_face="top", offset=FromMax(value=100.0)
+                contact_face="front",
+                edge_shared_face="top",
+                offset=FromMax(value=100.0),
             ),
             rhs=Anchor(
                 contact_face="down",
@@ -263,8 +270,9 @@ class TestExtractResources:
             pieces=[p1, p2], connections=[(PiecePair(base=p1, target=p2), conn)]
         )
 
-        # Extract resources
-        resources = extract_resources(model)
+        # Create assembly and extract resources
+        assembly = Assembly.of(model)
+        resources = extract_resources(assembly)
 
         # Check piece-1 has lhs anchor
         piece1 = next(p for p in resources.pieces if p.id == "piece-1")
@@ -291,12 +299,26 @@ class TestExtractResources:
 
         # Create two connections both involving piece-1
         conn1 = Connection(
-            lhs=Anchor(contact_face="front", edge_shared_face="top", offset=FromMax(value=100.0)),
-            rhs=Anchor(contact_face="down", edge_shared_face="front", offset=FromMin(value=50.0)),
+            lhs=Anchor(
+                contact_face="front",
+                edge_shared_face="top",
+                offset=FromMax(value=100.0),
+            ),
+            rhs=Anchor(
+                contact_face="down",
+                edge_shared_face="front",
+                offset=FromMin(value=50.0),
+            ),
         )
         conn2 = Connection(
-            lhs=Anchor(contact_face="back", edge_shared_face="left", offset=FromMin(value=25.0)),
-            rhs=Anchor(contact_face="right", edge_shared_face="down", offset=FromMax(value=75.0)),
+            lhs=Anchor(
+                contact_face="back", edge_shared_face="left", offset=FromMin(value=25.0)
+            ),
+            rhs=Anchor(
+                contact_face="right",
+                edge_shared_face="down",
+                offset=FromMax(value=75.0),
+            ),
         )
 
         model = Model.of(
@@ -307,8 +329,9 @@ class TestExtractResources:
             ],
         )
 
-        # Extract resources
-        resources = extract_resources(model)
+        # Create assembly and extract resources
+        assembly = Assembly.of(model)
+        resources = extract_resources(assembly)
 
         # Check piece-1 has two anchors
         piece1 = next(p for p in resources.pieces if p.id == "piece-1")
@@ -339,8 +362,9 @@ class TestExtractResources:
 
         model = Model.of(pieces=[p1, p2], connections=[])
 
-        # Extract resources
-        resources = extract_resources(model)
+        # Create assembly and extract resources
+        assembly = Assembly.of(model)
+        resources = extract_resources(assembly)
 
         # Both pieces should have empty anchor lists
         piece1 = next(p for p in resources.pieces if p.id == "piece-1")

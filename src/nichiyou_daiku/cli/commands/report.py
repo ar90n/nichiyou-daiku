@@ -12,8 +12,8 @@ from nichiyou_daiku.dsl import (
     DSLSemanticError,
     DSLValidationError,
 )
-from nichiyou_daiku.core.resources import extract_resources
-from nichiyou_daiku.shell import generate_markdown_report
+from nichiyou_daiku.core.assembly import Assembly
+from nichiyou_daiku.shell import extract_resources, generate_markdown_report
 
 
 @click.command()
@@ -74,11 +74,21 @@ def report(
         echo.error(f"Unexpected error parsing DSL: {e}")
         sys.exit(1)
 
+    # Create assembly
+    try:
+        echo.verbose("Creating assembly...")
+
+        assembly = Assembly.of(model)
+
+    except Exception as e:
+        echo.error(f"Error creating assembly: {e}")
+        sys.exit(1)
+
     # Extract resources
     try:
         echo.verbose("Extracting resources...")
 
-        resources = extract_resources(model)
+        resources = extract_resources(assembly)
 
     except Exception as e:
         echo.error(f"Error extracting resources: {e}")

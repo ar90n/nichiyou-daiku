@@ -3,7 +3,7 @@
 from unittest.mock import patch
 
 from nichiyou_daiku.core.piece import PieceType
-from nichiyou_daiku.core.resources import ResourceSummary, PieceResource, AnchorInfo
+from nichiyou_daiku.shell.resources import ResourceSummary, PieceResource, AnchorInfo
 from nichiyou_daiku.shell.report_generator import (
     CutPlan,
     _get_default_standard_lengths,

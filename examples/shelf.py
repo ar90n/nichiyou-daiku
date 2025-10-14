@@ -395,14 +395,15 @@ model = Model.of(
 )
 
 # ============================================================================
-# EXTRACT RESOURCES
+# CREATE ASSEMBLY AND EXTRACT RESOURCES
 # ============================================================================
-from nichiyou_daiku.core.resources import extract_resources
-from nichiyou_daiku.shell.report_generator import generate_markdown_report
-from nichiyou_daiku.core.piece import PieceType
+from nichiyou_daiku.shell import extract_resources, generate_markdown_report
+
+print("Creating assembly...")
+assembly = Assembly.of(model)
 
 print("Extracting bill of materials...")
-resources = extract_resources(model)
+resources = extract_resources(assembly)
 
 # Display resource summary
 print("\n" + resources.pretty_print())
@@ -446,7 +447,6 @@ print(report[:800] + "\n..." if len(report) > 800 else report)
 # VISUALIZE
 # ============================================================================
 print("\n\nBuilding 3D visualization...")
-assembly = Assembly.of(model)
 
 # Export with smaller fillet radius for sharper edges
 compound = assembly_to_build123d(assembly, fillet_radius=2.0)
