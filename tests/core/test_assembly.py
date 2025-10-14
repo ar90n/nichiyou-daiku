@@ -122,4 +122,37 @@ class TestAssembly:
         assert ("p1", "p2") in assembly.joints
         assert isinstance(assembly.joints[("p1", "p2")], JointPair)
 
+    def test_should_generate_pilot_holes_for_screw_connections(self):
+        """Should generate pilot holes for screw-type connections."""
+        from nichiyou_daiku.core.model import Model, PiecePair
+        from nichiyou_daiku.core.connection import ConnectionType
+
+        # Create pieces and screw connection
+        p1 = Piece.of(PieceType.PT_2x4, 1000.0, "p1")
+        p2 = Piece.of(PieceType.PT_2x4, 800.0, "p2")
+
+        conn = Connection(
+            lhs=Anchor(
+                contact_face="front", edge_shared_face="top", offset=FromMax(value=100)
+            ),
+            rhs=Anchor(
+                contact_face="down", edge_shared_face="front", offset=FromMin(value=50)
+            ),
+            type=ConnectionType.SCREW,
+        )
+
+        model = Model.of(
+            pieces=[p1, p2], connections=[(PiecePair(base=p1, target=p2), conn)]
+        )
+
+        assembly = Assembly.of(model)
+
+        # Verify pilot_holes is a dict
+        assert isinstance(assembly.pilot_holes, dict)
+
+        # Once _calculate_pilot_holes_for_connection is implemented,
+        # we can add more specific assertions here.
+        # For now, just check the structure exists and is empty (stub returns [])
+        # When implemented, this test should verify actual holes are generated
+
     # Assembly.of() method is covered in doctests

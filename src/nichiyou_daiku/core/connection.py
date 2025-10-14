@@ -71,8 +71,8 @@ def _get_pos_dir_edge(contact_face: Face, edge_shared_face: Face) -> Edge:
 
 
 class Anchor(BaseModel, frozen=True):
-    contact_face: Face
     edge_shared_face: Face
+    contact_face: Face
     offset: Offset
 
 

@@ -128,6 +128,11 @@ class Point3D(BaseModel, frozen=True):
         )
 
 
+class Point2D(BaseModel, frozen=True):
+    u: float
+    v: float
+
+
 class Vector3D(BaseModel, frozen=True):
     """3D vector for directions and displacements.
 

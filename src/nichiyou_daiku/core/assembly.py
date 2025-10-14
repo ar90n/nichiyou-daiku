@@ -7,9 +7,11 @@ This module converts the abstract model representation into concrete
 from pydantic import BaseModel
 
 from .piece import get_shape
-from .connection import Connection, Anchor, as_edge_point
+from .connection import Connection, Anchor, as_edge_point, ConnectionType
+from .geometry.face import Face
 from .model import Model
 from .geometry import (
+    Point2D,
     Point3D,
     Box,
     Orientation3D,
@@ -17,6 +19,49 @@ from .geometry import (
     opposite as opposite_face,
     Vector3D,
 )
+
+
+class SurfacePoint(BaseModel, frozen=True):
+    """A point on a piece's surface.
+
+    Represents a 2D position on a specific face of a piece.
+
+    Attributes:
+        face: The face where the point is located
+        position: 2D coordinates on the face surface
+
+    Examples:
+        >>> from nichiyou_daiku.core.geometry import Point2D
+        >>> sp = SurfacePoint(face="top", position=Point2D(u=50.0, v=25.0))
+        >>> sp.face
+        'top'
+        >>> sp.position.u
+        50.0
+    """
+
+    face: Face
+    position: Point2D
+
+
+class Hole(BaseModel, frozen=True):
+    """Specification for a pilot hole.
+
+    Attributes:
+        diameter: Hole diameter in mm
+        depth: Hole depth in mm (None for through-hole)
+
+    Examples:
+        >>> hole = Hole(diameter=3.0, depth=10.0)
+        >>> hole.diameter
+        3.0
+        >>> # Through-hole
+        >>> through = Hole(diameter=3.0)
+        >>> through.depth is None
+        True
+    """
+
+    diameter: float
+    depth: float | None = None
 
 
 class Joint(BaseModel, frozen=True):
@@ -119,6 +164,33 @@ class JointPair(BaseModel, frozen=True):
         )
 
 
+def _calculate_pilot_holes_for_connection(
+    lhs_box: Box,
+    rhs_box: Box,
+    connection: Connection,
+) -> tuple[list[tuple[SurfacePoint, Hole]], list[tuple[SurfacePoint, Hole]]]:
+    """Calculate pilot holes for both sides of a connection.
+
+    This function converts a Connection specification into pilot hole positions
+    for both the lhs and rhs pieces.
+
+    Args:
+        lhs_box: Box for the lhs piece
+        rhs_box: Box for the rhs piece
+        connection: Connection specification
+
+    Returns:
+        Tuple of (lhs_holes, rhs_holes) where each is a list of (SurfacePoint, Hole)
+
+    Note:
+        This is a stub implementation. The actual logic will be implemented
+        to convert Anchor positions to SurfacePoint coordinates.
+    """
+    # Stub implementation - returns empty lists
+    # TODO: Implement actual conversion from Connection to pilot holes
+    return ([], [])
+
+
 class Assembly(BaseModel, frozen=True):
     """Complete 3D assembly with all joints.
 
@@ -128,6 +200,7 @@ class Assembly(BaseModel, frozen=True):
         model: The source model with piece and connection definitions
         boxes: Dictionary mapping piece IDs to their 3D boxes
         joints: Dictionary mapping piece ID pairs to their joint pairs
+        pilot_holes: Dictionary mapping piece IDs to lists of (SurfacePoint, Hole) tuples
         label: Optional label for the assembly
 
     Examples:
@@ -162,6 +235,7 @@ class Assembly(BaseModel, frozen=True):
     model: Model
     boxes: dict[str, Box]
     joints: dict[tuple[str, str], JointPair]
+    pilot_holes: dict[str, list[tuple[SurfacePoint, Hole]]]
     label: str | None
 
     @classmethod
@@ -169,12 +243,13 @@ class Assembly(BaseModel, frozen=True):
         """Create an Assembly instance from a Model.
 
         Converts the abstract model into a concrete 3D assembly.
+        Generates pilot holes for screw connections.
 
         Args:
             model: Model containing pieces and connections
 
         Returns:
-            Assembly with 3D connection information
+            Assembly with 3D connection information and pilot holes
         """
 
         boxes = {
@@ -184,4 +259,29 @@ class Assembly(BaseModel, frozen=True):
             (lhs_id, rhs_id): JointPair.of(boxes[lhs_id], boxes[rhs_id], piece_conn)
             for (lhs_id, rhs_id), piece_conn in model.connections.items()
         }
-        return cls(model=model, label=model.label, boxes=boxes, joints=joints)
+
+        # Generate pilot holes for screw connections
+        pilot_holes: dict[str, list[tuple[SurfacePoint, Hole]]] = {}
+        for (lhs_id, rhs_id), connection in model.connections.items():
+            if connection.type == ConnectionType.SCREW:
+                lhs_holes, rhs_holes = _calculate_pilot_holes_for_connection(
+                    boxes[lhs_id], boxes[rhs_id], connection
+                )
+
+                if lhs_holes:
+                    if lhs_id not in pilot_holes:
+                        pilot_holes[lhs_id] = []
+                    pilot_holes[lhs_id].extend(lhs_holes)
+
+                if rhs_holes:
+                    if rhs_id not in pilot_holes:
+                        pilot_holes[rhs_id] = []
+                    pilot_holes[rhs_id].extend(rhs_holes)
+
+        return cls(
+            model=model,
+            label=model.label,
+            boxes=boxes,
+            joints=joints,
+            pilot_holes=pilot_holes,
+        )

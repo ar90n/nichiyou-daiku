@@ -16,7 +16,9 @@ class TestAssemblyToBuild123d:
 
         # Create minimal model and assembly
         model = Model.of(pieces=[], connections=[])
-        assembly = Assembly(model=model, boxes={}, joints={}, label="test_assembly")
+        assembly = Assembly(
+            model=model, boxes={}, joints={}, pilot_holes={}, label="test_assembly"
+        )
 
         # Temporarily set the flag to simulate build123d not being available
         import nichiyou_daiku.shell.build123d_export as export_module
@@ -59,7 +61,11 @@ class TestAssemblyToBuild123d:
                 # Create empty model and assembly
                 model = Model.of(pieces=[], connections=[])
                 assembly = Assembly(
-                    model=model, boxes={}, joints={}, label="test_assembly"
+                    model=model,
+                    boxes={},
+                    joints={},
+                    pilot_holes={},
+                    label="test_assembly",
                 )
 
                 # Mock the Compound class
@@ -104,6 +110,7 @@ class TestAssemblyToBuild123d:
                     model=model,
                     boxes={"p1": box1, "p2": box2},
                     joints={},
+                    pilot_holes={},
                     label="test_assembly",
                 )
 
@@ -240,6 +247,7 @@ class TestAssemblyToBuild123d:
                     model=model,
                     boxes={"p1": box1, "p2": box2},
                     joints={("p1", "p2"): JointPair(lhs=joint1, rhs=joint2)},
+                    pilot_holes={},
                     label="test_assembly",
                 )
 
