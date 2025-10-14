@@ -6,6 +6,7 @@ from pydantic import ValidationError
 from nichiyou_daiku.core.connection import (
     Anchor,
     Connection,
+    ConnectionType,
 )
 from nichiyou_daiku.core.geometry import Face, Edge, EdgePoint, FromMax, FromMin, Offset
 
@@ -137,6 +138,32 @@ class TestAnchorValidation:
             )
 
 
+class TestConnectionType:
+    """Test ConnectionType enum."""
+
+    def test_should_have_screw_type(self):
+        """Should have SCREW connection type."""
+        assert ConnectionType.SCREW.value == "screw"
+
+    def test_should_create_from_string(self):
+        """Should create ConnectionType from string using of() method."""
+        conn_type = ConnectionType.of("screw")
+        assert conn_type == ConnectionType.SCREW
+        assert conn_type.value == "screw"
+
+    def test_should_raise_error_for_unsupported_type(self):
+        """Should raise ValueError for unsupported connection type."""
+        with pytest.raises(ValueError) as exc:
+            ConnectionType.of("bolt")
+        assert "Unsupported connection type: bolt" in str(exc.value)
+
+    def test_should_support_equality(self):
+        """Should support equality comparison."""
+        type1 = ConnectionType.SCREW
+        type2 = ConnectionType.of("screw")
+        assert type1 == type2
+
+
 class TestConnection:
     """Test Connection model."""
 
@@ -205,3 +232,42 @@ class TestConnection:
 
         assert t_joint.lhs.contact_face == "left"
         assert l_angle.lhs.contact_face == "front"
+
+    def test_should_have_default_type(self):
+        """Should have default connection type of SCREW."""
+        conn = Connection(
+            lhs=Anchor(
+                contact_face="front", edge_shared_face="top", offset=FromMax(value=50)
+            ),
+            rhs=Anchor(
+                contact_face="down", edge_shared_face="front", offset=FromMin(value=10)
+            ),
+        )
+        assert conn.type == ConnectionType.SCREW
+
+    def test_should_accept_explicit_type(self):
+        """Should accept explicitly specified connection type."""
+        conn = Connection(
+            lhs=Anchor(
+                contact_face="front", edge_shared_face="top", offset=FromMax(value=50)
+            ),
+            rhs=Anchor(
+                contact_face="down", edge_shared_face="front", offset=FromMin(value=10)
+            ),
+            type=ConnectionType.SCREW,
+        )
+        assert conn.type == ConnectionType.SCREW
+
+    def test_should_serialize_with_type(self):
+        """Should serialize Connection including type field."""
+        conn = Connection(
+            lhs=Anchor(
+                contact_face="front", edge_shared_face="top", offset=FromMax(value=50)
+            ),
+            rhs=Anchor(
+                contact_face="down", edge_shared_face="front", offset=FromMin(value=10)
+            ),
+        )
+        data = conn.model_dump()
+        assert "type" in data
+        assert data["type"] == ConnectionType.SCREW

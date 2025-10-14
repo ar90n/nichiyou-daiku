@@ -4,6 +4,8 @@ This module defines the types used to specify how two pieces of lumber
 connect to each other, including positions and orientations.
 """
 
+from enum import Enum
+
 from pydantic import BaseModel
 
 from nichiyou_daiku.core.geometry import (
@@ -14,6 +16,51 @@ from nichiyou_daiku.core.geometry import (
     cross as cross_face,
     is_positive,
 )
+
+
+class ConnectionType(Enum):
+    """Enumeration of supported connection types.
+
+    Examples:
+        >>> ConnectionType.SCREW
+        <ConnectionType.SCREW: 'screw'>
+        >>> ConnectionType.SCREW.value
+        'screw'
+    """
+
+    SCREW = "screw"
+
+    @classmethod
+    def of(cls, value: str) -> "ConnectionType":
+        """Create a ConnectionType instance from a string value.
+
+        Args:
+            value: String representation of connection type (e.g., "screw")
+
+        Returns:
+            ConnectionType enum instance
+
+        Raises:
+            ValueError: If the connection type is not supported
+
+        Examples:
+            >>> ConnectionType.of("screw")
+            <ConnectionType.SCREW: 'screw'>
+            >>> ConnectionType.of("screw") == ConnectionType.SCREW
+            True
+            >>> import pytest
+            >>> with pytest.raises(ValueError) as exc:
+            ...     ConnectionType.of("bolt")
+            >>> "Unsupported connection type: bolt" in str(exc.value)
+            True
+        """
+        ret = {
+            "screw": cls.SCREW,
+        }.get(value)
+        if ret is not None:
+            return ret
+
+        raise ValueError(f"Unsupported connection type: {value}")
 
 
 def _get_pos_dir_edge(contact_face: Face, edge_shared_face: Face) -> Edge:
@@ -47,3 +94,4 @@ class Connection(BaseModel, frozen=True):
 
     lhs: Anchor
     rhs: Anchor
+    type: ConnectionType = ConnectionType.SCREW
