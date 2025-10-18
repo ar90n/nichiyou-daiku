@@ -8,10 +8,8 @@ from pydantic import BaseModel
 
 from .piece import get_shape
 from .connection import Connection, Anchor, as_edge_point, ConnectionType
-from .geometry.face import Face
 from .model import Model
 from .geometry import (
-    Point2D,
     Point3D,
     Box,
     Orientation3D,

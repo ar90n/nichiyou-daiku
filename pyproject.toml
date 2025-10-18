@@ -22,9 +22,15 @@ viz = [
     # However, it currently doesn't support ARM64/aarch64 platforms
     "ocp-vscode>=2.8.5",
 ]
+test-visual = [
+    "cairosvg>=2.7.0",  # SVG→PNG conversion for regression tests
+    "Pillow>=10.0.0",   # Image comparison for regression tests
+]
 all = [
     "build123d",
     "ocp-vscode>=2.8.5",
+    "cairosvg>=2.7.0",
+    "Pillow>=10.0.0",
 ]
 
 [project.scripts]
@@ -57,6 +63,7 @@ omit = [
 [tool.pyright]
 exclude = [
     "src/nichiyou_daiku/cli/commands/view.py",
+    "tests/utils/projection_utils.py",
 ]
 
 [tool.uv.sources]
