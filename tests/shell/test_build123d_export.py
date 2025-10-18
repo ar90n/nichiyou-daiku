@@ -173,12 +173,15 @@ class TestAssemblyToBuild123d:
                 result = export_module.assembly_to_build123d(assembly)
 
                 # Verify Box was created with correct dimensions
+                # Mapping: build123d(length, width, height) = our(width, height, length)
+                # box1: width=100, height=50, length=200
+                # box2: width=80, height=40, length=150
                 assert export_module.Box.call_count == 2
                 export_module.Box.assert_any_call(
-                    length=200.0, width=100.0, height=50.0, align="MIN"
+                    length=100.0, width=50.0, height=200.0, align="MIN"
                 )
                 export_module.Box.assert_any_call(
-                    length=150.0, width=80.0, height=40.0, align="MIN"
+                    length=80.0, width=40.0, height=150.0, align="MIN"
                 )
 
                 # Verify fillets were applied

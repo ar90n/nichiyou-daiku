@@ -100,9 +100,9 @@ def _create_piece_from(id: str, box: NichiyouBox, fillet_radius: float) -> "Part
     """
     piece = (
         Box(
-            length=float(box.shape.length),
-            width=float(box.shape.width),
-            height=float(box.shape.height),
+            length=float(box.shape.width),
+            width=float(box.shape.height),
+            height=float(box.shape.length),
             align=Align.MIN,
         )
         + Part()
