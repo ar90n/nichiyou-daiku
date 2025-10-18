@@ -33,18 +33,13 @@ if TYPE_CHECKING:
 def _as_euler_angles(
     orientation: Orientation3D, *, flip_dir: bool = False
 ) -> tuple[float, float, float]:
-    # Transform vectors from our coordinate system to build123d's
-    # Our system: X=width, Y=height, Z=length
-    # build123d:  X=length, Y=width, Z=height
-    # Mapping: build123d(X,Y,Z) = our(Z,X,Y)
-    
     dir_vec = np.asarray(
-        [orientation.direction.z, orientation.direction.x, orientation.direction.y],
+        [orientation.direction.x, orientation.direction.y, orientation.direction.z],
         dtype=float,
     )
 
     up_vec = np.asarray(
-        [orientation.up.z, orientation.up.x, orientation.up.y], dtype=float
+        [orientation.up.x, orientation.up.y, orientation.up.z], dtype=float
     )
 
     if flip_dir:
@@ -81,20 +76,15 @@ def _as_euler_angles(
 
 
 def _as_tuple(point: Point3D) -> tuple[float, float, float]:
-    """Convert a Point3D to a tuple of floats for build123d.
-
-    Maps our coordinate system to build123d's coordinate system:
-    - Our system: X=width, Y=height, Z=length
-    - build123d:  X=length, Y=width, Z=height
-    - Mapping: build123d(X,Y,Z) = our(Z,X,Y)
+    """Convert a Point3D to a tuple of floats.
 
     Args:
         point: The point to convert
 
     Returns:
-        Tuple of (x, y, z) coordinates in build123d coordinate system
+        Tuple of (x, y, z) coordinates as floats
     """
-    return (float(point.z), float(point.x), float(point.y))
+    return (float(point.x), float(point.y), float(point.z))
 
 
 def _create_piece_from(id: str, box: NichiyouBox, fillet_radius: float) -> "Part":
@@ -108,22 +98,17 @@ def _create_piece_from(id: str, box: NichiyouBox, fillet_radius: float) -> "Part
     Returns:
         A build123d Part with filleted edges
     """
-    # Map our coordinate system to build123d's coordinate system
-    # Our system: X=width, Y=height, Z=length
-    # build123d:  X=length, Y=width, Z=height
-    # Therefore: build123d(X,Y,Z) = our(Z,X,Y)
     piece = (
         Box(
-            length=float(box.shape.length),  # build123d X ← our Z
-            width=float(box.shape.width),    # build123d Y ← our X
-            height=float(box.shape.height),  # build123d Z ← our Y
+            length=float(box.shape.length),
+            width=float(box.shape.width),
+            height=float(box.shape.height),
             align=Align.MIN,
         )
         + Part()
     )
 
     if 0 < fillet_radius:
-        # Fillet along build123d X-axis (our Z-axis = length direction)
         filleted = fillet(piece.edges().filter_by(Axis.X), radius=fillet_radius)
         # Wrap the filleted result in a Part if it's a Compound
         if hasattr(filleted, "wrapped") and hasattr(Part, "__call__"):
@@ -132,7 +117,7 @@ def _create_piece_from(id: str, box: NichiyouBox, fillet_radius: float) -> "Part
             piece = filleted  # type: ignore
 
     piece.label = id
-    return piece  # type: ignore  # type: ignore
+    return piece  # type: ignore
 
 
 def _create_joint_from(
