@@ -156,13 +156,20 @@ def drawing(
     try:
         visible_lines, hidden_lines = [], []
 
-        # Isometric view (center-right)
+        # Calculate unified scale based on model bounding box
+        bbox = compound.bounding_box()
+        max_dim = max(bbox.size)
+        # Target size: 60% of A4 short edge (210mm)
+        target_size = 210 * 0.6  # 126mm
+        view_scale = target_size / max_dim if max_dim > 0 else 1.0
+
+        # Isometric view (right-top)
         iso_v, iso_h = project_to_2d(
             compound,
             (100, 100, 100),
             (0, 0, 1),
-            (page_size.X * 0.3, page_size.Y * 0.25),
-            0.75,
+            (page_size.X * 0.25, page_size.Y * 0.2),
+            view_scale,
         )
         visible_lines.extend(iso_v)
         hidden_lines.extend(iso_h)
@@ -172,27 +179,30 @@ def drawing(
             compound,
             (0, 0, 100),
             (0, 1, 0),
-            (page_size.X * -0.3, page_size.Y * 0.25),
+            (page_size.X * -0.25, page_size.Y * 0.2),
+            view_scale,
         )
         visible_lines.extend(vis)
         hidden_lines.extend(hid)
 
-        # Front view (left-center)
+        # Front view (left-bottom)
         vis, hid = project_to_2d(
             compound,
             (0, -100, 0),
             (0, 0, 1),
-            (page_size.X * -0.3, page_size.Y * -0.125),
+            (page_size.X * -0.25, page_size.Y * -0.2),
+            view_scale,
         )
         visible_lines.extend(vis)
         hidden_lines.extend(hid)
 
-        # Side view (right side, center-bottom)
+        # Side view (right-bottom)
         vis, hid = project_to_2d(
             compound,
             (100, 0, 0),
             (0, 0, 1),
-            (page_size.X * 0.15, page_size.Y * -0.25),
+            (page_size.X * 0.25, page_size.Y * -0.2),
+            view_scale,
         )
         visible_lines.extend(vis)
         hidden_lines.extend(hid)
