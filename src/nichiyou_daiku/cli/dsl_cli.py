@@ -7,6 +7,7 @@ from nichiyou_daiku.cli.commands.validate import validate
 from nichiyou_daiku.cli.commands.report import report
 from nichiyou_daiku.cli.commands.view import view
 from nichiyou_daiku.cli.commands.export import export
+from nichiyou_daiku.cli.commands.drawing import drawing
 
 
 @click.group()
@@ -35,6 +36,7 @@ cli.add_command(validate)
 cli.add_command(report)
 cli.add_command(view)
 cli.add_command(export)
+cli.add_command(drawing)
 
 
 if __name__ == "__main__":
