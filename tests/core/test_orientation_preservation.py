@@ -29,7 +29,7 @@ class TestOrientationPreservation:
             direction=Vector3D(x=1.0, y=0.0, z=0.0),  # X direction
             up=Vector3D(x=0.0, y=1.0, z=0.0),  # Y up
         )
-        joint = Joint(id="test-joint", position=Point3D(x=100, y=50, z=25), orientation=orientation)
+        joint = Joint(position=Point3D(x=100, y=50, z=25), orientation=orientation)
 
         # Check that orientation is preserved
         assert joint.orientation.direction.x == 1.0
@@ -65,16 +65,14 @@ class TestOrientationPreservation:
         )
         assembly = Assembly.of(model)
 
-        # Get the joints from assembly
-        # With new structure, joints are dict[str, Joint] and joint_pairs is list[tuple[str, str]]
-        assert len(assembly.joint_pairs) == 1
-        lhs_joint_id, rhs_joint_id = assembly.joint_pairs[0]
+        # Get the connection from assembly
+        asm_conn = assembly.joints[("base", "target")]
 
         # Check base joint
-        base_joint = assembly.joints[lhs_joint_id]
+        base_joint = asm_conn.lhs
 
         # Check target joint
-        target_joint = assembly.joints[rhs_joint_id]
+        target_joint = asm_conn.rhs
 
         # Both should have proper orientations
         assert isinstance(base_joint.orientation, Orientation3D)
@@ -129,23 +127,28 @@ class TestOrientationPreservation:
         )
         assembly = Assembly.of(model)
 
-        # Verify all joints have proper orientations
-        for joint_id, joint in assembly.joints.items():
-            assert isinstance(joint.orientation, Orientation3D)
+        # Verify all connections have proper orientations
+        for conn_key, conn in assembly.joints.items():
+            assert isinstance(conn.lhs.orientation, Orientation3D)
+            assert isinstance(conn.rhs.orientation, Orientation3D)
 
             # Check that direction vectors are unit vectors
-            dir_vec = joint.orientation.direction
-            dir_mag = (dir_vec.x**2 + dir_vec.y**2 + dir_vec.z**2) ** 0.5
-            assert abs(dir_mag - 1.0) < 1e-6
+            dir1 = conn.lhs.orientation.direction
+            dir1_mag = (dir1.x**2 + dir1.y**2 + dir1.z**2) ** 0.5
+            assert abs(dir1_mag - 1.0) < 1e-6
+
+            dir2 = conn.rhs.orientation.direction
+            dir2_mag = (dir2.x**2 + dir2.y**2 + dir2.z**2) ** 0.5
+            assert abs(dir2_mag - 1.0) < 1e-6
 
             # Check that up vectors are unit vectors and orthogonal to direction
-            up_vec = joint.orientation.up
-            up_mag = (up_vec.x**2 + up_vec.y**2 + up_vec.z**2) ** 0.5
-            assert abs(up_mag - 1.0) < 1e-6
+            up1 = conn.lhs.orientation.up
+            up1_mag = (up1.x**2 + up1.y**2 + up1.z**2) ** 0.5
+            assert abs(up1_mag - 1.0) < 1e-6
 
             # Dot product should be ~0 for orthogonal vectors
-            dot_product = dir_vec.x * up_vec.x + dir_vec.y * up_vec.y + dir_vec.z * up_vec.z
-            assert abs(dot_product) < 1e-6
+            dot1 = dir1.x * up1.x + dir1.y * up1.y + dir1.z * up1.z
+            assert abs(dot1) < 1e-6
 
     def test_orientation_from_face_and_edge(self):
         """Test creating orientation from face and edge."""

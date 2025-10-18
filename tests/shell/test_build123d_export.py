@@ -17,7 +17,7 @@ class TestAssemblyToBuild123d:
         # Create minimal model and assembly
         model = Model.of(pieces=[], connections=[])
         assembly = Assembly(
-            model=model, boxes={}, joints={}, joint_pairs=[], pilot_holes={}, label="test_assembly"
+            model=model, boxes={}, joints={}, pilot_holes={}, label="test_assembly"
         )
 
         # Temporarily set the flag to simulate build123d not being available
@@ -64,7 +64,6 @@ class TestAssemblyToBuild123d:
                     model=model,
                     boxes={},
                     joints={},
-                    joint_pairs=[],
                     pilot_holes={},
                     label="test_assembly",
                 )
@@ -111,7 +110,6 @@ class TestAssemblyToBuild123d:
                     model=model,
                     boxes={"p1": box1, "p2": box2},
                     joints={},
-                    joint_pairs=[],
                     pilot_holes={},
                     label="test_assembly",
                 )
@@ -230,7 +228,6 @@ class TestAssemblyToBuild123d:
                 box2 = Box(shape=Shape3D(width=100.0, height=50.0, length=200.0))
 
                 joint1 = NichiyouJoint(
-                    id="joint1",
                     position=Point3D(x=50.0, y=25.0, z=100.0),
                     orientation=Orientation3D.of(
                         direction=Vector3D(x=0.0, y=0.0, z=1.0),
@@ -238,7 +235,6 @@ class TestAssemblyToBuild123d:
                     ),
                 )
                 joint2 = NichiyouJoint(
-                    id="joint2",
                     position=Point3D(x=-50.0, y=-25.0, z=-100.0),
                     orientation=Orientation3D.of(
                         direction=Vector3D(x=0.0, y=0.0, z=-1.0),
@@ -246,25 +242,11 @@ class TestAssemblyToBuild123d:
                     ),
                 )
 
-                # Mock model with connections for joint_pair_to_pieces mapping
-                from nichiyou_daiku.core.piece import Piece, PieceType
-                from nichiyou_daiku.core.connection import Connection, Anchor
-                from nichiyou_daiku.core.geometry import FromMin
-                from nichiyou_daiku.core.model import PiecePair
-
-                p1 = Piece.of(PieceType.PT_2x4, 200.0, "p1")
-                p2 = Piece.of(PieceType.PT_2x4, 200.0, "p2")
-                conn = Connection(
-                    lhs=Anchor(contact_face="front", edge_shared_face="top", offset=FromMin(value=0)),
-                    rhs=Anchor(contact_face="down", edge_shared_face="front", offset=FromMin(value=0)),
-                )
-                model = Model.of(pieces=[p1, p2], connections=[(PiecePair(base=p1, target=p2), conn)])
-
+                model = Model.of(pieces=[], connections=[])
                 assembly = Assembly(
                     model=model,
                     boxes={"p1": box1, "p2": box2},
-                    joints={"joint1": joint1, "joint2": joint2},
-                    joint_pairs=[("joint1", "joint2")],
+                    joints={("p1", "p2"): JointPair(lhs=joint1, rhs=joint2)},
                     pilot_holes={},
                     label="test_assembly",
                 )
@@ -304,11 +286,11 @@ class TestAssemblyToBuild123d:
                 del mock_filleted_part2.wrapped
 
                 # Set up joints dictionaries for the filleted parts
-                mock_joint_p1_to_joint2 = Mock()
-                mock_joint_p2_to_joint1 = Mock()
-                mock_joint_p1_to_joint2.connect_to = Mock()
-                mock_filleted_part1.joints = {"to_joint2": mock_joint_p1_to_joint2}
-                mock_filleted_part2.joints = {"to_joint1": mock_joint_p2_to_joint1}
+                mock_joint_p1_to_p2 = Mock()
+                mock_joint_p2_to_p1 = Mock()
+                mock_joint_p1_to_p2.connect_to = Mock()
+                mock_filleted_part1.joints = {"to_p2": mock_joint_p1_to_p2}
+                mock_filleted_part2.joints = {"to_p1": mock_joint_p2_to_p1}
 
                 def mock_fillet_func(obj, radius):
                     if obj == mock_edges1:
@@ -327,10 +309,10 @@ class TestAssemblyToBuild123d:
 
                 # Mock RigidJoint to return the joints we set up
                 def mock_rigid_joint_func(label, to_part, joint_location):
-                    if label == "to_joint2" and to_part == mock_filleted_part1:
-                        return mock_joint_p1_to_joint2
-                    elif label == "to_joint1" and to_part == mock_filleted_part2:
-                        return mock_joint_p2_to_joint1
+                    if label == "to_p2" and to_part == mock_filleted_part1:
+                        return mock_joint_p1_to_p2
+                    elif label == "to_p1" and to_part == mock_filleted_part2:
+                        return mock_joint_p2_to_p1
                     else:
                         return Mock()
 
@@ -343,21 +325,20 @@ class TestAssemblyToBuild123d:
 
                 # Verify RigidJoint was created properly for both joints
                 assert export_module.RigidJoint.call_count == 2
-                # Joints are now labeled by joint IDs, not piece IDs
                 export_module.RigidJoint.assert_any_call(
-                    label="to_joint2",
+                    label="to_p2",
                     to_part=mock_filleted_part1,
                     joint_location=mock_location1,
                 )
                 export_module.RigidJoint.assert_any_call(
-                    label="to_joint1",
+                    label="to_p1",
                     to_part=mock_filleted_part2,
                     joint_location=mock_location2,
                 )
 
                 # Verify connect_to was called
-                mock_joint_p1_to_joint2.connect_to.assert_called_once_with(
-                    mock_joint_p2_to_joint1
+                mock_joint_p1_to_p2.connect_to.assert_called_once_with(
+                    mock_joint_p2_to_p1
                 )
 
                 # Verify result
