@@ -187,6 +187,44 @@ def export_side_view(
     )
 
 
+def svg_to_bitmap(svg_string: str, *, dpi: int = 96) -> np.ndarray:
+    """Convert SVG string to RGB bitmap (numpy array).
+
+    Args:
+        svg_string: SVG content as string
+        dpi: DPI for rendering (default: 96)
+
+    Returns:
+        RGB bitmap as numpy array (height, width, 3), dtype=uint8
+
+    Raises:
+        ImportError: If cairosvg and Pillow are not installed
+    """
+    if not HAS_VISUAL_TEST:
+        raise ImportError(
+            "cairosvg and Pillow are required. "
+            "Please install with: pip install nichiyou-daiku[test-visual]"
+        )
+
+    # Convert SVG to PNG bytes
+    png_data = cairosvg.svg2png(
+        bytestring=svg_string.encode("utf-8"), dpi=dpi, background_color="white"
+    )
+
+    # Load as PIL Image and ensure RGB mode
+    img = Image.open(pyio.BytesIO(png_data))
+    if img.mode != "RGB":
+        rgb_img = Image.new("RGB", img.size, (255, 255, 255))
+        if img.mode == "RGBA":
+            rgb_img.paste(img, mask=img.split()[3])
+        else:
+            rgb_img.paste(img)
+        img = rgb_img
+
+    # Return as numpy array
+    return np.array(img, dtype=np.uint8)
+
+
 def svg_to_png(svg_string: str, *, dpi: int = 96) -> bytes:
     """Convert SVG string to PNG bytes with white background.
 
@@ -230,12 +268,12 @@ def svg_to_png(svg_string: str, *, dpi: int = 96) -> bytes:
 
 
 def compare_images(
-    actual_png: bytes, expected_path: Path, *, tolerance: float = 0.01
+    actual: np.ndarray | bytes, expected_path: Path, *, tolerance: float = 0.01
 ) -> tuple[bool, str]:
-    """Compare actual PNG with expected baseline PNG.
+    """Compare image with baseline PNG.
 
     Args:
-        actual_png: Actual PNG image data as bytes
+        actual: RGB bitmap (numpy array) or PNG bytes
         expected_path: Path to expected baseline PNG file
         tolerance: Tolerance for pixel difference (0.0 to 1.0)
 
@@ -260,26 +298,28 @@ def compare_images(
             f"Run generate_baseline.py to create baseline images."
         )
 
-    # Load images
-    actual_img = Image.open(pyio.BytesIO(actual_png))
+    # Convert actual to numpy array if needed
+    if isinstance(actual, bytes):
+        actual_img = Image.open(pyio.BytesIO(actual))
+        if actual_img.mode != "RGB":
+            actual_img = actual_img.convert("RGB")
+        actual_arr = np.array(actual_img, dtype=np.float32)
+    else:
+        actual_arr = actual.astype(np.float32)
+
+    # Load expected image
     expected_img = Image.open(expected_path)
-
-    # Check dimensions
-    if actual_img.size != expected_img.size:
-        return (
-            False,
-            f"Image size mismatch: actual={actual_img.size}, "
-            f"expected={expected_img.size}",
-        )
-
-    # Convert to RGB if needed (handle transparency)
-    if actual_img.mode != "RGB":
-        actual_img = actual_img.convert("RGB")
     if expected_img.mode != "RGB":
         expected_img = expected_img.convert("RGB")
-
-    actual_arr = np.array(actual_img, dtype=np.float32)
     expected_arr = np.array(expected_img, dtype=np.float32)
+
+    # Check dimensions
+    if actual_arr.shape != expected_arr.shape:
+        return (
+            False,
+            f"Image size mismatch: actual={actual_arr.shape}, "
+            f"expected={expected_arr.shape}",
+        )
 
     # Calculate normalized difference (0.0 to 1.0)
     diff = np.abs(actual_arr - expected_arr) / 255.0

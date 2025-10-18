@@ -14,7 +14,7 @@ from tests.utils.projection_utils import (
     export_top_view,
     export_front_view,
     export_side_view,
-    svg_to_png,
+    svg_to_bitmap,
     compare_images,
 )
 from nichiyou_daiku.dsl import parse_dsl
@@ -73,13 +73,13 @@ def test_projection_matches_baseline(model_name, view_name, export_func):
     svg_output = io.StringIO()
     export_func(compound, svg_output)
 
-    # 4. Convert to PNG
-    png_data = svg_to_png(svg_output.getvalue())
+    # 4. Convert to bitmap (no PNG encoding)
+    actual_bitmap = svg_to_bitmap(svg_output.getvalue())
 
     # 5. Compare with baseline
     baseline_path = FIXTURES_DIR / model_name / f"{view_name}.png"
 
-    matches, message = compare_images(png_data, baseline_path, tolerance=0.01)
+    matches, message = compare_images(actual_bitmap, baseline_path, tolerance=0.01)
 
     assert matches, (
         f"Projection does not match baseline: {message}\n"
