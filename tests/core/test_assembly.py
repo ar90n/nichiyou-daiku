@@ -158,17 +158,19 @@ class TestAssembly:
 
         assembly = Assembly.of(model)
 
-        # Verify that joints have pilot_hole attribute
-        lhs_joint_id, rhs_joint_id = assembly.joint_pairs[0]
-        lhs_joint = assembly.joints[lhs_joint_id]
-        rhs_joint = assembly.joints[rhs_joint_id]
+        # Verify pilot_holes structure: dict[str, Hole]
+        assert isinstance(assembly.pilot_holes, dict)
 
-        # For screw connections, joints should have pilot holes
-        assert lhs_joint.pilot_hole is not None
-        assert rhs_joint.pilot_hole is not None
+        # For screw connections, pilot holes should be created for both joints
+        assert len(assembly.pilot_holes) == 2
+
+        # Verify that pilot holes map to joint IDs
+        lhs_joint_id, rhs_joint_id = assembly.joint_pairs[0]
+        assert lhs_joint_id in assembly.pilot_holes
+        assert rhs_joint_id in assembly.pilot_holes
 
         # Verify Hole instances
-        assert isinstance(lhs_joint.pilot_hole, Hole)
-        assert isinstance(rhs_joint.pilot_hole, Hole)
+        assert isinstance(assembly.pilot_holes[lhs_joint_id], Hole)
+        assert isinstance(assembly.pilot_holes[rhs_joint_id], Hole)
 
     # Assembly.of() method is covered in doctests
