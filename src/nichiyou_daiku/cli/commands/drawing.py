@@ -154,58 +154,83 @@ def drawing(
 
     # Generate projections
     try:
+        from build123d import Compound as Build123dCompound
+
         visible_lines, hidden_lines = [], []
 
-        # Calculate unified scale based on model bounding box
+        # Calculate drawing area (considering border and title block)
+        # A4: 297mm x 210mm, border: ~20mm, title block: ~40mm height
+        drawing_area_width = page_size.X - 40  # Left/right margins
+        drawing_area_height = page_size.Y - 80  # Top margin + title block
+
+        # 2x2 grid layout
+        margin = 10  # Margin between views
+        grid_width = drawing_area_width / 2 - margin
+        grid_height = drawing_area_height / 2 - margin
+
+        # Calculate unified scale based on model and grid size
         bbox = compound.bounding_box()
         max_dim = max(bbox.size)
-        # Target size: 60% of A4 short edge (210mm)
-        target_size = 210 * 0.6  # 126mm
-        view_scale = target_size / max_dim if max_dim > 0 else 1.0
+        # Views should fit in 80% of grid cell
+        max_view_size = min(grid_width, grid_height) * 0.8
+        view_scale = max_view_size / max_dim if max_dim > 0 else 1.0
 
-        # Isometric view (right-top)
-        iso_v, iso_h = project_to_2d(
-            compound,
-            (100, 100, 100),
-            (0, 0, 1),
-            (page_size.X * 0.25, page_size.Y * 0.2),
-            view_scale,
-        )
-        visible_lines.extend(iso_v)
-        hidden_lines.extend(iso_h)
+        # Calculate positions for 2x2 grid (centered in each cell)
+        # Offset Y slightly up to account for title block
+        y_offset = 10
+
+        # Left column center
+        left_x = -drawing_area_width / 4
+        # Right column center
+        right_x = drawing_area_width / 4
+        # Top row center
+        top_y = drawing_area_height / 4 + y_offset
+        # Bottom row center
+        bottom_y = -drawing_area_height / 4 + y_offset
 
         # Top view (plan, left-top)
-        vis, hid = project_to_2d(
+        top_vis, top_hid = project_to_2d(
             compound,
             (0, 0, 100),
             (0, 1, 0),
-            (page_size.X * -0.25, page_size.Y * 0.2),
+            (left_x, top_y),
             view_scale,
         )
-        visible_lines.extend(vis)
-        hidden_lines.extend(hid)
+        visible_lines.extend(top_vis)
+        hidden_lines.extend(top_hid)
 
         # Front view (left-bottom)
-        vis, hid = project_to_2d(
+        front_vis, front_hid = project_to_2d(
             compound,
             (0, -100, 0),
             (0, 0, 1),
-            (page_size.X * -0.25, page_size.Y * -0.2),
+            (left_x, bottom_y),
             view_scale,
         )
-        visible_lines.extend(vis)
-        hidden_lines.extend(hid)
+        visible_lines.extend(front_vis)
+        hidden_lines.extend(front_hid)
+
+        # Isometric view (right-top)
+        iso_vis, iso_hid = project_to_2d(
+            compound,
+            (100, 100, 100),
+            (0, 0, 1),
+            (right_x, top_y),
+            view_scale,
+        )
+        visible_lines.extend(iso_vis)
+        hidden_lines.extend(iso_hid)
 
         # Side view (right-bottom)
-        vis, hid = project_to_2d(
+        side_vis, side_hid = project_to_2d(
             compound,
             (100, 0, 0),
             (0, 0, 1),
-            (page_size.X * 0.25, page_size.Y * -0.2),
+            (right_x, bottom_y),
             view_scale,
         )
-        visible_lines.extend(vis)
-        hidden_lines.extend(hid)
+        visible_lines.extend(side_vis)
+        hidden_lines.extend(side_hid)
 
     except Exception as e:
         echo.error(f"Error generating projections: {e}")
