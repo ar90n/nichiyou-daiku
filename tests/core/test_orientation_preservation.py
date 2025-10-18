@@ -79,11 +79,11 @@ class TestOrientationPreservation:
         assert isinstance(target_joint.orientation, Orientation3D)
 
         # The orientations should be set correctly based on faces and edges
-        # Base: face=left -> direction=(0,-1,0), edge determines up
-        assert base_joint.orientation.direction == Vector3D(x=0.0, y=-1.0, z=0.0)
+        # Base: face=left -> direction=(-1,0,0) in new coordinate system
+        assert base_joint.orientation.direction == Vector3D(x=-1.0, y=0.0, z=0.0)
 
-        # Target: face=right -> direction=(0,1,0), edge determines up
-        assert target_joint.orientation.direction == Vector3D(x=0.0, y=1.0, z=0.0)
+        # Target: face=right -> direction=(1,0,0) in new coordinate system
+        assert target_joint.orientation.direction == Vector3D(x=1.0, y=0.0, z=0.0)
 
     def test_complex_orientation_scenario(self):
         """Test a complex scenario with multiple orientations."""
@@ -157,20 +157,20 @@ class TestOrientationPreservation:
             (
                 "top",
                 Edge(lhs="top", rhs="front"),
-                Vector3D(x=1, y=0, z=0),
-                Vector3D(x=0, y=-1, z=0),
+                Vector3D(x=0, y=0, z=1),  # top = +Z in new coordinate system
+                Vector3D(x=-1, y=0, z=0),  # top x front = left = -X
             ),
             (
                 "front",
                 Edge(lhs="front", rhs="right"),
-                Vector3D(x=0, y=0, z=1),
-                Vector3D(x=-1, y=0, z=0),
+                Vector3D(x=0, y=1, z=0),  # front = +Y in new coordinate system
+                Vector3D(x=0, y=0, z=-1),  # front x right = down = -Z
             ),
             (
                 "left",
                 Edge(lhs="left", rhs="down"),
-                Vector3D(x=0, y=-1, z=0),
-                Vector3D(x=0, y=0, z=-1),
+                Vector3D(x=-1, y=0, z=0),  # left = -X in new coordinate system
+                Vector3D(x=0, y=-1, z=0),  # left x down = back = -Y
             ),
         ]
 

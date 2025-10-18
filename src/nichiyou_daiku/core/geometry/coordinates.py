@@ -24,10 +24,13 @@ from .dimensions import Millimeters
 
 def _edge_legnth_of(box: Box, edge: Edge) -> Millimeters:
     third_face = cross_face(edge.lhs, edge.rhs)
+    # Z-axis (down to top): length
     if is_down_to_top_axis(third_face):
         return box.shape.length
+    # X-axis (left to right): width
     if is_left_to_right_axis(third_face):
         return box.shape.width
+    # Y-axis (back to front): height
     if is_back_to_front_axis(third_face):
         return box.shape.height
 
@@ -94,12 +97,12 @@ class Point3D(BaseModel, frozen=True):
         Returns:
             Point3D at the specified corner
         """
-        # X-axis is length (top/down faces)
-        x = 0.0 if corner.face_top_down == "down" else box.shape.length
-        # Y-axis is width (left/right faces)
-        y = 0.0 if corner.face_right_left == "left" else box.shape.width
-        # Z-axis is height (front/back faces)
-        z = 0.0 if corner.face_front_back == "back" else box.shape.height
+        # X-axis: left to right (width)
+        x = 0.0 if corner.face_right_left == "left" else box.shape.width
+        # Y-axis: back to front (height)
+        y = 0.0 if corner.face_front_back == "back" else box.shape.height
+        # Z-axis: down to top (length)
+        z = 0.0 if corner.face_top_down == "down" else box.shape.length
         return cls(x=x, y=y, z=z)
 
     @classmethod
@@ -129,6 +132,19 @@ class Point3D(BaseModel, frozen=True):
 
 
 class Point2D(BaseModel, frozen=True):
+    """2D point in space.
+
+    Represents a position in 2D space.
+
+    Attributes:
+        u: U coordinate
+        v: V coordinate
+
+    Examples:
+        >>> origin = Point2D(u=0.0, v=0.0)
+        >>> origin.u
+        0.0
+    """
     u: float
     v: float
 
@@ -201,22 +217,22 @@ class Vector3D(BaseModel, frozen=True):
 
         Examples:
             >>> normal = Vector3D.normal_of("top")
-            >>> normal.x
+            >>> normal.z
             1.0
         """
         match face:
-            case "top":
-                return cls(x=1.0, y=0.0, z=0.0)
-            case "down":
-                return cls(x=-1.0, y=0.0, z=0.0)
             case "left":
-                return cls(x=0.0, y=-1.0, z=0.0)
+                return cls(x=-1.0, y=0.0, z=0.0)
             case "right":
-                return cls(x=0.0, y=1.0, z=0.0)
-            case "front":
-                return cls(x=0.0, y=0.0, z=1.0)
+                return cls(x=1.0, y=0.0, z=0.0)
             case "back":
+                return cls(x=0.0, y=-1.0, z=0.0)
+            case "front":
+                return cls(x=0.0, y=1.0, z=0.0)
+            case "down":
                 return cls(x=0.0, y=0.0, z=-1.0)
+            case "top":
+                return cls(x=0.0, y=0.0, z=1.0)
         raise ValueError(f"Invalid face: {face}")
 
 
@@ -374,3 +390,25 @@ class Orientation3D(BaseModel, frozen=True):
         up = Vector3D(x=sz * cy + cz * sx * sy, y=cz * cx, z=-sz * sy + cz * sx * cy)
 
         return cls(direction=direction, up=up)
+
+
+class SurfacePoint(BaseModel, frozen=True):
+    """A point on a piece's surface.
+
+    Represents a 2D position on a specific face of a piece.
+
+    Attributes:
+        face: The face where the point is located
+        position: 2D coordinates on the face surface
+
+    Examples:
+        >>> from nichiyou_daiku.core.geometry import Point2D
+        >>> sp = SurfacePoint(face="top", position=Point2D(u=50.0, v=25.0))
+        >>> sp.face
+        'top'
+        >>> sp.position.u
+        50.0
+    """
+
+    face: Face
+    position: Point2D

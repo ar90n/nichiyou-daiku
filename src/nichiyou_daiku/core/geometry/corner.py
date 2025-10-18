@@ -23,9 +23,9 @@ class Corner(BaseModel, frozen=True):
     Represents a corner formed by the intersection of three faces.
 
     Attributes:
-        face_x: Face in the X direction (must be top or down)
-        face_y: Face in the Y direction (must be left or right)
-        face_z: Face in the Z direction (must be front or back)
+        face_top_down: Face in the Z direction (must be top or down)
+        face_right_left: Face in the X direction (must be left or right)
+        face_front_back: Face in the Y direction (must be front or back)
 
     Examples:
         >>> corner = Corner(face_top_down="top", face_right_left="left", face_front_back="front")

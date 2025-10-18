@@ -18,29 +18,8 @@ from .geometry import (
     cross as cross_face,
     opposite as opposite_face,
     Vector3D,
+    SurfacePoint,
 )
-
-
-class SurfacePoint(BaseModel, frozen=True):
-    """A point on a piece's surface.
-
-    Represents a 2D position on a specific face of a piece.
-
-    Attributes:
-        face: The face where the point is located
-        position: 2D coordinates on the face surface
-
-    Examples:
-        >>> from nichiyou_daiku.core.geometry import Point2D
-        >>> sp = SurfacePoint(face="top", position=Point2D(u=50.0, v=25.0))
-        >>> sp.face
-        'top'
-        >>> sp.position.u
-        50.0
-    """
-
-    face: Face
-    position: Point2D
 
 
 class Hole(BaseModel, frozen=True):

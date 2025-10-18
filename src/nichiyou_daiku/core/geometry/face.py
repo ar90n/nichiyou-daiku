@@ -13,9 +13,9 @@ Face = Literal["top", "down", "left", "right", "front", "back"]
 Represents the six faces of a rectangular piece of lumber, used for
 specifying connections and orientations.
 
-- top/down: faces perpendicular to X axis
-- left/right: faces perpendicular to Y axis  
-- front/back: faces perpendicular to Z axis
+- left to right: faces perpendicular to X axis  
+- back to front: faces perpendicular to Y axis
+- down to top: faces perpendicular to Z axis
 
 Examples:
     >>> face: Face = "top"

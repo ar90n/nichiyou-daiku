@@ -63,14 +63,14 @@ class TestOrientation3D:
 
         orient = Orientation3D.of(face, edge)
 
-        # Direction should be face normal (top = +X)
-        assert orient.direction.x == 1.0
+        # Direction should be face normal (top = +Z in new coordinate system)
+        assert orient.direction.x == 0.0
         assert orient.direction.y == 0.0
-        assert orient.direction.z == 0.0
+        assert orient.direction.z == 1.0
 
-        # Up should be edge direction (top x front = left = -Y)
-        assert orient.up.x == 0.0
-        assert orient.up.y == -1.0
+        # Up should be edge direction (top x front = left = -X in new coordinate system)
+        assert orient.up.x == -1.0
+        assert orient.up.y == 0.0
         assert orient.up.z == 0.0
 
     def test_should_create_from_euler_angles(self):
