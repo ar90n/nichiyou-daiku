@@ -854,6 +854,7 @@ test-visual = [
 ]
 viz = [
     { name = "build123d" },
+    { name = "cairosvg" },
     { name = "ocp-vscode" },
 ]
 
@@ -878,6 +879,7 @@ requires-dist = [
     { name = "build123d", marker = "extra == 'viz'", git = "https://github.com/gumyr/build123d" },
     { name = "cairosvg", marker = "extra == 'all'", specifier = ">=2.7.0" },
     { name = "cairosvg", marker = "extra == 'test-visual'", specifier = ">=2.7.0" },
+    { name = "cairosvg", marker = "extra == 'viz'", specifier = ">=2.7.0" },
     { name = "click", specifier = ">=8.1.7" },
     { name = "lark", specifier = ">=1.1.9" },
     { name = "numpy", specifier = ">=2.2.6" },
