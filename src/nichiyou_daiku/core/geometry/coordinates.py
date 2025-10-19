@@ -104,22 +104,21 @@ class SurfacePoint(BaseModel, frozen=True):
         # Convert EdgePoint to Point3D using standard logic
         point_3d = Point3D._of_edge_point(box, edge_point)
 
-        # Project Point3D to face's 2D coordinates
-        # The projection simply drops the coordinate perpendicular to the face
+        # Project Point3D to face's 2D coordinates with origin at face center
         # Face coordinate systems (must match _of_surface_point):
-        # - top/down: u=X, v=Y (drop Z)
-        # - left/right: u=Y, v=Z (drop X)
-        # - front/back: u=X, v=Z (drop Y)
+        # - top/down: u=X, v=Y (drop Z), center at (width/2, height/2)
+        # - left/right: u=Y, v=Z (drop X), center at (height/2, length/2)
+        # - front/back: u=X, v=Z (drop Y), center at (width/2, length/2)
 
         if face in ("top", "down"):
-            u = point_3d.x
-            v = point_3d.y
+            u = point_3d.x - box.shape.width / 2
+            v = point_3d.y - box.shape.height / 2
         elif face in ("left", "right"):
-            u = point_3d.y
-            v = point_3d.z
+            u = point_3d.y - box.shape.height / 2
+            v = point_3d.z - box.shape.length / 2
         elif face in ("front", "back"):
-            u = point_3d.x
-            v = point_3d.z
+            u = point_3d.x - box.shape.width / 2
+            v = point_3d.z - box.shape.length / 2
         else:
             raise ValueError(f"Invalid face: {face}")
 
@@ -241,26 +240,30 @@ class Point3D(BaseModel, frozen=True):
         v = surface_point.position.v
 
         # Map 2D coordinates (u, v) to 3D coordinates (x, y, z)
-        # based on which face we're on
+        # SurfacePoint uses face center as origin, so add center offsets
+        # Face coordinate systems:
+        # - top/down: u=X, v=Y, center at (width/2, height/2)
+        # - left/right: u=Y, v=Z, center at (height/2, length/2)
+        # - front/back: u=X, v=Z, center at (width/2, length/2)
 
         if face == "top":
             # Top face: u=X, v=Y, Z=length
-            return cls(x=u, y=v, z=box.shape.length)
+            return cls(x=u + box.shape.width / 2, y=v + box.shape.height / 2, z=box.shape.length)
         elif face == "down":
             # Down face: u=X, v=Y, Z=0
-            return cls(x=u, y=v, z=0.0)
+            return cls(x=u + box.shape.width / 2, y=v + box.shape.height / 2, z=0.0)
         elif face == "left":
             # Left face: u=Y, v=Z, X=0
-            return cls(x=0.0, y=u, z=v)
+            return cls(x=0.0, y=u + box.shape.height / 2, z=v + box.shape.length / 2)
         elif face == "right":
             # Right face: u=Y, v=Z, X=width
-            return cls(x=box.shape.width, y=u, z=v)
+            return cls(x=box.shape.width, y=u + box.shape.height / 2, z=v + box.shape.length / 2)
         elif face == "front":
             # Front face: u=X, v=Z, Y=height
-            return cls(x=u, y=box.shape.height, z=v)
+            return cls(x=u + box.shape.width / 2, y=box.shape.height, z=v + box.shape.length / 2)
         elif face == "back":
             # Back face: u=X, v=Z, Y=0
-            return cls(x=u, y=0.0, z=v)
+            return cls(x=u + box.shape.width / 2, y=0.0, z=v + box.shape.length / 2)
         else:
             raise ValueError(f"Invalid face: {face}")
 
