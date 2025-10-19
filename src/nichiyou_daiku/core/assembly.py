@@ -137,10 +137,31 @@ class JointPair(BaseModel, frozen=True):
     def of(
         cls, lhs_box: Box, rhs_box: Box, piece_connection: Connection
     ) -> "JointPair":
-        return cls(
-            lhs=Joint.of(box=lhs_box, anchor=piece_connection.lhs),
-            rhs=Joint.of(box=rhs_box, anchor=piece_connection.rhs, flip_dir=True),
+        # Step 1: Create lhs joint from lhs anchor
+        lhs_joint = Joint.of(box=lhs_box, anchor=piece_connection.lhs)
+
+        # Step 2: Project lhs joint position to rhs coordinate system
+        rhs_position = _project_surface_point(
+            src_box=lhs_box,
+            dst_box=rhs_box,
+            src_surface_point=lhs_joint.position,
+            src_anchor=piece_connection.lhs,
+            dst_anchor=piece_connection.rhs,
         )
+
+        # Step 3: Create rhs joint with projected position
+        # Calculate orientation for rhs (same logic as Joint.of with flip_dir=True)
+        up_face = cross_face(piece_connection.rhs.contact_face, piece_connection.rhs.edge_shared_face)
+        up_face = opposite_face(up_face)  # flip_dir=True
+
+        rhs_orientation = Orientation3D.of(
+            direction=Vector3D.normal_of(piece_connection.rhs.contact_face),
+            up=Vector3D.normal_of(up_face),
+        )
+
+        rhs_joint = Joint(position=rhs_position, orientation=rhs_orientation)
+
+        return cls(lhs=lhs_joint, rhs=rhs_joint)
 
 def _project_surface_point(
     src_box: Box,
