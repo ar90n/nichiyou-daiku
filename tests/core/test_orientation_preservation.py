@@ -7,7 +7,9 @@ from nichiyou_daiku.core.assembly import (
 from nichiyou_daiku.core.connection import Connection, Anchor
 from typing import cast
 from nichiyou_daiku.core.geometry import (
+    Point2D,
     Point3D,
+    SurfacePoint,
     Vector3D,
     Orientation3D,
     Edge,
@@ -29,7 +31,8 @@ class TestOrientationPreservation:
             direction=Vector3D(x=1.0, y=0.0, z=0.0),  # X direction
             up=Vector3D(x=0.0, y=1.0, z=0.0),  # Y up
         )
-        joint = Joint(position=Point3D(x=100, y=50, z=25), orientation=orientation)
+        position = SurfacePoint(face="front", position=Point2D(u=100, v=25))
+        joint = Joint(position=position, orientation=orientation)
 
         # Check that orientation is preserved
         assert joint.orientation.direction.x == 1.0

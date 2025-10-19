@@ -4,7 +4,7 @@ import pytest
 from unittest.mock import Mock, patch, MagicMock
 
 from nichiyou_daiku.core.assembly import Assembly, JointPair, Joint as NichiyouJoint
-from nichiyou_daiku.core.geometry import Box, Shape3D, Point3D, Vector3D, Orientation3D
+from nichiyou_daiku.core.geometry import Box, Shape3D, Point2D, Point3D, SurfacePoint, Vector3D, Orientation3D
 
 
 class TestAssemblyToBuild123d:
@@ -231,14 +231,14 @@ class TestAssemblyToBuild123d:
                 box2 = Box(shape=Shape3D(width=100.0, height=50.0, length=200.0))
 
                 joint1 = NichiyouJoint(
-                    position=Point3D(x=50.0, y=25.0, z=100.0),
+                    position=SurfacePoint(face="top", position=Point2D(u=50.0, v=25.0)),
                     orientation=Orientation3D.of(
                         direction=Vector3D(x=0.0, y=0.0, z=1.0),
                         up=Vector3D(x=1.0, y=0.0, z=0.0),
                     ),
                 )
                 joint2 = NichiyouJoint(
-                    position=Point3D(x=-50.0, y=-25.0, z=-100.0),
+                    position=SurfacePoint(face="down", position=Point2D(u=50.0, v=25.0)),
                     orientation=Orientation3D.of(
                         direction=Vector3D(x=0.0, y=0.0, z=-1.0),
                         up=Vector3D(x=-1.0, y=0.0, z=0.0),

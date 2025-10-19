@@ -47,25 +47,25 @@ class Joint(BaseModel, frozen=True):
     Represents one half of a connection between pieces.
 
     Attributes:
-        position: 3D position of the joint
+        position: Surface position of the joint
         orientation: Full 3D orientation at the joint
 
     Examples:
-        >>> from nichiyou_daiku.core.geometry import Point3D, Vector3D, Orientation3D
+        >>> from nichiyou_daiku.core.geometry import Point2D, SurfacePoint, Vector3D, Orientation3D
         >>> joint = Joint(
-        ...     position=Point3D(x=100.0, y=50.0, z=25.0),
+        ...     position=SurfacePoint(face="top", position=Point2D(u=100.0, v=50.0)),
         ...     orientation=Orientation3D.of(
         ...         direction=Vector3D(x=0.0, y=0.0, z=1.0),
         ...         up=Vector3D(x=0.0, y=1.0, z=0.0)
         ...     )
         ... )
-        >>> joint.position.x
+        >>> joint.position.face
+        'top'
+        >>> joint.position.position.u
         100.0
-        >>> joint.orientation.direction.z
-        1.0
     """
 
-    position: Point3D
+    position: SurfacePoint
     orientation: Orientation3D
 
     @classmethod
@@ -75,6 +75,7 @@ class Joint(BaseModel, frozen=True):
         Args:
             box: The 3D box of the piece
             anchor: Anchor point defining position and orientation
+            flip_dir: Whether to flip the up direction
 
         Returns:
             Joint with position and orientation based on the anchor
@@ -83,7 +84,7 @@ class Joint(BaseModel, frozen=True):
         if flip_dir:
             up_face = opposite_face(up_face)
 
-        position = Point3D.of(box, as_edge_point(anchor))
+        position = SurfacePoint.of(box, anchor.contact_face, as_edge_point(anchor))
         orientation = Orientation3D.of(
             direction=Vector3D.normal_of(anchor.contact_face),
             up=Vector3D.normal_of(up_face),
@@ -139,7 +140,6 @@ class JointPair(BaseModel, frozen=True):
             lhs=Joint.of(box=lhs_box, anchor=piece_connection.lhs),
             rhs=Joint.of(box=rhs_box, anchor=piece_connection.rhs, flip_dir=True),
         )
-
 
 def _calculate_pilot_holes_for_connection(
     lhs_box: Box,

@@ -9,7 +9,9 @@ from nichiyou_daiku.core.piece import Piece, PieceType
 from nichiyou_daiku.core.connection import Connection, Anchor
 from nichiyou_daiku.core.geometry import FromMax, FromMin
 from nichiyou_daiku.core.geometry import (
+    Point2D,
     Point3D,
+    SurfacePoint,
     Vector3D,
     Box,
     Orientation3D,
@@ -42,7 +44,7 @@ class TestJoint:
 
     def test_should_support_negative_direction_vectors(self):
         """Should support joints with negative direction vectors."""
-        position = Point3D(x=0.0, y=0.0, z=100.0)
+        position = SurfacePoint(face="top", position=Point2D(u=0.0, v=0.0))
         orientation = Orientation3D.of(
             direction=Vector3D(x=-1.0, y=0.0, z=0.0), up=Vector3D(x=0.0, y=0.0, z=1.0)
         )

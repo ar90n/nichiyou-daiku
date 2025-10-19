@@ -4,7 +4,7 @@ This module provides types for representing positions and directions in 3D space
 """
 
 import math
-from typing import overload, cast
+from typing import overload, cast, Union
 
 from pydantic import BaseModel, field_validator
 
@@ -35,6 +35,95 @@ def _edge_legnth_of(box: Box, edge: Edge) -> Millimeters:
         return box.shape.height
 
     raise RuntimeError("Unreachable code reached")
+
+
+class Point2D(BaseModel, frozen=True):
+    """2D point in space.
+
+    Represents a position in 2D space.
+
+    Attributes:
+        u: U coordinate
+        v: V coordinate
+
+    Examples:
+        >>> origin = Point2D(u=0.0, v=0.0)
+        >>> origin.u
+        0.0
+    """
+
+    u: float
+    v: float
+
+
+class SurfacePoint(BaseModel, frozen=True):
+    """A point on a piece's surface.
+
+    Represents a 2D position on a specific face of a piece.
+
+    Attributes:
+        face: The face where the point is located
+        position: 2D coordinates on the face surface
+
+    Examples:
+        >>> from nichiyou_daiku.core.geometry import Point2D
+        >>> sp = SurfacePoint(face="top", position=Point2D(u=50.0, v=25.0))
+        >>> sp.face
+        'top'
+        >>> sp.position.u
+        50.0
+    """
+
+    face: Face
+    position: Point2D
+
+    @classmethod
+    def of(cls, box: Box, face: Face, edge_point: EdgePoint) -> "SurfacePoint":
+        """Create a SurfacePoint from a face and edge point.
+
+        Converts an EdgePoint (edge + offset) to 2D coordinates on the specified face.
+
+        This method uses the same logic as Point3D._of_edge_point() to ensure
+        that Point3D.of(box, edge_point) and Point3D.of(box, SurfacePoint.of(box, face, edge_point))
+        produce the same result.
+
+        Args:
+            box: The bounding box (needed to determine coordinate system)
+            face: The face where the point is located
+            edge_point: Point along an edge
+
+        Returns:
+            SurfacePoint with 2D coordinates on the face
+        """
+        edge = edge_point.edge
+
+        # Verify the edge belongs to the specified face
+        if edge.lhs != face and edge.rhs != face:
+            raise ValueError(f"Edge {edge} does not belong to face {face}")
+
+        # Convert EdgePoint to Point3D using standard logic
+        point_3d = Point3D._of_edge_point(box, edge_point)
+
+        # Project Point3D to face's 2D coordinates
+        # The projection simply drops the coordinate perpendicular to the face
+        # Face coordinate systems (must match _of_surface_point):
+        # - top/down: u=X, v=Y (drop Z)
+        # - left/right: u=Y, v=Z (drop X)
+        # - front/back: u=X, v=Z (drop Y)
+
+        if face in ("top", "down"):
+            u = point_3d.x
+            v = point_3d.y
+        elif face in ("left", "right"):
+            u = point_3d.y
+            v = point_3d.z
+        elif face in ("front", "back"):
+            u = point_3d.x
+            v = point_3d.z
+        else:
+            raise ValueError(f"Invalid face: {face}")
+
+        return cls(face=face, position=Point2D(u=u, v=v))
 
 
 class Point3D(BaseModel, frozen=True):
@@ -68,23 +157,29 @@ class Point3D(BaseModel, frozen=True):
     @overload
     @classmethod
     def of(cls, box: Box, source: EdgePoint) -> "Point3D": ...
+    @overload
     @classmethod
-    def of(cls, box: Box, source: Corner | EdgePoint) -> "Point3D":
-        """Create a 3D point from a box and a corner or edge point.
+    def of(cls, box: Box, source: SurfacePoint) -> "Point3D": ...
+    @classmethod
+    def of(
+        cls, box: Box, source: Union[Corner, EdgePoint, SurfacePoint]
+    ) -> "Point3D":
+        """Create a 3D point from a box and a corner, edge point, or surface point.
 
         Args:
             box: The bounding box
-            point: Either a corner or an edge point
+            source: Either a corner, edge point, or surface point
 
         Returns:
             Point3D at the specified position
         """
         if isinstance(source, Corner):
             return cls._of_corner(box, source)
-        elif isinstance(source, EdgePoint):
+        if isinstance(source, EdgePoint):
             return cls._of_edge_point(box, source)
-        else:
-            raise TypeError(f"Unsupported point type: {type(source)}")
+        if isinstance(source, SurfacePoint):
+            return cls._of_surface_point(box, source)
+        raise TypeError(f"Unsupported point type: {type(source)}")
 
     @classmethod
     def _of_corner(cls, box: Box, corner: Corner) -> "Point3D":
@@ -130,23 +225,44 @@ class Point3D(BaseModel, frozen=True):
             z=origin.z + direction.z * offset_length,
         )
 
+    @classmethod
+    def _of_surface_point(cls, box: Box, surface_point: SurfacePoint) -> "Point3D":
+        """Create a 3D point from a surface point.
 
-class Point2D(BaseModel, frozen=True):
-    """2D point in space.
+        Args:
+            box: The bounding box
+            surface_point: The point on a face surface
 
-    Represents a position in 2D space.
+        Returns:
+            Point3D at the specified surface point
+        """
+        face = surface_point.face
+        u = surface_point.position.u
+        v = surface_point.position.v
 
-    Attributes:
-        u: U coordinate
-        v: V coordinate
+        # Map 2D coordinates (u, v) to 3D coordinates (x, y, z)
+        # based on which face we're on
 
-    Examples:
-        >>> origin = Point2D(u=0.0, v=0.0)
-        >>> origin.u
-        0.0
-    """
-    u: float
-    v: float
+        if face == "top":
+            # Top face: u=X, v=Y, Z=length
+            return cls(x=u, y=v, z=box.shape.length)
+        elif face == "down":
+            # Down face: u=X, v=Y, Z=0
+            return cls(x=u, y=v, z=0.0)
+        elif face == "left":
+            # Left face: u=Y, v=Z, X=0
+            return cls(x=0.0, y=u, z=v)
+        elif face == "right":
+            # Right face: u=Y, v=Z, X=width
+            return cls(x=box.shape.width, y=u, z=v)
+        elif face == "front":
+            # Front face: u=X, v=Z, Y=height
+            return cls(x=u, y=box.shape.height, z=v)
+        elif face == "back":
+            # Back face: u=X, v=Z, Y=0
+            return cls(x=u, y=0.0, z=v)
+        else:
+            raise ValueError(f"Invalid face: {face}")
 
 
 class Vector3D(BaseModel, frozen=True):
@@ -390,25 +506,3 @@ class Orientation3D(BaseModel, frozen=True):
         up = Vector3D(x=sz * cy + cz * sx * sy, y=cz * cx, z=-sz * sy + cz * sx * cy)
 
         return cls(direction=direction, up=up)
-
-
-class SurfacePoint(BaseModel, frozen=True):
-    """A point on a piece's surface.
-
-    Represents a 2D position on a specific face of a piece.
-
-    Attributes:
-        face: The face where the point is located
-        position: 2D coordinates on the face surface
-
-    Examples:
-        >>> from nichiyou_daiku.core.geometry import Point2D
-        >>> sp = SurfacePoint(face="top", position=Point2D(u=50.0, v=25.0))
-        >>> sp.face
-        'top'
-        >>> sp.position.u
-        50.0
-    """
-
-    face: Face
-    position: Point2D

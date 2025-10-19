@@ -121,12 +121,13 @@ def _create_piece_from(id: str, box: NichiyouBox, fillet_radius: float) -> "Part
 
 
 def _create_joint_from(
-    joint: NichiyouJoint, label: str, to_part: "Part", flip_dir: bool = False
+    joint: NichiyouJoint, box: NichiyouBox, label: str, to_part: "Part", flip_dir: bool = False
 ) -> "RigidJoint":
     """Create a build123d RigidJoint from a nichiyou Joint.
 
     Args:
         joint: The nichiyou Joint to convert
+        box: The box for converting SurfacePoint to Point3D
         label: Label for the rigid joint
         to_part: The Part this joint belongs to
         flip_dir: Whether to flip the direction vector (for target joints)
@@ -135,7 +136,8 @@ def _create_joint_from(
         A build123d RigidJoint
     """
     orientation = joint.orientation
-    position = joint.position
+    # Convert SurfacePoint to Point3D using the box
+    position = Point3D.of(box, joint.position)
 
     return RigidJoint(
         label=label,
@@ -201,13 +203,18 @@ def assembly_to_build123d(
         graph[lhs_id].add(rhs_id)
         _create_joint_from(
             joint_pair.lhs,
+            assembly.boxes[lhs_id],
             label=f"to_{rhs_id}",
             to_part=parts[lhs_id],
         )
 
         graph[rhs_id].add(lhs_id)
         _create_joint_from(
-            joint_pair.rhs, label=f"to_{lhs_id}", to_part=parts[rhs_id], flip_dir=True
+            joint_pair.rhs,
+            assembly.boxes[rhs_id],
+            label=f"to_{lhs_id}",
+            to_part=parts[rhs_id],
+            flip_dir=True
         )
 
     # BFS traversal
