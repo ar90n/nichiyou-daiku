@@ -234,7 +234,7 @@ class TestConnection:
         assert l_angle.lhs.contact_face == "front"
 
     def test_should_have_default_type(self):
-        """Should have default connection type of SCREW."""
+        """Should have default connection type of VANILLA."""
         conn = Connection(
             lhs=Anchor(
                 contact_face="front", edge_shared_face="top", offset=FromMax(value=50)
@@ -243,7 +243,7 @@ class TestConnection:
                 contact_face="down", edge_shared_face="front", offset=FromMin(value=10)
             ),
         )
-        assert conn.type == ConnectionType.SCREW
+        assert conn.type == ConnectionType.VANILLA
 
     def test_should_accept_explicit_type(self):
         """Should accept explicitly specified connection type."""
@@ -270,4 +270,4 @@ class TestConnection:
         )
         data = conn.model_dump()
         assert "type" in data
-        assert data["type"] == ConnectionType.SCREW
+        assert data["type"] == ConnectionType.VANILLA

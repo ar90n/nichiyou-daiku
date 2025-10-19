@@ -4,6 +4,7 @@ This module converts the abstract model representation into concrete
 3D assembly information with positions and orientations.
 """
 
+from collections.abc import Callable
 from pydantic import BaseModel
 
 from .piece import get_shape
@@ -94,62 +95,9 @@ class Joint(BaseModel, frozen=True):
 
 
 class JointPair(BaseModel, frozen=True):
-    """3D connection between two pieces using joints.
-
-    Contains the joint information for both pieces in the connection.
-
-    Attributes:
-        joint1: Joint for the base piece
-        joint2: Joint for the target piece
-
-    Examples:
-        >>> from nichiyou_daiku.core.piece import Piece, PieceType
-        >>> from nichiyou_daiku.core.connection import Connection, Anchor
-        >>> from nichiyou_daiku.core.geometry import FromMax, FromMin
-        >>> base = Piece.of(PieceType.PT_2x4, 1000.0)
-        >>> target = Piece.of(PieceType.PT_2x4, 800.0)
-        >>> pc = Connection(
-        ...     lhs=Anchor(
-        ...         contact_face="front",
-        ...         edge_shared_face="top",
-        ...         offset=FromMax(value=100)
-        ...     ),
-        ...     rhs=Anchor(
-        ...         contact_face="down",
-        ...         edge_shared_face="front",
-        ...         offset=FromMin(value=50)
-        ...     )
-        ... )
-        >>> base_box = Box(shape=get_shape(base))
-        >>> target_box = Box(shape=get_shape(target))
-        >>> conn = JointPair.of(base_box, target_box, pc)
-        >>> # JointPair has joints with positions and orientations
-        >>> isinstance(conn.lhs.position, SurfacePoint)
-        True
-        >>> isinstance(conn.rhs.orientation, Orientation3D)
-        True
-    """
-
     lhs: Joint
     rhs: Joint
 
-    @classmethod
-    def of(
-        cls, lhs_box: Box, rhs_box: Box, piece_connection: Connection
-    ) -> "JointPair":
-        # Step 1: Create lhs joint from lhs anchor
-        lhs_joint = Joint.of(box=lhs_box, anchor=piece_connection.lhs)
-
-        # Step 2: Project lhs joint to rhs coordinate system
-        rhs_joint = _project_joint(
-            src_box=lhs_box,
-            dst_box=rhs_box,
-            src_joint=lhs_joint,
-            src_anchor=piece_connection.lhs,
-            dst_anchor=piece_connection.rhs,
-        )
-
-        return cls(lhs=lhs_joint, rhs=rhs_joint)
 
 def _project_joint(
     src_box: Box,
@@ -336,6 +284,79 @@ def _calculate_pilot_holes_for_connection(
     return ([], [])
 
 
+def _create_vanilla_joint_pairs(
+    lhs_box: Box, rhs_box: Box, piece_conn: Connection
+) -> list[JointPair]:
+    lhs = Joint.of(box=lhs_box, anchor=piece_conn.lhs)
+    rhs = _project_joint(
+        src_box=lhs_box,
+        dst_box=rhs_box,
+        src_joint=lhs,
+        src_anchor=piece_conn.lhs,
+        dst_anchor=piece_conn.rhs,
+    )
+
+    return [JointPair(lhs=lhs, rhs=rhs)]
+
+
+def _create_screw_joint_pairs(
+    lhs_box: Box, rhs_box: Box, piece_conn: Connection
+) -> list[JointPair]:
+    lhs = Joint.of(box=lhs_box, anchor=piece_conn.lhs)
+    rhs = _project_joint(
+        src_box=lhs_box,
+        dst_box=rhs_box,
+        src_joint=lhs,
+        src_anchor=piece_conn.lhs,
+        dst_anchor=piece_conn.rhs,
+    )
+
+    return [JointPair(lhs=lhs, rhs=rhs)]
+
+
+def _create_joint_pairs(
+    lhs_box: Box, rhs_box: Box, piece_conn: Connection
+) -> list[JointPair]:
+    match piece_conn.type:
+        case ConnectionType.VANILLA:
+            return _create_vanilla_joint_pairs(lhs_box, rhs_box, piece_conn)
+        case ConnectionType.SCREW:
+            return _create_screw_joint_pairs(lhs_box, rhs_box, piece_conn)
+
+    raise RuntimeError(f"Unhandled connection type: {piece_conn.type}")
+
+
+def _create_joint_id_generator(piece_ids: list[str]) -> Callable[[str], str]:
+    """Create a joint ID generator function with encapsulated state.
+
+    Returns a closure that generates sequential joint IDs for each piece.
+    The counter state is encapsulated within the closure.
+
+    Args:
+        piece_ids: List of piece IDs to initialize counters for
+
+    Returns:
+        A function that generates the next joint ID for a given piece_id
+
+    Example:
+        >>> generate_id = _create_joint_id_generator(["p1", "p2"])
+        >>> generate_id("p1")
+        'p1_j0'
+        >>> generate_id("p1")
+        'p1_j1'
+        >>> generate_id("p2")
+        'p2_j0'
+    """
+    counters: dict[str, int] = {piece_id: 0 for piece_id in piece_ids}
+
+    def generate_next(piece_id: str) -> str:
+        joint_id = f"{piece_id}_j{counters[piece_id]}"
+        counters[piece_id] += 1
+        return joint_id
+
+    return generate_next
+
+
 class Assembly(BaseModel, frozen=True):
     """Complete 3D assembly with all joints.
 
@@ -344,7 +365,8 @@ class Assembly(BaseModel, frozen=True):
     Attributes:
         model: The source model with piece and connection definitions
         boxes: Dictionary mapping piece IDs to their 3D boxes
-        joints: Dictionary mapping piece ID pairs to their joint pairs
+        joints: Dictionary mapping joint IDs to Joint objects
+        joint_conns: List of joint ID tuples connecting joints
         pilot_holes: Dictionary mapping piece IDs to lists of (SurfacePoint, Hole) tuples
         label: Optional label for the assembly
 
@@ -374,12 +396,15 @@ class Assembly(BaseModel, frozen=True):
         ... )
         >>> assembly = Assembly.of(model)
         >>> len(assembly.joints)
+        2
+        >>> len(assembly.joint_conns)
         1
     """
 
     model: Model
     boxes: dict[str, Box]
-    joints: dict[tuple[str, str], JointPair]
+    joints: dict[str, Joint]
+    joint_conns: list[tuple[str, str]]
     pilot_holes: dict[str, list[tuple[SurfacePoint, Hole]]]
     label: str | None
 
@@ -400,10 +425,24 @@ class Assembly(BaseModel, frozen=True):
         boxes = {
             piece.id: Box(shape=get_shape(piece)) for piece in model.pieces.values()
         }
-        joints = {
-            (lhs_id, rhs_id): JointPair.of(boxes[lhs_id], boxes[rhs_id], piece_conn)
-            for (lhs_id, rhs_id), piece_conn in model.connections.items()
-        }
+
+        # Create joints with IDs and joint pairs
+        joints: dict[str, Joint] = {}
+        joint_conns: list[tuple[str, str]] = []
+        generate_joint_id = _create_joint_id_generator(list(model.pieces.keys()))
+
+        for (lhs_id, rhs_id), piece_conn in model.connections.items():
+            joint_pairs = _create_joint_pairs(
+                lhs_box=boxes[lhs_id], rhs_box=boxes[rhs_id], piece_conn=piece_conn
+            )
+
+            for joint_pair in joint_pairs:
+                lhs_joint_id = generate_joint_id(lhs_id)
+                rhs_joint_id = generate_joint_id(rhs_id)
+
+                joints[lhs_joint_id] = joint_pair.lhs
+                joints[rhs_joint_id] = joint_pair.rhs
+                joint_conns.append((lhs_joint_id, rhs_joint_id))
 
         # Generate pilot holes for screw connections
         pilot_holes: dict[str, list[tuple[SurfacePoint, Hole]]] = {}
@@ -428,5 +467,6 @@ class Assembly(BaseModel, frozen=True):
             label=model.label,
             boxes=boxes,
             joints=joints,
+            joint_conns=joint_conns,
             pilot_holes=pilot_holes,
         )

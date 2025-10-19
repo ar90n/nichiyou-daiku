@@ -28,6 +28,7 @@ class ConnectionType(Enum):
         'screw'
     """
 
+    VANILLA = "vanilla"
     SCREW = "screw"
 
     @classmethod
@@ -56,6 +57,7 @@ class ConnectionType(Enum):
         """
         ret = {
             "screw": cls.SCREW,
+            "vanilla": cls.VANILLA,
         }.get(value)
         if ret is not None:
             return ret
@@ -94,4 +96,4 @@ class Connection(BaseModel, frozen=True):
 
     lhs: Anchor
     rhs: Anchor
-    type: ConnectionType = ConnectionType.SCREW
+    type: ConnectionType = ConnectionType.VANILLA

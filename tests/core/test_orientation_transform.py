@@ -36,10 +36,10 @@ class TestOrientationTransform:
         )
         assembly = Assembly.of(model)
 
-        # Get joints - pieces have default IDs p0, p1
-        key = list(assembly.joints.keys())[0]
-        joint1 = assembly.joints[key].lhs
-        joint2 = assembly.joints[key].rhs
+        # Get joints from joint_conns - pieces have default IDs p0, p1
+        lhs_joint_id, rhs_joint_id = assembly.joint_conns[0]
+        joint1 = assembly.joints[lhs_joint_id]
+        joint2 = assembly.joints[rhs_joint_id]
 
         # Verify face normals are opposite (base face normal = -target face normal)
         dir1 = joint1.orientation.direction

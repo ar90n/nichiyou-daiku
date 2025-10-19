@@ -68,14 +68,9 @@ class TestOrientationPreservation:
         )
         assembly = Assembly.of(model)
 
-        # Get the connection from assembly
-        asm_conn = assembly.joints[("base", "target")]
-
-        # Check base joint
-        base_joint = asm_conn.lhs
-
-        # Check target joint
-        target_joint = asm_conn.rhs
+        # Get the joints from assembly
+        base_joint = assembly.joints["base_j0"]
+        target_joint = assembly.joints["target_j0"]
 
         # Both should have proper orientations
         assert isinstance(base_joint.orientation, Orientation3D)
@@ -130,22 +125,17 @@ class TestOrientationPreservation:
         )
         assembly = Assembly.of(model)
 
-        # Verify all connections have proper orientations
-        for conn_key, conn in assembly.joints.items():
-            assert isinstance(conn.lhs.orientation, Orientation3D)
-            assert isinstance(conn.rhs.orientation, Orientation3D)
+        # Verify all joints have proper orientations
+        for joint_id, joint in assembly.joints.items():
+            assert isinstance(joint.orientation, Orientation3D)
 
             # Check that direction vectors are unit vectors
-            dir1 = conn.lhs.orientation.direction
+            dir1 = joint.orientation.direction
             dir1_mag = (dir1.x**2 + dir1.y**2 + dir1.z**2) ** 0.5
             assert abs(dir1_mag - 1.0) < 1e-6
 
-            dir2 = conn.rhs.orientation.direction
-            dir2_mag = (dir2.x**2 + dir2.y**2 + dir2.z**2) ** 0.5
-            assert abs(dir2_mag - 1.0) < 1e-6
-
             # Check that up vectors are unit vectors and orthogonal to direction
-            up1 = conn.lhs.orientation.up
+            up1 = joint.orientation.up
             up1_mag = (up1.x**2 + up1.y**2 + up1.z**2) ** 0.5
             assert abs(up1_mag - 1.0) < 1e-6
 

@@ -199,10 +199,17 @@ def assembly_to_build123d(
 
     # Build graph from connections
     graph = defaultdict(set)
-    for (lhs_id, rhs_id), joint_pair in assembly.joints.items():
+    for lhs_joint_id, rhs_joint_id in assembly.joint_conns:
+        lhs_joint = assembly.joints[lhs_joint_id]
+        rhs_joint = assembly.joints[rhs_joint_id]
+
+        # Extract piece IDs from joint IDs
+        lhs_id = lhs_joint_id.rsplit("_j", 1)[0]
+        rhs_id = rhs_joint_id.rsplit("_j", 1)[0]
+
         graph[lhs_id].add(rhs_id)
         _create_joint_from(
-            joint_pair.lhs,
+            lhs_joint,
             assembly.boxes[lhs_id],
             label=f"to_{rhs_id}",
             to_part=parts[lhs_id],
@@ -210,7 +217,7 @@ def assembly_to_build123d(
 
         graph[rhs_id].add(lhs_id)
         _create_joint_from(
-            joint_pair.rhs,
+            rhs_joint,
             assembly.boxes[rhs_id],
             label=f"to_{lhs_id}",
             to_part=parts[rhs_id],

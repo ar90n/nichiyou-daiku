@@ -81,15 +81,19 @@ class TestJointPair:
             ),
         )
 
-        # Create joint pair
+        # Create joints directly
         from nichiyou_daiku.core.piece import get_shape
 
         horizontal_box = Box(shape=get_shape(horizontal))
         vertical_box = Box(shape=get_shape(vertical))
-        joint_pair = JointPair.of(horizontal_box, vertical_box, piece_conn)
+        
+        lhs_joint = Joint.of(horizontal_box, piece_conn.lhs)
+        rhs_joint = _project_joint(
+            horizontal_box, vertical_box, lhs_joint, piece_conn.lhs, piece_conn.rhs
+        )
 
-        assert isinstance(joint_pair.lhs, Joint)
-        assert isinstance(joint_pair.rhs, Joint)
+        assert isinstance(lhs_joint, Joint)
+        assert isinstance(rhs_joint, Joint)
 
 
 class TestAssembly:
@@ -122,9 +126,11 @@ class TestAssembly:
 
         assembly = Assembly.of(model)
 
-        assert len(assembly.joints) == 1
-        assert ("p1", "p2") in assembly.joints
-        assert isinstance(assembly.joints[("p1", "p2")], JointPair)
+        assert len(assembly.joints) == 2
+        assert "p1_j0" in assembly.joints
+        assert "p2_j0" in assembly.joints
+        assert len(assembly.joint_conns) == 1
+        assert assembly.joint_conns[0] == ("p1_j0", "p2_j0")
 
     def test_should_generate_pilot_holes_for_screw_connections(self):
         """Should generate pilot holes for screw-type connections."""
