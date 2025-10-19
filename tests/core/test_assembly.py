@@ -4,6 +4,7 @@ from nichiyou_daiku.core.assembly import (
     Joint,
     JointPair,
     Assembly,
+    _project_joint,
     _project_surface_point,
 )
 from nichiyou_daiku.core.piece import Piece, PieceType, get_shape
@@ -252,3 +253,50 @@ class TestProjectSurfacePoint:
         # Result should be a SurfacePoint on the destination right face
         assert isinstance(dst_sp, SurfacePoint)
         assert dst_sp.face == "right"
+
+    def test_should_project_joint(self):
+        """Should project entire joint from source to destination."""
+        # Create two pieces
+        src_piece = Piece.of(PieceType.PT_2x4, 1000.0)
+        dst_piece = Piece.of(PieceType.PT_2x4, 800.0)
+        src_box = Box(shape=get_shape(src_piece))
+        dst_box = Box(shape=get_shape(dst_piece))
+
+        # Create matching anchors
+        src_anchor = Anchor(
+            contact_face="front", edge_shared_face="top", offset=FromMax(value=100)
+        )
+        dst_anchor = Anchor(
+            contact_face="down", edge_shared_face="front", offset=FromMin(value=50)
+        )
+
+        # Create source joint
+        src_joint = Joint.of(src_box, src_anchor)
+
+        # Project joint
+        dst_joint = _project_joint(src_box, dst_box, src_joint, src_anchor, dst_anchor)
+
+        # Verify it's a Joint with correct attributes
+        assert isinstance(dst_joint, Joint)
+        assert isinstance(dst_joint.position, SurfacePoint)
+        assert isinstance(dst_joint.orientation, Orientation3D)
+        assert dst_joint.position.face == "down"
+
+        # Verify the projected joint matches what Joint.of would create
+        # (for regression testing)
+        expected_joint = Joint.of(dst_box, dst_anchor, flip_dir=True)
+
+        # Convert both positions to Point3D for comparison
+        dst_joint_3d = Point3D.of(dst_box, dst_joint.position)
+        expected_joint_3d = Point3D.of(dst_box, expected_joint.position)
+
+        # They should be at the same 3D position
+        assert abs(dst_joint_3d.x - expected_joint_3d.x) < 1e-6
+        assert abs(dst_joint_3d.y - expected_joint_3d.y) < 1e-6
+        assert abs(dst_joint_3d.z - expected_joint_3d.z) < 1e-6
+
+        # Orientation should also match
+        assert dst_joint.orientation.direction == expected_joint.orientation.direction
+        assert abs(dst_joint.orientation.up.x - expected_joint.orientation.up.x) < 1e-6
+        assert abs(dst_joint.orientation.up.y - expected_joint.orientation.up.y) < 1e-6
+        assert abs(dst_joint.orientation.up.z - expected_joint.orientation.up.z) < 1e-6

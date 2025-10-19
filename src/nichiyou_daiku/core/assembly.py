@@ -140,28 +140,82 @@ class JointPair(BaseModel, frozen=True):
         # Step 1: Create lhs joint from lhs anchor
         lhs_joint = Joint.of(box=lhs_box, anchor=piece_connection.lhs)
 
-        # Step 2: Project lhs joint position to rhs coordinate system
-        rhs_position = _project_surface_point(
+        # Step 2: Project lhs joint to rhs coordinate system
+        rhs_joint = _project_joint(
             src_box=lhs_box,
             dst_box=rhs_box,
-            src_surface_point=lhs_joint.position,
+            src_joint=lhs_joint,
             src_anchor=piece_connection.lhs,
             dst_anchor=piece_connection.rhs,
         )
 
-        # Step 3: Create rhs joint with projected position
-        # Calculate orientation for rhs (same logic as Joint.of with flip_dir=True)
-        up_face = cross_face(piece_connection.rhs.contact_face, piece_connection.rhs.edge_shared_face)
-        up_face = opposite_face(up_face)  # flip_dir=True
-
-        rhs_orientation = Orientation3D.of(
-            direction=Vector3D.normal_of(piece_connection.rhs.contact_face),
-            up=Vector3D.normal_of(up_face),
-        )
-
-        rhs_joint = Joint(position=rhs_position, orientation=rhs_orientation)
-
         return cls(lhs=lhs_joint, rhs=rhs_joint)
+
+def _project_joint(
+    src_box: Box,
+    dst_box: Box,
+    src_joint: Joint,
+    src_anchor: Anchor,
+    dst_anchor: Anchor,
+) -> Joint:
+    """Project a joint from source to destination coordinate system.
+
+    Transforms a Joint from one piece's coordinate system to another piece's
+    coordinate system when the two pieces are connected via matching anchors.
+
+    This function projects the joint's position and calculates the appropriate
+    orientation for the destination piece.
+
+    Args:
+        src_box: Box of the source piece
+        dst_box: Box of the destination piece
+        src_joint: Joint in source coordinate system
+        src_anchor: Source anchor
+        dst_anchor: Destination anchor (must match with src_anchor)
+
+    Returns:
+        Joint in destination coordinate system with projected position
+        and calculated orientation
+
+    Examples:
+        >>> from nichiyou_daiku.core.piece import Piece, PieceType, get_shape
+        >>> from nichiyou_daiku.core.geometry import FromMax, FromMin
+        >>> # Create two pieces
+        >>> src_piece = Piece.of(PieceType.PT_2x4, 1000.0)
+        >>> dst_piece = Piece.of(PieceType.PT_2x4, 800.0)
+        >>> src_box = Box(shape=get_shape(src_piece))
+        >>> dst_box = Box(shape=get_shape(dst_piece))
+        >>> # Create matching anchors
+        >>> src_anchor = Anchor(contact_face="front", edge_shared_face="top", offset=FromMax(value=100))
+        >>> dst_anchor = Anchor(contact_face="down", edge_shared_face="front", offset=FromMin(value=50))
+        >>> # Create and project joint
+        >>> src_joint = Joint.of(src_box, src_anchor)
+        >>> dst_joint = _project_joint(src_box, dst_box, src_joint, src_anchor, dst_anchor)
+        >>> isinstance(dst_joint, Joint)
+        True
+        >>> isinstance(dst_joint.position, SurfacePoint)
+        True
+    """
+    # Project position from src to dst coordinate system
+    dst_position = _project_surface_point(
+        src_box=src_box,
+        dst_box=dst_box,
+        src_surface_point=src_joint.position,
+        src_anchor=src_anchor,
+        dst_anchor=dst_anchor,
+    )
+
+    # Calculate orientation for dst (same logic as Joint.of with flip_dir=True)
+    up_face = cross_face(dst_anchor.contact_face, dst_anchor.edge_shared_face)
+    up_face = opposite_face(up_face)  # flip_dir=True
+
+    dst_orientation = Orientation3D.of(
+        direction=Vector3D.normal_of(dst_anchor.contact_face),
+        up=Vector3D.normal_of(up_face),
+    )
+
+    return Joint(position=dst_position, orientation=dst_orientation)
+
 
 def _project_surface_point(
     src_box: Box,
