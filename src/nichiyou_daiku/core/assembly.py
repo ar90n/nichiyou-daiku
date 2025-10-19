@@ -10,6 +10,7 @@ from .piece import get_shape
 from .connection import Connection, Anchor, as_edge_point, ConnectionType
 from .model import Model
 from .geometry import (
+    Point2D,
     Point3D,
     Box,
     Orientation3D,
@@ -123,7 +124,7 @@ class JointPair(BaseModel, frozen=True):
         >>> target_box = Box(shape=get_shape(target))
         >>> conn = JointPair.of(base_box, target_box, pc)
         >>> # JointPair has joints with positions and orientations
-        >>> isinstance(conn.lhs.position, Point3D)
+        >>> isinstance(conn.lhs.position, SurfacePoint)
         True
         >>> isinstance(conn.rhs.orientation, Orientation3D)
         True
@@ -140,6 +141,98 @@ class JointPair(BaseModel, frozen=True):
             lhs=Joint.of(box=lhs_box, anchor=piece_connection.lhs),
             rhs=Joint.of(box=rhs_box, anchor=piece_connection.rhs, flip_dir=True),
         )
+
+def _project_surface_point(
+    src_box: Box,
+    dst_box: Box,
+    src_surface_point: SurfacePoint,
+    src_anchor: Anchor,
+    dst_anchor: Anchor,
+) -> SurfacePoint:
+    """Project a surface point from source to destination coordinate system.
+
+    Transforms a SurfacePoint from one piece's coordinate system to another
+    piece's coordinate system when the two pieces are connected via matching anchors.
+
+    This function assumes that src_anchor and dst_anchor represent matching
+    connection points (i.e., they are at the same position in 3D space when
+    the pieces are assembled).
+
+    Args:
+        src_box: Box of the source piece
+        dst_box: Box of the destination piece
+        src_surface_point: Surface point in source coordinate system
+        src_anchor: Source anchor
+        dst_anchor: Destination anchor (must match with src_anchor)
+
+    Returns:
+        Surface point in destination coordinate system
+
+    Examples:
+        >>> from nichiyou_daiku.core.piece import Piece, PieceType, get_shape
+        >>> from nichiyou_daiku.core.geometry import Point2D, FromMax, FromMin
+        >>> # Create two pieces
+        >>> src_piece = Piece.of(PieceType.PT_2x4, 1000.0)
+        >>> dst_piece = Piece.of(PieceType.PT_2x4, 800.0)
+        >>> src_box = Box(shape=get_shape(src_piece))
+        >>> dst_box = Box(shape=get_shape(dst_piece))
+        >>> # Create matching anchors
+        >>> src_anchor = Anchor(contact_face="front", edge_shared_face="top", offset=FromMax(value=100))
+        >>> dst_anchor = Anchor(contact_face="down", edge_shared_face="front", offset=FromMin(value=50))
+        >>> # Project a point from src to dst
+        >>> src_sp = SurfacePoint(face="front", position=Point2D(u=10.0, v=20.0))
+        >>> dst_sp = _project_surface_point(src_box, dst_box, src_sp, src_anchor, dst_anchor)
+        >>> isinstance(dst_sp, SurfacePoint)
+        True
+    """
+    # Step 1: Convert source SurfacePoint to Point3D in source coordinate system
+    src_point_3d = Point3D.of(src_box, src_surface_point)
+
+    # Step 2: Get the joint positions for both anchors
+    src_joint = Joint.of(src_box, src_anchor)
+    dst_joint = Joint.of(dst_box, dst_anchor, flip_dir=True)
+
+    # Step 3: Transform from src to dst coordinate system
+    # Get the 3D positions of both joints
+    src_joint_3d = Point3D.of(src_box, src_joint.position)
+    dst_joint_3d = Point3D.of(dst_box, dst_joint.position)
+
+    # Calculate the relative position from src_joint to src_point
+    rel_x = src_point_3d.x - src_joint_3d.x
+    rel_y = src_point_3d.y - src_joint_3d.y
+    rel_z = src_point_3d.z - src_joint_3d.z
+
+    # Transform the relative position using the orientation difference
+    # For now, we implement a simplified version that assumes
+    # the coordinate systems align when anchors match
+    # TODO: Implement full rotation transformation using orientation matrices
+
+    # Calculate dst point in dst coordinate system
+    dst_point_3d = Point3D(
+        x=dst_joint_3d.x + rel_x,
+        y=dst_joint_3d.y + rel_y,
+        z=dst_joint_3d.z + rel_z,
+    )
+
+    # Step 4: Project the 3D point onto the destination face
+    # We need to convert Point3D to SurfacePoint on the destination contact face
+    face = dst_anchor.contact_face
+
+    # Project the 3D point onto the 2D face coordinates
+    if face in ("top", "down"):
+        u = dst_point_3d.x - dst_box.shape.width / 2
+        v = dst_point_3d.y - dst_box.shape.height / 2
+    elif face in ("left", "right"):
+        u = dst_point_3d.y - dst_box.shape.height / 2
+        v = dst_point_3d.z - dst_box.shape.length / 2
+    elif face in ("front", "back"):
+        u = dst_point_3d.x - dst_box.shape.width / 2
+        v = dst_point_3d.z - dst_box.shape.length / 2
+    else:
+        raise ValueError(f"Invalid face: {face}")
+
+    return SurfacePoint(face=face, position=Point2D(u=u, v=v))
+
 
 def _calculate_pilot_holes_for_connection(
     lhs_box: Box,

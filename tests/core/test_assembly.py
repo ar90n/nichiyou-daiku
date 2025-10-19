@@ -4,8 +4,9 @@ from nichiyou_daiku.core.assembly import (
     Joint,
     JointPair,
     Assembly,
+    _project_surface_point,
 )
-from nichiyou_daiku.core.piece import Piece, PieceType
+from nichiyou_daiku.core.piece import Piece, PieceType, get_shape
 from nichiyou_daiku.core.connection import Connection, Anchor
 from nichiyou_daiku.core.geometry import FromMax, FromMin
 from nichiyou_daiku.core.geometry import (
@@ -158,3 +159,96 @@ class TestAssembly:
         # When implemented, this test should verify actual holes are generated
 
     # Assembly.of() method is covered in doctests
+
+
+class TestProjectSurfacePoint:
+    """Test surface point projection between coordinate systems."""
+
+    def test_should_project_point_on_same_face(self):
+        """Should project a point when source and destination are on the same logical face."""
+        # Create two pieces
+        src_piece = Piece.of(PieceType.PT_2x4, 1000.0)
+        dst_piece = Piece.of(PieceType.PT_2x4, 800.0)
+        src_box = Box(shape=get_shape(src_piece))
+        dst_box = Box(shape=get_shape(dst_piece))
+
+        # Create matching anchors (front face of src connects to down face of dst)
+        src_anchor = Anchor(
+            contact_face="front", edge_shared_face="top", offset=FromMax(value=100)
+        )
+        dst_anchor = Anchor(
+            contact_face="down", edge_shared_face="front", offset=FromMin(value=50)
+        )
+
+        # Create a point on the source front face
+        src_sp = SurfacePoint(face="front", position=Point2D(u=10.0, v=20.0))
+
+        # Project to destination
+        dst_sp = _project_surface_point(src_box, dst_box, src_sp, src_anchor, dst_anchor)
+
+        # Result should be a SurfacePoint on the destination contact face
+        assert isinstance(dst_sp, SurfacePoint)
+        assert dst_sp.face == "down"
+        assert isinstance(dst_sp.position, Point2D)
+
+    def test_should_preserve_joint_position(self):
+        """Should preserve the joint position when projecting the joint itself."""
+        # Create two pieces
+        src_piece = Piece.of(PieceType.PT_2x4, 1000.0)
+        dst_piece = Piece.of(PieceType.PT_2x4, 800.0)
+        src_box = Box(shape=get_shape(src_piece))
+        dst_box = Box(shape=get_shape(dst_piece))
+
+        # Create matching anchors
+        src_anchor = Anchor(
+            contact_face="front", edge_shared_face="top", offset=FromMax(value=100)
+        )
+        dst_anchor = Anchor(
+            contact_face="down", edge_shared_face="front", offset=FromMin(value=50)
+        )
+
+        # Get the joint position on source
+        src_joint = Joint.of(src_box, src_anchor)
+
+        # Project the joint position to destination
+        dst_sp = _project_surface_point(
+            src_box, dst_box, src_joint.position, src_anchor, dst_anchor
+        )
+
+        # The projected point should match the destination joint position
+        dst_joint = Joint.of(dst_box, dst_anchor, flip_dir=True)
+
+        # Convert both to Point3D for comparison
+        dst_sp_3d = Point3D.of(dst_box, dst_sp)
+        dst_joint_3d = Point3D.of(dst_box, dst_joint.position)
+
+        # They should be at the same 3D position (allowing small numerical error)
+        assert abs(dst_sp_3d.x - dst_joint_3d.x) < 1e-6
+        assert abs(dst_sp_3d.y - dst_joint_3d.y) < 1e-6
+        assert abs(dst_sp_3d.z - dst_joint_3d.z) < 1e-6
+
+    def test_should_handle_different_faces(self):
+        """Should correctly project between different face orientations."""
+        # Create two pieces
+        src_piece = Piece.of(PieceType.PT_2x4, 1000.0)
+        dst_piece = Piece.of(PieceType.PT_2x4, 800.0)
+        src_box = Box(shape=get_shape(src_piece))
+        dst_box = Box(shape=get_shape(dst_piece))
+
+        # Create anchors with different face combinations
+        src_anchor = Anchor(
+            contact_face="left", edge_shared_face="top", offset=FromMax(value=200)
+        )
+        dst_anchor = Anchor(
+            contact_face="right", edge_shared_face="down", offset=FromMin(value=100)
+        )
+
+        # Create a point on the source left face
+        src_sp = SurfacePoint(face="left", position=Point2D(u=5.0, v=15.0))
+
+        # Project to destination
+        dst_sp = _project_surface_point(src_box, dst_box, src_sp, src_anchor, dst_anchor)
+
+        # Result should be a SurfacePoint on the destination right face
+        assert isinstance(dst_sp, SurfacePoint)
+        assert dst_sp.face == "right"
