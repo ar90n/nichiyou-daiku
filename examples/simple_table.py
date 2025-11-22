@@ -82,13 +82,13 @@ connections.append(
 
 connections.append(
     (
-        PiecePair(base=leg_2, target=apron_front),
+        PiecePair(base=apron_front, target=leg_2),
         Connection(
             lhs=Anchor(
-                contact_face="right", edge_shared_face="front", offset=FromMax(value=0)
+                contact_face="top", edge_shared_face="front", offset=FromMax(value=0)
             ),
             rhs=Anchor(
-                contact_face="top", edge_shared_face="front", offset=FromMax(value=0)
+                contact_face="right", edge_shared_face="front", offset=FromMax(value=0)
             ),
         ),
     )
