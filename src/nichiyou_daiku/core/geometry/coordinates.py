@@ -105,18 +105,32 @@ class SurfacePoint(BaseModel, frozen=True):
         point_3d = Point3D._of_edge_point(box, edge_point)
 
         # Project Point3D to face's 2D coordinates with origin at face center
-        # Face coordinate systems (must match _of_surface_point):
-        # - top/down: u=X, v=Y (drop Z), center at (width/2, height/2)
-        # - left/right: u=Y, v=Z (drop X), center at (height/2, length/2)
-        # - front/back: u=X, v=Z (drop Y), center at (width/2, length/2)
+        # RIGHT-HANDED coordinate systems (u × v = direction):
+        # Must match _of_surface_point inversely
+        #
+        # - top:   u=+X, v=+Y
+        # - down:  u=-X, v=+Y (u-axis flipped)
+        # - left:  u=-Y, v=+Z (u-axis flipped)
+        # - right: u=+Y, v=+Z
+        # - front: u=-X, v=+Z (u-axis flipped)
+        # - back:  u=+X, v=+Z
 
-        if face in ("top", "down"):
+        if face == "top":
             u = point_3d.x - box.shape.width / 2
             v = point_3d.y - box.shape.height / 2
-        elif face in ("left", "right"):
+        elif face == "down":
+            u = box.shape.width / 2 - point_3d.x  # u=-X, so flip
+            v = point_3d.y - box.shape.height / 2
+        elif face == "left":
+            u = box.shape.height / 2 - point_3d.y  # u=-Y, so flip
+            v = point_3d.z - box.shape.length / 2
+        elif face == "right":
             u = point_3d.y - box.shape.height / 2
             v = point_3d.z - box.shape.length / 2
-        elif face in ("front", "back"):
+        elif face == "front":
+            u = box.shape.width / 2 - point_3d.x  # u=-X, so flip
+            v = point_3d.z - box.shape.length / 2
+        elif face == "back":
             u = point_3d.x - box.shape.width / 2
             v = point_3d.z - box.shape.length / 2
         else:
@@ -160,9 +174,7 @@ class Point3D(BaseModel, frozen=True):
     @classmethod
     def of(cls, box: Box, source: SurfacePoint) -> "Point3D": ...
     @classmethod
-    def of(
-        cls, box: Box, source: Union[Corner, EdgePoint, SurfacePoint]
-    ) -> "Point3D":
+    def of(cls, box: Box, source: Union[Corner, EdgePoint, SurfacePoint]) -> "Point3D":
         """Create a 3D point from a box and a corner, edge point, or surface point.
 
         Args:
@@ -241,28 +253,46 @@ class Point3D(BaseModel, frozen=True):
 
         # Map 2D coordinates (u, v) to 3D coordinates (x, y, z)
         # SurfacePoint uses face center as origin, so add center offsets
-        # Face coordinate systems:
-        # - top/down: u=X, v=Y, center at (width/2, height/2)
-        # - left/right: u=Y, v=Z, center at (height/2, length/2)
-        # - front/back: u=X, v=Z, center at (width/2, length/2)
+        #
+        # RIGHT-HANDED coordinate systems (u × v = direction):
+        # Each face has: right = cross(up, direction), u = right, v = up
+        #
+        # - top:   u=+X, v=+Y (unchanged)
+        # - down:  u=-X, v=+Y (u-axis flipped)
+        # - left:  u=-Y, v=+Z (u-axis flipped)
+        # - right: u=+Y, v=+Z (unchanged)
+        # - front: u=-X, v=+Z (u-axis flipped)
+        # - back:  u=+X, v=+Z (unchanged)
 
         if face == "top":
-            # Top face: u=X, v=Y, Z=length
-            return cls(x=u + box.shape.width / 2, y=v + box.shape.height / 2, z=box.shape.length)
+            # Top face: direction=+Z, up=+Y, right=+X → u=+X, v=+Y
+            return cls(
+                x=u + box.shape.width / 2,
+                y=v + box.shape.height / 2,
+                z=box.shape.length,
+            )
         elif face == "down":
-            # Down face: u=X, v=Y, Z=0
-            return cls(x=u + box.shape.width / 2, y=v + box.shape.height / 2, z=0.0)
+            # Down face: direction=-Z, up=+Y, right=-X → u=-X, v=+Y
+            return cls(x=-u + box.shape.width / 2, y=v + box.shape.height / 2, z=0.0)
         elif face == "left":
-            # Left face: u=Y, v=Z, X=0
-            return cls(x=0.0, y=u + box.shape.height / 2, z=v + box.shape.length / 2)
+            # Left face: direction=-X, up=+Z, right=-Y → u=-Y, v=+Z
+            return cls(x=0.0, y=-u + box.shape.height / 2, z=v + box.shape.length / 2)
         elif face == "right":
-            # Right face: u=Y, v=Z, X=width
-            return cls(x=box.shape.width, y=u + box.shape.height / 2, z=v + box.shape.length / 2)
+            # Right face: direction=+X, up=+Z, right=+Y → u=+Y, v=+Z
+            return cls(
+                x=box.shape.width,
+                y=u + box.shape.height / 2,
+                z=v + box.shape.length / 2,
+            )
         elif face == "front":
-            # Front face: u=X, v=Z, Y=height
-            return cls(x=u + box.shape.width / 2, y=box.shape.height, z=v + box.shape.length / 2)
+            # Front face: direction=+Y, up=+Z, right=-X → u=-X, v=+Z
+            return cls(
+                x=-u + box.shape.width / 2,
+                y=box.shape.height,
+                z=v + box.shape.length / 2,
+            )
         elif face == "back":
-            # Back face: u=X, v=Z, Y=0
+            # Back face: direction=-Y, up=+Z, right=+X → u=+X, v=+Z
             return cls(x=u + box.shape.width / 2, y=0.0, z=v + box.shape.length / 2)
         else:
             raise ValueError(f"Invalid face: {face}")
@@ -353,6 +383,15 @@ class Vector3D(BaseModel, frozen=True):
             case "top":
                 return cls(x=0.0, y=0.0, z=1.0)
         raise ValueError(f"Invalid face: {face}")
+
+
+class Orientation(BaseModel, frozen=True):
+    direction: Face
+    up: Face
+
+    @classmethod
+    def of(cls, direction: Face, up: Face) -> "Orientation":
+        return cls(direction=direction, up=up)
 
 
 class Orientation3D(BaseModel, frozen=True):

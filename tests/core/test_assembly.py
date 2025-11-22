@@ -86,8 +86,8 @@ class TestJointPair:
 
         horizontal_box = Box(shape=get_shape(horizontal))
         vertical_box = Box(shape=get_shape(vertical))
-        
-        lhs_joint = Joint.of(horizontal_box, piece_conn.lhs)
+
+        lhs_joint = Joint.of_anchor(anchor=piece_conn.lhs, box=horizontal_box)
         rhs_joint = _project_joint(
             horizontal_box, vertical_box, lhs_joint, piece_conn.lhs, piece_conn.rhs
         )
@@ -215,7 +215,7 @@ class TestProjectSurfacePoint:
         )
 
         # Get the joint position on source
-        src_joint = Joint.of(src_box, src_anchor)
+        src_joint = Joint.of_anchor(box=src_box, anchor=src_anchor)
 
         # Project the joint position to destination
         dst_sp = _project_surface_point(
@@ -223,7 +223,7 @@ class TestProjectSurfacePoint:
         )
 
         # The projected point should match the destination joint position
-        dst_joint = Joint.of(dst_box, dst_anchor, flip_dir=True)
+        dst_joint = Joint.of_anchor(box=dst_box, anchor=dst_anchor, flip_dir=True)
 
         # Convert both to Point3D for comparison
         dst_sp_3d = Point3D.of(dst_box, dst_sp)
@@ -277,7 +277,7 @@ class TestProjectSurfacePoint:
         )
 
         # Create source joint
-        src_joint = Joint.of(src_box, src_anchor)
+        src_joint = Joint.of_anchor(box=src_box, anchor=src_anchor)
 
         # Project joint
         dst_joint = _project_joint(src_box, dst_box, src_joint, src_anchor, dst_anchor)
@@ -288,9 +288,9 @@ class TestProjectSurfacePoint:
         assert isinstance(dst_joint.orientation, Orientation3D)
         assert dst_joint.position.face == "down"
 
-        # Verify the projected joint matches what Joint.of would create
+        # Verify the projected joint matches what Joint.of_anchor would create
         # (for regression testing)
-        expected_joint = Joint.of(dst_box, dst_anchor, flip_dir=True)
+        expected_joint = Joint.of_anchor(box=dst_box, anchor=dst_anchor, flip_dir=True)
 
         # Convert both positions to Point3D for comparison
         dst_joint_3d = Point3D.of(dst_box, dst_joint.position)

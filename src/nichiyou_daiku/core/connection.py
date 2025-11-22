@@ -9,10 +9,14 @@ from enum import Enum
 from pydantic import BaseModel
 
 from nichiyou_daiku.core.geometry import (
+    Box,
     Face,
     Edge,
     EdgePoint,
+    SurfacePoint,
     Offset,
+    Orientation,
+    Point3D,
     cross as cross_face,
     is_positive,
 )
@@ -85,6 +89,21 @@ def as_edge_point(anchor: Anchor) -> EdgePoint:
             edge_shared_face=anchor.edge_shared_face,
         ),
         offset=anchor.offset,
+    )
+
+
+def as_surface_point(anchor: Anchor, box: Box) -> SurfacePoint:
+    return SurfacePoint.of(box, anchor.contact_face, as_edge_point(anchor))
+
+def as_point_3d(anchor: Anchor, box: Box) -> Point3D:
+    surface_point = as_surface_point(anchor, box)
+    return Point3D.of(box, surface_point)
+
+def as_orientation(anchor: Anchor) -> Orientation:
+    up_face = cross_face(anchor.contact_face, anchor.edge_shared_face)
+    return Orientation.of(
+        direction=anchor.contact_face,
+        up=up_face
     )
 
 

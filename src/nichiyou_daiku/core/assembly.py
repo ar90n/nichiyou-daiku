@@ -8,12 +8,21 @@ from collections.abc import Callable
 from pydantic import BaseModel
 
 from .piece import get_shape
-from .connection import Connection, Anchor, as_edge_point, ConnectionType
+from .connection import (
+    Connection,
+    Anchor,
+    as_point_3d,
+    as_surface_point,
+    as_orientation,
+    ConnectionType,
+)
 from .model import Model
 from .geometry import (
     Point2D,
     Point3D,
     Box,
+    Face,
+    Orientation,
     Orientation3D,
     cross as cross_face,
     opposite as opposite_face,
@@ -71,7 +80,7 @@ class Joint(BaseModel, frozen=True):
     orientation: Orientation3D
 
     @classmethod
-    def of(cls, box: Box, anchor: Anchor, flip_dir: bool = False) -> "Joint":
+    def of_anchor(cls, anchor: Anchor, box: Box, flip_dir: bool = False) -> "Joint":
         """Create a Joint from a piece shape and anchor point.
 
         Args:
@@ -85,10 +94,18 @@ class Joint(BaseModel, frozen=True):
         up_face = cross_face(anchor.contact_face, anchor.edge_shared_face)
         if flip_dir:
             up_face = opposite_face(up_face)
-
-        position = SurfacePoint.of(box, anchor.contact_face, as_edge_point(anchor))
         orientation = Orientation3D.of(
             direction=Vector3D.normal_of(anchor.contact_face),
+            up=Vector3D.normal_of(up_face),
+        )
+
+        position = as_surface_point(anchor, box)
+        return cls(position=position, orientation=orientation)
+
+    @classmethod
+    def of_surface_point(cls, position: SurfacePoint, up_face: Face) -> "Joint":
+        orientation = Orientation3D.of(
+            direction=Vector3D.normal_of(position.face),
             up=Vector3D.normal_of(up_face),
         )
         return cls(position=position, orientation=orientation)
@@ -165,6 +182,161 @@ def _project_joint(
     return Joint(position=dst_position, orientation=dst_orientation)
 
 
+def _get_up_dir_aligned_axis(orientation: Orientation):
+    """Determine which axis (u or v) the up direction aligns with.
+
+    Args:
+        orientation: Orientation with direction and up faces
+
+    Returns:
+        'u' if up aligns with u axis, 'v' if up aligns with v axis
+
+    Examples:
+        >>> from nichiyou_daiku.core.geometry import Orientation
+        >>> orientation = Orientation.of(direction="top", up="front")
+        >>> _get_up_dir_aligned_axis(orientation)
+        'v'
+        >>> orientation = Orientation.of(direction="front", up="top")
+        >>> _get_up_dir_aligned_axis(orientation)
+        'u'
+    """
+    match (orientation.direction, orientation.up):
+        case ("top" | "down", "front" | "back"):
+            return "v"
+        case ("top" | "down", "left" | "right"):
+            return "u"
+        case ("front" | "back", "top" | "down"):
+            return "v"
+        case ("front" | "back", "left" | "right"):
+            return "u"
+        case ("left" | "right", "top" | "down"):
+            return "v"
+        case ("left" | "right", "front" | "back"):
+            return "u"
+
+    raise ValueError(
+        f"Invalid orientation with direction {orientation.direction} and up {orientation.up}"
+    )
+
+
+def _need_transpose_surface_point(
+    src_orientation: Orientation,
+    dst_orientation: Orientation,
+) -> bool:
+    """Determine if surface point axes need to be transposed.
+
+    Checks if the u and v axes of the source and destination orientations
+    are aligned or need to be swapped.
+
+    Args:
+        src_orientation: Source orientation
+        dst_orientation: Destination orientation
+    Returns:
+        True
+        if axes need to be transposed, False otherwise
+    Examples:
+        >>> from nichiyou_daiku.core.geometry import Orientation
+        >>> src_orientation = Orientation.of(direction="top", up="front")
+        >>> dst_orientation = Orientation.of(direction="down", up="front")
+        >>> _need_transpose_surface_point(src_orientation, dst_orientation)
+        False
+        >>> dst_orientation = Orientation.of(direction="down", up="left")
+        >>> _need_transpose_surface_point(src_orientation, dst_orientation)
+        True
+    """
+    src_up_axis = _get_up_dir_aligned_axis(src_orientation)
+    dst_up_axis = _get_up_dir_aligned_axis(dst_orientation)
+
+    return src_up_axis != dst_up_axis
+
+
+def _need_flip_u_axis(
+    src_orientation: Orientation,
+    dst_orientation: Orientation,
+) -> bool:
+    """Determine if the u axis needs to be flipped.
+
+    In contact state (opposite directions, same up), the right vectors are opposite:
+    right_dst = -right_src, therefore u-axis always needs to be flipped.
+
+    For right-handed coordinate systems: u = right, v = up
+    When directions are opposite and ups are aligned:
+    - right_dst = cross(up_dst, direction_dst) = cross(up_src, -direction_src) = -right_src
+    - Therefore: u_dst = -u_src (always flip)
+
+    Args:
+        src_orientation: Source orientation
+        dst_orientation: Destination orientation
+    Returns:
+        True if u axis needs to be flipped, False otherwise
+    Examples:
+        >>> from nichiyou_daiku.core.geometry import Orientation
+        >>> src_orientation = Orientation.of(direction="top", up="front")
+        >>> dst_orientation = Orientation.of(direction="down", up="front")
+        >>> _need_flip_u_axis(src_orientation, dst_orientation)
+        True
+        >>> dst_orientation = Orientation.of(direction="top", up="front")
+        >>> _need_flip_u_axis(src_orientation, dst_orientation)
+        False
+    """
+    # Check if directions are opposite (contact state)
+    opposite_pairs = [
+        ("top", "down"), ("down", "top"),
+        ("front", "back"), ("back", "front"),
+        ("left", "right"), ("right", "left"),
+    ]
+
+    directions_opposite = (src_orientation.direction, dst_orientation.direction) in opposite_pairs
+
+    # In contact state with aligned ups, u-axis is always flipped
+    # (because right vectors are opposite)
+    return directions_opposite
+        
+def _need_flip_v_axis(
+    src_orientation: Orientation,
+    dst_orientation: Orientation,
+) -> bool:
+    """Determine if the v axis needs to be flipped.
+
+    In contact state (opposite directions, same up), the up vectors are aligned:
+    up_dst = up_src, therefore v-axis does NOT need to be flipped.
+
+    For right-handed coordinate systems: u = right, v = up
+    When directions are opposite and ups are aligned:
+    - up_dst = up_src (same direction)
+    - Therefore: v_dst = v_src (no flip)
+
+    However, if the up directions are different (not aligned), we need to check
+    if they point in opposite directions.
+
+    Args:
+        src_orientation: Source orientation
+        dst_orientation: Destination orientation
+    Returns:
+        True if v axis needs to be flipped, False otherwise
+    Examples:
+        >>> from nichiyou_daiku.core.geometry import Orientation
+        >>> src_orientation = Orientation.of(direction="top", up="front")
+        >>> dst_orientation = Orientation.of(direction="down", up="front")
+        >>> _need_flip_v_axis(src_orientation, dst_orientation)
+        False
+        >>> dst_orientation = Orientation.of(direction="top", up="back")
+        >>> _need_flip_v_axis(src_orientation, dst_orientation)
+        True
+    """
+    # Check if up directions are opposite
+    opposite_pairs = [
+        ("top", "down"), ("down", "top"),
+        ("front", "back"), ("back", "front"),
+        ("left", "right"), ("right", "left"),
+    ]
+
+    ups_opposite = (src_orientation.up, dst_orientation.up) in opposite_pairs
+
+    # V-axis needs to be flipped only if up directions are opposite
+    return ups_opposite
+
+
 def _project_surface_point(
     src_box: Box,
     dst_box: Box,
@@ -208,54 +380,38 @@ def _project_surface_point(
         >>> isinstance(dst_sp, SurfacePoint)
         True
     """
-    # Step 1: Convert source SurfacePoint to Point3D in source coordinate system
-    src_point_3d = Point3D.of(src_box, src_surface_point)
-
-    # Step 2: Get the joint positions for both anchors
-    src_joint = Joint.of(src_box, src_anchor)
-    dst_joint = Joint.of(dst_box, dst_anchor, flip_dir=True)
-
-    # Step 3: Transform from src to dst coordinate system
-    # Get the 3D positions of both joints
-    src_joint_3d = Point3D.of(src_box, src_joint.position)
-    dst_joint_3d = Point3D.of(dst_box, dst_joint.position)
-
-    # Calculate the relative position from src_joint to src_point
-    rel_x = src_point_3d.x - src_joint_3d.x
-    rel_y = src_point_3d.y - src_joint_3d.y
-    rel_z = src_point_3d.z - src_joint_3d.z
-
-    # Transform the relative position using the orientation difference
-    # For now, we implement a simplified version that assumes
-    # the coordinate systems align when anchors match
-    # TODO: Implement full rotation transformation using orientation matrices
-
-    # Calculate dst point in dst coordinate system
-    dst_point_3d = Point3D(
-        x=dst_joint_3d.x + rel_x,
-        y=dst_joint_3d.y + rel_y,
-        z=dst_joint_3d.z + rel_z,
+    src_anchor_orientation = as_orientation(src_anchor)
+    dst_anchor_orientation = as_orientation(dst_anchor)
+    transpose_axes = _need_transpose_surface_point(
+        src_anchor_orientation, dst_anchor_orientation
+    )
+    flip_u = _need_flip_u_axis(
+        src_anchor_orientation, dst_anchor_orientation
+    )
+    flip_v = _need_flip_v_axis(
+        src_anchor_orientation, dst_anchor_orientation
     )
 
-    # Step 4: Project the 3D point onto the destination face
-    # We need to convert Point3D to SurfacePoint on the destination contact face
-    face = dst_anchor.contact_face
+    src_anchor_surface_point = as_surface_point(src_anchor, src_box)
+    dst_anchor_surface_point = as_surface_point(dst_anchor, dst_box)
 
-    # Project the 3D point onto the 2D face coordinates
-    if face in ("top", "down"):
-        u = dst_point_3d.x - dst_box.shape.width / 2
-        v = dst_point_3d.y - dst_box.shape.height / 2
-    elif face in ("left", "right"):
-        u = dst_point_3d.y - dst_box.shape.height / 2
-        v = dst_point_3d.z - dst_box.shape.length / 2
-    elif face in ("front", "back"):
-        u = dst_point_3d.x - dst_box.shape.width / 2
-        v = dst_point_3d.z - dst_box.shape.length / 2
-    else:
-        raise ValueError(f"Invalid face: {face}")
+    rel_u = src_surface_point.position.u - src_anchor_surface_point.position.u
+    rel_v = src_surface_point.position.v - src_anchor_surface_point.position.v
 
-    return SurfacePoint(face=face, position=Point2D(u=u, v=v))
+    if transpose_axes:
+        rel_u, rel_v = rel_v, rel_u
+    if flip_u:
+        rel_u = -rel_u
+    if flip_v:
+        rel_v = -rel_v
 
+    return SurfacePoint(
+        face=dst_anchor.contact_face,
+        position=Point2D(
+            u=dst_anchor_surface_point.position.u + rel_u,
+            v=dst_anchor_surface_point.position.v + rel_v,
+        ),
+    )
 
 def _calculate_pilot_holes_for_connection(
     lhs_box: Box,
@@ -287,7 +443,7 @@ def _calculate_pilot_holes_for_connection(
 def _create_vanilla_joint_pairs(
     lhs_box: Box, rhs_box: Box, piece_conn: Connection
 ) -> list[JointPair]:
-    lhs = Joint.of(box=lhs_box, anchor=piece_conn.lhs)
+    lhs = Joint.of_anchor(box=lhs_box, anchor=piece_conn.lhs)
     rhs = _project_joint(
         src_box=lhs_box,
         dst_box=rhs_box,
@@ -302,16 +458,95 @@ def _create_vanilla_joint_pairs(
 def _create_screw_joint_pairs(
     lhs_box: Box, rhs_box: Box, piece_conn: Connection
 ) -> list[JointPair]:
-    lhs = Joint.of(box=lhs_box, anchor=piece_conn.lhs)
-    rhs = _project_joint(
-        src_box=lhs_box,
-        dst_box=rhs_box,
-        src_joint=lhs,
-        src_anchor=piece_conn.lhs,
-        dst_anchor=piece_conn.rhs,
-    )
+    if piece_conn.lhs.contact_face in ("down", "top"):
+        orientation = Orientation3D.of(
+            direction=Vector3D.normal_of(piece_conn.lhs.contact_face),
+            up=Vector3D.normal_of(
+                cross_face(piece_conn.lhs.contact_face, piece_conn.lhs.edge_shared_face)
+            ),
+        )
+        lhs_0 = Joint(
+            position=SurfacePoint(
+                face=piece_conn.lhs.contact_face,
+                position=Point2D(
+                    u=25.4,
+                    v=0.0,
+                ),
+            ),
+            orientation=orientation,
+        )
+        lhs_1 = Joint(
+            position=SurfacePoint(
+                face=piece_conn.lhs.contact_face,
+                position=Point2D(u=-25.4, v=0.0),
+            ),
+            orientation=orientation,
+        )
+        rhs_0 = _project_joint(
+            src_box=lhs_box,
+            dst_box=rhs_box,
+            src_joint=lhs_0,
+            src_anchor=piece_conn.lhs,
+            dst_anchor=piece_conn.rhs,
+        )
+        rhs_1 = _project_joint(
+            src_box=lhs_box,
+            dst_box=rhs_box,
+            src_joint=lhs_1,
+            src_anchor=piece_conn.lhs,
+            dst_anchor=piece_conn.rhs,
+        )
+        return [JointPair(lhs=lhs_0, rhs=rhs_0), JointPair(lhs=lhs_1, rhs=rhs_1)]
+    elif piece_conn.rhs.contact_face in ("down", "top"):
+        orientation = Orientation3D.of(
+            direction=Vector3D.normal_of(piece_conn.rhs.contact_face),
+            up=Vector3D.normal_of(
+                cross_face(piece_conn.rhs.contact_face, piece_conn.rhs.edge_shared_face)
+            ),
+        )
+        rhs_0 = Joint(
+            position=SurfacePoint(
+                face=piece_conn.rhs.contact_face,
+                position=Point2D(u=25.4, v=0.0),
+            ),
+            orientation=orientation,
+        )
+        rhs_1 = Joint(
+            position=SurfacePoint(
+                face=piece_conn.rhs.contact_face,
+                position=Point2D(u=-25.4, v=0.0),
+            ),
+            orientation=orientation,
+        )
+        lhs_0 = _project_joint(
+            src_box=rhs_box,
+            dst_box=lhs_box,
+            src_joint=rhs_0,
+            src_anchor=piece_conn.rhs,
+            dst_anchor=piece_conn.lhs,
+        )
+        lhs_1 = _project_joint(
+            src_box=rhs_box,
+            dst_box=lhs_box,
+            src_joint=rhs_1,
+            src_anchor=piece_conn.rhs,
+            dst_anchor=piece_conn.lhs,
+        )
+        return [JointPair(lhs=lhs_0, rhs=rhs_0), JointPair(lhs=lhs_1, rhs=rhs_1)]
+    elif piece_conn.lhs.contact_face in (
+        "left",
+        "right",
+    ) and piece_conn.rhs.contact_face in ("front", "back"):
+        pass
+    elif piece_conn.lhs.contact_face in (
+        "front",
+        "back",
+    ) and piece_conn.rhs.contact_face in ("left", "right"):
+        pass
+    else:
+        raise RuntimeError("Unsupported screw connection configuration.")
 
-    return [JointPair(lhs=lhs, rhs=rhs)]
+    raise RuntimeError("Unhandled screw connection case.")
 
 
 def _create_joint_pairs(

@@ -148,18 +148,20 @@ def _create_joint_from(
     )
 
 
-def _connect(parts, src_id: str, dst_id: str):
+def _connect(parts, src_joint_id: str, dst_joint_id: str):
     """Connect two parts using their rigid joints.
 
     Args:
         parts: Dictionary mapping part IDs to Part objects
-        src_id: Source part ID
-        dst_id: Destination part ID
+        src_joint_id: Source joint ID (e.g., "p1_j0")
+        dst_joint_id: Destination joint ID (e.g., "p2_j0")
     """
-    src_joint = parts[src_id].joints[f"to_{dst_id}"]
-    dst_joint = parts[dst_id].joints[f"to_{src_id}"]
-    src_joint.connect_to(dst_joint)
-
+    src_id = src_joint_id.rsplit("_j", 1)[0]
+    dst_id = dst_joint_id.rsplit("_j", 1)[0]
+    src_joint = parts[src_id].joints.get(f"to_{dst_id}")
+    dst_joint = parts[dst_id].joints.get(f"to_{src_id}")
+    if src_joint and dst_joint:
+        src_joint.connect_to(dst_joint)
 
 def assembly_to_build123d(
     assembly: Assembly,
@@ -198,7 +200,7 @@ def assembly_to_build123d(
             parts[piece_id] = _create_piece_from(piece_id, box, fillet_radius)
 
     # Build graph from connections
-    graph = defaultdict(set)
+    joints = {}
     for lhs_joint_id, rhs_joint_id in assembly.joint_conns:
         lhs_joint = assembly.joints[lhs_joint_id]
         rhs_joint = assembly.joints[rhs_joint_id]
@@ -207,15 +209,14 @@ def assembly_to_build123d(
         lhs_id = lhs_joint_id.rsplit("_j", 1)[0]
         rhs_id = rhs_joint_id.rsplit("_j", 1)[0]
 
-        graph[lhs_id].add(rhs_id)
+        joints.setdefault(lhs_id, []).append((lhs_joint_id, rhs_joint_id))
         _create_joint_from(
             lhs_joint,
             assembly.boxes[lhs_id],
             label=f"to_{rhs_id}",
             to_part=parts[lhs_id],
         )
-
-        graph[rhs_id].add(lhs_id)
+        joints.setdefault(rhs_id, []).append((rhs_joint_id, lhs_joint_id))
         _create_joint_from(
             rhs_joint,
             assembly.boxes[rhs_id],
@@ -237,12 +238,13 @@ def assembly_to_build123d(
         visited.add(start_piece)
 
         while queue:
-            current_id = queue.popleft()
+            current_piece_id = queue.popleft()
 
             # Process all neighbors
-            for neighbor_id in graph[current_id]:
-                # Skip if this edge already processed
+            for current_id, neighbor_id in joints.get(current_piece_id, []):
                 if (current_id, neighbor_id) in processed_edges:
+                    continue
+                if (neighbor_id, current_id) in processed_edges:
                     continue
                 processed_edges.add((current_id, neighbor_id))
                 processed_edges.add((neighbor_id, current_id))
@@ -250,8 +252,9 @@ def assembly_to_build123d(
                 _connect(parts, current_id, neighbor_id)
 
                 # Add neighbor to queue if not visited
-                if neighbor_id not in visited:
-                    visited.add(neighbor_id)
-                    queue.append(neighbor_id)
+                neighbor_piece_id = neighbor_id.rsplit("_j", 1)[0]
+                if neighbor_piece_id not in visited:
+                    visited.add(neighbor_piece_id)
+                    queue.append(neighbor_piece_id)
 
     return Compound(label=assembly.label or "assembly", children=list(parts.values()))
