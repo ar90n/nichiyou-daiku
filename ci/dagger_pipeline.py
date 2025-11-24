@@ -29,6 +29,7 @@ async def test_pipeline(
                 "--no-install-recommends",
                 "git",
                 "libgl1-mesa-dev",
+                "libcairo2-dev",
             ]
         )
         .with_exec(["pip", "install", "--upgrade", "pip"])
@@ -76,6 +77,7 @@ async def lint_pipeline(
                 "--no-install-recommends",
                 "git",
                 "libgl1-mesa-dev",
+                "libcairo2-dev",
             ]
         )
         .with_exec(["pip", "install", "--upgrade", "pip"])
