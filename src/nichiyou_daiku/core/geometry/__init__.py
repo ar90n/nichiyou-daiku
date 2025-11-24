@@ -20,7 +20,7 @@ from .face import (
 )
 from .edge import Edge, EdgePoint
 from .corner import Corner
-from .coordinates import Point2D, Point3D, Vector3D, Orientation3D, Orientation, SurfacePoint
+from .coordinates import Point2D, Vector2D, Point3D, Vector3D, Orientation3D, Orientation, SurfacePoint
 from .offset import Offset, FromMax, FromMin
 
 # Explicitly define what's exported when using "from geometry import *"
@@ -48,6 +48,7 @@ __all__ = [
     "Corner",
     # From coordinates
     "Point2D",
+    "Vector2D",
     "Point3D",
     "Vector3D",
     "Orientation",

@@ -56,6 +56,52 @@ class Point2D(BaseModel, frozen=True):
     v: float
 
 
+class Vector2D(BaseModel, frozen=True):
+    u: float
+    v: float
+
+    @classmethod
+    def of(cls, face: Face, edge_shared_face: Face) -> "Vector2D":
+        match (face, edge_shared_face):
+            case (
+                ("top", "right")
+                | ("down", "left")
+                | ("front", "left")
+                | ("back", "right")
+                | ("left", "back")
+                | ("right", "front")
+            ):
+                return cls(u=1.0, v=0.0)
+            case (
+                ("top", "left")
+                | ("down", "right")
+                | ("front", "right")
+                | ("back", "left")
+                | ("left", "front")
+                | ("right", "back")
+            ):
+                return cls(u=-1.0, v=0.0)
+            case (
+                ("top", "front")
+                | ("down", "front")
+                | ("front", "top")
+                | ("back", "top")
+                | ("left", "top")
+                | ("right", "top")
+            ):
+                return cls(u=0.0, v=1.0)
+            case (
+                ("top", "back")
+                | ("down", "back")
+                | ("front", "down")
+                | ("back", "down")
+                | ("left", "down")
+                | ("right", "down")
+            ):
+                return cls(u=0.0, v=-1.0)
+        raise ValueError(f"Invalid face combination: {face}, {edge_shared_face}")
+
+
 class SurfacePoint(BaseModel, frozen=True):
     """A point on a piece's surface.
 

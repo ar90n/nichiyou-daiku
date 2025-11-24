@@ -17,6 +17,7 @@ from nichiyou_daiku.core.geometry import (
     Offset,
     Orientation,
     Point3D,
+    opposite as opposite_face,
     cross as cross_face,
     is_positive,
 )
@@ -99,8 +100,10 @@ def as_point_3d(anchor: Anchor, box: Box) -> Point3D:
     surface_point = as_surface_point(anchor, box)
     return Point3D.of(box, surface_point)
 
-def as_orientation(anchor: Anchor) -> Orientation:
+def as_orientation(anchor: Anchor, flip_dir: bool = False) -> Orientation:
     up_face = cross_face(anchor.contact_face, anchor.edge_shared_face)
+    if flip_dir:
+        up_face = opposite_face(up_face)
     return Orientation.of(
         direction=anchor.contact_face,
         up=up_face

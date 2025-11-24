@@ -126,11 +126,15 @@ class TestAssembly:
 
         assembly = Assembly.of(model)
 
-        assert len(assembly.joints) == 2
+        # VANILLA connections use screw implementation (2 JointPairs = 4 joints)
+        assert len(assembly.joints) == 4
         assert "p1_j0" in assembly.joints
+        assert "p1_j1" in assembly.joints
         assert "p2_j0" in assembly.joints
-        assert len(assembly.joint_conns) == 1
+        assert "p2_j1" in assembly.joints
+        assert len(assembly.joint_conns) == 2
         assert assembly.joint_conns[0] == ("p1_j0", "p2_j0")
+        assert assembly.joint_conns[1] == ("p1_j1", "p2_j1")
 
     def test_should_generate_pilot_holes_for_screw_connections(self):
         """Should generate pilot holes for screw-type connections."""
