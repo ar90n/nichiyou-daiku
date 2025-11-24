@@ -42,24 +42,24 @@ table_top_piece_interval = (
 
 # Build DSL string with calculated dimensions
 table_dsl = f"""
-(leg_1:PT_2x4 {{"length": {TABLE_HEIGHT}}})
-(leg_2:PT_2x4 {{"length": {TABLE_HEIGHT}}})
-(leg_3:PT_2x4 {{"length": {TABLE_HEIGHT}}})
-(leg_4:PT_2x4 {{"length": {TABLE_HEIGHT}}})
+(leg_1:2x4 {{"length": {TABLE_HEIGHT}}})
+(leg_2:2x4 {{"length": {TABLE_HEIGHT}}})
+(leg_3:2x4 {{"length": {TABLE_HEIGHT}}})
+(leg_4:2x4 {{"length": {TABLE_HEIGHT}}})
 
-(apron_front:PT_2x4 {{"length": {apron_front_back_length}}})
-(apron_back:PT_2x4 {{"length": {apron_front_back_length}}})
-(apron_left:PT_2x4 {{"length": {apron_left_right_length}}})
-(apron_right:PT_2x4 {{"length": {apron_left_right_length}}})
+(apron_front:2x4 {{"length": {apron_front_back_length}}})
+(apron_back:2x4 {{"length": {apron_front_back_length}}})
+(apron_left:2x4 {{"length": {apron_left_right_length}}})
+(apron_right:2x4 {{"length": {apron_left_right_length}}})
 
-(table_top_1:PT_2x4 {{"length": {TABLE_DEPTH}}})
-(table_top_2:PT_2x4 {{"length": {TABLE_DEPTH}}})
-(table_top_3:PT_2x4 {{"length": {TABLE_DEPTH}}})
-(table_top_4:PT_2x4 {{"length": {TABLE_DEPTH}}})
-(table_top_5:PT_2x4 {{"length": {TABLE_DEPTH}}})
-(table_top_6:PT_2x4 {{"length": {TABLE_DEPTH}}})
-(table_top_7:PT_2x4 {{"length": {TABLE_DEPTH}}})
-(table_top_8:PT_2x4 {{"length": {TABLE_DEPTH}}})
+(table_top_1:2x4 {{"length": {TABLE_DEPTH}}})
+(table_top_2:2x4 {{"length": {TABLE_DEPTH}}})
+(table_top_3:2x4 {{"length": {TABLE_DEPTH}}})
+(table_top_4:2x4 {{"length": {TABLE_DEPTH}}})
+(table_top_5:2x4 {{"length": {TABLE_DEPTH}}})
+(table_top_6:2x4 {{"length": {TABLE_DEPTH}}})
+(table_top_7:2x4 {{"length": {TABLE_DEPTH}}})
+(table_top_8:2x4 {{"length": {TABLE_DEPTH}}})
 
 leg_1 -[{{"contact_face": "left", "edge_shared_face": "back", "offset": FromMax(0)}}
         {{"contact_face": "down", "edge_shared_face": "back", "offset": FromMax(0)}}]- apron_front

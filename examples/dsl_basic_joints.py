@@ -19,8 +19,8 @@ print("Building T-Joint example...")
 
 # T-Joint: Connect upright to the middle of base beam
 t_joint_dsl = """
-(t_base:PT_2x4 {"length": 800})
-(t_upright:PT_2x4 {"length": 400})
+(t_base:2x4 {"length": 800})
+(t_upright:2x4 {"length": 400})
 
 t_base -[{"contact_face": "front", "edge_shared_face": "right", "offset": FromMin(400)}
          {"contact_face": "down", "edge_shared_face": "front", "offset": FromMin(44.5)}]- t_upright
@@ -35,8 +35,8 @@ print("Building Butt Joint example...")
 
 # Butt Joint: Connect end-to-end
 butt_joint_dsl = """
-(butt_first:PT_2x4 {"length": 300})
-(butt_second:PT_2x4 {"length": 300})
+(butt_first:2x4 {"length": 300})
+(butt_second:2x4 {"length": 300})
 
 butt_first -[{"contact_face": "top", "edge_shared_face": "left", "offset": FromMin(0)}
              {"contact_face": "down", "edge_shared_face": "left", "offset": FromMin(0)}]- butt_second
@@ -51,8 +51,8 @@ print("Building Corner Joint example...")
 
 # Corner Joint: Two pieces meeting at 90 degrees
 corner_joint_dsl = """
-(corner_a:PT_2x4 {"length": 400})
-(corner_b:PT_2x4 {"length": 400})
+(corner_a:2x4 {"length": 400})
+(corner_b:2x4 {"length": 400})
 
 corner_a -[{"contact_face": "back", "edge_shared_face": "right", "offset": FromMin(0)}
            {"contact_face": "left", "edge_shared_face": "front", "offset": FromMin(0)}]- corner_b
