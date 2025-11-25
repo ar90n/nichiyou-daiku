@@ -15,8 +15,8 @@ from nichiyou_daiku.core.geometry import (
     Orientation3D,
     Point3D,
     Box as NichiyouBox,
-    Face,
 )
+from nichiyou_daiku.shell.utils import detect_face_from_point
 
 # Check if build123d is available
 HAS_BUILD123D = False
@@ -88,35 +88,6 @@ def _as_tuple(point: Point3D) -> tuple[float, float, float]:
     return (float(point.x), float(point.y), float(point.z))
 
 
-def _detect_face_from_point(point: Point3D, box: NichiyouBox) -> Face:
-    """Detect which face of the box a point lies on.
-
-    Args:
-        point: The 3D point to check
-        box: The box to check against
-
-    Returns:
-        The face that the point lies on
-
-    Raises:
-        ValueError: If the point is not on any face of the box
-    """
-    tolerance = 0.001
-    if abs(point.z - box.shape.length) < tolerance:
-        return "top"
-    if abs(point.z) < tolerance:
-        return "down"
-    if abs(point.x) < tolerance:
-        return "left"
-    if abs(point.x - box.shape.width) < tolerance:
-        return "right"
-    if abs(point.y - box.shape.height) < tolerance:
-        return "front"
-    if abs(point.y) < tolerance:
-        return "back"
-    raise ValueError(f"Point {point} is not on any face of box")
-
-
 def _create_hole(
     point: Point3D,
     hole: NichiyouHole,
@@ -132,10 +103,10 @@ def _create_hole(
     Returns:
         A build123d Part (cylinder) positioned and oriented for subtraction
     """
-    face = _detect_face_from_point(point, box)
+    face = detect_face_from_point(point, box)
 
     # Face rotation angles to orient cylinder inward (Z-axis aligned with hole direction)
-    face_rotations: dict[Face, tuple[float, float, float]] = {
+    face_rotations: dict[str, tuple[float, float, float]] = {
         "left": (0, 90, 0),     # cylinder Z -> +X (inward)
         "right": (0, -90, 0),   # cylinder Z -> -X (inward)
         "back": (-90, 0, 0),    # cylinder Z -> +Y (inward)

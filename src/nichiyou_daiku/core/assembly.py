@@ -11,10 +11,8 @@ from .piece import get_shape
 from .connection import (
     Connection,
     Anchor,
-    as_point_3d,
     as_surface_point,
     as_orientation,
-    as_edge_point,
     ConnectionType,
 )
 from .model import Model
@@ -22,9 +20,9 @@ from .geometry import (
     Point2D,
     Vector2D,
     Point3D,
-    Offset,
-    FromMax,
-    FromMin,
+    Offset,  # noqa: F401 - used in docstring examples
+    FromMax,  # noqa: F401 - used in docstring examples
+    FromMin,  # noqa: F401 - used in docstring examples
     Box,
     Face,
     Orientation,
@@ -790,7 +788,7 @@ class Assembly(BaseModel, frozen=True):
                 joints[rhs_joint_id] = joint_pair.rhs
                 joint_conns.append((lhs_joint_id, rhs_joint_id))
 
-                if piece_conn.type == ConnectionType.SCREW or True:
+                if piece_conn.type in (ConnectionType.SCREW, ConnectionType.VANILLA):
                     pilot_holes.setdefault(lhs_id, []).append(
                         _create_pilot_hole_on_joint(
                             box=boxes[lhs_id],
