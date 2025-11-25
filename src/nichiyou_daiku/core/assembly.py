@@ -492,6 +492,23 @@ def _create_top_down_screw_joints(
     return (src_0, src_1)
 
 
+def _create_orientation_from_anchor(anchor: Anchor) -> Orientation3D:
+    """Create orientation from anchor's contact and edge shared faces.
+
+    Args:
+        anchor: Anchor defining contact_face and edge_shared_face
+
+    Returns:
+        Orientation3D with direction normal to contact_face and up normal to crossed faces
+    """
+    return Orientation3D.of(
+        direction=Vector3D.normal_of(anchor.contact_face),
+        up=Vector3D.normal_of(
+            cross_face(anchor.contact_face, anchor.edge_shared_face)
+        ),
+    )
+
+
 def _create_screw_joint_pairs(
     lhs_box: Box, rhs_box: Box, piece_conn: Connection
 ) -> list[JointPair]:
@@ -866,6 +883,7 @@ class Assembly(BaseModel, frozen=True):
         # Create joints with IDs and joint pairs
         joints: dict[str, Joint] = {}
         joint_conns: list[tuple[str, str]] = []
+        pilot_holes: dict[str, list[tuple[SurfacePoint, Hole]]] = {}
         generate_joint_id = _create_joint_id_generator(list(model.pieces.keys()))
 
         for (lhs_id, rhs_id), piece_conn in model.connections.items():
@@ -881,23 +899,14 @@ class Assembly(BaseModel, frozen=True):
                 joints[rhs_joint_id] = joint_pair.rhs
                 joint_conns.append((lhs_joint_id, rhs_joint_id))
 
-        # Generate pilot holes for screw connections
-        pilot_holes: dict[str, list[tuple[SurfacePoint, Hole]]] = {}
-        for (lhs_id, rhs_id), connection in model.connections.items():
-            if connection.type == ConnectionType.SCREW:
-                lhs_holes, rhs_holes = _calculate_pilot_holes_for_connection(
-                    boxes[lhs_id], boxes[rhs_id], connection
-                )
-
-                if lhs_holes:
+                if piece_conn.type == ConnectionType.SCREW:
                     if lhs_id not in pilot_holes:
                         pilot_holes[lhs_id] = []
-                    pilot_holes[lhs_id].extend(lhs_holes)
+                    #pilot_holes[lhs_id].append(lhs_hole)
 
-                if rhs_holes:
                     if rhs_id not in pilot_holes:
                         pilot_holes[rhs_id] = []
-                    pilot_holes[rhs_id].extend(rhs_holes)
+                    #pilot_holes[rhs_joint_id].append(rhs_hole)
 
         return cls(
             model=model,
