@@ -4,8 +4,8 @@ help:  ## Show this help message
 	@echo "Available commands:"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
 
-test:  ## Run tests with coverage
-	uv run pytest tests/ --cov=nichiyou_daiku --cov-report=term-missing -v
+test:  ## Run tests with coverage (including doctests)
+	uv run pytest src/ tests/ --doctest-modules --cov=nichiyou_daiku --cov-report=term-missing --cov-fail-under=90 -v
 
 lint:  ## Run linting checks
 	uv run ruff format --check src/ tests/
