@@ -622,6 +622,60 @@ def _create_left_right_screw_joints(
     return (src_0, src_1, dst_0, dst_1)
 
 
+def _create_front_back_screw_joints_with_offset(
+    src_box: Box,
+    dst_box: Box,
+    src_anchor: Anchor,
+    dst_anchor: Anchor,
+) -> tuple[Joint, Joint, Joint, Joint]:
+    """Create screw joints for front/back connections with offset clamping.
+
+    Args:
+        src_box: Source piece box
+        dst_box: Destination piece box
+        src_anchor: Source anchor (must be front or back face with top/down edge)
+        dst_anchor: Destination anchor
+
+    Returns:
+        Tuple of (src_0, src_1, dst_0, dst_1)
+    """
+    orientation = _create_orientation_from_anchor(src_anchor)
+
+    # Clamp offset to prevent screws from being too close to edges
+    def _anchor_offset(offset: Offset):
+        match offset:
+            case FromMin(value=v):
+                return FromMin(value=min(v, 44.5))
+            case FromMax(value=v):
+                return FromMax(value=min(v, 44.5))
+
+    # Get anchor position with clamped offset
+    offset_anchor = Anchor(
+        contact_face=src_anchor.contact_face,
+        edge_shared_face=src_anchor.edge_shared_face,
+        offset=_anchor_offset(src_anchor.offset),
+    )
+    anchor_sp = as_surface_point(offset_anchor, src_box)
+    pos_0 = Point2D(u=25.4, v=anchor_sp.position.v)
+    pos_1 = Point2D(u=-25.4, v=anchor_sp.position.v)
+
+    src_0, src_1 = _create_joint_pair_from_positions(
+        face=src_anchor.contact_face,
+        pos_0=pos_0,
+        pos_1=pos_1,
+        orientation=orientation,
+    )
+    dst_0, dst_1 = _project_joint_pair(
+        src_box=src_box,
+        dst_box=dst_box,
+        src_joint_0=src_0,
+        src_joint_1=src_1,
+        src_anchor=src_anchor,
+        dst_anchor=dst_anchor,
+    )
+    return (src_0, src_1, dst_0, dst_1)
+
+
 def _create_screw_joint_pairs(
     lhs_box: Box, rhs_box: Box, piece_conn: Connection
 ) -> list[JointPair]:
@@ -680,87 +734,23 @@ def _create_screw_joint_pairs(
         "front",
         "back",
     ) and piece_conn.rhs.contact_face in ("front", "back"):
-        is_lhs_shared_face_top_down = piece_conn.lhs.edge_shared_face in ("top", "down")       
+        is_lhs_shared_face_top_down = piece_conn.lhs.edge_shared_face in ("top", "down")
         is_rhs_shared_face_top_down = piece_conn.rhs.edge_shared_face in ("top", "down")
-        is_lhs_shared_face_left_right = piece_conn.lhs.edge_shared_face in ("left", "right")       
+        is_lhs_shared_face_left_right = piece_conn.lhs.edge_shared_face in ("left", "right")
         is_rhs_shared_face_left_right = piece_conn.rhs.edge_shared_face in ("left", "right")
 
-        # Get anchor position to place screws relative to it
-        def _anchor_offset(offset: Offset):
-            match offset:
-                case FromMin(value=v):
-                    return FromMin(value=min(v, 44.5))
-                case FromMax(value=v):
-                    return FromMax(value=min(v, 44.5))
-
         if is_lhs_shared_face_top_down:
-            orientation = Orientation3D.of(
-                direction=Vector3D.normal_of(piece_conn.lhs.contact_face),
-                up=Vector3D.normal_of(
-                    cross_face(
-                        piece_conn.lhs.contact_face,
-                        piece_conn.lhs.edge_shared_face,
-                    )
-                ),
-            )
-
-                
-            offset_anchor = Anchor(
-                contact_face=piece_conn.lhs.contact_face,
-                edge_shared_face=piece_conn.lhs.edge_shared_face,
-                offset=_anchor_offset(piece_conn.lhs.offset),
-            )
-            anchor_sp = as_surface_point(offset_anchor, lhs_box)
-            pos_0 = Point2D(u=25.4, v=anchor_sp.position.v)
-            pos_1 = Point2D(u=-25.4, v=anchor_sp.position.v)
-
-            lhs_0, lhs_1 = _create_joint_pair_from_positions(
-                face=piece_conn.lhs.contact_face,
-                pos_0=pos_0,
-                pos_1=pos_1,
-                orientation=orientation,
-            )
-            rhs_0, rhs_1 = _project_joint_pair(
+            lhs_0, lhs_1, rhs_0, rhs_1 = _create_front_back_screw_joints_with_offset(
                 src_box=lhs_box,
                 dst_box=rhs_box,
-                src_joint_0=lhs_0,
-                src_joint_1=lhs_1,
                 src_anchor=piece_conn.lhs,
                 dst_anchor=piece_conn.rhs,
             )
             return [JointPair(lhs=lhs_0, rhs=rhs_0), JointPair(lhs=lhs_1, rhs=rhs_1)]
         elif is_rhs_shared_face_top_down:
-            orientation = Orientation3D.of(
-                direction=Vector3D.normal_of(piece_conn.rhs.contact_face),
-                up=Vector3D.normal_of(
-                    cross_face(
-                        piece_conn.rhs.contact_face,
-                        piece_conn.rhs.edge_shared_face,
-                    )
-                ),
-            )
-
-                
-            offset_anchor = Anchor(
-                contact_face=piece_conn.rhs.contact_face,
-                edge_shared_face=piece_conn.rhs.edge_shared_face,
-                offset=_anchor_offset(piece_conn.rhs.offset),
-            )
-            anchor_sp = as_surface_point(offset_anchor, rhs_box)
-            pos_0 = Point2D(u=25.4, v=anchor_sp.position.v)
-            pos_1 = Point2D(u=-25.4, v=anchor_sp.position.v)
-
-            rhs_0, rhs_1 = _create_joint_pair_from_positions(
-                face=piece_conn.rhs.contact_face,
-                pos_0=pos_0,
-                pos_1=pos_1,
-                orientation=orientation,
-            )
-            lhs_0, lhs_1 = _project_joint_pair(
+            rhs_0, rhs_1, lhs_0, lhs_1 = _create_front_back_screw_joints_with_offset(
                 src_box=rhs_box,
                 dst_box=lhs_box,
-                src_joint_0=rhs_0,
-                src_joint_1=rhs_1,
                 src_anchor=piece_conn.rhs,
                 dst_anchor=piece_conn.lhs,
             )
