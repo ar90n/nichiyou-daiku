@@ -3,12 +3,11 @@
 import pytest
 from unittest.mock import Mock, patch, MagicMock
 
-from nichiyou_daiku.core.assembly import Assembly, JointPair, Joint as NichiyouJoint
+from nichiyou_daiku.core.assembly import Assembly, Joint as NichiyouJoint
 from nichiyou_daiku.core.geometry import (
     Box,
     Shape3D,
     Point2D,
-    Point3D,
     SurfacePoint,
     Vector3D,
     Orientation3D,

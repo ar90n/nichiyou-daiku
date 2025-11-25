@@ -4,7 +4,6 @@ import pytest
 
 from nichiyou_daiku.core.assembly import (
     Joint,
-    JointPair,
     Assembly,
     _project_joint,
     _project_surface_point,

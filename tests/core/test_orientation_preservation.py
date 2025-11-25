@@ -8,7 +8,6 @@ from nichiyou_daiku.core.connection import Connection, Anchor
 from typing import cast
 from nichiyou_daiku.core.geometry import (
     Point2D,
-    Point3D,
     SurfacePoint,
     Vector3D,
     Orientation3D,
