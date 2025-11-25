@@ -200,3 +200,6 @@ cython_debug/
 # Claude
 CLAUDE.md
 .claude
+
+# Generated project reports
+*_project_report.md
