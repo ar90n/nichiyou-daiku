@@ -269,8 +269,10 @@ def assembly_to_build123d(
         ImportError: If build123d is not installed
 
     Example:
+        >>> from nichiyou_daiku.core.model import Model
         >>> from nichiyou_daiku.core.assembly import Assembly
-        >>> assembly = Assembly(boxes={}, joints={}, label="example")
+        >>> model = Model.of(pieces=[], connections=[])
+        >>> assembly = Assembly.of(model)
         >>> compound = assembly_to_build123d(assembly, fillet_radius=3.0)
     """
     if not HAS_BUILD123D:

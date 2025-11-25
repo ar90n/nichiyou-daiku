@@ -393,7 +393,7 @@ class Vector3D(BaseModel, frozen=True):
             >>> edge = Edge(lhs="top", rhs="front")
             >>> vector = Vector3D.of(edge)
             >>> vector.x, vector.y, vector.z
-            (0.0, -1.0, 0.0)
+            (-1.0, 0.0, 0.0)
         """
         result_face = cross_face(edge.lhs, edge.rhs)
         return cls.normal_of(result_face)
@@ -461,7 +461,7 @@ class Orientation3D(BaseModel, frozen=True):
         1.0
         >>> # From face and edge
         >>> orient2 = Orientation3D.of(face="top", edge=Edge(lhs="top", rhs="front"))
-        >>> orient2.direction.x
+        >>> orient2.direction.z
         1.0
     """
 

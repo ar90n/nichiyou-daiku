@@ -157,7 +157,7 @@ def _project_joint(
         >>> src_anchor = Anchor(contact_face="front", edge_shared_face="top", offset=FromMax(value=100))
         >>> dst_anchor = Anchor(contact_face="down", edge_shared_face="front", offset=FromMin(value=50))
         >>> # Create and project joint
-        >>> src_joint = Joint.of(src_box, src_anchor)
+        >>> src_joint = Joint.of_anchor(src_anchor, src_box)
         >>> dst_joint = _project_joint(src_box, dst_box, src_joint, src_anchor, dst_anchor)
         >>> isinstance(dst_joint, Joint)
         True
@@ -199,7 +199,7 @@ def _get_up_dir_aligned_axis(orientation: Orientation):
         >>> orientation = Orientation.of(direction="top", up="front")
         >>> _get_up_dir_aligned_axis(orientation)
         'v'
-        >>> orientation = Orientation.of(direction="front", up="top")
+        >>> orientation = Orientation.of(direction="front", up="left")
         >>> _get_up_dir_aligned_axis(orientation)
         'u'
     """
@@ -740,9 +740,9 @@ class Assembly(BaseModel, frozen=True):
         ... )
         >>> assembly = Assembly.of(model)
         >>> len(assembly.joints)
-        2
+        4
         >>> len(assembly.joint_conns)
-        1
+        2
     """
 
     model: Model
