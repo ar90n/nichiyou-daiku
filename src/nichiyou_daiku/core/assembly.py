@@ -755,24 +755,10 @@ def _create_screw_joint_pairs(
         raise RuntimeError("Unsupported screw connection configuration.")
 
 
-def _create_vanilla_joint_pairs(
-    lhs_box: Box, rhs_box: Box, piece_conn: Connection
-) -> list[JointPair]:
-    lhs = Joint.of_anchor(box=lhs_box, anchor=piece_conn.lhs)
-    rhs = _project_joint(
-        src_box=lhs_box,
-        dst_box=rhs_box,
-        src_joint=lhs,
-        src_anchor=piece_conn.lhs,
-        dst_anchor=piece_conn.rhs,
-    )
-    return [JointPair(lhs=lhs, rhs=rhs)]
-
 def _create_joint_pairs(
     lhs_box: Box, rhs_box: Box, piece_conn: Connection
 ) -> list[JointPair]:
     return _create_screw_joint_pairs(lhs_box, rhs_box, piece_conn)
-    #return _create_vanilla_joint_pairs(lhs_box, rhs_box, piece_conn)
 
 
 def _create_joint_id_generator(piece_ids: list[str]) -> Callable[[str], str]:
