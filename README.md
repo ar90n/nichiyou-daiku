@@ -252,9 +252,9 @@ make lint
 This project uses Dagger for CI/CD pipelines. The Quality Assurance pipeline includes
 
 - ✅ **Testing**: pytest with 90% minimum coverage + docstring tests
-- 🎨 **Code Formatting**: black code formatter
+- 🎨 **Code Formatting**: ruff formatter
 - 🔍 **Linting**: ruff static analysis
-- 🏷️ **Type Checking**: mypy type verification
+- 🏷️ **Type Checking**: pyright type verification
 - 📦 **Building**: Python package distribution
 
 #### Running QA Locally
@@ -303,7 +303,7 @@ show(compound)
 Extract bill of materials from your models to understand lumber requirements
 
 ```python
-from nichiyou_daiku.core.resources import extract_resources
+from nichiyou_daiku.shell.resources import extract_resources
 
 # Extract resources from a model
 resources = extract_resources(model)
@@ -439,8 +439,10 @@ nichiyou-daiku/
 │       │   ├── piece.py    # Lumber piece definitions
 │       │   ├── model.py    # Assembly graph model
 │       │   ├── connection.py # Connection specifications
-│       │   ├── assembly.py # 3D assembly generation
-│       │   ├── resources.py # Resource extraction
+│       │   ├── assembly/   # 3D assembly generation
+│       │   │   ├── models.py, projection.py
+│       │   │   ├── screw_joints.py, utils.py
+│       │   │   └── builder.py
 │       │   └── geometry/   # Geometric primitives
 │       │       ├── face.py, edge.py, corner.py
 │       │       ├── coordinates.py, dimensions.py
@@ -459,7 +461,7 @@ nichiyou-daiku/
 │           └── report_generator.py
 ├── examples/               # Example projects
 │   ├── *.py               # Python examples
-│   └── *.nd               # DSL examples
+│   └── nd_files/*.nd      # DSL examples
 ├── tests/                  # Test suite
 └── ci/                     # CI/CD pipeline (Dagger)
 ```
