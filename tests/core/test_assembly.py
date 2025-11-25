@@ -177,32 +177,34 @@ class TestAssembly:
 class TestScrewJointFaceCombinations:
     """Test screw joint implementation for all face combinations."""
 
-    @pytest.mark.parametrize("connection_type", [
-        ConnectionType.VANILLA,
-        ConnectionType.SCREW,
-    ])
-    @pytest.mark.parametrize("lhs_face,lhs_edge,rhs_face,rhs_edge,description", [
-        # Top/down combinations
-        ("top", "front", "down", "front", "top-down"),
-        ("down", "back", "top", "back", "down-top"),
-
-        # Top/down with left/right
-        ("top", "front", "left", "top", "top-left"),
-        ("down", "back", "right", "down", "down-right"),
-        ("left", "top", "down", "front", "left-down"),
-        ("right", "top", "top", "front", "right-top"),
-
-        # Top/down with front/back
-        ("top", "left", "front", "top", "top-front"),
-        ("down", "right", "back", "down", "down-back"),
-
-        # Left/right with front/back
-        ("left", "front", "front", "left", "left-front"),
-        ("right", "back", "back", "right", "right-back"),
-
-        # Front/back with top/down edges
-        ("front", "top", "back", "down", "front-back-topdown"),
-    ])
+    @pytest.mark.parametrize(
+        "connection_type",
+        [
+            ConnectionType.VANILLA,
+            ConnectionType.SCREW,
+        ],
+    )
+    @pytest.mark.parametrize(
+        "lhs_face,lhs_edge,rhs_face,rhs_edge,description",
+        [
+            # Top/down combinations
+            ("top", "front", "down", "front", "top-down"),
+            ("down", "back", "top", "back", "down-top"),
+            # Top/down with left/right
+            ("top", "front", "left", "top", "top-left"),
+            ("down", "back", "right", "down", "down-right"),
+            ("left", "top", "down", "front", "left-down"),
+            ("right", "top", "top", "front", "right-top"),
+            # Top/down with front/back
+            ("top", "left", "front", "top", "top-front"),
+            ("down", "right", "back", "down", "down-back"),
+            # Left/right with front/back
+            ("left", "front", "front", "left", "left-front"),
+            ("right", "back", "back", "right", "right-back"),
+            # Front/back with top/down edges
+            ("front", "top", "back", "down", "front-back-topdown"),
+        ],
+    )
     def test_should_create_joints_for_face_combination(
         self, connection_type, lhs_face, lhs_edge, rhs_face, rhs_edge, description
     ):
@@ -237,8 +239,12 @@ class TestScrewJointFaceCombinations:
         assembly = Assembly.of(model)
 
         # Verify joints were created
-        assert len(assembly.joints) == 4, f"Expected 4 joints for {description} with {connection_type.value}"
-        assert len(assembly.joint_conns) == 2, f"Expected 2 joint pairs for {description} with {connection_type.value}"
+        assert len(assembly.joints) == 4, (
+            f"Expected 4 joints for {description} with {connection_type.value}"
+        )
+        assert len(assembly.joint_conns) == 2, (
+            f"Expected 2 joint pairs for {description} with {connection_type.value}"
+        )
 
         # Verify joint IDs
         assert "p1_j0" in assembly.joints
@@ -270,7 +276,9 @@ class TestProjectSurfacePoint:
         src_sp = SurfacePoint(face="front", position=Point2D(u=10.0, v=20.0))
 
         # Project to destination
-        dst_sp = _project_surface_point(src_box, dst_box, src_sp, src_anchor, dst_anchor)
+        dst_sp = _project_surface_point(
+            src_box, dst_box, src_sp, src_anchor, dst_anchor
+        )
 
         # Result should be a SurfacePoint on the destination contact face
         assert isinstance(dst_sp, SurfacePoint)
@@ -333,7 +341,9 @@ class TestProjectSurfacePoint:
         src_sp = SurfacePoint(face="left", position=Point2D(u=5.0, v=15.0))
 
         # Project to destination
-        dst_sp = _project_surface_point(src_box, dst_box, src_sp, src_anchor, dst_anchor)
+        dst_sp = _project_surface_point(
+            src_box, dst_box, src_sp, src_anchor, dst_anchor
+        )
 
         # Result should be a SurfacePoint on the destination right face
         assert isinstance(dst_sp, SurfacePoint)

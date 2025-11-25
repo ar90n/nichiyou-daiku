@@ -4,7 +4,15 @@ import pytest
 from unittest.mock import Mock, patch, MagicMock
 
 from nichiyou_daiku.core.assembly import Assembly, JointPair, Joint as NichiyouJoint
-from nichiyou_daiku.core.geometry import Box, Shape3D, Point2D, Point3D, SurfacePoint, Vector3D, Orientation3D
+from nichiyou_daiku.core.geometry import (
+    Box,
+    Shape3D,
+    Point2D,
+    Point3D,
+    SurfacePoint,
+    Vector3D,
+    Orientation3D,
+)
 
 
 class TestAssemblyToBuild123d:
@@ -17,7 +25,12 @@ class TestAssemblyToBuild123d:
         # Create minimal model and assembly
         model = Model.of(pieces=[], connections=[])
         assembly = Assembly(
-            model=model, boxes={}, joints={}, joint_conns=[], pilot_holes={}, label="test_assembly"
+            model=model,
+            boxes={},
+            joints={},
+            joint_conns=[],
+            pilot_holes={},
+            label="test_assembly",
         )
 
         # Temporarily set the flag to simulate build123d not being available
@@ -240,7 +253,9 @@ class TestAssemblyToBuild123d:
                     ),
                 )
                 joint2 = NichiyouJoint(
-                    position=SurfacePoint(face="down", position=Point2D(u=50.0, v=25.0)),
+                    position=SurfacePoint(
+                        face="down", position=Point2D(u=50.0, v=25.0)
+                    ),
                     orientation=Orientation3D.of(
                         direction=Vector3D(x=0.0, y=0.0, z=-1.0),
                         up=Vector3D(x=-1.0, y=0.0, z=0.0),

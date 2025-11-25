@@ -96,18 +96,17 @@ def as_edge_point(anchor: Anchor) -> EdgePoint:
 def as_surface_point(anchor: Anchor, box: Box) -> SurfacePoint:
     return SurfacePoint.of(box, anchor.contact_face, as_edge_point(anchor))
 
+
 def as_point_3d(anchor: Anchor, box: Box) -> Point3D:
     surface_point = as_surface_point(anchor, box)
     return Point3D.of(box, surface_point)
+
 
 def as_orientation(anchor: Anchor, flip_dir: bool = False) -> Orientation:
     up_face = cross_face(anchor.contact_face, anchor.edge_shared_face)
     if flip_dir:
         up_face = opposite_face(up_face)
-    return Orientation.of(
-        direction=anchor.contact_face,
-        up=up_face
-    )
+    return Orientation.of(direction=anchor.contact_face, up=up_face)
 
 
 class Connection(BaseModel, frozen=True):

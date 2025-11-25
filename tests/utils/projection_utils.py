@@ -61,7 +61,9 @@ def _export_projection_to_svg(
         )
 
     # Project compound to viewport
-    visible, hidden = compound.project_to_viewport(viewport_origin, viewport_up, look_at=(0, 0, 0))
+    visible, hidden = compound.project_to_viewport(
+        viewport_origin, viewport_up, look_at=(0, 0, 0)
+    )
 
     # Calculate scale from bounding box
     max_dimension = max(
@@ -85,7 +87,10 @@ def _export_projection_to_svg(
     exporter.add_layer("Visible", line_color=(0, 0, 0), line_weight=0.5)
     # Hidden: gray dotted lines, thinner
     exporter.add_layer(
-        "Hidden", line_color=(128, 128, 128), line_type=LineType.ISO_DOT, line_weight=0.3
+        "Hidden",
+        line_color=(128, 128, 128),
+        line_type=LineType.ISO_DOT,
+        line_weight=0.3,
     )
 
     # Add shapes to layers
@@ -94,9 +99,7 @@ def _export_projection_to_svg(
 
     # ExportSVG.write() only accepts file paths, not IO objects
     # So we write to a temporary file and then read it back
-    with tempfile.NamedTemporaryFile(
-        mode="w", suffix=".svg", delete=False
-    ) as tmp_file:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".svg", delete=False) as tmp_file:
         tmp_path = Path(tmp_file.name)
 
     try:

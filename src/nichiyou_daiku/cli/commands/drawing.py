@@ -119,8 +119,10 @@ def drawing(
         from build123d import TechnicalDrawing, PageSize, ExportSVG, Unit, LineType
         import cairosvg
     except ImportError as e:
-        echo.error(f"Error importing dependencies: {e}\n"
-                   "Please install with: uv add nichiyou-daiku[viz]")
+        echo.error(
+            f"Error importing dependencies: {e}\n"
+            "Please install with: uv add nichiyou-daiku[viz]"
+        )
         sys.exit(1)
 
     # Determine output path and title
@@ -201,14 +203,18 @@ def drawing(
         )
 
         # Get bounding boxes
-        top_bbox = Build123dCompound(children=top_vis_temp + top_hid_temp).bounding_box()
+        top_bbox = Build123dCompound(
+            children=top_vis_temp + top_hid_temp
+        ).bounding_box()
         front_bbox = Build123dCompound(
             children=front_vis_temp + front_hid_temp
         ).bounding_box()
         side_bbox = Build123dCompound(
             children=side_vis_temp + side_hid_temp
         ).bounding_box()
-        iso_bbox = Build123dCompound(children=iso_vis_temp + iso_hid_temp).bounding_box()
+        iso_bbox = Build123dCompound(
+            children=iso_vis_temp + iso_hid_temp
+        ).bounding_box()
 
         # Step 2: Calculate unified scale based on largest view
         top_max = max(top_bbox.size.X, top_bbox.size.Y)
@@ -235,14 +241,18 @@ def drawing(
             compound, (100, 100, 100), (0, 0, 1), (0, 0), view_scale
         )
 
-        top_bbox = Build123dCompound(children=top_vis_temp + top_hid_temp).bounding_box()
+        top_bbox = Build123dCompound(
+            children=top_vis_temp + top_hid_temp
+        ).bounding_box()
         front_bbox = Build123dCompound(
             children=front_vis_temp + front_hid_temp
         ).bounding_box()
         side_bbox = Build123dCompound(
             children=side_vis_temp + side_hid_temp
         ).bounding_box()
-        iso_bbox = Build123dCompound(children=iso_vis_temp + iso_hid_temp).bounding_box()
+        iso_bbox = Build123dCompound(
+            children=iso_vis_temp + iso_hid_temp
+        ).bounding_box()
 
         # Step 4: Calculate grid cell centers
         y_offset = 10  # Offset Y slightly up to account for title block

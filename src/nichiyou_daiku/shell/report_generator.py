@@ -447,9 +447,7 @@ def _generate_pilot_holes_section(summary: ResourceSummary) -> str:
 
     for piece in pieces_with_holes:
         # Piece header
-        lines.extend(
-            [f"### {piece.id} ({piece.type.value}, {piece.length:.0f}mm)", ""]
-        )
+        lines.extend([f"### {piece.id} ({piece.type.value}, {piece.length:.0f}mm)", ""])
 
         # Table header
         lines.extend(

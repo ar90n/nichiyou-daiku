@@ -215,8 +215,6 @@ class ResourceSummary(BaseModel):
         return "\n".join(lines)
 
 
-
-
 def _point3d_to_pilot_hole_info(
     point: Point3D, hole: Hole, box: Box
 ) -> "PilotHoleInfo":

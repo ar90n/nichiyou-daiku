@@ -10,7 +10,11 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from nichiyou_daiku.core.assembly import Assembly, Joint as NichiyouJoint, Hole as NichiyouHole
+from nichiyou_daiku.core.assembly import (
+    Assembly,
+    Joint as NichiyouJoint,
+    Hole as NichiyouHole,
+)
 from nichiyou_daiku.core.geometry import (
     Orientation3D,
     Point3D,
@@ -21,14 +25,34 @@ from nichiyou_daiku.shell.utils import detect_face_from_point
 # Check if build123d is available
 HAS_BUILD123D = False
 try:
-    from build123d import Box, RigidJoint, Compound, Part, Location, Align, fillet, Axis, Cylinder
+    from build123d import (
+        Box,
+        RigidJoint,
+        Compound,
+        Part,
+        Location,
+        Align,
+        fillet,
+        Axis,
+        Cylinder,
+    )
 
     HAS_BUILD123D = True
 except ImportError:
     pass
 
 if TYPE_CHECKING:
-    from build123d import Box, RigidJoint, Compound, Part, Location, Align, fillet, Axis, Cylinder
+    from build123d import (
+        Box,
+        RigidJoint,
+        Compound,
+        Part,
+        Location,
+        Align,
+        fillet,
+        Axis,
+        Cylinder,
+    )
 
 
 def _as_euler_angles(
@@ -107,12 +131,12 @@ def _create_hole(
 
     # Face rotation angles to orient cylinder inward (Z-axis aligned with hole direction)
     face_rotations: dict[str, tuple[float, float, float]] = {
-        "left": (0, 90, 0),     # cylinder Z -> +X (inward)
-        "right": (0, -90, 0),   # cylinder Z -> -X (inward)
-        "back": (-90, 0, 0),    # cylinder Z -> +Y (inward)
-        "front": (90, 0, 0),    # cylinder Z -> -Y (inward)
-        "down": (0, 0, 0),      # cylinder Z -> +Z (inward)
-        "top": (180, 0, 0),     # cylinder Z -> -Z (inward)
+        "left": (0, 90, 0),  # cylinder Z -> +X (inward)
+        "right": (0, -90, 0),  # cylinder Z -> -X (inward)
+        "back": (-90, 0, 0),  # cylinder Z -> +Y (inward)
+        "front": (90, 0, 0),  # cylinder Z -> -Y (inward)
+        "down": (0, 0, 0),  # cylinder Z -> +Z (inward)
+        "top": (180, 0, 0),  # cylinder Z -> -Z (inward)
     }
 
     # Calculate depth: use specified depth or fixed value for through-holes
@@ -178,7 +202,11 @@ def _create_piece_from(
 
 
 def _create_joint_from(
-    joint: NichiyouJoint, box: NichiyouBox, label: str, to_part: "Part", flip_dir: bool = False
+    joint: NichiyouJoint,
+    box: NichiyouBox,
+    label: str,
+    to_part: "Part",
+    flip_dir: bool = False,
 ) -> "RigidJoint":
     """Create a build123d RigidJoint from a nichiyou Joint.
 
@@ -219,6 +247,7 @@ def _connect(parts, src_joint_id: str, dst_joint_id: str):
     dst_joint = parts[dst_id].joints.get(f"to_{src_id}")
     if src_joint and dst_joint:
         src_joint.connect_to(dst_joint)
+
 
 def assembly_to_build123d(
     assembly: Assembly,
@@ -284,7 +313,7 @@ def assembly_to_build123d(
             assembly.boxes[rhs_id],
             label=f"to_{lhs_id}",
             to_part=parts[rhs_id],
-            flip_dir=True
+            flip_dir=True,
         )
 
     # BFS traversal

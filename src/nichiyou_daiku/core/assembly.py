@@ -578,6 +578,7 @@ def _create_front_back_screw_joints_with_offset(
     )
     return (src_0, src_1, dst_0, dst_1)
 
+
 def _create_screw_joint_pairs(
     lhs_box: Box, rhs_box: Box, piece_conn: Connection
 ) -> list[JointPair]:
