@@ -114,14 +114,21 @@ leg_right_back -[FR<{TOP_APRON_HEIGHT} TL<0]- top_table_top_apron_back
 
 // Bottom side apron connections
 leg_left_front -[RF>{BOTTOM_APRON_HEIGHT + 150} TF<0]- bottom_apron_left
+leg_left_back -[LF>{BOTTOM_APRON_HEIGHT + 150} DF<0]- bottom_apron_left
 leg_right_front -[RB>{BOTTOM_APRON_HEIGHT + 150} DF<0]- bottom_apron_right
+leg_right_back -[LB>{BOTTOM_APRON_HEIGHT + 150} TF<0]- bottom_apron_right
 leg_left_back -[BR>{BOTTOM_APRON_HEIGHT + 150} DB<0]- bottom_apron_back
+leg_right_back -[FR>{BOTTOM_APRON_HEIGHT + 150} TB<0]- bottom_apron_back
 
 // Top side apron connections
 leg_left_front -[RF<0 TF<0]- top_apron_left
+leg_left_back -[LF<0 DF<0]- top_apron_left
 leg_right_front -[RB<0 DF<0]- top_apron_right
+leg_right_back -[LB<0 TF<0]- top_apron_right
 leg_left_back -[BR<0 DB<0]- top_apron_back
+leg_right_back -[FR<0 TB<0]- top_apron_back
 leg_left_front -[BL<0 DF<0]- top_apron_front
+leg_right_front -[FL<0 TF<0]- top_apron_front
 """
 
 # Add bottom table top piece connections
