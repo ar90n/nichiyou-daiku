@@ -35,6 +35,11 @@ from nichiyou_daiku.shell import extract_resources, generate_markdown_report
     default=True,
     help="Include anchor details in report",
 )
+@click.option(
+    "--include-pilot-holes/--no-pilot-holes",
+    default=True,
+    help="Include pilot holes drilling guide in report",
+)
 @click.pass_context
 def report(
     ctx: click.Context,
@@ -43,6 +48,7 @@ def report(
     project_name: str,
     include_cut_diagram: bool,
     include_anchor_details: bool,
+    include_pilot_holes: bool,
 ) -> None:
     """Generate a markdown report from DSL file.
 
@@ -103,6 +109,7 @@ def report(
             project_name=project_name,
             include_cut_diagram=include_cut_diagram,
             include_anchor_details=include_anchor_details,
+            include_pilot_holes=include_pilot_holes,
         )
 
     except Exception as e:

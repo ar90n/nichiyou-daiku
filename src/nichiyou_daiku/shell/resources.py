@@ -8,7 +8,8 @@ from typing import Dict
 
 from pydantic import BaseModel, ConfigDict
 
-from nichiyou_daiku.core.assembly import Assembly
+from nichiyou_daiku.core.assembly import Assembly, Hole
+from nichiyou_daiku.core.geometry import Point3D, Box, Face
 from nichiyou_daiku.core.piece import PieceType, get_shape
 
 
@@ -43,6 +44,40 @@ class AnchorInfo(BaseModel):
     offset_value: float  # mm
 
 
+class PilotHoleInfo(BaseModel):
+    """Pilot hole information for drilling guidance.
+
+    Represents a pilot hole position on a piece surface, with coordinates
+    expressed as distances from edges for easy measurement during fabrication.
+
+    Attributes:
+        face: The face where the hole is located (e.g., "top", "back")
+        from_length_edge: Distance from the length edge in millimeters
+        from_width_edge: Distance from the width edge in millimeters
+        diameter: Hole diameter in millimeters
+        depth: Hole depth in millimeters (None for through-hole)
+
+    Examples:
+        >>> hole = PilotHoleInfo(
+        ...     face="top",
+        ...     from_length_edge=70.0,
+        ...     from_width_edge=19.0,
+        ...     diameter=3.0,
+        ...     depth=15.0
+        ... )
+        >>> hole.face
+        'top'
+        >>> hole.diameter
+        3.0
+    """
+
+    face: str
+    from_length_edge: float  # mm - distance along length axis
+    from_width_edge: float  # mm - distance along width axis
+    diameter: float  # mm
+    depth: float | None  # mm, None for through-hole
+
+
 class PieceResource(BaseModel):
     """Resource information for a single piece of lumber.
 
@@ -71,6 +106,8 @@ class PieceResource(BaseModel):
         2536500.0
         >>> len(resource.anchors)
         0
+        >>> len(resource.pilot_holes)
+        0
     """
 
     id: str
@@ -80,6 +117,7 @@ class PieceResource(BaseModel):
     height: float  # mm
     volume: float  # mm³
     anchors: list[AnchorInfo] = []
+    pilot_holes: list[PilotHoleInfo] = []
 
 
 class ResourceSummary(BaseModel):
@@ -176,6 +214,81 @@ class ResourceSummary(BaseModel):
         return "\n".join(lines)
 
 
+def _detect_face_from_point(point: Point3D, box: Box) -> Face:
+    """Detect which face of the box a point lies on.
+
+    Args:
+        point: The 3D point to check
+        box: The box to check against
+
+    Returns:
+        The face that the point lies on
+
+    Raises:
+        ValueError: If the point is not on any face of the box
+    """
+    tolerance = 0.001
+    if abs(point.z - box.shape.length) < tolerance:
+        return "top"
+    if abs(point.z) < tolerance:
+        return "down"
+    if abs(point.x) < tolerance:
+        return "left"
+    if abs(point.x - box.shape.width) < tolerance:
+        return "right"
+    if abs(point.y - box.shape.height) < tolerance:
+        return "front"
+    if abs(point.y) < tolerance:
+        return "back"
+    raise ValueError(f"Point {point} is not on any face of box")
+
+
+def _point3d_to_pilot_hole_info(
+    point: Point3D, hole: Hole, box: Box
+) -> "PilotHoleInfo":
+    """Convert a Point3D and Hole to PilotHoleInfo with edge distances.
+
+    Converts 3D coordinates to distances from edges based on the face.
+    The coordinate system is designed so that side faces (left/right/front/back)
+    all use z (length) as the horizontal axis for consistent comparison.
+
+    Face coordinate mappings:
+        - top/down: from_length_edge=x, from_width_edge=y
+        - left/right: from_length_edge=z, from_width_edge=y
+        - front/back: from_length_edge=z, from_width_edge=x
+
+    Args:
+        point: 3D position of the hole
+        hole: Hole specification (diameter, depth)
+        box: Box for dimension reference
+
+    Returns:
+        PilotHoleInfo with face and edge distances
+    """
+    face = _detect_face_from_point(point, box)
+
+    # Map face to edge distances
+    # from_length_edge: distance along the length axis of the piece
+    # from_width_edge: distance along the width axis of the piece
+    if face in ("top", "down"):
+        from_length_edge = point.x
+        from_width_edge = point.y
+    elif face in ("left", "right"):
+        from_length_edge = point.z
+        from_width_edge = point.y
+    else:  # front, back
+        from_length_edge = point.z
+        from_width_edge = point.x
+
+    return PilotHoleInfo(
+        face=face,
+        from_length_edge=from_length_edge,
+        from_width_edge=from_width_edge,
+        diameter=hole.diameter,
+        depth=hole.depth,
+    )
+
+
 def extract_resources(assembly: Assembly) -> ResourceSummary:
     """Extract all required resources from an Assembly.
 
@@ -246,6 +359,14 @@ def extract_resources(assembly: Assembly) -> ResourceSummary:
             )
         )
 
+    # Extract pilot hole information
+    piece_pilot_holes: Dict[str, list[PilotHoleInfo]] = {}
+    for piece_id, holes in assembly.pilot_holes.items():
+        box = assembly.boxes[piece_id]
+        piece_pilot_holes[piece_id] = [
+            _point3d_to_pilot_hole_info(point, hole, box) for point, hole in holes
+        ]
+
     # Extract piece resources from model
     pieces_list = []
     pieces_by_type: Dict[PieceType, int] = {}
@@ -259,7 +380,7 @@ def extract_resources(assembly: Assembly) -> ResourceSummary:
         # Calculate volume
         volume = shape.width * shape.height * shape.length
 
-        # Create resource entry with anchors
+        # Create resource entry with anchors and pilot holes
         resource = PieceResource(
             id=piece.id,
             type=piece.type,
@@ -268,6 +389,7 @@ def extract_resources(assembly: Assembly) -> ResourceSummary:
             height=shape.height,
             volume=volume,
             anchors=piece_anchors.get(piece.id, []),
+            pilot_holes=piece_pilot_holes.get(piece.id, []),
         )
         pieces_list.append(resource)
 

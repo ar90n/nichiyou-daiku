@@ -365,12 +365,147 @@ def _generate_anchor_details(summary: ResourceSummary) -> str:
     return "\n".join(lines)
 
 
+def _generate_face_diagram(
+    holes: list, face: str, width: float, height: float
+) -> list[str]:
+    """Generate ASCII diagram for a single face.
+
+    Args:
+        holes: List of PilotHoleInfo for this face
+        face: Face name (top, down, left, right, front, back)
+        width: Width of the diagram area in mm
+        height: Height of the diagram area in mm
+
+    Returns:
+        List of lines for the ASCII diagram
+    """
+    # Diagram dimensions (characters)
+    DIAGRAM_WIDTH = 40
+    DIAGRAM_HEIGHT = 5
+
+    lines = []
+    lines.append("```")
+    lines.append(f"{face}面 ({width:.0f}mm × {height:.0f}mm):")
+
+    # Create empty grid
+    grid = [[" " for _ in range(DIAGRAM_WIDTH + 2)] for _ in range(DIAGRAM_HEIGHT + 2)]
+
+    # Draw border
+    for x in range(DIAGRAM_WIDTH + 2):
+        grid[0][x] = "-"
+        grid[DIAGRAM_HEIGHT + 1][x] = "-"
+    for y in range(DIAGRAM_HEIGHT + 2):
+        grid[y][0] = "|"
+        grid[y][DIAGRAM_WIDTH + 1] = "|"
+    grid[0][0] = "+"
+    grid[0][DIAGRAM_WIDTH + 1] = "+"
+    grid[DIAGRAM_HEIGHT + 1][0] = "+"
+    grid[DIAGRAM_HEIGHT + 1][DIAGRAM_WIDTH + 1] = "+"
+
+    # Place holes
+    for hole in holes:
+        # Scale coordinates to grid
+        x = int((hole.from_length_edge / width) * DIAGRAM_WIDTH) + 1
+        y = int((hole.from_width_edge / height) * DIAGRAM_HEIGHT) + 1
+
+        # Clamp to valid range
+        x = max(1, min(DIAGRAM_WIDTH, x))
+        y = max(1, min(DIAGRAM_HEIGHT, y))
+
+        grid[y][x] = "○"
+
+    # Convert grid to lines
+    for row in grid:
+        lines.append("".join(row))
+
+    lines.append("```")
+    return lines
+
+
+def _generate_pilot_holes_section(summary: ResourceSummary) -> str:
+    """Generate pilot hole drilling guide for each piece.
+
+    Args:
+        summary: Resource summary data
+
+    Returns:
+        Markdown formatted pilot holes section with tables and ASCII diagrams
+    """
+    lines = [
+        "## Pilot Holes (下穴ガイド)",
+        "",
+    ]
+
+    # Filter pieces that have pilot holes and sort by ID
+    pieces_with_holes = [p for p in summary.pieces if p.pilot_holes]
+    pieces_with_holes.sort(key=lambda p: p.id)
+
+    if not pieces_with_holes:
+        lines.append("*No pilot holes in this project.*")
+        lines.append("")
+        return "\n".join(lines)
+
+    for piece in pieces_with_holes:
+        # Piece header
+        lines.extend(
+            [f"### {piece.id} ({piece.type.value}, {piece.length:.0f}mm)", ""]
+        )
+
+        # Table header
+        lines.extend(
+            [
+                "| 面 | 端からの距離 | エッジからの距離 | 直径 | 深さ |",
+                "|---|---|---|---|---|",
+            ]
+        )
+
+        # Group holes by face for diagram generation
+        holes_by_face: dict[str, list] = {}
+
+        # Table rows
+        for hole in piece.pilot_holes:
+            depth_str = f"{hole.depth:.1f}mm" if hole.depth else "貫通"
+            lines.append(
+                f"| {hole.face} | {hole.from_length_edge:.1f}mm | "
+                f"{hole.from_width_edge:.1f}mm | φ{hole.diameter:.1f}mm | {depth_str} |"
+            )
+
+            # Group for diagram
+            if hole.face not in holes_by_face:
+                holes_by_face[hole.face] = []
+            holes_by_face[hole.face].append(hole)
+
+        lines.append("")
+
+        # Generate ASCII diagrams for each face with holes
+        for face, face_holes in sorted(holes_by_face.items()):
+            # Determine diagram dimensions based on face
+            if face in ("top", "down"):
+                diagram_width = piece.width
+                diagram_height = piece.height
+            elif face in ("left", "right"):
+                diagram_width = piece.length
+                diagram_height = piece.height
+            else:  # front, back
+                diagram_width = piece.length
+                diagram_height = piece.width
+
+            diagram_lines = _generate_face_diagram(
+                face_holes, face, diagram_width, diagram_height
+            )
+            lines.extend(diagram_lines)
+            lines.append("")
+
+    return "\n".join(lines)
+
+
 def generate_markdown_report(
     resource_summary: ResourceSummary,
     project_name: str = "Woodworking Project",
     standard_lengths: Optional[Dict[PieceType, List[float]]] = None,
     include_cut_diagram: bool = True,
     include_anchor_details: bool = True,
+    include_pilot_holes: bool = True,
 ) -> str:
     """Generate a complete markdown report from ResourceSummary.
 
@@ -381,6 +516,7 @@ def generate_markdown_report(
                         If None, uses sensible defaults.
         include_cut_diagram: Whether to include cut list section
         include_anchor_details: Whether to include anchor details section
+        include_pilot_holes: Whether to include pilot holes section
 
     Returns:
         Complete markdown report as string
@@ -415,9 +551,13 @@ def generate_markdown_report(
     sections.append(_generate_overview_section(resource_summary, project_name))
     sections.append(_generate_bill_of_materials(resource_summary))
 
-    # Add anchor details after BOM, before shopping list
+    # Add anchor details after BOM, before pilot holes
     if include_anchor_details:
         sections.append(_generate_anchor_details(resource_summary))
+
+    # Add pilot holes section after anchor details
+    if include_pilot_holes:
+        sections.append(_generate_pilot_holes_section(resource_summary))
 
     sections.append(_generate_shopping_list(resource_summary))
     sections.append(
