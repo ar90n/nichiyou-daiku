@@ -14,6 +14,7 @@ from .connection import (
     as_point_3d,
     as_surface_point,
     as_orientation,
+    as_edge_point,
     ConnectionType,
 )
 from .model import Model
@@ -540,6 +541,9 @@ def _create_front_back_screw_joints_with_offset(
 ) -> tuple[Joint, Joint, Joint, Joint]:
     """Create screw joints for front/back connections with offset clamping.
 
+    For 2x4 lumber, screws are placed 1 inch (25.4mm) from center horizontally,
+    and 44.5mm from the anchor edge to avoid splitting.
+
     Args:
         src_box: Source piece box
         dst_box: Destination piece box
@@ -549,25 +553,16 @@ def _create_front_back_screw_joints_with_offset(
     Returns:
         Tuple of (src_0, src_1, dst_0, dst_1)
     """
+    # Screw placement constants for 2x4 lumber
+    screw_horizontal_offset = 25.4  # 1 inch from center
+    screw_edge_offset = 44.5  # Distance from anchor edge to avoid splitting
+
     orientation = _create_orientation_from_anchor(src_anchor)
-
-    # Clamp offset to prevent screws from being too close to edges
-    def _anchor_offset(offset: Offset):
-        match offset:
-            case FromMin(value=v):
-                return FromMin(value=min(v, 44.5))
-            case FromMax(value=v):
-                return FromMax(value=min(v, 44.5))
-
-    # Get anchor position with clamped offset
-    offset_anchor = Anchor(
-        contact_face=src_anchor.contact_face,
-        edge_shared_face=src_anchor.edge_shared_face,
-        offset=_anchor_offset(src_anchor.offset),
-    )
-    anchor_sp = as_surface_point(offset_anchor, src_box)
-    pos_0 = Point2D(u=25.4, v=anchor_sp.position.v)
-    pos_1 = Point2D(u=-25.4, v=anchor_sp.position.v)
+    anchor_sp = as_surface_point(src_anchor, src_box)
+    offset_dir = Vector2D.of(src_anchor.contact_face, src_anchor.edge_shared_face).v
+    screw_v = anchor_sp.position.v - offset_dir * screw_edge_offset
+    pos_0 = Point2D(u=screw_horizontal_offset, v=screw_v)
+    pos_1 = Point2D(u=-screw_horizontal_offset, v=screw_v)
 
     src_0, src_1 = _create_joint_pair_from_positions(
         face=src_anchor.contact_face,
@@ -584,7 +579,6 @@ def _create_front_back_screw_joints_with_offset(
         dst_anchor=dst_anchor,
     )
     return (src_0, src_1, dst_0, dst_1)
-
 
 def _create_screw_joint_pairs(
     lhs_box: Box, rhs_box: Box, piece_conn: Connection
