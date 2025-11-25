@@ -509,6 +509,40 @@ def _create_orientation_from_anchor(anchor: Anchor) -> Orientation3D:
     )
 
 
+def _create_joint_pair_from_positions(
+    face: Face,
+    pos_0: Point2D,
+    pos_1: Point2D,
+    orientation: Orientation3D,
+) -> tuple[Joint, Joint]:
+    """Create two joints at specified positions on a face.
+
+    Args:
+        face: Face on which to create joints
+        pos_0: Position of first joint
+        pos_1: Position of second joint
+        orientation: Orientation for both joints
+
+    Returns:
+        Tuple of (joint_0, joint_1)
+    """
+    joint_0 = Joint(
+        position=SurfacePoint(
+            face=face,
+            position=pos_0,
+        ),
+        orientation=orientation,
+    )
+    joint_1 = Joint(
+        position=SurfacePoint(
+            face=face,
+            position=pos_1,
+        ),
+        orientation=orientation,
+    )
+    return (joint_0, joint_1)
+
+
 def _create_screw_joint_pairs(
     lhs_box: Box, rhs_box: Box, piece_conn: Connection
 ) -> list[JointPair]:
@@ -559,18 +593,10 @@ def _create_screw_joint_pairs(
         pos_0 = Point2D(u=0.0, v=anchor_sp.position.v + 25.4)
         pos_1 = Point2D(u=0.0, v=anchor_sp.position.v - 25.4)
 
-        lhs_0 = Joint(
-            position=SurfacePoint(
-                face=piece_conn.lhs.contact_face,
-                position=pos_0,
-            ),
-            orientation=orientation,
-        )
-        lhs_1 = Joint(
-            position=SurfacePoint(
-                face=piece_conn.lhs.contact_face,
-                position=pos_1,
-            ),
+        lhs_0, lhs_1 = _create_joint_pair_from_positions(
+            face=piece_conn.lhs.contact_face,
+            pos_0=pos_0,
+            pos_1=pos_1,
             orientation=orientation,
         )
         rhs_0 = _project_joint(
@@ -601,18 +627,10 @@ def _create_screw_joint_pairs(
         pos_0 = Point2D(u=0.0, v=anchor_sp.position.v + 25.4)
         pos_1 = Point2D(u=0.0, v=anchor_sp.position.v - 25.4)
 
-        rhs_0 = Joint(
-            position=SurfacePoint(
-                face=piece_conn.rhs.contact_face,
-                position=pos_0,
-            ),
-            orientation=orientation,
-        )
-        rhs_1 = Joint(
-            position=SurfacePoint(
-                face=piece_conn.rhs.contact_face,
-                position=pos_1,
-            ),
+        rhs_0, rhs_1 = _create_joint_pair_from_positions(
+            face=piece_conn.rhs.contact_face,
+            pos_0=pos_0,
+            pos_1=pos_1,
             orientation=orientation,
         )
         lhs_0 = _project_joint(
@@ -669,18 +687,10 @@ def _create_screw_joint_pairs(
             pos_0 = Point2D(u=25.4, v=anchor_sp.position.v)
             pos_1 = Point2D(u=-25.4, v=anchor_sp.position.v)
 
-            lhs_0 = Joint(
-                position=SurfacePoint(
-                    face=piece_conn.lhs.contact_face,
-                    position=pos_0,
-                ),
-                orientation=orientation,
-            )
-            lhs_1 = Joint(
-                position=SurfacePoint(
-                    face=piece_conn.lhs.contact_face,
-                    position=pos_1,
-                ),
+            lhs_0, lhs_1 = _create_joint_pair_from_positions(
+                face=piece_conn.lhs.contact_face,
+                pos_0=pos_0,
+                pos_1=pos_1,
                 orientation=orientation,
             )
             rhs_0 = _project_joint(
@@ -719,18 +729,10 @@ def _create_screw_joint_pairs(
             pos_0 = Point2D(u=25.4, v=anchor_sp.position.v)
             pos_1 = Point2D(u=-25.4, v=anchor_sp.position.v)
 
-            rhs_0 = Joint(
-                position=SurfacePoint(
-                    face=piece_conn.rhs.contact_face,
-                    position=pos_0,
-                ),
-                orientation=orientation,
-            )
-            rhs_1 = Joint(
-                position=SurfacePoint(
-                    face=piece_conn.rhs.contact_face,
-                    position=pos_1,
-                ),
+            rhs_0, rhs_1 = _create_joint_pair_from_positions(
+                face=piece_conn.rhs.contact_face,
+                pos_0=pos_0,
+                pos_1=pos_1,
                 orientation=orientation,
             )
             lhs_0 = _project_joint(
