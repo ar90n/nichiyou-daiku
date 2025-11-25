@@ -681,34 +681,22 @@ def _create_screw_joint_pairs(
 ) -> list[JointPair]:
     if piece_conn.lhs.contact_face in ("down", "top"):
         lhs_0, lhs_1 = _create_top_down_screw_joints(piece_conn.lhs)
-        rhs_0 = _project_joint(
+        rhs_0, rhs_1 = _project_joint_pair(
             src_box=lhs_box,
             dst_box=rhs_box,
-            src_joint=lhs_0,
-            src_anchor=piece_conn.lhs,
-            dst_anchor=piece_conn.rhs,
-        )
-        rhs_1 = _project_joint(
-            src_box=lhs_box,
-            dst_box=rhs_box,
-            src_joint=lhs_1,
+            src_joint_0=lhs_0,
+            src_joint_1=lhs_1,
             src_anchor=piece_conn.lhs,
             dst_anchor=piece_conn.rhs,
         )
         return [JointPair(lhs=lhs_0, rhs=rhs_0), JointPair(lhs=lhs_1, rhs=rhs_1)]
     elif piece_conn.rhs.contact_face in ("down", "top"):
         rhs_0, rhs_1 = _create_top_down_screw_joints(piece_conn.rhs)
-        lhs_0 = _project_joint(
+        lhs_0, lhs_1 = _project_joint_pair(
             src_box=rhs_box,
             dst_box=lhs_box,
-            src_joint=rhs_0,
-            src_anchor=piece_conn.rhs,
-            dst_anchor=piece_conn.lhs,
-        )
-        lhs_1 = _project_joint(
-            src_box=rhs_box,
-            dst_box=lhs_box,
-            src_joint=rhs_1,
+            src_joint_0=rhs_0,
+            src_joint_1=rhs_1,
             src_anchor=piece_conn.rhs,
             dst_anchor=piece_conn.lhs,
         )
