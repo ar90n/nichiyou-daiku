@@ -385,7 +385,7 @@ def _generate_face_diagram(
 
     lines = []
     lines.append("```")
-    lines.append(f"{face}面 ({width:.0f}mm × {height:.0f}mm):")
+    lines.append(f"{face} ({width:.0f}mm x {height:.0f}mm):")
 
     # Create empty grid
     grid = [[" " for _ in range(DIAGRAM_WIDTH + 2)] for _ in range(DIAGRAM_HEIGHT + 2)]
@@ -412,7 +412,7 @@ def _generate_face_diagram(
         x = max(1, min(DIAGRAM_WIDTH, x))
         y = max(1, min(DIAGRAM_HEIGHT, y))
 
-        grid[y][x] = "○"
+        grid[y][x] = "o"
 
     # Convert grid to lines
     for row in grid:
@@ -452,7 +452,7 @@ def _generate_pilot_holes_section(summary: ResourceSummary) -> str:
         # Table header
         lines.extend(
             [
-                "| 面 | 端からの距離 | エッジからの距離 | 直径 | 深さ |",
+                "| Face | From Length Edge | From Width Edge | Diameter | Depth |",
                 "|---|---|---|---|---|",
             ]
         )
@@ -462,7 +462,7 @@ def _generate_pilot_holes_section(summary: ResourceSummary) -> str:
 
         # Table rows
         for hole in piece.pilot_holes:
-            depth_str = f"{hole.depth:.1f}mm" if hole.depth else "貫通"
+            depth_str = f"{hole.depth:.1f}mm" if hole.depth else "through"
             lines.append(
                 f"| {hole.face} | {hole.from_length_edge:.1f}mm | "
                 f"{hole.from_width_edge:.1f}mm | φ{hole.diameter:.1f}mm | {depth_str} |"
