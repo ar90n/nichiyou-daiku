@@ -254,93 +254,6 @@ def _need_transpose_surface_point(
     return src_up_axis != dst_up_axis
 
 
-def _need_flip_u_axis(
-    src_orientation: Orientation,
-    dst_orientation: Orientation,
-) -> bool:
-    """Determine if the u axis needs to be flipped.
-
-    In contact state (opposite directions, same up), the right vectors are opposite:
-    right_dst = -right_src, therefore u-axis always needs to be flipped.
-
-    For right-handed coordinate systems: u = right, v = up
-    When directions are opposite and ups are aligned:
-    - right_dst = cross(up_dst, direction_dst) = cross(up_src, -direction_src) = -right_src
-    - Therefore: u_dst = -u_src (always flip)
-
-    Args:
-        src_orientation: Source orientation
-        dst_orientation: Destination orientation
-    Returns:
-        True if u axis needs to be flipped, False otherwise
-    Examples:
-        >>> from nichiyou_daiku.core.geometry import Orientation
-        >>> src_orientation = Orientation.of(direction="top", up="front")
-        >>> dst_orientation = Orientation.of(direction="down", up="front")
-        >>> _need_flip_u_axis(src_orientation, dst_orientation)
-        True
-        >>> dst_orientation = Orientation.of(direction="top", up="front")
-        >>> _need_flip_u_axis(src_orientation, dst_orientation)
-        False
-    """
-    # Check if directions are opposite (contact state)
-    opposite_pairs = [
-        ("top", "down"), ("down", "top"),
-        ("front", "back"), ("back", "front"),
-        ("left", "right"), ("right", "left"),
-    ]
-
-    directions_opposite = (src_orientation.direction, dst_orientation.direction) in opposite_pairs
-
-    # In contact state with aligned ups, u-axis is always flipped
-    # (because right vectors are opposite)
-    return directions_opposite
-        
-def _need_flip_v_axis(
-    src_orientation: Orientation,
-    dst_orientation: Orientation,
-) -> bool:
-    """Determine if the v axis needs to be flipped.
-
-    In contact state (opposite directions, same up), the up vectors are aligned:
-    up_dst = up_src, therefore v-axis does NOT need to be flipped.
-
-    For right-handed coordinate systems: u = right, v = up
-    When directions are opposite and ups are aligned:
-    - up_dst = up_src (same direction)
-    - Therefore: v_dst = v_src (no flip)
-
-    However, if the up directions are different (not aligned), we need to check
-    if they point in opposite directions.
-
-    Args:
-        src_orientation: Source orientation
-        dst_orientation: Destination orientation
-    Returns:
-        True if v axis needs to be flipped, False otherwise
-    Examples:
-        >>> from nichiyou_daiku.core.geometry import Orientation
-        >>> src_orientation = Orientation.of(direction="top", up="front")
-        >>> dst_orientation = Orientation.of(direction="down", up="front")
-        >>> _need_flip_v_axis(src_orientation, dst_orientation)
-        False
-        >>> dst_orientation = Orientation.of(direction="top", up="back")
-        >>> _need_flip_v_axis(src_orientation, dst_orientation)
-        True
-    """
-    # Check if up directions are opposite
-    opposite_pairs = [
-        ("top", "down"), ("down", "top"),
-        ("front", "back"), ("back", "front"),
-        ("left", "right"), ("right", "left"),
-    ]
-
-    ups_opposite = (src_orientation.up, dst_orientation.up) in opposite_pairs
-
-    # V-axis needs to be flipped only if up directions are opposite
-    return ups_opposite
-
-
 def _project_surface_point(
     src_box: Box,
     dst_box: Box,
@@ -387,24 +300,33 @@ def _project_surface_point(
     src_anchor_orientation = as_orientation(src_anchor)
     dst_anchor_orientation = as_orientation(dst_anchor, flip_dir=True)
 
-    src_anchor_contact_dir = Vector2D.of(src_anchor.contact_face, src_anchor.edge_shared_face)
+    src_anchor_contact_dir = Vector2D.of(
+        src_anchor.contact_face, src_anchor.edge_shared_face
+    )
     src_anchor_up_dir = Vector2D.of(src_anchor.contact_face, src_anchor_orientation.up)
-    dst_anchor_contact_dir = Vector2D.of(dst_anchor.contact_face, dst_anchor.edge_shared_face)
+    dst_anchor_contact_dir = Vector2D.of(
+        dst_anchor.contact_face, dst_anchor.edge_shared_face
+    )
     dst_anchor_up_up = Vector2D.of(dst_anchor.contact_face, dst_anchor_orientation.up)
 
     import numpy as np
-    src_mat = np.array([
-        [src_anchor_contact_dir.u, src_anchor_contact_dir.v],
-        [src_anchor_up_dir.u, src_anchor_up_dir.v],
-    ])
-    dst_mat = np.array([
-        [dst_anchor_contact_dir.u, dst_anchor_contact_dir.v],
-        [dst_anchor_up_up.u, dst_anchor_up_up.v],
-    ])
+
+    src_mat = np.array(
+        [
+            [src_anchor_contact_dir.u, src_anchor_contact_dir.v],
+            [src_anchor_up_dir.u, src_anchor_up_dir.v],
+        ]
+    )
+    dst_mat = np.array(
+        [
+            [dst_anchor_contact_dir.u, dst_anchor_contact_dir.v],
+            [dst_anchor_up_up.u, dst_anchor_up_up.v],
+        ]
+    )
     tr_mat = np.linalg.inv(dst_mat) @ src_mat
     transpose_axes = abs(np.diag(tr_mat).prod()) < 1e-7
-    flip_u = tr_mat[:,0].min() < 0
-    flip_v = tr_mat[:,1].min() < 0
+    flip_u = tr_mat[:, 0].min() < 0
+    flip_v = tr_mat[:, 1].min() < 0
 
     src_anchor_surface_point = as_surface_point(src_anchor, src_box)
     dst_anchor_surface_point = as_surface_point(dst_anchor, dst_box)
@@ -427,31 +349,23 @@ def _project_surface_point(
         ),
     )
 
-def _calculate_pilot_holes_for_connection(
-    lhs_box: Box,
-    rhs_box: Box,
-    connection: Connection,
-) -> tuple[list[tuple[SurfacePoint, Hole]], list[tuple[SurfacePoint, Hole]]]:
-    """Calculate pilot holes for both sides of a connection.
 
-    This function converts a Connection specification into pilot hole positions
-    for both the lhs and rhs pieces.
+def _create_pilot_hole_on_joint(
+    box: Box,
+    joint: Joint,
+) -> tuple[Point3D, Hole]:
+    """Create a pilot hole at the joint position.
 
     Args:
-        lhs_box: Box for the lhs piece
-        rhs_box: Box for the rhs piece
-        connection: Connection specification
+        box: Box of the piece
+        joint: Joint where the hole is to be created
 
     Returns:
-        Tuple of (lhs_holes, rhs_holes) where each is a list of (SurfacePoint, Hole)
-
-    Note:
-        This is a stub implementation. The actual logic will be implemented
-        to convert Anchor positions to SurfacePoint coordinates.
+        Tuple of (3D position of hole, Hole specification)
     """
-    # Stub implementation - returns empty lists
-    # TODO: Implement actual conversion from Connection to pilot holes
-    return ([], [])
+    point_3d = Point3D.of(box, joint.position)
+    hole = Hole(diameter=3.0, depth=5.0)
+    return (point_3d, hole)
 
 
 def _create_top_down_screw_joints(
@@ -476,15 +390,13 @@ def _create_top_down_screw_joints(
 
     src_0 = Joint(
         position=SurfacePoint(
-            face=src_anchor.contact_face,
-            position=Point2D(u=25.4, v=0.0)
+            face=src_anchor.contact_face, position=Point2D(u=25.4, v=0.0)
         ),
         orientation=orientation,
     )
     src_1 = Joint(
         position=SurfacePoint(
-            face=src_anchor.contact_face,
-            position=Point2D(u=-25.4, v=0.0)
+            face=src_anchor.contact_face, position=Point2D(u=-25.4, v=0.0)
         ),
         orientation=orientation,
     )
@@ -503,9 +415,7 @@ def _create_orientation_from_anchor(anchor: Anchor) -> Orientation3D:
     """
     return Orientation3D.of(
         direction=Vector3D.normal_of(anchor.contact_face),
-        up=Vector3D.normal_of(
-            cross_face(anchor.contact_face, anchor.edge_shared_face)
-        ),
+        up=Vector3D.normal_of(cross_face(anchor.contact_face, anchor.edge_shared_face)),
     )
 
 
@@ -724,8 +634,14 @@ def _create_screw_joint_pairs(
     ) and piece_conn.rhs.contact_face in ("front", "back"):
         is_lhs_shared_face_top_down = piece_conn.lhs.edge_shared_face in ("top", "down")
         is_rhs_shared_face_top_down = piece_conn.rhs.edge_shared_face in ("top", "down")
-        is_lhs_shared_face_left_right = piece_conn.lhs.edge_shared_face in ("left", "right")
-        is_rhs_shared_face_left_right = piece_conn.rhs.edge_shared_face in ("left", "right")
+        is_lhs_shared_face_left_right = piece_conn.lhs.edge_shared_face in (
+            "left",
+            "right",
+        )
+        is_rhs_shared_face_left_right = piece_conn.rhs.edge_shared_face in (
+            "left",
+            "right",
+        )
 
         if is_lhs_shared_face_top_down:
             lhs_0, lhs_1, rhs_0, rhs_1 = _create_front_back_screw_joints_with_offset(
@@ -840,7 +756,7 @@ class Assembly(BaseModel, frozen=True):
     boxes: dict[str, Box]
     joints: dict[str, Joint]
     joint_conns: list[tuple[str, str]]
-    pilot_holes: dict[str, list[tuple[SurfacePoint, Hole]]]
+    pilot_holes: dict[str, list[tuple[Point3D, Hole]]]
     label: str | None
 
     @classmethod
@@ -864,7 +780,7 @@ class Assembly(BaseModel, frozen=True):
         # Create joints with IDs and joint pairs
         joints: dict[str, Joint] = {}
         joint_conns: list[tuple[str, str]] = []
-        pilot_holes: dict[str, list[tuple[SurfacePoint, Hole]]] = {}
+        pilot_holes: dict[str, list[tuple[Point3D, Hole]]] = {}
         generate_joint_id = _create_joint_id_generator(list(model.pieces.keys()))
 
         for (lhs_id, rhs_id), piece_conn in model.connections.items():
@@ -880,14 +796,19 @@ class Assembly(BaseModel, frozen=True):
                 joints[rhs_joint_id] = joint_pair.rhs
                 joint_conns.append((lhs_joint_id, rhs_joint_id))
 
-                if piece_conn.type == ConnectionType.SCREW:
-                    if lhs_id not in pilot_holes:
-                        pilot_holes[lhs_id] = []
-                    #pilot_holes[lhs_id].append(lhs_hole)
-
-                    if rhs_id not in pilot_holes:
-                        pilot_holes[rhs_id] = []
-                    #pilot_holes[rhs_joint_id].append(rhs_hole)
+                if piece_conn.type == ConnectionType.SCREW or True:
+                    pilot_holes.setdefault(lhs_id, []).append(
+                        _create_pilot_hole_on_joint(
+                            box=boxes[lhs_id],
+                            joint=joint_pair.lhs,
+                        )
+                    )
+                    pilot_holes.setdefault(rhs_id, []).append(
+                        _create_pilot_hole_on_joint(
+                            box=boxes[rhs_id],
+                            joint=joint_pair.rhs,
+                        )
+                    )
 
         return cls(
             model=model,

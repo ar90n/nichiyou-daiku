@@ -5,29 +5,30 @@ representation to build123d objects that can be visualized in CAD tools.
 """
 
 import math
-from collections import defaultdict, deque
+from collections import deque
 from typing import TYPE_CHECKING
 
 import numpy as np
 
-from nichiyou_daiku.core.assembly import Assembly, Joint as NichiyouJoint
+from nichiyou_daiku.core.assembly import Assembly, Joint as NichiyouJoint, Hole as NichiyouHole
 from nichiyou_daiku.core.geometry import (
     Orientation3D,
     Point3D,
     Box as NichiyouBox,
+    Face,
 )
 
 # Check if build123d is available
 HAS_BUILD123D = False
 try:
-    from build123d import Box, RigidJoint, Compound, Part, Location, Align, fillet, Axis
+    from build123d import Box, RigidJoint, Compound, Part, Location, Align, fillet, Axis, Cylinder
 
     HAS_BUILD123D = True
 except ImportError:
     pass
 
 if TYPE_CHECKING:
-    from build123d import Box, RigidJoint, Compound, Part, Location, Align, fillet, Axis
+    from build123d import Box, RigidJoint, Compound, Part, Location, Align, fillet, Axis, Cylinder
 
 
 def _as_euler_angles(
@@ -87,16 +88,94 @@ def _as_tuple(point: Point3D) -> tuple[float, float, float]:
     return (float(point.x), float(point.y), float(point.z))
 
 
-def _create_piece_from(id: str, box: NichiyouBox, fillet_radius: float) -> "Part":
+def _detect_face_from_point(point: Point3D, box: NichiyouBox) -> Face:
+    """Detect which face of the box a point lies on.
+
+    Args:
+        point: The 3D point to check
+        box: The box to check against
+
+    Returns:
+        The face that the point lies on
+
+    Raises:
+        ValueError: If the point is not on any face of the box
+    """
+    tolerance = 0.001
+    if abs(point.z - box.shape.length) < tolerance:
+        return "top"
+    if abs(point.z) < tolerance:
+        return "down"
+    if abs(point.x) < tolerance:
+        return "left"
+    if abs(point.x - box.shape.width) < tolerance:
+        return "right"
+    if abs(point.y - box.shape.height) < tolerance:
+        return "front"
+    if abs(point.y) < tolerance:
+        return "back"
+    raise ValueError(f"Point {point} is not on any face of box")
+
+
+def _create_hole(
+    point: Point3D,
+    hole: NichiyouHole,
+    box: NichiyouBox,
+) -> "Part":
+    """Create a cylinder for hole subtraction at the specified position.
+
+    Args:
+        point: The 3D position of the hole center on the box surface
+        hole: The hole specification (diameter and depth)
+        box: The box containing dimension information
+
+    Returns:
+        A build123d Part (cylinder) positioned and oriented for subtraction
+    """
+    face = _detect_face_from_point(point, box)
+
+    # Face rotation angles to orient cylinder inward (Z-axis aligned with hole direction)
+    face_rotations: dict[Face, tuple[float, float, float]] = {
+        "left": (0, 90, 0),     # cylinder Z -> +X (inward)
+        "right": (0, -90, 0),   # cylinder Z -> -X (inward)
+        "back": (-90, 0, 0),    # cylinder Z -> +Y (inward)
+        "front": (90, 0, 0),    # cylinder Z -> -Y (inward)
+        "down": (0, 0, 0),      # cylinder Z -> +Z (inward)
+        "top": (180, 0, 0),     # cylinder Z -> -Z (inward)
+    }
+
+    # Calculate depth: use specified depth or fixed value for through-holes
+    depth = hole.depth if hole.depth is not None else 100.0
+
+    # Create cylinder centered at origin, then rotate and translate
+    cylinder = Cylinder(
+        radius=hole.diameter / 2,
+        height=depth,
+        align=(Align.CENTER, Align.CENTER, Align.MIN),
+    )
+
+    rotation = face_rotations[face]
+    position = _as_tuple(point)
+
+    return cylinder.locate(Location(position, rotation))
+
+
+def _create_piece_from(
+    id: str,
+    box: NichiyouBox,
+    fillet_radius: float,
+    pilot_holes: list[tuple[Point3D, NichiyouHole]] | None = None,
+) -> "Part":
     """Create a build123d Part from a nichiyou Box.
 
     Args:
         id: The piece ID
         box: The nichiyou Box to convert
         fillet_radius: Radius for edge fillets in mm (default: 5.0)
+        pilot_holes: List of (position, hole) tuples for pilot holes
 
     Returns:
-        A build123d Part with filleted edges
+        A build123d Part with filleted edges and pilot holes
     """
     piece = (
         Box(
@@ -108,6 +187,7 @@ def _create_piece_from(id: str, box: NichiyouBox, fillet_radius: float) -> "Part
         + Part()
     )
 
+    # Apply fillet first
     if 0 < fillet_radius:
         filleted = fillet(piece.edges().filter_by(Axis.X), radius=fillet_radius)
         # Wrap the filleted result in a Part if it's a Compound
@@ -115,6 +195,12 @@ def _create_piece_from(id: str, box: NichiyouBox, fillet_radius: float) -> "Part
             piece = Part(filleted.wrapped)
         else:
             piece = filleted  # type: ignore
+
+    # Subtract pilot holes after fillet
+    if pilot_holes:
+        for point, hole in pilot_holes:
+            hole_cylinder = _create_hole(point, hole, box)
+            piece = piece - hole_cylinder
 
     piece.label = id
     return piece  # type: ignore
@@ -197,7 +283,12 @@ def assembly_to_build123d(
     # Create parts for all pieces
     for piece_id, box in assembly.boxes.items():
         if piece_id not in parts:
-            parts[piece_id] = _create_piece_from(piece_id, box, fillet_radius)
+            parts[piece_id] = _create_piece_from(
+                piece_id,
+                box,
+                fillet_radius,
+                pilot_holes=assembly.pilot_holes.get(piece_id),
+            )
 
     # Build graph from connections
     joints = {}
