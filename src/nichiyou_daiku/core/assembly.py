@@ -543,6 +543,44 @@ def _create_joint_pair_from_positions(
     return (joint_0, joint_1)
 
 
+def _project_joint_pair(
+    src_box: Box,
+    dst_box: Box,
+    src_joint_0: Joint,
+    src_joint_1: Joint,
+    src_anchor: Anchor,
+    dst_anchor: Anchor,
+) -> tuple[Joint, Joint]:
+    """Project two joints from source to destination coordinate system.
+
+    Args:
+        src_box: Source box
+        dst_box: Destination box
+        src_joint_0: First source joint
+        src_joint_1: Second source joint
+        src_anchor: Source anchor
+        dst_anchor: Destination anchor
+
+    Returns:
+        Tuple of (dst_joint_0, dst_joint_1)
+    """
+    dst_joint_0 = _project_joint(
+        src_box=src_box,
+        dst_box=dst_box,
+        src_joint=src_joint_0,
+        src_anchor=src_anchor,
+        dst_anchor=dst_anchor,
+    )
+    dst_joint_1 = _project_joint(
+        src_box=src_box,
+        dst_box=dst_box,
+        src_joint=src_joint_1,
+        src_anchor=src_anchor,
+        dst_anchor=dst_anchor,
+    )
+    return (dst_joint_0, dst_joint_1)
+
+
 def _create_screw_joint_pairs(
     lhs_box: Box, rhs_box: Box, piece_conn: Connection
 ) -> list[JointPair]:
@@ -599,17 +637,11 @@ def _create_screw_joint_pairs(
             pos_1=pos_1,
             orientation=orientation,
         )
-        rhs_0 = _project_joint(
+        rhs_0, rhs_1 = _project_joint_pair(
             src_box=lhs_box,
             dst_box=rhs_box,
-            src_joint=lhs_0,
-            src_anchor=piece_conn.lhs,
-            dst_anchor=piece_conn.rhs,
-        )
-        rhs_1 = _project_joint(
-            src_box=lhs_box,
-            dst_box=rhs_box,
-            src_joint=lhs_1,
+            src_joint_0=lhs_0,
+            src_joint_1=lhs_1,
             src_anchor=piece_conn.lhs,
             dst_anchor=piece_conn.rhs,
         )
@@ -633,17 +665,11 @@ def _create_screw_joint_pairs(
             pos_1=pos_1,
             orientation=orientation,
         )
-        lhs_0 = _project_joint(
+        lhs_0, lhs_1 = _project_joint_pair(
             src_box=rhs_box,
             dst_box=lhs_box,
-            src_joint=rhs_0,
-            src_anchor=piece_conn.rhs,
-            dst_anchor=piece_conn.lhs,
-        )
-        lhs_1 = _project_joint(
-            src_box=rhs_box,
-            dst_box=lhs_box,
-            src_joint=rhs_1,
+            src_joint_0=rhs_0,
+            src_joint_1=rhs_1,
             src_anchor=piece_conn.rhs,
             dst_anchor=piece_conn.lhs,
         )
@@ -693,17 +719,11 @@ def _create_screw_joint_pairs(
                 pos_1=pos_1,
                 orientation=orientation,
             )
-            rhs_0 = _project_joint(
+            rhs_0, rhs_1 = _project_joint_pair(
                 src_box=lhs_box,
                 dst_box=rhs_box,
-                src_joint=lhs_0,
-                src_anchor=piece_conn.lhs,
-                dst_anchor=piece_conn.rhs,
-            )
-            rhs_1 = _project_joint(
-                src_box=lhs_box,
-                dst_box=rhs_box,
-                src_joint=lhs_1,
+                src_joint_0=lhs_0,
+                src_joint_1=lhs_1,
                 src_anchor=piece_conn.lhs,
                 dst_anchor=piece_conn.rhs,
             )
@@ -735,17 +755,11 @@ def _create_screw_joint_pairs(
                 pos_1=pos_1,
                 orientation=orientation,
             )
-            lhs_0 = _project_joint(
+            lhs_0, lhs_1 = _project_joint_pair(
                 src_box=rhs_box,
                 dst_box=lhs_box,
-                src_joint=rhs_0,
-                src_anchor=piece_conn.rhs,
-                dst_anchor=piece_conn.lhs,
-            )
-            lhs_1 = _project_joint(
-                src_box=rhs_box,
-                dst_box=lhs_box,
-                src_joint=rhs_1,
+                src_joint_0=rhs_0,
+                src_joint_1=rhs_1,
                 src_anchor=piece_conn.rhs,
                 dst_anchor=piece_conn.lhs,
             )
