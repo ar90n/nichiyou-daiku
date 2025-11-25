@@ -1,0 +1,310 @@
+"""Screw joint creation functions for assembly.
+
+This module provides functions for creating screw joints between
+pieces in different orientations (top/down, left/right, front/back).
+"""
+
+from ..connection import Anchor, Connection, as_surface_point
+from ..geometry import (
+    Box,
+    Face,
+    Orientation3D,
+    Point2D,
+    SurfacePoint,
+    Vector2D,
+    Vector3D,
+    cross as cross_face,
+)
+from .models import Joint, JointPair
+from .projection import _project_joint_pair
+
+
+def _create_orientation_from_anchor(anchor: Anchor) -> Orientation3D:
+    """Create orientation from anchor's contact and edge shared faces.
+
+    Args:
+        anchor: Anchor defining contact_face and edge_shared_face
+
+    Returns:
+        Orientation3D with direction normal to contact_face and up normal to crossed faces
+    """
+    return Orientation3D.of(
+        direction=Vector3D.normal_of(anchor.contact_face),
+        up=Vector3D.normal_of(cross_face(anchor.contact_face, anchor.edge_shared_face)),
+    )
+
+
+def _create_joint_pair_from_positions(
+    face: Face,
+    pos_0: Point2D,
+    pos_1: Point2D,
+    orientation: Orientation3D,
+) -> tuple[Joint, Joint]:
+    """Create two joints at specified positions on a face.
+
+    Args:
+        face: Face on which to create joints
+        pos_0: Position of first joint
+        pos_1: Position of second joint
+        orientation: Orientation for both joints
+
+    Returns:
+        Tuple of (joint_0, joint_1)
+    """
+    joint_0 = Joint(
+        position=SurfacePoint(
+            face=face,
+            position=pos_0,
+        ),
+        orientation=orientation,
+    )
+    joint_1 = Joint(
+        position=SurfacePoint(
+            face=face,
+            position=pos_1,
+        ),
+        orientation=orientation,
+    )
+    return (joint_0, joint_1)
+
+
+def _create_top_down_screw_joints(
+    src_anchor: Anchor,
+) -> tuple[Joint, Joint]:
+    """Create two screw joints on top/down face.
+
+    Creates joints at u=+/-25.4mm from face center (along width axis).
+
+    Args:
+        src_anchor: Anchor on top or down face
+
+    Returns:
+        Tuple of (joint_0, joint_1) at u=+25.4 and u=-25.4
+    """
+    orientation = Orientation3D.of(
+        direction=Vector3D.normal_of(src_anchor.contact_face),
+        up=Vector3D.normal_of(
+            cross_face(src_anchor.contact_face, src_anchor.edge_shared_face)
+        ),
+    )
+
+    src_0 = Joint(
+        position=SurfacePoint(
+            face=src_anchor.contact_face, position=Point2D(u=25.4, v=0.0)
+        ),
+        orientation=orientation,
+    )
+    src_1 = Joint(
+        position=SurfacePoint(
+            face=src_anchor.contact_face, position=Point2D(u=-25.4, v=0.0)
+        ),
+        orientation=orientation,
+    )
+
+    return (src_0, src_1)
+
+
+def _create_left_right_screw_joints(
+    src_box: Box,
+    dst_box: Box,
+    src_anchor: Anchor,
+    dst_anchor: Anchor,
+) -> tuple[Joint, Joint, Joint, Joint]:
+    """Create screw joints for left/right connections.
+
+    Args:
+        src_box: Source piece box
+        dst_box: Destination piece box
+        src_anchor: Source anchor (must be left or right face)
+        dst_anchor: Destination anchor
+
+    Returns:
+        Tuple of (src_0, src_1, dst_0, dst_1)
+    """
+    orientation = _create_orientation_from_anchor(src_anchor)
+
+    # Get anchor position to place screws relative to it
+    anchor_sp = as_surface_point(src_anchor, src_box)
+    pos_0 = Point2D(u=0.0, v=anchor_sp.position.v + 25.4)
+    pos_1 = Point2D(u=0.0, v=anchor_sp.position.v - 25.4)
+
+    src_0, src_1 = _create_joint_pair_from_positions(
+        face=src_anchor.contact_face,
+        pos_0=pos_0,
+        pos_1=pos_1,
+        orientation=orientation,
+    )
+    dst_0, dst_1 = _project_joint_pair(
+        src_box=src_box,
+        dst_box=dst_box,
+        src_joint_0=src_0,
+        src_joint_1=src_1,
+        src_anchor=src_anchor,
+        dst_anchor=dst_anchor,
+    )
+    return (src_0, src_1, dst_0, dst_1)
+
+
+def _create_front_back_screw_joints_with_offset(
+    src_box: Box,
+    dst_box: Box,
+    src_anchor: Anchor,
+    dst_anchor: Anchor,
+) -> tuple[Joint, Joint, Joint, Joint]:
+    """Create screw joints for front/back connections with offset clamping.
+
+    For 2x4 lumber, screws are placed 1 inch (25.4mm) from center horizontally,
+    and 44.5mm from the anchor edge to avoid splitting.
+
+    Args:
+        src_box: Source piece box
+        dst_box: Destination piece box
+        src_anchor: Source anchor (must be front or back face with top/down edge)
+        dst_anchor: Destination anchor
+
+    Returns:
+        Tuple of (src_0, src_1, dst_0, dst_1)
+    """
+    # Screw placement constants for 2x4 lumber
+    screw_horizontal_offset = 25.4  # 1 inch from center
+    screw_edge_offset = 44.5  # Distance from anchor edge to avoid splitting
+
+    orientation = _create_orientation_from_anchor(src_anchor)
+    anchor_sp = as_surface_point(src_anchor, src_box)
+    offset_dir = Vector2D.of(src_anchor.contact_face, src_anchor.edge_shared_face).v
+    screw_v = anchor_sp.position.v - offset_dir * screw_edge_offset
+    pos_0 = Point2D(u=screw_horizontal_offset, v=screw_v)
+    pos_1 = Point2D(u=-screw_horizontal_offset, v=screw_v)
+
+    src_0, src_1 = _create_joint_pair_from_positions(
+        face=src_anchor.contact_face,
+        pos_0=pos_0,
+        pos_1=pos_1,
+        orientation=orientation,
+    )
+    dst_0, dst_1 = _project_joint_pair(
+        src_box=src_box,
+        dst_box=dst_box,
+        src_joint_0=src_0,
+        src_joint_1=src_1,
+        src_anchor=src_anchor,
+        dst_anchor=dst_anchor,
+    )
+    return (src_0, src_1, dst_0, dst_1)
+
+
+def _create_screw_joint_pairs(
+    lhs_box: Box, rhs_box: Box, piece_conn: Connection
+) -> list[JointPair]:
+    """Create screw joint pairs based on connection configuration.
+
+    Args:
+        lhs_box: Left-hand side piece box
+        rhs_box: Right-hand side piece box
+        piece_conn: Connection defining how pieces connect
+
+    Returns:
+        List of JointPair objects for screw connections
+
+    Raises:
+        NotImplementedError: For unsupported connection configurations
+        RuntimeError: For invalid connection configurations
+    """
+    if piece_conn.lhs.contact_face in ("down", "top"):
+        lhs_0, lhs_1 = _create_top_down_screw_joints(piece_conn.lhs)
+        rhs_0, rhs_1 = _project_joint_pair(
+            src_box=lhs_box,
+            dst_box=rhs_box,
+            src_joint_0=lhs_0,
+            src_joint_1=lhs_1,
+            src_anchor=piece_conn.lhs,
+            dst_anchor=piece_conn.rhs,
+        )
+        return [JointPair(lhs=lhs_0, rhs=rhs_0), JointPair(lhs=lhs_1, rhs=rhs_1)]
+    elif piece_conn.rhs.contact_face in ("down", "top"):
+        rhs_0, rhs_1 = _create_top_down_screw_joints(piece_conn.rhs)
+        lhs_0, lhs_1 = _project_joint_pair(
+            src_box=rhs_box,
+            dst_box=lhs_box,
+            src_joint_0=rhs_0,
+            src_joint_1=rhs_1,
+            src_anchor=piece_conn.rhs,
+            dst_anchor=piece_conn.lhs,
+        )
+        return [JointPair(lhs=lhs_0, rhs=rhs_0), JointPair(lhs=lhs_1, rhs=rhs_1)]
+    elif piece_conn.lhs.contact_face in ("left", "right"):
+        lhs_0, lhs_1, rhs_0, rhs_1 = _create_left_right_screw_joints(
+            src_box=lhs_box,
+            dst_box=rhs_box,
+            src_anchor=piece_conn.lhs,
+            dst_anchor=piece_conn.rhs,
+        )
+        return [JointPair(lhs=lhs_0, rhs=rhs_0), JointPair(lhs=lhs_1, rhs=rhs_1)]
+    elif piece_conn.rhs.contact_face in ("left", "right"):
+        rhs_0, rhs_1, lhs_0, lhs_1 = _create_left_right_screw_joints(
+            src_box=rhs_box,
+            dst_box=lhs_box,
+            src_anchor=piece_conn.rhs,
+            dst_anchor=piece_conn.lhs,
+        )
+        return [JointPair(lhs=lhs_0, rhs=rhs_0), JointPair(lhs=lhs_1, rhs=rhs_1)]
+
+    elif piece_conn.lhs.contact_face in (
+        "front",
+        "back",
+    ) and piece_conn.rhs.contact_face in ("front", "back"):
+        is_lhs_shared_face_top_down = piece_conn.lhs.edge_shared_face in ("top", "down")
+        is_rhs_shared_face_top_down = piece_conn.rhs.edge_shared_face in ("top", "down")
+        is_lhs_shared_face_left_right = piece_conn.lhs.edge_shared_face in (
+            "left",
+            "right",
+        )
+        is_rhs_shared_face_left_right = piece_conn.rhs.edge_shared_face in (
+            "left",
+            "right",
+        )
+
+        if is_lhs_shared_face_top_down:
+            lhs_0, lhs_1, rhs_0, rhs_1 = _create_front_back_screw_joints_with_offset(
+                src_box=lhs_box,
+                dst_box=rhs_box,
+                src_anchor=piece_conn.lhs,
+                dst_anchor=piece_conn.rhs,
+            )
+            return [JointPair(lhs=lhs_0, rhs=rhs_0), JointPair(lhs=lhs_1, rhs=rhs_1)]
+        elif is_rhs_shared_face_top_down:
+            rhs_0, rhs_1, lhs_0, lhs_1 = _create_front_back_screw_joints_with_offset(
+                src_box=rhs_box,
+                dst_box=lhs_box,
+                src_anchor=piece_conn.rhs,
+                dst_anchor=piece_conn.lhs,
+            )
+            return [JointPair(lhs=lhs_0, rhs=rhs_0), JointPair(lhs=lhs_1, rhs=rhs_1)]
+        elif is_lhs_shared_face_left_right and is_rhs_shared_face_left_right:
+            raise NotImplementedError(
+                "Screw joints for left-right to left-right connections are not yet implemented."
+            )
+
+        raise NotImplementedError(
+            "Screw joints for front-back to front-back connections are not yet implemented."
+        )
+    else:
+        raise RuntimeError("Unsupported screw connection configuration.")
+
+
+def _create_joint_pairs(
+    lhs_box: Box, rhs_box: Box, piece_conn: Connection
+) -> list[JointPair]:
+    """Create joint pairs for a connection.
+
+    Currently delegates to screw joint creation.
+
+    Args:
+        lhs_box: Left-hand side piece box
+        rhs_box: Right-hand side piece box
+        piece_conn: Connection defining how pieces connect
+
+    Returns:
+        List of JointPair objects
+    """
+    return _create_screw_joint_pairs(lhs_box, rhs_box, piece_conn)
