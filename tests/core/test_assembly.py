@@ -1,5 +1,7 @@
 """Tests for assembly module."""
 
+import pytest
+
 from nichiyou_daiku.core.assembly import (
     Joint,
     JointPair,
@@ -8,7 +10,7 @@ from nichiyou_daiku.core.assembly import (
     _project_surface_point,
 )
 from nichiyou_daiku.core.piece import Piece, PieceType, get_shape
-from nichiyou_daiku.core.connection import Connection, Anchor
+from nichiyou_daiku.core.connection import Connection, Anchor, ConnectionType
 from nichiyou_daiku.core.geometry import FromMax, FromMin
 from nichiyou_daiku.core.geometry import (
     Point2D,
@@ -170,6 +172,79 @@ class TestAssembly:
         # When implemented, this test should verify actual holes are generated
 
     # Assembly.of() method is covered in doctests
+
+
+class TestScrewJointFaceCombinations:
+    """Test screw joint implementation for all face combinations."""
+
+    @pytest.mark.parametrize("connection_type", [
+        ConnectionType.VANILLA,
+        ConnectionType.SCREW,
+    ])
+    @pytest.mark.parametrize("lhs_face,lhs_edge,rhs_face,rhs_edge,description", [
+        # Top/down combinations
+        ("top", "front", "down", "front", "top-down"),
+        ("down", "back", "top", "back", "down-top"),
+
+        # Top/down with left/right
+        ("top", "front", "left", "top", "top-left"),
+        ("down", "back", "right", "down", "down-right"),
+        ("left", "top", "down", "front", "left-down"),
+        ("right", "top", "top", "front", "right-top"),
+
+        # Top/down with front/back
+        ("top", "left", "front", "top", "top-front"),
+        ("down", "right", "back", "down", "down-back"),
+
+        # Left/right with front/back
+        ("left", "front", "front", "left", "left-front"),
+        ("right", "back", "back", "right", "right-back"),
+
+        # Front/back with top/down edges
+        ("front", "top", "back", "down", "front-back-topdown"),
+    ])
+    def test_should_create_joints_for_face_combination(
+        self, connection_type, lhs_face, lhs_edge, rhs_face, rhs_edge, description
+    ):
+        """Should create correct number of joints for all valid face combinations."""
+        # Create pieces
+        p1 = Piece.of(PieceType.PT_2x4, 1000.0, "p1")
+        p2 = Piece.of(PieceType.PT_2x4, 800.0, "p2")
+
+        # Create connection
+        conn = Connection(
+            lhs=Anchor(
+                contact_face=lhs_face,
+                edge_shared_face=lhs_edge,
+                offset=FromMax(value=100),
+            ),
+            rhs=Anchor(
+                contact_face=rhs_face,
+                edge_shared_face=rhs_edge,
+                offset=FromMin(value=50),
+            ),
+            type=connection_type,
+        )
+
+        # Create model and assembly
+        from nichiyou_daiku.core.model import Model, PiecePair
+
+        model = Model.of(
+            pieces=[p1, p2],
+            connections=[(PiecePair(base=p1, target=p2), conn)],
+            label=f"test_{description}_{connection_type.value}",
+        )
+        assembly = Assembly.of(model)
+
+        # Verify joints were created
+        assert len(assembly.joints) == 4, f"Expected 4 joints for {description} with {connection_type.value}"
+        assert len(assembly.joint_conns) == 2, f"Expected 2 joint pairs for {description} with {connection_type.value}"
+
+        # Verify joint IDs
+        assert "p1_j0" in assembly.joints
+        assert "p1_j1" in assembly.joints
+        assert "p2_j0" in assembly.joints
+        assert "p2_j1" in assembly.joints
 
 
 class TestProjectSurfacePoint:
