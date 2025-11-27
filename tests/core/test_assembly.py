@@ -127,15 +127,12 @@ class TestAssembly:
 
         assembly = Assembly.of(model)
 
-        # VANILLA connections use screw implementation (2 JointPairs = 4 joints)
-        assert len(assembly.joints) == 4
+        # VANILLA connections create 1 JointPair (2 joints) at anchor positions
+        assert len(assembly.joints) == 2
         assert "p1_j0" in assembly.joints
-        assert "p1_j1" in assembly.joints
         assert "p2_j0" in assembly.joints
-        assert "p2_j1" in assembly.joints
-        assert len(assembly.joint_conns) == 2
+        assert len(assembly.joint_conns) == 1
         assert assembly.joint_conns[0] == ("p1_j0", "p2_j0")
-        assert assembly.joint_conns[1] == ("p1_j1", "p2_j1")
 
     def test_should_generate_pilot_holes_for_screw_connections(self):
         """Should generate pilot holes for screw-type connections."""
@@ -237,19 +234,28 @@ class TestScrewJointFaceCombinations:
         )
         assembly = Assembly.of(model)
 
-        # Verify joints were created
-        assert len(assembly.joints) == 4, (
-            f"Expected 4 joints for {description} with {connection_type.value}"
+        # Verify joints were created based on connection type
+        # SCREW creates 2 joint pairs (4 joints), VANILLA creates 1 joint pair (2 joints)
+        if connection_type == ConnectionType.SCREW:
+            expected_joints = 4
+            expected_pairs = 2
+        else:  # VANILLA
+            expected_joints = 2
+            expected_pairs = 1
+
+        assert len(assembly.joints) == expected_joints, (
+            f"Expected {expected_joints} joints for {description} with {connection_type.value}"
         )
-        assert len(assembly.joint_conns) == 2, (
-            f"Expected 2 joint pairs for {description} with {connection_type.value}"
+        assert len(assembly.joint_conns) == expected_pairs, (
+            f"Expected {expected_pairs} joint pairs for {description} with {connection_type.value}"
         )
 
         # Verify joint IDs
         assert "p1_j0" in assembly.joints
-        assert "p1_j1" in assembly.joints
         assert "p2_j0" in assembly.joints
-        assert "p2_j1" in assembly.joints
+        if connection_type == ConnectionType.SCREW:
+            assert "p1_j1" in assembly.joints
+            assert "p2_j1" in assembly.joints
 
 
 class TestProjectSurfacePoint:

@@ -53,10 +53,10 @@ class Assembly(BaseModel, frozen=True):
         ...     connections=[(PiecePair(base=p1, target=p2), pc)]
         ... )
         >>> assembly = Assembly.of(model)
-        >>> len(assembly.joints)
-        4
-        >>> len(assembly.joint_conns)
+        >>> len(assembly.joints)  # VANILLA creates 1 joint pair (2 joints)
         2
+        >>> len(assembly.joint_conns)
+        1
     """
 
     model: Model

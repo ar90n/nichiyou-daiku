@@ -4,7 +4,7 @@ This module provides functions for creating screw joints between
 pieces in different orientations (top/down, left/right, front/back).
 """
 
-from ..connection import Anchor, Connection, as_surface_point
+from ..connection import Anchor, Connection, ConnectionType, as_surface_point
 from ..geometry import (
     Box,
     Face,
@@ -16,7 +16,7 @@ from ..geometry import (
     cross as cross_face,
 )
 from .models import Joint, JointPair
-from .projection import _project_joint_pair
+from .projection import _project_joint, _project_joint_pair
 
 
 def _create_orientation_from_anchor(anchor: Anchor) -> Orientation3D:
@@ -193,6 +193,41 @@ def _create_front_back_screw_joints_with_offset(
     return (src_0, src_1, dst_0, dst_1)
 
 
+def _create_vanilla_joint_pairs(
+    lhs_box: Box, rhs_box: Box, piece_conn: Connection
+) -> list[JointPair]:
+    """Create a single joint pair at anchor positions for vanilla connections.
+
+    Vanilla connections place one joint at each anchor point without
+    the offset patterns used for screw joints.
+
+    Args:
+        lhs_box: Left-hand side piece box
+        rhs_box: Right-hand side piece box
+        piece_conn: Connection defining how pieces connect
+
+    Returns:
+        List containing a single JointPair at anchor positions
+    """
+    lhs_orientation = _create_orientation_from_anchor(piece_conn.lhs)
+    lhs_surface_point = as_surface_point(piece_conn.lhs, lhs_box)
+
+    lhs_joint = Joint(
+        position=lhs_surface_point,
+        orientation=lhs_orientation,
+    )
+
+    rhs_joint = _project_joint(
+        src_box=lhs_box,
+        dst_box=rhs_box,
+        src_joint=lhs_joint,
+        src_anchor=piece_conn.lhs,
+        dst_anchor=piece_conn.rhs,
+    )
+
+    return [JointPair(lhs=lhs_joint, rhs=rhs_joint)]
+
+
 def _create_screw_joint_pairs(
     lhs_box: Box, rhs_box: Box, piece_conn: Connection
 ) -> list[JointPair]:
@@ -295,9 +330,7 @@ def _create_screw_joint_pairs(
 def _create_joint_pairs(
     lhs_box: Box, rhs_box: Box, piece_conn: Connection
 ) -> list[JointPair]:
-    """Create joint pairs for a connection.
-
-    Currently delegates to screw joint creation.
+    """Create joint pairs for a connection based on connection type.
 
     Args:
         lhs_box: Left-hand side piece box
@@ -307,4 +340,7 @@ def _create_joint_pairs(
     Returns:
         List of JointPair objects
     """
-    return _create_screw_joint_pairs(lhs_box, rhs_box, piece_conn)
+    if piece_conn.type == ConnectionType.VANILLA:
+        return _create_vanilla_joint_pairs(lhs_box, rhs_box, piece_conn)
+    else:
+        return _create_screw_joint_pairs(lhs_box, rhs_box, piece_conn)
