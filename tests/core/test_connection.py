@@ -7,6 +7,8 @@ from nichiyou_daiku.core.connection import (
     Anchor,
     Connection,
     ConnectionType,
+    VanillaConnection,
+    DowelConnection,
 )
 from nichiyou_daiku.core.geometry import Face, Edge, EdgePoint, FromMax, FromMin, Offset
 
@@ -139,29 +141,35 @@ class TestAnchorValidation:
 
 
 class TestConnectionType:
-    """Test ConnectionType enum."""
+    """Test ConnectionType type alias and connection classes."""
 
-    def test_should_have_dowel_type(self):
-        """Should have DOWEL connection type."""
-        assert ConnectionType.DOWEL.value == "dowel"
+    def test_vanilla_connection_instantiation(self):
+        """VanillaConnection should be instantiable without parameters."""
+        vanilla = VanillaConnection()
+        assert isinstance(vanilla, VanillaConnection)
 
-    def test_should_create_from_string(self):
-        """Should create ConnectionType from string using of() method."""
-        conn_type = ConnectionType.of("dowel")
-        assert conn_type == ConnectionType.DOWEL
-        assert conn_type.value == "dowel"
+    def test_dowel_connection_with_parameters(self):
+        """DowelConnection should require radius and depth parameters."""
+        dowel = DowelConnection(radius=4.0, depth=20.0)
+        assert isinstance(dowel, DowelConnection)
+        assert dowel.radius == 4.0
+        assert dowel.depth == 20.0
 
-    def test_should_raise_error_for_unsupported_type(self):
-        """Should raise ValueError for unsupported connection type."""
-        with pytest.raises(ValueError) as exc:
-            ConnectionType.of("bolt")
-        assert "Unsupported connection type: bolt" in str(exc.value)
+    def test_dowel_connection_validation(self):
+        """DowelConnection should validate parameters."""
+        # Negative values should fail
+        with pytest.raises(ValidationError):
+            DowelConnection(radius=-1.0, depth=20.0)
+        with pytest.raises(ValidationError):
+            DowelConnection(radius=4.0, depth=-10.0)
 
-    def test_should_support_equality(self):
-        """Should support equality comparison."""
-        type1 = ConnectionType.DOWEL
-        type2 = ConnectionType.of("dowel")
-        assert type1 == type2
+    def test_connection_type_is_union(self):
+        """ConnectionType should accept both VanillaConnection and DowelConnection."""
+        vanilla: ConnectionType = VanillaConnection()
+        dowel: ConnectionType = DowelConnection(radius=4.0, depth=20.0)
+
+        assert isinstance(vanilla, VanillaConnection)
+        assert isinstance(dowel, DowelConnection)
 
 
 class TestConnection:
@@ -234,7 +242,7 @@ class TestConnection:
         assert l_angle.lhs.contact_face == "front"
 
     def test_should_have_default_type(self):
-        """Should have default connection type of VANILLA."""
+        """Should have default connection type of VanillaConnection."""
         conn = Connection(
             lhs=Anchor(
                 contact_face="front", edge_shared_face="top", offset=FromMax(value=50)
@@ -243,7 +251,7 @@ class TestConnection:
                 contact_face="down", edge_shared_face="front", offset=FromMin(value=10)
             ),
         )
-        assert conn.type == ConnectionType.VANILLA
+        assert isinstance(conn.type, VanillaConnection)
 
     def test_should_accept_explicit_type(self):
         """Should accept explicitly specified connection type."""
@@ -254,9 +262,11 @@ class TestConnection:
             rhs=Anchor(
                 contact_face="down", edge_shared_face="front", offset=FromMin(value=10)
             ),
-            type=ConnectionType.DOWEL,
+            type=DowelConnection(radius=4.0, depth=20.0),
         )
-        assert conn.type == ConnectionType.DOWEL
+        assert isinstance(conn.type, DowelConnection)
+        assert conn.type.radius == 4.0
+        assert conn.type.depth == 20.0
 
     def test_should_serialize_with_type(self):
         """Should serialize Connection including type field."""
@@ -270,4 +280,4 @@ class TestConnection:
         )
         data = conn.model_dump()
         assert "type" in data
-        assert data["type"] == ConnectionType.VANILLA
+        assert data["type"] == {}

@@ -9,7 +9,6 @@ import numpy as np
 from ..connection import Anchor, as_orientation, as_surface_point
 from ..geometry import (
     Box,
-    Orientation,
     Orientation3D,
     Point2D,
     SurfacePoint,
@@ -21,7 +20,7 @@ from ..geometry import (
 from .models import Joint
 
 
-def _project_joint(
+def project_joint(
     src_box: Box,
     dst_box: Box,
     src_joint: Joint,
@@ -60,14 +59,14 @@ def _project_joint(
         >>> dst_anchor = Anchor(contact_face="down", edge_shared_face="front", offset=FromMin(value=50))
         >>> # Create and project joint
         >>> src_joint = Joint.of_anchor(src_anchor, src_box)
-        >>> dst_joint = _project_joint(src_box, dst_box, src_joint, src_anchor, dst_anchor)
+        >>> dst_joint = project_joint(src_box, dst_box, src_joint, src_anchor, dst_anchor)
         >>> isinstance(dst_joint, Joint)
         True
         >>> isinstance(dst_joint.position, SurfacePoint)
         True
     """
     # Project position from src to dst coordinate system
-    dst_position = _project_surface_point(
+    dst_position = project_surface_point(
         src_box=src_box,
         dst_box=dst_box,
         src_surface_point=src_joint.position,
@@ -87,75 +86,7 @@ def _project_joint(
     return Joint(position=dst_position, orientation=dst_orientation)
 
 
-def _get_up_dir_aligned_axis(orientation: Orientation):
-    """Determine which axis (u or v) the up direction aligns with.
-
-    Args:
-        orientation: Orientation with direction and up faces
-
-    Returns:
-        'u' if up aligns with u axis, 'v' if up aligns with v axis
-
-    Examples:
-        >>> from nichiyou_daiku.core.geometry import Orientation
-        >>> orientation = Orientation.of(direction="top", up="front")
-        >>> _get_up_dir_aligned_axis(orientation)
-        'v'
-        >>> orientation = Orientation.of(direction="front", up="left")
-        >>> _get_up_dir_aligned_axis(orientation)
-        'u'
-    """
-    match (orientation.direction, orientation.up):
-        case ("top" | "down", "front" | "back"):
-            return "v"
-        case ("top" | "down", "left" | "right"):
-            return "u"
-        case ("front" | "back", "top" | "down"):
-            return "v"
-        case ("front" | "back", "left" | "right"):
-            return "u"
-        case ("left" | "right", "top" | "down"):
-            return "v"
-        case ("left" | "right", "front" | "back"):
-            return "u"
-
-    raise ValueError(
-        f"Invalid orientation with direction {orientation.direction} and up {orientation.up}"
-    )
-
-
-def _need_transpose_surface_point(
-    src_orientation: Orientation,
-    dst_orientation: Orientation,
-) -> bool:
-    """Determine if surface point axes need to be transposed.
-
-    Checks if the u and v axes of the source and destination orientations
-    are aligned or need to be swapped.
-
-    Args:
-        src_orientation: Source orientation
-        dst_orientation: Destination orientation
-    Returns:
-        True
-        if axes need to be transposed, False otherwise
-    Examples:
-        >>> from nichiyou_daiku.core.geometry import Orientation
-        >>> src_orientation = Orientation.of(direction="top", up="front")
-        >>> dst_orientation = Orientation.of(direction="down", up="front")
-        >>> _need_transpose_surface_point(src_orientation, dst_orientation)
-        False
-        >>> dst_orientation = Orientation.of(direction="down", up="left")
-        >>> _need_transpose_surface_point(src_orientation, dst_orientation)
-        True
-    """
-    src_up_axis = _get_up_dir_aligned_axis(src_orientation)
-    dst_up_axis = _get_up_dir_aligned_axis(dst_orientation)
-
-    return src_up_axis != dst_up_axis
-
-
-def _project_surface_point(
+def project_surface_point(
     src_box: Box,
     dst_box: Box,
     src_surface_point: SurfacePoint,
@@ -194,7 +125,7 @@ def _project_surface_point(
         >>> dst_anchor = Anchor(contact_face="down", edge_shared_face="front", offset=FromMin(value=50))
         >>> # Project a point from src to dst
         >>> src_sp = SurfacePoint(face="front", position=Point2D(u=10.0, v=20.0))
-        >>> dst_sp = _project_surface_point(src_box, dst_box, src_sp, src_anchor, dst_anchor)
+        >>> dst_sp = project_surface_point(src_box, dst_box, src_sp, src_anchor, dst_anchor)
         >>> isinstance(dst_sp, SurfacePoint)
         True
     """
@@ -247,41 +178,3 @@ def _project_surface_point(
             v=dst_anchor_surface_point.position.v + rel_v,
         ),
     )
-
-
-def _project_joint_pair(
-    src_box: Box,
-    dst_box: Box,
-    src_joint_0: Joint,
-    src_joint_1: Joint,
-    src_anchor: Anchor,
-    dst_anchor: Anchor,
-) -> tuple[Joint, Joint]:
-    """Project two joints from source to destination coordinate system.
-
-    Args:
-        src_box: Source box
-        dst_box: Destination box
-        src_joint_0: First source joint
-        src_joint_1: Second source joint
-        src_anchor: Source anchor
-        dst_anchor: Destination anchor
-
-    Returns:
-        Tuple of (dst_joint_0, dst_joint_1)
-    """
-    dst_joint_0 = _project_joint(
-        src_box=src_box,
-        dst_box=dst_box,
-        src_joint=src_joint_0,
-        src_anchor=src_anchor,
-        dst_anchor=dst_anchor,
-    )
-    dst_joint_1 = _project_joint(
-        src_box=src_box,
-        dst_box=dst_box,
-        src_joint=src_joint_1,
-        src_anchor=src_anchor,
-        dst_anchor=dst_anchor,
-    )
-    return (dst_joint_0, dst_joint_1)

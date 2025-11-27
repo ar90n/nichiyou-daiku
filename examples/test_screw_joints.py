@@ -1,7 +1,7 @@
 """Test screw joint implementation with various face combinations."""
 
 from nichiyou_daiku.core.piece import Piece, PieceType
-from nichiyou_daiku.core.connection import Connection, Anchor, ConnectionType
+from nichiyou_daiku.core.connection import Connection, Anchor, DowelConnection
 from nichiyou_daiku.core.geometry import FromMax, FromMin
 from nichiyou_daiku.core.model import Model, PiecePair
 from nichiyou_daiku.core.assembly import Assembly
@@ -33,7 +33,7 @@ def test_face_combination(
         rhs=Anchor(
             contact_face=rhs_face, edge_shared_face=rhs_edge, offset=FromMin(value=50)
         ),
-        type=ConnectionType.SCREW,
+        type=DowelConnection(radius=4.0, depth=20.0),
     )
 
     # Create model and assembly

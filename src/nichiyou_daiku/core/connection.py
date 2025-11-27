@@ -4,7 +4,7 @@ This module defines the types used to specify how two pieces of lumber
 connect to each other, including positions and orientations.
 """
 
-from enum import Enum
+from typing import TypeAlias
 
 from pydantic import BaseModel
 
@@ -20,54 +20,30 @@ from nichiyou_daiku.core.geometry import (
     opposite as opposite_face,
     cross as cross_face,
     is_positive,
+    Millimeters,
 )
 
 
-class ConnectionType(Enum):
-    """Enumeration of supported connection types.
+class VanillaConnection(BaseModel, frozen=True):
+    """A vanilla connection without special reinforcements.
 
-    Examples:
-        >>> ConnectionType.DOWEL
-        <ConnectionType.DOWEL: 'dowel'>
-        >>> ConnectionType.DOWEL.value
-        'dowel'
+    This represents a basic connection between two pieces.
     """
 
-    VANILLA = "vanilla"
-    DOWEL = "dowel"
+    pass
 
-    @classmethod
-    def of(cls, value: str) -> "ConnectionType":
-        """Create a ConnectionType instance from a string value.
 
-        Args:
-            value: String representation of connection type (e.g., "screw")
+class DowelConnection(BaseModel, frozen=True):
+    """A connection reinforced with dowels.
 
-        Returns:
-            ConnectionType enum instance
+    This represents a connection that uses dowels for added strength.
+    """
 
-        Raises:
-            ValueError: If the connection type is not supported
+    radius: Millimeters
+    depth: Millimeters
 
-        Examples:
-            >>> ConnectionType.of("dowel")
-            <ConnectionType.DOWEL: 'dowel'>
-            >>> ConnectionType.of("dowel") == ConnectionType.DOWEL
-            True
-            >>> import pytest
-            >>> with pytest.raises(ValueError) as exc:
-            ...     ConnectionType.of("bolt")
-            >>> "Unsupported connection type: bolt" in str(exc.value)
-            True
-        """
-        ret = {
-            "dowel": cls.DOWEL,
-            "vanilla": cls.VANILLA,
-        }.get(value)
-        if ret is not None:
-            return ret
 
-        raise ValueError(f"Unsupported connection type: {value}")
+ConnectionType: TypeAlias = VanillaConnection | DowelConnection
 
 
 def _get_pos_dir_edge(contact_face: Face, edge_shared_face: Face) -> Edge:
@@ -117,4 +93,4 @@ class Connection(BaseModel, frozen=True):
 
     lhs: Anchor
     rhs: Anchor
-    type: ConnectionType = ConnectionType.VANILLA
+    type: ConnectionType = VanillaConnection()

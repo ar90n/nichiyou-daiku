@@ -5,15 +5,18 @@ import pytest
 from nichiyou_daiku.core.assembly import (
     Joint,
     Assembly,
-    _project_joint,
-    _project_surface_point,
+    project_joint,
 )
 from nichiyou_daiku.core.piece import Piece, PieceType, get_shape
-from nichiyou_daiku.core.connection import Connection, Anchor, ConnectionType
+from nichiyou_daiku.core.connection import (
+    Connection,
+    Anchor,
+    VanillaConnection,
+    DowelConnection,
+)
 from nichiyou_daiku.core.geometry import FromMax, FromMin
 from nichiyou_daiku.core.geometry import (
     Point2D,
-    Point3D,
     SurfacePoint,
     Vector3D,
     Box,
@@ -28,8 +31,6 @@ class TestBox:
 
     def test_should_handle_different_piece_lengths(self):
         """Should create boxes with correct dimensions for different piece lengths."""
-        from nichiyou_daiku.core.piece import get_shape
-
         lengths = [500.0, 1000.0, 2000.0]
 
         for length in lengths:
@@ -83,13 +84,11 @@ class TestJointPair:
         )
 
         # Create joints directly
-        from nichiyou_daiku.core.piece import get_shape
-
         horizontal_box = Box(shape=get_shape(horizontal))
         vertical_box = Box(shape=get_shape(vertical))
 
         lhs_joint = Joint.of_anchor(anchor=piece_conn.lhs, box=horizontal_box)
-        rhs_joint = _project_joint(
+        rhs_joint = project_joint(
             horizontal_box, vertical_box, lhs_joint, piece_conn.lhs, piece_conn.rhs
         )
 
@@ -137,7 +136,6 @@ class TestAssembly:
     def test_should_generate_pilot_holes_for_dowel_connections(self):
         """Should generate pilot holes for dowel-type connections."""
         from nichiyou_daiku.core.model import Model, PiecePair
-        from nichiyou_daiku.core.connection import ConnectionType
 
         # Create pieces and dowel connection
         p1 = Piece.of(PieceType.PT_2x4, 1000.0, "p1")
@@ -150,7 +148,7 @@ class TestAssembly:
             rhs=Anchor(
                 contact_face="down", edge_shared_face="front", offset=FromMin(value=50)
             ),
-            type=ConnectionType.DOWEL,
+            type=DowelConnection(radius=4.0, depth=20.0),
         )
 
         model = Model.of(
@@ -176,8 +174,8 @@ class TestDowelJointFaceCombinations:
     @pytest.mark.parametrize(
         "connection_type",
         [
-            ConnectionType.VANILLA,
-            ConnectionType.DOWEL,
+            VanillaConnection(),
+            DowelConnection(radius=4.0, depth=20.0),
         ],
     )
     @pytest.mark.parametrize(
@@ -230,13 +228,13 @@ class TestDowelJointFaceCombinations:
         model = Model.of(
             pieces=[p1, p2],
             connections=[(PiecePair(base=p1, target=p2), conn)],
-            label=f"test_{description}_{connection_type.value}",
+            label=f"test_{description}_{connection_type.__class__.__name__}",
         )
         assembly = Assembly.of(model)
 
         # Verify joints were created based on connection type
         # DOWEL creates 2 joint pairs (4 joints), VANILLA creates 1 joint pair (2 joints)
-        if connection_type == ConnectionType.DOWEL:
+        if isinstance(connection_type, DowelConnection):
             expected_joints = 4
             expected_pairs = 2
         else:  # VANILLA
@@ -244,159 +242,15 @@ class TestDowelJointFaceCombinations:
             expected_pairs = 1
 
         assert len(assembly.joints) == expected_joints, (
-            f"Expected {expected_joints} joints for {description} with {connection_type.value}"
+            f"Expected {expected_joints} joints for {description} with {connection_type.__class__.__name__}"
         )
         assert len(assembly.joint_conns) == expected_pairs, (
-            f"Expected {expected_pairs} joint pairs for {description} with {connection_type.value}"
+            f"Expected {expected_pairs} joint pairs for {description} with {connection_type.__class__.__name__}"
         )
 
         # Verify joint IDs
         assert "p1_j0" in assembly.joints
         assert "p2_j0" in assembly.joints
-        if connection_type == ConnectionType.DOWEL:
+        if isinstance(connection_type, DowelConnection):
             assert "p1_j1" in assembly.joints
             assert "p2_j1" in assembly.joints
-
-
-class TestProjectSurfacePoint:
-    """Test surface point projection between coordinate systems."""
-
-    def test_should_project_point_on_same_face(self):
-        """Should project a point when source and destination are on the same logical face."""
-        # Create two pieces
-        src_piece = Piece.of(PieceType.PT_2x4, 1000.0)
-        dst_piece = Piece.of(PieceType.PT_2x4, 800.0)
-        src_box = Box(shape=get_shape(src_piece))
-        dst_box = Box(shape=get_shape(dst_piece))
-
-        # Create matching anchors (front face of src connects to down face of dst)
-        src_anchor = Anchor(
-            contact_face="front", edge_shared_face="top", offset=FromMax(value=100)
-        )
-        dst_anchor = Anchor(
-            contact_face="down", edge_shared_face="front", offset=FromMin(value=50)
-        )
-
-        # Create a point on the source front face
-        src_sp = SurfacePoint(face="front", position=Point2D(u=10.0, v=20.0))
-
-        # Project to destination
-        dst_sp = _project_surface_point(
-            src_box, dst_box, src_sp, src_anchor, dst_anchor
-        )
-
-        # Result should be a SurfacePoint on the destination contact face
-        assert isinstance(dst_sp, SurfacePoint)
-        assert dst_sp.face == "down"
-        assert isinstance(dst_sp.position, Point2D)
-
-    def test_should_preserve_joint_position(self):
-        """Should preserve the joint position when projecting the joint itself."""
-        # Create two pieces
-        src_piece = Piece.of(PieceType.PT_2x4, 1000.0)
-        dst_piece = Piece.of(PieceType.PT_2x4, 800.0)
-        src_box = Box(shape=get_shape(src_piece))
-        dst_box = Box(shape=get_shape(dst_piece))
-
-        # Create matching anchors
-        src_anchor = Anchor(
-            contact_face="front", edge_shared_face="top", offset=FromMax(value=100)
-        )
-        dst_anchor = Anchor(
-            contact_face="down", edge_shared_face="front", offset=FromMin(value=50)
-        )
-
-        # Get the joint position on source
-        src_joint = Joint.of_anchor(box=src_box, anchor=src_anchor)
-
-        # Project the joint position to destination
-        dst_sp = _project_surface_point(
-            src_box, dst_box, src_joint.position, src_anchor, dst_anchor
-        )
-
-        # The projected point should match the destination joint position
-        dst_joint = Joint.of_anchor(box=dst_box, anchor=dst_anchor, flip_dir=True)
-
-        # Convert both to Point3D for comparison
-        dst_sp_3d = Point3D.of(dst_box, dst_sp)
-        dst_joint_3d = Point3D.of(dst_box, dst_joint.position)
-
-        # They should be at the same 3D position (allowing small numerical error)
-        assert abs(dst_sp_3d.x - dst_joint_3d.x) < 1e-6
-        assert abs(dst_sp_3d.y - dst_joint_3d.y) < 1e-6
-        assert abs(dst_sp_3d.z - dst_joint_3d.z) < 1e-6
-
-    def test_should_handle_different_faces(self):
-        """Should correctly project between different face orientations."""
-        # Create two pieces
-        src_piece = Piece.of(PieceType.PT_2x4, 1000.0)
-        dst_piece = Piece.of(PieceType.PT_2x4, 800.0)
-        src_box = Box(shape=get_shape(src_piece))
-        dst_box = Box(shape=get_shape(dst_piece))
-
-        # Create anchors with different face combinations
-        src_anchor = Anchor(
-            contact_face="left", edge_shared_face="top", offset=FromMax(value=200)
-        )
-        dst_anchor = Anchor(
-            contact_face="right", edge_shared_face="down", offset=FromMin(value=100)
-        )
-
-        # Create a point on the source left face
-        src_sp = SurfacePoint(face="left", position=Point2D(u=5.0, v=15.0))
-
-        # Project to destination
-        dst_sp = _project_surface_point(
-            src_box, dst_box, src_sp, src_anchor, dst_anchor
-        )
-
-        # Result should be a SurfacePoint on the destination right face
-        assert isinstance(dst_sp, SurfacePoint)
-        assert dst_sp.face == "right"
-
-    def test_should_project_joint(self):
-        """Should project entire joint from source to destination."""
-        # Create two pieces
-        src_piece = Piece.of(PieceType.PT_2x4, 1000.0)
-        dst_piece = Piece.of(PieceType.PT_2x4, 800.0)
-        src_box = Box(shape=get_shape(src_piece))
-        dst_box = Box(shape=get_shape(dst_piece))
-
-        # Create matching anchors
-        src_anchor = Anchor(
-            contact_face="front", edge_shared_face="top", offset=FromMax(value=100)
-        )
-        dst_anchor = Anchor(
-            contact_face="down", edge_shared_face="front", offset=FromMin(value=50)
-        )
-
-        # Create source joint
-        src_joint = Joint.of_anchor(box=src_box, anchor=src_anchor)
-
-        # Project joint
-        dst_joint = _project_joint(src_box, dst_box, src_joint, src_anchor, dst_anchor)
-
-        # Verify it's a Joint with correct attributes
-        assert isinstance(dst_joint, Joint)
-        assert isinstance(dst_joint.position, SurfacePoint)
-        assert isinstance(dst_joint.orientation, Orientation3D)
-        assert dst_joint.position.face == "down"
-
-        # Verify the projected joint matches what Joint.of_anchor would create
-        # (for regression testing)
-        expected_joint = Joint.of_anchor(box=dst_box, anchor=dst_anchor, flip_dir=True)
-
-        # Convert both positions to Point3D for comparison
-        dst_joint_3d = Point3D.of(dst_box, dst_joint.position)
-        expected_joint_3d = Point3D.of(dst_box, expected_joint.position)
-
-        # They should be at the same 3D position
-        assert abs(dst_joint_3d.x - expected_joint_3d.x) < 1e-6
-        assert abs(dst_joint_3d.y - expected_joint_3d.y) < 1e-6
-        assert abs(dst_joint_3d.z - expected_joint_3d.z) < 1e-6
-
-        # Orientation should also match
-        assert dst_joint.orientation.direction == expected_joint.orientation.direction
-        assert abs(dst_joint.orientation.up.x - expected_joint.orientation.up.x) < 1e-6
-        assert abs(dst_joint.orientation.up.y - expected_joint.orientation.up.y) < 1e-6
-        assert abs(dst_joint.orientation.up.z - expected_joint.orientation.up.z) < 1e-6

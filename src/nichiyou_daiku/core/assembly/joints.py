@@ -4,7 +4,7 @@ This module provides functions for creating dowel joints between
 pieces in different orientations (top/down, left/right, front/back).
 """
 
-from ..connection import Anchor, Connection, ConnectionType, as_surface_point
+from ..connection import Anchor, Connection, as_surface_point
 from ..geometry import (
     Box,
     Face,
@@ -16,7 +16,45 @@ from ..geometry import (
     cross as cross_face,
 )
 from .models import Joint, JointPair
-from .projection import _project_joint, _project_joint_pair
+from .projection import project_joint
+
+
+def _project_joint_pair(
+    src_box: Box,
+    dst_box: Box,
+    src_joint_0: Joint,
+    src_joint_1: Joint,
+    src_anchor: Anchor,
+    dst_anchor: Anchor,
+) -> tuple[Joint, Joint]:
+    """Project two joints from source to destination coordinate system.
+
+    Args:
+        src_box: Source box
+        dst_box: Destination box
+        src_joint_0: First source joint
+        src_joint_1: Second source joint
+        src_anchor: Source anchor
+        dst_anchor: Destination anchor
+
+    Returns:
+        Tuple of (dst_joint_0, dst_joint_1)
+    """
+    dst_joint_0 = project_joint(
+        src_box=src_box,
+        dst_box=dst_box,
+        src_joint=src_joint_0,
+        src_anchor=src_anchor,
+        dst_anchor=dst_anchor,
+    )
+    dst_joint_1 = project_joint(
+        src_box=src_box,
+        dst_box=dst_box,
+        src_joint=src_joint_1,
+        src_anchor=src_anchor,
+        dst_anchor=dst_anchor,
+    )
+    return (dst_joint_0, dst_joint_1)
 
 
 def _create_orientation_from_anchor(anchor: Anchor) -> Orientation3D:
@@ -193,7 +231,7 @@ def _create_front_back_dowel_joints_with_offset(
     return (src_0, src_1, dst_0, dst_1)
 
 
-def _create_vanilla_joint_pairs(
+def create_vanilla_joint_pairs(
     lhs_box: Box, rhs_box: Box, piece_conn: Connection
 ) -> list[JointPair]:
     """Create a single joint pair at anchor positions for vanilla connections.
@@ -217,7 +255,7 @@ def _create_vanilla_joint_pairs(
         orientation=lhs_orientation,
     )
 
-    rhs_joint = _project_joint(
+    rhs_joint = project_joint(
         src_box=lhs_box,
         dst_box=rhs_box,
         src_joint=lhs_joint,
@@ -228,7 +266,7 @@ def _create_vanilla_joint_pairs(
     return [JointPair(lhs=lhs_joint, rhs=rhs_joint)]
 
 
-def _create_dowel_joint_pairs(
+def create_dowel_joint_pairs(
     lhs_box: Box, rhs_box: Box, piece_conn: Connection
 ) -> list[JointPair]:
     """Create dowel joint pairs based on connection configuration.
@@ -325,22 +363,3 @@ def _create_dowel_joint_pairs(
         )
     else:
         raise RuntimeError("Unsupported dowel connection configuration.")
-
-
-def _create_joint_pairs(
-    lhs_box: Box, rhs_box: Box, piece_conn: Connection
-) -> list[JointPair]:
-    """Create joint pairs for a connection based on connection type.
-
-    Args:
-        lhs_box: Left-hand side piece box
-        rhs_box: Right-hand side piece box
-        piece_conn: Connection defining how pieces connect
-
-    Returns:
-        List of JointPair objects
-    """
-    if piece_conn.type == ConnectionType.VANILLA:
-        return _create_vanilla_joint_pairs(lhs_box, rhs_box, piece_conn)
-    else:
-        return _create_dowel_joint_pairs(lhs_box, rhs_box, piece_conn)

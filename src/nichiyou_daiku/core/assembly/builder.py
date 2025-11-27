@@ -4,15 +4,84 @@ This module contains the Assembly class that orchestrates the
 creation of 3D assembly information from abstract model definitions.
 """
 
+from collections.abc import Callable
+
 from pydantic import BaseModel
 
-from ..connection import ConnectionType
+from ..connection import Connection, DowelConnection, VanillaConnection
 from ..geometry import Box, Point3D
 from ..model import Model
 from ..piece import get_shape
-from .models import Hole, Joint
-from .dowel_joints import _create_joint_pairs
-from .utils import _create_joint_id_generator, _create_pilot_hole_on_joint
+from .models import Hole, Joint, JointPair
+from .joints import create_vanilla_joint_pairs, create_dowel_joint_pairs
+
+
+def _create_pilot_hole_on_joint(
+    box: Box,
+    joint: Joint,
+) -> tuple[Point3D, Hole]:
+    """Create a pilot hole at the joint position.
+
+    Args:
+        box: Box of the piece
+        joint: Joint where the hole is to be created
+
+    Returns:
+        Tuple of (3D position of hole, Hole specification)
+    """
+    point_3d = Point3D.of(box, joint.position)
+    hole = Hole(diameter=3.0, depth=5.0)
+    return (point_3d, hole)
+
+
+def _create_joint_id_generator(piece_ids: list[str]) -> Callable[[str], str]:
+    """Create a joint ID generator function with encapsulated state.
+
+    Returns a closure that generates sequential joint IDs for each piece.
+    The counter state is encapsulated within the closure.
+
+    Args:
+        piece_ids: List of piece IDs to initialize counters for
+
+    Returns:
+        A function that generates the next joint ID for a given piece_id
+
+    Example:
+        >>> generate_id = _create_joint_id_generator(["p1", "p2"])
+        >>> generate_id("p1")
+        'p1_j0'
+        >>> generate_id("p1")
+        'p1_j1'
+        >>> generate_id("p2")
+        'p2_j0'
+    """
+    counters: dict[str, int] = {piece_id: 0 for piece_id in piece_ids}
+
+    def generate_next(piece_id: str) -> str:
+        joint_id = f"{piece_id}_j{counters[piece_id]}"
+        counters[piece_id] += 1
+        return joint_id
+
+    return generate_next
+
+
+def _create_joint_pairs(
+    lhs_box: Box, rhs_box: Box, piece_conn: Connection
+) -> list[JointPair]:
+    """Create joint pairs for a connection based on connection type.
+
+    Args:
+        lhs_box: Left-hand side piece box
+        rhs_box: Right-hand side piece box
+        piece_conn: Connection defining how pieces connect
+
+    Returns:
+        List of JointPair objects
+    """
+    if isinstance(piece_conn.type, VanillaConnection):
+        return create_vanilla_joint_pairs(lhs_box, rhs_box, piece_conn)
+    else:
+        return create_dowel_joint_pairs(lhs_box, rhs_box, piece_conn)
 
 
 class Assembly(BaseModel, frozen=True):
@@ -103,7 +172,7 @@ class Assembly(BaseModel, frozen=True):
                 joints[rhs_joint_id] = joint_pair.rhs
                 joint_conns.append((lhs_joint_id, rhs_joint_id))
 
-                if piece_conn.type in (ConnectionType.DOWEL, ConnectionType.VANILLA):
+                if isinstance(piece_conn.type, (DowelConnection, VanillaConnection)):
                     pilot_holes.setdefault(lhs_id, []).append(
                         _create_pilot_hole_on_joint(
                             box=boxes[lhs_id],
