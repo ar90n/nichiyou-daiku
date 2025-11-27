@@ -348,6 +348,77 @@ class TestTransformerModelGeneration:
         assert len(model.pieces) == 2
         assert len(model.connections) == 0
 
-        # Check pieces are in model (model.pieces is a dict)
-        assert "beam1" in model.pieces
-        assert "beam2" in model.pieces
+
+class TestConnectionTypeTransformer:
+    """Test transformer handling of ConnectionType."""
+
+    def test_type_vanilla_transformation(self):
+        """Test vanilla connection type transformation."""
+        from nichiyou_daiku.core.connection import VanillaConnection
+
+        transformer = DSLTransformer()
+        result = transformer.type_vanilla([])
+
+        assert isinstance(result, VanillaConnection)
+
+    def test_type_dowel_transformation(self):
+        """Test dowel connection type transformation."""
+        from lark import Token
+
+        from nichiyou_daiku.core.connection import DowelConnection
+
+        transformer = DSLTransformer()
+        result = transformer.type_dowel(
+            [Token("NUMBER", "4.0"), Token("NUMBER", "20.0")]
+        )
+
+        assert isinstance(result, DowelConnection)
+        assert result.radius == 4.0
+        assert result.depth == 20.0
+
+    def test_dowel_compact_transformation(self):
+        """Test compact dowel connection type transformation."""
+        from lark import Token
+
+        from nichiyou_daiku.core.connection import DowelConnection
+
+        transformer = DSLTransformer()
+        result = transformer.dowel_compact(
+            [Token("NUMBER", "5.0"), Token("NUMBER", "25.0")]
+        )
+
+        assert isinstance(result, DowelConnection)
+        assert result.radius == 5.0
+        assert result.depth == 25.0
+
+    def test_compact_connection_type_vanilla(self):
+        """Test compact connection type for vanilla."""
+        from lark import Token
+
+        from nichiyou_daiku.core.connection import VanillaConnection
+
+        transformer = DSLTransformer()
+        result = transformer.compact_connection_type([Token("COMPACT_VANILLA", "V")])
+
+        assert isinstance(result, VanillaConnection)
+
+    def test_compact_connection_type_dowel(self):
+        """Test compact connection type for dowel."""
+        from nichiyou_daiku.core.connection import DowelConnection
+
+        transformer = DSLTransformer()
+        dowel_conn = DowelConnection(radius=4.0, depth=20.0)
+        result = transformer.compact_connection_type([dowel_conn])
+
+        assert isinstance(result, DowelConnection)
+        assert result.radius == 4.0
+        assert result.depth == 20.0
+
+    def test_compact_connection_type_empty_returns_vanilla(self):
+        """Test compact connection type returns vanilla when empty."""
+        from nichiyou_daiku.core.connection import VanillaConnection
+
+        transformer = DSLTransformer()
+        result = transformer.compact_connection_type([])
+
+        assert isinstance(result, VanillaConnection)

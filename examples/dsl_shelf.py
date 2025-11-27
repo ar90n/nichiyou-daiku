@@ -97,51 +97,51 @@ for i in range(table_top_piece_num):
 # Add connections
 shelf_dsl += f"""
 // Front table top apron connections (bottom level)
-leg_left_front -[BL>{BOTTOM_APRON_HEIGHT} DR>0]- bottom_table_top_apron_front
-leg_right_front -[FR>{BOTTOM_APRON_HEIGHT} TL>0]- bottom_table_top_apron_front
+leg_left_front -[BL>{BOTTOM_APRON_HEIGHT} DR>0 D(4.0, 20.0)]- bottom_table_top_apron_front
+leg_right_front -[FR>{BOTTOM_APRON_HEIGHT} TL>0 D(4.0, 20.0)]- bottom_table_top_apron_front
 
 // Back table top apron connections (bottom level)
-leg_left_back -[BL>{BOTTOM_APRON_HEIGHT} DR>0]- bottom_table_top_apron_back
-leg_right_back -[FR>{BOTTOM_APRON_HEIGHT} TL>0]- bottom_table_top_apron_back
+leg_left_back -[BL>{BOTTOM_APRON_HEIGHT} DR>0 D(4.0, 20.0)]- bottom_table_top_apron_back
+leg_right_back -[FR>{BOTTOM_APRON_HEIGHT} TL>0 D(4.0, 20.0)]- bottom_table_top_apron_back
 
 // Front table top apron connections (top level)
-leg_left_front -[BL<{TOP_APRON_HEIGHT} DR<0]- top_table_top_apron_front
-leg_right_front -[FR<{TOP_APRON_HEIGHT} TL<0]- top_table_top_apron_front
+leg_left_front -[BL<{TOP_APRON_HEIGHT} DR<0 D(4.0, 20.0)]- top_table_top_apron_front
+leg_right_front -[FR<{TOP_APRON_HEIGHT} TL<0 D(4.0, 20.0)]- top_table_top_apron_front
 
 // Back table top apron connections (top level)
-leg_left_back -[BL<{TOP_APRON_HEIGHT} DR<0]- top_table_top_apron_back
-leg_right_back -[FR<{TOP_APRON_HEIGHT} TL<0]- top_table_top_apron_back
+leg_left_back -[BL<{TOP_APRON_HEIGHT} DR<0 D(4.0, 20.0)]- top_table_top_apron_back
+leg_right_back -[FR<{TOP_APRON_HEIGHT} TL<0 D(4.0, 20.0)]- top_table_top_apron_back
 
 // Bottom side apron connections
-leg_left_front -[RF>{BOTTOM_APRON_HEIGHT + 150} TF<0]- bottom_apron_left
-leg_left_back -[LF>{BOTTOM_APRON_HEIGHT + 150} DF<0]- bottom_apron_left
-leg_right_front -[RB>{BOTTOM_APRON_HEIGHT + 150} DF<0]- bottom_apron_right
-leg_right_back -[LB>{BOTTOM_APRON_HEIGHT + 150} TF<0]- bottom_apron_right
-leg_left_back -[BR>{BOTTOM_APRON_HEIGHT + 150} DB<0]- bottom_apron_back
-leg_right_back -[FR>{BOTTOM_APRON_HEIGHT + 150} TB<0]- bottom_apron_back
+leg_left_front -[RF>{BOTTOM_APRON_HEIGHT + 150} TF<0 D(4.0, 20.0)]- bottom_apron_left
+leg_left_back -[LF>{BOTTOM_APRON_HEIGHT + 150} DF<0 D(4.0, 20.0)]- bottom_apron_left
+leg_right_front -[RB>{BOTTOM_APRON_HEIGHT + 150} DF<0 D(4.0, 20.0)]- bottom_apron_right
+leg_right_back -[LB>{BOTTOM_APRON_HEIGHT + 150} TF<0 D(4.0, 20.0)]- bottom_apron_right
+leg_left_back -[BR>{BOTTOM_APRON_HEIGHT + 150} DB<0 D(4.0, 20.0)]- bottom_apron_back
+leg_right_back -[FR>{BOTTOM_APRON_HEIGHT + 150} TB<0 D(4.0, 20.0)]- bottom_apron_back
 
 // Top side apron connections
-leg_left_front -[RF<0 TF<0]- top_apron_left
-leg_left_back -[LF<0 DF<0]- top_apron_left
-leg_right_front -[RB<0 DF<0]- top_apron_right
-leg_right_back -[LB<0 TF<0]- top_apron_right
-leg_left_back -[BR<0 DB<0]- top_apron_back
-leg_right_back -[FR<0 TB<0]- top_apron_back
-leg_left_front -[BL<0 DF<0]- top_apron_front
-leg_right_front -[FL<0 TF<0]- top_apron_front
+leg_left_front -[RF<0 TF<0 D(4.0, 20.0)]- top_apron_left
+leg_left_back -[LF<0 DF<0 D(4.0, 20.0)]- top_apron_left
+leg_right_front -[RB<0 DF<0 D(4.0, 20.0)]- top_apron_right
+leg_right_back -[LB<0 TF<0 D(4.0, 20.0)]- top_apron_right
+leg_left_back -[BR<0 DB<0 D(4.0, 20.0)]- top_apron_back
+leg_right_back -[FR<0 TB<0 D(4.0, 20.0)]- top_apron_back
+leg_left_front -[BL<0 DF<0 D(4.0, 20.0)]- top_apron_front
+leg_right_front -[FL<0 TF<0 D(4.0, 20.0)]- top_apron_front
 """
 
 # Add bottom table top piece connections
 for i in range(table_top_piece_num):
     offset = i * (get_shape(PieceType.PT_1x4).width + table_top_piece_interval)
-    shelf_dsl += f"bottom_table_top_apron_front -[FR>{offset:.3f} FT>0]- bottom_table_top_{i}\n"
-    shelf_dsl += f"bottom_table_top_apron_back -[FL>{offset:.3f} FD>0]- bottom_table_top_{i}\n"
+    shelf_dsl += f"bottom_table_top_apron_front -[FR>{offset:.3f} FT>0 D(4.0, 20.0)]- bottom_table_top_{i}\n"
+    shelf_dsl += f"bottom_table_top_apron_back -[FL>{offset:.3f} FD>0 D(4.0, 20.0)]- bottom_table_top_{i}\n"
 
 # Add top table top piece connections
 for i in range(table_top_piece_num):
     offset = i * (get_shape(PieceType.PT_1x4).width + table_top_piece_interval)
-    shelf_dsl += f"top_table_top_apron_front -[FR>{offset:.3f} FT>0]- top_table_top_{i}\n"
-    shelf_dsl += f"top_table_top_apron_back -[FL>{offset:.3f} FD>0]- top_table_top_{i}\n"
+    shelf_dsl += f"top_table_top_apron_front -[FR>{offset:.3f} FT>0 D(4.0, 20.0)]- top_table_top_{i}\n"
+    shelf_dsl += f"top_table_top_apron_back -[FL>{offset:.3f} FD>0 D(4.0, 20.0)]- top_table_top_{i}\n"
 
 # Parse DSL to create model
 print("Parsing shelf DSL...")

@@ -12,7 +12,9 @@ compact_length: "=" NUMBER
 prop_list: prop ("," prop)*
 prop: ESCAPED_STRING ":" value
 
-connection_def: piece_ref "-[" (anchor_props anchor_props | compact_anchor_props compact_anchor_props) "]-" piece_ref
+connection_def: piece_ref "-[" connection_body "]-" piece_ref
+connection_body: anchor_props anchor_props connection_type_props?
+               | compact_anchor_props compact_anchor_props compact_connection_type?
 piece_ref: CNAME
 anchor_props: "{" anchor_prop_list? "}"
 anchor_prop_list: anchor_prop ("," anchor_prop)*
@@ -32,6 +34,18 @@ compact_offset: COMPACT_FROM_MIN NUMBER | COMPACT_FROM_MAX NUMBER
 COMPACT_FACE: /[TDLRFB]/
 COMPACT_FROM_MIN: "<"
 COMPACT_FROM_MAX: ">"
+
+// ConnectionType (JSON)
+connection_type_props: "{" connection_type_content "}"
+connection_type_content: type_vanilla | type_dowel
+type_vanilla: "\"type\"" ":" "\"vanilla\""
+type_dowel: "\"type\"" ":" "\"dowel\"" "," "\"radius\"" ":" NUMBER "," "\"depth\"" ":" NUMBER
+
+// ConnectionType (Compact)
+compact_connection_type: COMPACT_VANILLA | dowel_compact
+COMPACT_VANILLA: "V"
+dowel_compact: DOWEL_START NUMBER "," NUMBER ")"
+DOWEL_START: "D("
 
 // Comment support
 COMMENT: "//" /[^\n]*/

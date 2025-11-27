@@ -5,7 +5,13 @@ from typing import Any, cast
 
 from lark import Token, Transformer
 
-from nichiyou_daiku.core.connection import Anchor, Connection
+from nichiyou_daiku.core.connection import (
+    Anchor,
+    Connection,
+    ConnectionType,
+    DowelConnection,
+    VanillaConnection,
+)
 from nichiyou_daiku.core.geometry.face import Face
 from nichiyou_daiku.core.geometry.offset import FromMax, FromMin, Offset
 from nichiyou_daiku.core.model import Model, PiecePair
@@ -30,6 +36,7 @@ class ConnectionComponents:
     piece_refs: list[str] = field(default_factory=list)
     anchor_props_list: list[dict] = field(default_factory=list)
     compact_anchor_list: list[Anchor] = field(default_factory=list)
+    connection_type: ConnectionType | None = None
 
 
 class DSLTransformer(Transformer):
@@ -162,19 +169,28 @@ class DSLTransformer(Transformer):
         anchors = self._create_anchors_from_components(components)
         pieces = self._resolve_piece_references(components.piece_refs)
 
-        self._register_connection(pieces, anchors)
+        self._register_connection(pieces, anchors, components.connection_type)
 
     def _parse_connection_components(self, items: list[Any]) -> ConnectionComponents:
         """Parse items into connection components."""
         components = ConnectionComponents()
 
-        for item in items:
-            if isinstance(item, str):
+        def process_item(item: Any) -> None:
+            """Process a single item, recursively handling lists."""
+            if isinstance(item, list):
+                for sub_item in item:
+                    process_item(sub_item)
+            elif isinstance(item, str):
                 components.piece_refs.append(item)
             elif isinstance(item, dict):
                 components.anchor_props_list.append(item)
             elif isinstance(item, Anchor):
                 components.compact_anchor_list.append(item)
+            elif isinstance(item, (VanillaConnection, DowelConnection)):
+                components.connection_type = item
+
+        for item in items:
+            process_item(item)
 
         return components
 
@@ -234,13 +250,21 @@ class DSLTransformer(Transformer):
         return base_piece, target_piece
 
     def _register_connection(
-        self, pieces: tuple[Piece, Piece], anchors: tuple[Anchor, Anchor]
+        self,
+        pieces: tuple[Piece, Piece],
+        anchors: tuple[Anchor, Anchor],
+        connection_type: ConnectionType | None = None,
     ) -> None:
         """Register a connection between pieces."""
         base_piece, target_piece = pieces
         lhs_anchor, rhs_anchor = anchors
 
-        connection = Connection(lhs=lhs_anchor, rhs=rhs_anchor)
+        # Use VanillaConnection as default if not specified
+        conn_type = (
+            connection_type if connection_type is not None else VanillaConnection()
+        )
+
+        connection = Connection(lhs=lhs_anchor, rhs=rhs_anchor, type=conn_type)
         piece_pair = PiecePair(base=base_piece, target=target_piece)
 
         self.connections.append((piece_pair, connection))
@@ -411,3 +435,63 @@ class DSLTransformer(Transformer):
                 raise DSLValidationError(
                     f"Unknown offset type: {offset_type_token.type}"
                 )
+
+    # ConnectionType transformers (JSON format)
+    def connection_body(self, items: list[Any]) -> list[Any]:
+        """Pass through connection body items."""
+        return items
+
+    def connection_type_props(self, items: list[Any]) -> ConnectionType:
+        """Transform connection type properties."""
+        return items[0]
+
+    def connection_type_content(self, items: list[Any]) -> ConnectionType:
+        """Transform connection type content."""
+        return items[0]
+
+    def type_vanilla(self, items: list[Any]) -> VanillaConnection:
+        """Transform vanilla connection type."""
+        return VanillaConnection()
+
+    def type_dowel(self, items: list[Any]) -> DowelConnection:
+        """Transform dowel connection type."""
+        # Extract NUMBER tokens from items
+        numbers = [
+            float(item)
+            for item in items
+            if isinstance(item, Token) and item.type == "NUMBER"
+        ]
+        if len(numbers) != 2:
+            raise DSLValidationError(
+                f"Dowel connection type requires exactly 2 numbers (radius, depth), got {len(numbers)}"
+            )
+        radius, depth = numbers
+        return DowelConnection(radius=radius, depth=depth)
+
+    # ConnectionType transformers (Compact format)
+    def compact_connection_type(self, items: list[Any]) -> ConnectionType:
+        """Transform compact connection type."""
+        if not items:
+            return VanillaConnection()
+        item = items[0]
+        if isinstance(item, Token) and item.type == "COMPACT_VANILLA":
+            return VanillaConnection()
+        # At this point, item should be a DowelConnection from dowel_compact
+        if isinstance(item, DowelConnection):
+            return item
+        return VanillaConnection()  # fallback
+
+    def dowel_compact(self, items: list[Any]) -> DowelConnection:
+        """Transform compact dowel connection type."""
+        # Extract NUMBER tokens from items
+        numbers = [
+            float(item)
+            for item in items
+            if isinstance(item, Token) and item.type == "NUMBER"
+        ]
+        if len(numbers) != 2:
+            raise DSLValidationError(
+                f"Compact dowel connection requires exactly 2 numbers (radius, depth), got {len(numbers)}"
+            )
+        radius, depth = numbers
+        return DowelConnection(radius=radius, depth=depth)

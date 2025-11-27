@@ -340,3 +340,142 @@ class TestDSLIntegration:
 
         assert len(model_compact.pieces) == len(model_spaced.pieces)
         assert len(model_compact.connections) == len(model_spaced.connections)
+
+
+class TestConnectionTypeIntegration:
+    """Integration tests for ConnectionType in DSL."""
+
+    def test_json_vanilla_connection_default(self):
+        """Test JSON format with default VanillaConnection."""
+        from nichiyou_daiku.core.connection import VanillaConnection
+
+        dsl = """
+        (beam1:2x4 {"length": 1000})
+        (beam2:2x4 {"length": 800})
+        beam1 -[{"contact_face": "front", "edge_shared_face": "top", "offset": FromMax(100)}
+                {"contact_face": "down", "edge_shared_face": "front", "offset": FromMin(50)}]- beam2
+        """
+
+        model = parse_dsl(dsl)
+        conn = model.connections[("beam1", "beam2")]
+        assert isinstance(conn.type, VanillaConnection)
+
+    def test_json_vanilla_connection_explicit(self):
+        """Test JSON format with explicit VanillaConnection."""
+        from nichiyou_daiku.core.connection import VanillaConnection
+
+        dsl = """
+        (beam1:2x4 {"length": 1000})
+        (beam2:2x4 {"length": 800})
+        beam1 -[{"contact_face": "front", "edge_shared_face": "top", "offset": FromMax(100)}
+                {"contact_face": "down", "edge_shared_face": "front", "offset": FromMin(50)}
+                {"type": "vanilla"}]- beam2
+        """
+
+        model = parse_dsl(dsl)
+        conn = model.connections[("beam1", "beam2")]
+        assert isinstance(conn.type, VanillaConnection)
+
+    def test_json_dowel_connection(self):
+        """Test JSON format with DowelConnection."""
+        from nichiyou_daiku.core.connection import DowelConnection
+
+        dsl = """
+        (beam1:2x4 {"length": 1000})
+        (beam2:2x4 {"length": 800})
+        beam1 -[{"contact_face": "front", "edge_shared_face": "top", "offset": FromMax(100)}
+                {"contact_face": "down", "edge_shared_face": "front", "offset": FromMin(50)}
+                {"type": "dowel", "radius": 4.0, "depth": 20.0}]- beam2
+        """
+
+        model = parse_dsl(dsl)
+        conn = model.connections[("beam1", "beam2")]
+        assert isinstance(conn.type, DowelConnection)
+        assert conn.type.radius == 4.0
+        assert conn.type.depth == 20.0
+
+    def test_compact_vanilla_connection_default(self):
+        """Test compact format with default VanillaConnection."""
+        from nichiyou_daiku.core.connection import VanillaConnection
+
+        dsl = """
+        (beam1:2x4 =1000)
+        (beam2:2x4 =800)
+        beam1 -[TF>100 BD<50]- beam2
+        """
+
+        model = parse_dsl(dsl)
+        conn = model.connections[("beam1", "beam2")]
+        assert isinstance(conn.type, VanillaConnection)
+
+    def test_compact_vanilla_connection_explicit(self):
+        """Test compact format with explicit V (VanillaConnection)."""
+        from nichiyou_daiku.core.connection import VanillaConnection
+
+        dsl = """
+        (beam1:2x4 =1000)
+        (beam2:2x4 =800)
+        beam1 -[TF>100 BD<50 V]- beam2
+        """
+
+        model = parse_dsl(dsl)
+        conn = model.connections[("beam1", "beam2")]
+        assert isinstance(conn.type, VanillaConnection)
+
+    def test_compact_dowel_connection(self):
+        """Test compact format with D(radius, depth) DowelConnection."""
+        from nichiyou_daiku.core.connection import DowelConnection
+
+        dsl = """
+        (beam1:2x4 =1000)
+        (beam2:2x4 =800)
+        beam1 -[TF>100 BD<50 D(4.0,20.0)]- beam2
+        """
+
+        model = parse_dsl(dsl)
+        conn = model.connections[("beam1", "beam2")]
+        assert isinstance(conn.type, DowelConnection)
+        assert conn.type.radius == 4.0
+        assert conn.type.depth == 20.0
+
+    def test_compact_dowel_connection_with_space(self):
+        """Test compact dowel with space after comma."""
+        from nichiyou_daiku.core.connection import DowelConnection
+
+        dsl = """
+        (beam1:2x4 =1000)
+        (beam2:2x4 =800)
+        beam1 -[TF>100 BD<50 D(4.0, 20.0)]- beam2
+        """
+
+        model = parse_dsl(dsl)
+        conn = model.connections[("beam1", "beam2")]
+        assert isinstance(conn.type, DowelConnection)
+        assert conn.type.radius == 4.0
+        assert conn.type.depth == 20.0
+
+    def test_mixed_connection_types_in_model(self):
+        """Test model with mixed connection types."""
+        from nichiyou_daiku.core.connection import DowelConnection, VanillaConnection
+
+        dsl = """
+        (beam1:2x4 =1000)
+        (beam2:2x4 =800)
+        (beam3:2x4 =600)
+
+        // Vanilla connection (default)
+        beam1 -[TF>100 BD<50]- beam2
+
+        // Dowel connection
+        beam2 -[LB>50 DB>25 D(5.0,25.0)]- beam3
+        """
+
+        model = parse_dsl(dsl)
+
+        conn1 = model.connections[("beam1", "beam2")]
+        assert isinstance(conn1.type, VanillaConnection)
+
+        conn2 = model.connections[("beam2", "beam3")]
+        assert isinstance(conn2.type, DowelConnection)
+        assert conn2.type.radius == 5.0
+        assert conn2.type.depth == 25.0
