@@ -1,6 +1,6 @@
-"""Screw joint creation functions for assembly.
+"""Dowel joint creation functions for assembly.
 
-This module provides functions for creating screw joints between
+This module provides functions for creating dowel joints between
 pieces in different orientations (top/down, left/right, front/back).
 """
 
@@ -68,10 +68,10 @@ def _create_joint_pair_from_positions(
     return (joint_0, joint_1)
 
 
-def _create_top_down_screw_joints(
+def _create_top_down_dowel_joints(
     src_anchor: Anchor,
 ) -> tuple[Joint, Joint]:
-    """Create two screw joints on top/down face.
+    """Create two dowel joints on top/down face.
 
     Creates joints at u=+/-25.4mm from face center (along width axis).
 
@@ -104,13 +104,13 @@ def _create_top_down_screw_joints(
     return (src_0, src_1)
 
 
-def _create_left_right_screw_joints(
+def _create_left_right_dowel_joints(
     src_box: Box,
     dst_box: Box,
     src_anchor: Anchor,
     dst_anchor: Anchor,
 ) -> tuple[Joint, Joint, Joint, Joint]:
-    """Create screw joints for left/right connections.
+    """Create dowel joints for left/right connections.
 
     Args:
         src_box: Source piece box
@@ -145,15 +145,15 @@ def _create_left_right_screw_joints(
     return (src_0, src_1, dst_0, dst_1)
 
 
-def _create_front_back_screw_joints_with_offset(
+def _create_front_back_dowel_joints_with_offset(
     src_box: Box,
     dst_box: Box,
     src_anchor: Anchor,
     dst_anchor: Anchor,
 ) -> tuple[Joint, Joint, Joint, Joint]:
-    """Create screw joints for front/back connections with offset clamping.
+    """Create dowel joints for front/back connections with offset clamping.
 
-    For 2x4 lumber, screws are placed 1 inch (25.4mm) from center horizontally,
+    For 2x4 lumber, dowels are placed 1 inch (25.4mm) from center horizontally,
     and 44.5mm from the anchor edge to avoid splitting.
 
     Args:
@@ -165,16 +165,16 @@ def _create_front_back_screw_joints_with_offset(
     Returns:
         Tuple of (src_0, src_1, dst_0, dst_1)
     """
-    # Screw placement constants for 2x4 lumber
-    screw_horizontal_offset = 25.4  # 1 inch from center
-    screw_edge_offset = 44.5  # Distance from anchor edge to avoid splitting
+    # Dowel placement constants for 2x4 lumber
+    dowel_horizontal_offset = 25.4  # 1 inch from center
+    dowel_edge_offset = 44.5  # Distance from anchor edge to avoid splitting
 
     orientation = _create_orientation_from_anchor(src_anchor)
     anchor_sp = as_surface_point(src_anchor, src_box)
     offset_dir = Vector2D.of(src_anchor.contact_face, src_anchor.edge_shared_face).v
-    screw_v = anchor_sp.position.v - offset_dir * screw_edge_offset
-    pos_0 = Point2D(u=screw_horizontal_offset, v=screw_v)
-    pos_1 = Point2D(u=-screw_horizontal_offset, v=screw_v)
+    dowel_v = anchor_sp.position.v - offset_dir * dowel_edge_offset
+    pos_0 = Point2D(u=dowel_horizontal_offset, v=dowel_v)
+    pos_1 = Point2D(u=-dowel_horizontal_offset, v=dowel_v)
 
     src_0, src_1 = _create_joint_pair_from_positions(
         face=src_anchor.contact_face,
@@ -228,10 +228,10 @@ def _create_vanilla_joint_pairs(
     return [JointPair(lhs=lhs_joint, rhs=rhs_joint)]
 
 
-def _create_screw_joint_pairs(
+def _create_dowel_joint_pairs(
     lhs_box: Box, rhs_box: Box, piece_conn: Connection
 ) -> list[JointPair]:
-    """Create screw joint pairs based on connection configuration.
+    """Create dowel joint pairs based on connection configuration.
 
     Args:
         lhs_box: Left-hand side piece box
@@ -239,14 +239,14 @@ def _create_screw_joint_pairs(
         piece_conn: Connection defining how pieces connect
 
     Returns:
-        List of JointPair objects for screw connections
+        List of JointPair objects for dowel connections
 
     Raises:
         NotImplementedError: For unsupported connection configurations
         RuntimeError: For invalid connection configurations
     """
     if piece_conn.lhs.contact_face in ("down", "top"):
-        lhs_0, lhs_1 = _create_top_down_screw_joints(piece_conn.lhs)
+        lhs_0, lhs_1 = _create_top_down_dowel_joints(piece_conn.lhs)
         rhs_0, rhs_1 = _project_joint_pair(
             src_box=lhs_box,
             dst_box=rhs_box,
@@ -257,7 +257,7 @@ def _create_screw_joint_pairs(
         )
         return [JointPair(lhs=lhs_0, rhs=rhs_0), JointPair(lhs=lhs_1, rhs=rhs_1)]
     elif piece_conn.rhs.contact_face in ("down", "top"):
-        rhs_0, rhs_1 = _create_top_down_screw_joints(piece_conn.rhs)
+        rhs_0, rhs_1 = _create_top_down_dowel_joints(piece_conn.rhs)
         lhs_0, lhs_1 = _project_joint_pair(
             src_box=rhs_box,
             dst_box=lhs_box,
@@ -268,7 +268,7 @@ def _create_screw_joint_pairs(
         )
         return [JointPair(lhs=lhs_0, rhs=rhs_0), JointPair(lhs=lhs_1, rhs=rhs_1)]
     elif piece_conn.lhs.contact_face in ("left", "right"):
-        lhs_0, lhs_1, rhs_0, rhs_1 = _create_left_right_screw_joints(
+        lhs_0, lhs_1, rhs_0, rhs_1 = _create_left_right_dowel_joints(
             src_box=lhs_box,
             dst_box=rhs_box,
             src_anchor=piece_conn.lhs,
@@ -276,7 +276,7 @@ def _create_screw_joint_pairs(
         )
         return [JointPair(lhs=lhs_0, rhs=rhs_0), JointPair(lhs=lhs_1, rhs=rhs_1)]
     elif piece_conn.rhs.contact_face in ("left", "right"):
-        rhs_0, rhs_1, lhs_0, lhs_1 = _create_left_right_screw_joints(
+        rhs_0, rhs_1, lhs_0, lhs_1 = _create_left_right_dowel_joints(
             src_box=rhs_box,
             dst_box=lhs_box,
             src_anchor=piece_conn.rhs,
@@ -300,7 +300,7 @@ def _create_screw_joint_pairs(
         )
 
         if is_lhs_shared_face_top_down:
-            lhs_0, lhs_1, rhs_0, rhs_1 = _create_front_back_screw_joints_with_offset(
+            lhs_0, lhs_1, rhs_0, rhs_1 = _create_front_back_dowel_joints_with_offset(
                 src_box=lhs_box,
                 dst_box=rhs_box,
                 src_anchor=piece_conn.lhs,
@@ -308,7 +308,7 @@ def _create_screw_joint_pairs(
             )
             return [JointPair(lhs=lhs_0, rhs=rhs_0), JointPair(lhs=lhs_1, rhs=rhs_1)]
         elif is_rhs_shared_face_top_down:
-            rhs_0, rhs_1, lhs_0, lhs_1 = _create_front_back_screw_joints_with_offset(
+            rhs_0, rhs_1, lhs_0, lhs_1 = _create_front_back_dowel_joints_with_offset(
                 src_box=rhs_box,
                 dst_box=lhs_box,
                 src_anchor=piece_conn.rhs,
@@ -317,14 +317,14 @@ def _create_screw_joint_pairs(
             return [JointPair(lhs=lhs_0, rhs=rhs_0), JointPair(lhs=lhs_1, rhs=rhs_1)]
         elif is_lhs_shared_face_left_right and is_rhs_shared_face_left_right:
             raise NotImplementedError(
-                "Screw joints for left-right to left-right connections are not yet implemented."
+                "Dowel joints for left-right to left-right connections are not yet implemented."
             )
 
         raise NotImplementedError(
-            "Screw joints for front-back to front-back connections are not yet implemented."
+            "Dowel joints for front-back to front-back connections are not yet implemented."
         )
     else:
-        raise RuntimeError("Unsupported screw connection configuration.")
+        raise RuntimeError("Unsupported dowel connection configuration.")
 
 
 def _create_joint_pairs(
@@ -343,4 +343,4 @@ def _create_joint_pairs(
     if piece_conn.type == ConnectionType.VANILLA:
         return _create_vanilla_joint_pairs(lhs_box, rhs_box, piece_conn)
     else:
-        return _create_screw_joint_pairs(lhs_box, rhs_box, piece_conn)
+        return _create_dowel_joint_pairs(lhs_box, rhs_box, piece_conn)

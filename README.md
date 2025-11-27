@@ -441,7 +441,7 @@ nichiyou-daiku/
 │       │   ├── connection.py # Connection specifications
 │       │   ├── assembly/   # 3D assembly generation
 │       │   │   ├── models.py, projection.py
-│       │   │   ├── screw_joints.py, utils.py
+│       │   │   ├── dowel_joints.py, utils.py
 │       │   │   └── builder.py
 │       │   └── geometry/   # Geometric primitives
 │       │       ├── face.py, edge.py, corner.py

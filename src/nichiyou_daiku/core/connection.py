@@ -27,14 +27,14 @@ class ConnectionType(Enum):
     """Enumeration of supported connection types.
 
     Examples:
-        >>> ConnectionType.SCREW
-        <ConnectionType.SCREW: 'screw'>
-        >>> ConnectionType.SCREW.value
-        'screw'
+        >>> ConnectionType.DOWEL
+        <ConnectionType.DOWEL: 'dowel'>
+        >>> ConnectionType.DOWEL.value
+        'dowel'
     """
 
     VANILLA = "vanilla"
-    SCREW = "screw"
+    DOWEL = "dowel"
 
     @classmethod
     def of(cls, value: str) -> "ConnectionType":
@@ -50,9 +50,9 @@ class ConnectionType(Enum):
             ValueError: If the connection type is not supported
 
         Examples:
-            >>> ConnectionType.of("screw")
-            <ConnectionType.SCREW: 'screw'>
-            >>> ConnectionType.of("screw") == ConnectionType.SCREW
+            >>> ConnectionType.of("dowel")
+            <ConnectionType.DOWEL: 'dowel'>
+            >>> ConnectionType.of("dowel") == ConnectionType.DOWEL
             True
             >>> import pytest
             >>> with pytest.raises(ValueError) as exc:
@@ -61,7 +61,7 @@ class ConnectionType(Enum):
             True
         """
         ret = {
-            "screw": cls.SCREW,
+            "dowel": cls.DOWEL,
             "vanilla": cls.VANILLA,
         }.get(value)
         if ret is not None:

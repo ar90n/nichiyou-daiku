@@ -11,7 +11,7 @@ from ..geometry import Box, Point3D
 from ..model import Model
 from ..piece import get_shape
 from .models import Hole, Joint
-from .screw_joints import _create_joint_pairs
+from .dowel_joints import _create_joint_pairs
 from .utils import _create_joint_id_generator, _create_pilot_hole_on_joint
 
 
@@ -71,7 +71,7 @@ class Assembly(BaseModel, frozen=True):
         """Create an Assembly instance from a Model.
 
         Converts the abstract model into a concrete 3D assembly.
-        Generates pilot holes for screw connections.
+        Generates pilot holes for dowel connections.
 
         Args:
             model: Model containing pieces and connections
@@ -103,7 +103,7 @@ class Assembly(BaseModel, frozen=True):
                 joints[rhs_joint_id] = joint_pair.rhs
                 joint_conns.append((lhs_joint_id, rhs_joint_id))
 
-                if piece_conn.type in (ConnectionType.SCREW, ConnectionType.VANILLA):
+                if piece_conn.type in (ConnectionType.DOWEL, ConnectionType.VANILLA):
                     pilot_holes.setdefault(lhs_id, []).append(
                         _create_pilot_hole_on_joint(
                             box=boxes[lhs_id],

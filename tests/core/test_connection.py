@@ -141,15 +141,15 @@ class TestAnchorValidation:
 class TestConnectionType:
     """Test ConnectionType enum."""
 
-    def test_should_have_screw_type(self):
-        """Should have SCREW connection type."""
-        assert ConnectionType.SCREW.value == "screw"
+    def test_should_have_dowel_type(self):
+        """Should have DOWEL connection type."""
+        assert ConnectionType.DOWEL.value == "dowel"
 
     def test_should_create_from_string(self):
         """Should create ConnectionType from string using of() method."""
-        conn_type = ConnectionType.of("screw")
-        assert conn_type == ConnectionType.SCREW
-        assert conn_type.value == "screw"
+        conn_type = ConnectionType.of("dowel")
+        assert conn_type == ConnectionType.DOWEL
+        assert conn_type.value == "dowel"
 
     def test_should_raise_error_for_unsupported_type(self):
         """Should raise ValueError for unsupported connection type."""
@@ -159,8 +159,8 @@ class TestConnectionType:
 
     def test_should_support_equality(self):
         """Should support equality comparison."""
-        type1 = ConnectionType.SCREW
-        type2 = ConnectionType.of("screw")
+        type1 = ConnectionType.DOWEL
+        type2 = ConnectionType.of("dowel")
         assert type1 == type2
 
 
@@ -254,9 +254,9 @@ class TestConnection:
             rhs=Anchor(
                 contact_face="down", edge_shared_face="front", offset=FromMin(value=10)
             ),
-            type=ConnectionType.SCREW,
+            type=ConnectionType.DOWEL,
         )
-        assert conn.type == ConnectionType.SCREW
+        assert conn.type == ConnectionType.DOWEL
 
     def test_should_serialize_with_type(self):
         """Should serialize Connection including type field."""

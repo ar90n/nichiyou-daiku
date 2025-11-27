@@ -134,12 +134,12 @@ class TestAssembly:
         assert len(assembly.joint_conns) == 1
         assert assembly.joint_conns[0] == ("p1_j0", "p2_j0")
 
-    def test_should_generate_pilot_holes_for_screw_connections(self):
-        """Should generate pilot holes for screw-type connections."""
+    def test_should_generate_pilot_holes_for_dowel_connections(self):
+        """Should generate pilot holes for dowel-type connections."""
         from nichiyou_daiku.core.model import Model, PiecePair
         from nichiyou_daiku.core.connection import ConnectionType
 
-        # Create pieces and screw connection
+        # Create pieces and dowel connection
         p1 = Piece.of(PieceType.PT_2x4, 1000.0, "p1")
         p2 = Piece.of(PieceType.PT_2x4, 800.0, "p2")
 
@@ -150,7 +150,7 @@ class TestAssembly:
             rhs=Anchor(
                 contact_face="down", edge_shared_face="front", offset=FromMin(value=50)
             ),
-            type=ConnectionType.SCREW,
+            type=ConnectionType.DOWEL,
         )
 
         model = Model.of(
@@ -170,14 +170,14 @@ class TestAssembly:
     # Assembly.of() method is covered in doctests
 
 
-class TestScrewJointFaceCombinations:
-    """Test screw joint implementation for all face combinations."""
+class TestDowelJointFaceCombinations:
+    """Test dowel joint implementation for all face combinations."""
 
     @pytest.mark.parametrize(
         "connection_type",
         [
             ConnectionType.VANILLA,
-            ConnectionType.SCREW,
+            ConnectionType.DOWEL,
         ],
     )
     @pytest.mark.parametrize(
@@ -235,8 +235,8 @@ class TestScrewJointFaceCombinations:
         assembly = Assembly.of(model)
 
         # Verify joints were created based on connection type
-        # SCREW creates 2 joint pairs (4 joints), VANILLA creates 1 joint pair (2 joints)
-        if connection_type == ConnectionType.SCREW:
+        # DOWEL creates 2 joint pairs (4 joints), VANILLA creates 1 joint pair (2 joints)
+        if connection_type == ConnectionType.DOWEL:
             expected_joints = 4
             expected_pairs = 2
         else:  # VANILLA
@@ -253,7 +253,7 @@ class TestScrewJointFaceCombinations:
         # Verify joint IDs
         assert "p1_j0" in assembly.joints
         assert "p2_j0" in assembly.joints
-        if connection_type == ConnectionType.SCREW:
+        if connection_type == ConnectionType.DOWEL:
             assert "p1_j1" in assembly.joints
             assert "p2_j1" in assembly.joints
 
