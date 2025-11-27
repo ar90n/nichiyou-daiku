@@ -1,6 +1,6 @@
 """Tests for cross product algorithm in Connection.of."""
 
-from nichiyou_daiku.core.connection import Anchor
+from nichiyou_daiku.core.anchor import Anchor, as_edge_point
 from nichiyou_daiku.core.geometry import (
     cross as cross_face,
     FromMax,
@@ -17,8 +17,6 @@ class TestCrossProductAlgorithm:
         anchor = Anchor(
             contact_face="left", edge_shared_face="down", offset=FromMax(value=50)
         )
-
-        from nichiyou_daiku.core.connection import as_edge_point
 
         edge_point = as_edge_point(anchor)
 
@@ -40,8 +38,6 @@ class TestCrossProductAlgorithm:
             contact_face="front", edge_shared_face="right", offset=FromMax(value=30)
         )
 
-        from nichiyou_daiku.core.connection import as_edge_point
-
         edge_point = as_edge_point(anchor)
 
         # Check that cross product determines correct edge direction
@@ -54,8 +50,6 @@ class TestCrossProductAlgorithm:
         anchor = Anchor(
             contact_face="left", edge_shared_face="down", offset=FromMin(value=50)
         )
-
-        from nichiyou_daiku.core.connection import as_edge_point
 
         edge_point = as_edge_point(anchor)
 
@@ -75,8 +69,6 @@ class TestCrossProductAlgorithm:
         anchor = Anchor(
             contact_face="left", edge_shared_face="back", offset=FromMax(value=25)
         )
-
-        from nichiyou_daiku.core.connection import as_edge_point
 
         edge_point = as_edge_point(anchor)
 

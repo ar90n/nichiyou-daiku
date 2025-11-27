@@ -6,7 +6,8 @@ meet at right angles, like the corner of a picture frame or box.
 
 from nichiyou_daiku.core.piece import Piece, PieceType
 from nichiyou_daiku.core.model import Model, PiecePair
-from nichiyou_daiku.core.connection import Connection, Anchor
+from nichiyou_daiku.core.anchor import Anchor
+from nichiyou_daiku.core.connection import Connection
 from nichiyou_daiku.core.geometry import FromMin
 from nichiyou_daiku.core.assembly import Assembly
 from nichiyou_daiku.shell import assembly_to_build123d

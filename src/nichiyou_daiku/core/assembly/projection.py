@@ -6,7 +6,7 @@ between different coordinate systems when connecting pieces.
 
 import numpy as np
 
-from ..connection import Anchor, as_orientation, as_surface_point
+from ..anchor import Anchor, as_orientation, as_surface_point
 from ..geometry import (
     Box,
     Orientation3D,

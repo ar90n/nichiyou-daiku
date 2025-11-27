@@ -8,9 +8,9 @@ from nichiyou_daiku.core.assembly import (
     project_joint,
 )
 from nichiyou_daiku.core.piece import Piece, PieceType, get_shape
+from nichiyou_daiku.core.anchor import Anchor
 from nichiyou_daiku.core.connection import (
     Connection,
-    Anchor,
     VanillaConnection,
     DowelConnection,
 )

@@ -1,7 +1,8 @@
 """Test screw joint implementation with various face combinations."""
 
 from nichiyou_daiku.core.piece import Piece, PieceType
-from nichiyou_daiku.core.connection import Connection, Anchor, DowelConnection
+from nichiyou_daiku.core.anchor import Anchor
+from nichiyou_daiku.core.connection import Connection, DowelConnection
 from nichiyou_daiku.core.geometry import FromMax, FromMin
 from nichiyou_daiku.core.model import Model, PiecePair
 from nichiyou_daiku.core.assembly import Assembly

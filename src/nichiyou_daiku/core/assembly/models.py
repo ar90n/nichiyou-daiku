@@ -6,7 +6,7 @@ joints and holes in 3D assemblies.
 
 from pydantic import BaseModel
 
-from ..connection import Anchor, as_surface_point
+from ..anchor import Anchor, as_surface_point
 from ..geometry import (
     Box,
     Face,

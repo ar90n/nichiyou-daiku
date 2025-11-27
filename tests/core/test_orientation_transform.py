@@ -1,6 +1,7 @@
 """Tests for orientation transformation in connections."""
 
-from nichiyou_daiku.core.connection import Connection, Anchor
+from nichiyou_daiku.core.anchor import Anchor
+from nichiyou_daiku.core.connection import Connection
 from nichiyou_daiku.core.geometry import (
     FromMax,
     FromMin,

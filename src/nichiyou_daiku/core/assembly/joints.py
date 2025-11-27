@@ -4,7 +4,8 @@ This module provides functions for creating dowel joints between
 pieces in different orientations (top/down, left/right, front/back).
 """
 
-from ..connection import Anchor, Connection, as_surface_point
+from ..anchor import Anchor, as_surface_point
+from ..connection import Connection
 from ..geometry import (
     Box,
     Face,

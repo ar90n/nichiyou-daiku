@@ -5,7 +5,7 @@ from lark import Token
 
 from nichiyou_daiku.core.geometry.offset import FromMax, FromMin
 from nichiyou_daiku.core.piece import PieceType
-from nichiyou_daiku.core.connection import Anchor
+from nichiyou_daiku.core.anchor import Anchor
 from nichiyou_daiku.dsl.exceptions import DSLSemanticError, DSLValidationError
 from nichiyou_daiku.dsl.transformer import DSLTransformer
 

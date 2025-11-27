@@ -363,9 +363,9 @@ nichiyou-daiku supports a Cypher-inspired DSL for more concise model definitions
 (right_side:2x4 =800)
 (shelf:2x4 =600)        // 600mm wide shelf
 
-// Connections using compact notation
-left_side -[RT>100 FT<50]- shelf    // Right-Top to Front-Top
-right_side -[LT>100 FT<50]- shelf   // Left-Top to Front-Top
+// Connections using compact notation with dowel joints
+left_side -[RT>100 FT<50 D(4.0, 20.0)]- shelf    // Dowel joint
+right_side -[LT>100 FT<50 D(4.0, 20.0)]- shelf   // Dowel joint
 ```
 
 #### DSL Features
@@ -374,6 +374,7 @@ right_side -[LT>100 FT<50]- shelf   // Left-Top to Front-Top
 - **Compact piece syntax**: `(id:type =length)` instead of JSON
 - **Compact connection syntax**: `[FF<100 TD>50]` for face+offset pairs
 - **Face abbreviations**: T(op), D(own), L(eft), R(ight), F(ront), B(ack)
+- **Connection types**: `V` for vanilla (default), `D(radius, depth)` for dowel joints
 
 #### DSL CLI Tools
 
@@ -401,7 +402,8 @@ For programmatic access, you can use the Python API directly
 ```python
 from nichiyou_daiku.core.piece import Piece, PieceType
 from nichiyou_daiku.core.model import Model, PiecePair
-from nichiyou_daiku.core.connection import Connection, Anchor
+from nichiyou_daiku.core.anchor import Anchor
+from nichiyou_daiku.core.connection import Connection
 from nichiyou_daiku.core.geometry import FromMin, FromMax
 
 # Create lumber pieces
@@ -441,7 +443,7 @@ nichiyou-daiku/
 │       │   ├── connection.py # Connection specifications
 │       │   ├── assembly/   # 3D assembly generation
 │       │   │   ├── models.py, projection.py
-│       │   │   ├── dowel_joints.py, utils.py
+│       │   │   ├── joints.py
 │       │   │   └── builder.py
 │       │   └── geometry/   # Geometric primitives
 │       │       ├── face.py, edge.py, corner.py

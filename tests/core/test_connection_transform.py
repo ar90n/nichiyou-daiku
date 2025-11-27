@@ -1,9 +1,6 @@
 """Tests for Connection.of coordinate transformation logic."""
 
-from nichiyou_daiku.core.connection import (
-    Anchor,
-    as_edge_point,
-)
+from nichiyou_daiku.core.anchor import Anchor, as_edge_point
 from nichiyou_daiku.core.geometry import FromMax
 
 
