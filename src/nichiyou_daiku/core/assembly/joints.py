@@ -245,6 +245,16 @@ def create_vanilla_joint_pairs(piece_conn: Connection) -> list[JointPair]:
     return [JointPair(lhs=base_joint, rhs=target_joint)]
 
 
+def _make_joint_pairs(
+    base_0: Joint, base_1: Joint, target_0: Joint, target_1: Joint
+) -> list[JointPair]:
+    """Create list of JointPairs from base and target joints."""
+    return [
+        JointPair(lhs=base_0, rhs=target_0),
+        JointPair(lhs=base_1, rhs=target_1),
+    ]
+
+
 def create_dowel_joint_pairs(piece_conn: Connection) -> list[JointPair]:
     """Create dowel joint pairs based on connection configuration.
 
@@ -260,100 +270,83 @@ def create_dowel_joint_pairs(piece_conn: Connection) -> list[JointPair]:
     """
     base_bound = piece_conn.base
     target_bound = piece_conn.target
+    base_face = base_bound.anchor.contact_face
+    target_face = target_bound.anchor.contact_face
 
-    if base_bound.anchor.contact_face in ("down", "top"):
-        base_0, base_1 = _create_top_down_dowel_joints(base_bound.anchor)
-        target_0, target_1 = _project_joint_pair(
-            src_bound=base_bound,
-            dst_bound=target_bound,
-            src_joint_0=base_0,
-            src_joint_1=base_1,
-        )
-        return [
-            JointPair(lhs=base_0, rhs=target_0),
-            JointPair(lhs=base_1, rhs=target_1),
-        ]
-    elif target_bound.anchor.contact_face in ("down", "top"):
-        target_0, target_1 = _create_top_down_dowel_joints(target_bound.anchor)
-        base_0, base_1 = _project_joint_pair(
-            src_bound=target_bound,
-            dst_bound=base_bound,
-            src_joint_0=target_0,
-            src_joint_1=target_1,
-        )
-        return [
-            JointPair(lhs=base_0, rhs=target_0),
-            JointPair(lhs=base_1, rhs=target_1),
-        ]
-    elif base_bound.anchor.contact_face in ("left", "right"):
-        base_0, base_1, target_0, target_1 = _create_left_right_dowel_joints(
-            src_bound=base_bound,
-            dst_bound=target_bound,
-        )
-        return [
-            JointPair(lhs=base_0, rhs=target_0),
-            JointPair(lhs=base_1, rhs=target_1),
-        ]
-    elif target_bound.anchor.contact_face in ("left", "right"):
-        target_0, target_1, base_0, base_1 = _create_left_right_dowel_joints(
-            src_bound=target_bound,
-            dst_bound=base_bound,
-        )
-        return [
-            JointPair(lhs=base_0, rhs=target_0),
-            JointPair(lhs=base_1, rhs=target_1),
-        ]
-
-    elif base_bound.anchor.contact_face in (
-        "front",
-        "back",
-    ) and target_bound.anchor.contact_face in ("front", "back"):
-        is_base_shared_face_top_down = base_bound.anchor.edge_shared_face in (
-            "top",
-            "down",
-        )
-        is_target_shared_face_top_down = target_bound.anchor.edge_shared_face in (
-            "top",
-            "down",
-        )
-        is_base_shared_face_left_right = base_bound.anchor.edge_shared_face in (
-            "left",
-            "right",
-        )
-        is_target_shared_face_left_right = target_bound.anchor.edge_shared_face in (
-            "left",
-            "right",
-        )
-
-        if is_base_shared_face_top_down:
-            base_0, base_1, target_0, target_1 = (
-                _create_front_back_dowel_joints_with_offset(
-                    src_bound=base_bound,
-                    dst_bound=target_bound,
-                )
+    match (base_face, target_face):
+        # Base is top/down: create joints on base, project to target
+        case ("top" | "down", _):
+            base_0, base_1 = _create_top_down_dowel_joints(base_bound.anchor)
+            target_0, target_1 = _project_joint_pair(
+                src_bound=base_bound,
+                dst_bound=target_bound,
+                src_joint_0=base_0,
+                src_joint_1=base_1,
             )
-            return [
-                JointPair(lhs=base_0, rhs=target_0),
-                JointPair(lhs=base_1, rhs=target_1),
-            ]
-        elif is_target_shared_face_top_down:
-            target_0, target_1, base_0, base_1 = (
-                _create_front_back_dowel_joints_with_offset(
-                    src_bound=target_bound,
-                    dst_bound=base_bound,
-                )
-            )
-            return [
-                JointPair(lhs=base_0, rhs=target_0),
-                JointPair(lhs=base_1, rhs=target_1),
-            ]
-        elif is_base_shared_face_left_right and is_target_shared_face_left_right:
-            raise NotImplementedError(
-                "Dowel joints for left-right to left-right connections are not yet implemented."
-            )
+            return _make_joint_pairs(base_0, base_1, target_0, target_1)
 
-        raise NotImplementedError(
-            "Dowel joints for front-back to front-back connections are not yet implemented."
-        )
-    else:
-        raise RuntimeError("Unsupported dowel connection configuration.")
+        # Target is top/down: create joints on target, project to base
+        case (_, "top" | "down"):
+            target_0, target_1 = _create_top_down_dowel_joints(target_bound.anchor)
+            base_0, base_1 = _project_joint_pair(
+                src_bound=target_bound,
+                dst_bound=base_bound,
+                src_joint_0=target_0,
+                src_joint_1=target_1,
+            )
+            return _make_joint_pairs(base_0, base_1, target_0, target_1)
+
+        # Base is left/right
+        case ("left" | "right", _):
+            base_0, base_1, target_0, target_1 = _create_left_right_dowel_joints(
+                src_bound=base_bound,
+                dst_bound=target_bound,
+            )
+            return _make_joint_pairs(base_0, base_1, target_0, target_1)
+
+        # Target is left/right
+        case (_, "left" | "right"):
+            target_0, target_1, base_0, base_1 = _create_left_right_dowel_joints(
+                src_bound=target_bound,
+                dst_bound=base_bound,
+            )
+            return _make_joint_pairs(base_0, base_1, target_0, target_1)
+
+        # Both are front/back: check edge_shared_face for orientation
+        case ("front" | "back", "front" | "back"):
+            base_edge = base_bound.anchor.edge_shared_face
+            target_edge = target_bound.anchor.edge_shared_face
+
+            match (base_edge, target_edge):
+                # Base edge is top/down: use base as source
+                case ("top" | "down", _):
+                    base_0, base_1, target_0, target_1 = (
+                        _create_front_back_dowel_joints_with_offset(
+                            src_bound=base_bound,
+                            dst_bound=target_bound,
+                        )
+                    )
+                    return _make_joint_pairs(base_0, base_1, target_0, target_1)
+
+                # Target edge is top/down: use target as source
+                case (_, "top" | "down"):
+                    target_0, target_1, base_0, base_1 = (
+                        _create_front_back_dowel_joints_with_offset(
+                            src_bound=target_bound,
+                            dst_bound=base_bound,
+                        )
+                    )
+                    return _make_joint_pairs(base_0, base_1, target_0, target_1)
+
+                # Both edges are left/right: not implemented
+                case ("left" | "right", "left" | "right"):
+                    raise NotImplementedError(
+                        "Dowel joints for left-right to left-right connections "
+                        "are not yet implemented."
+                    )
+
+                case _:
+                    raise NotImplementedError(
+                        "Dowel joints for front-back to front-back connections "
+                        "are not yet implemented."
+                    )
