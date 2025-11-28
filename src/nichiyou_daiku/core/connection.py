@@ -9,8 +9,8 @@ from typing import TypeAlias
 from pydantic import BaseModel
 
 from nichiyou_daiku.core.anchor import Anchor
-from nichiyou_daiku.core.geometry import Millimeters
-from nichiyou_daiku.core.piece import Piece
+from nichiyou_daiku.core.geometry import Box, Millimeters
+from nichiyou_daiku.core.piece import Piece, get_shape
 
 
 class VanillaConnection(BaseModel, frozen=True):
@@ -48,6 +48,14 @@ class BoundAnchor(BaseModel, frozen=True):
 
     piece: Piece
     anchor: Anchor
+
+    def get_box(self) -> Box:
+        """Get the Box for this BoundAnchor's piece.
+
+        Returns:
+            Box with the 3D shape of the piece
+        """
+        return Box(shape=get_shape(self.piece))
 
 
 class Connection(BaseModel, frozen=True):

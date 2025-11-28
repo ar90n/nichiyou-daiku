@@ -9,12 +9,11 @@ Public API:
     - JointPair: A pair of joints connecting two pieces
     - Assembly: Complete 3D assembly with all joints
     - project_joint: Project joint between coordinate systems
-    - project_surface_point: Project surface point between coordinate systems
 """
 
 from .builder import Assembly
 from .models import Hole, Joint, JointPair
-from .projection import project_joint, project_surface_point
+from .projection import project_joint
 
 __all__ = [
     "Hole",
@@ -22,5 +21,4 @@ __all__ = [
     "JointPair",
     "Assembly",
     "project_joint",
-    "project_surface_point",
 ]

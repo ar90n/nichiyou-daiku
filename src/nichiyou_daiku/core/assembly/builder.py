@@ -65,23 +65,19 @@ def _create_joint_id_generator(piece_ids: list[str]) -> Callable[[str], str]:
     return generate_next
 
 
-def _create_joint_pairs(
-    base_box: Box, target_box: Box, piece_conn: Connection
-) -> list[JointPair]:
+def _create_joint_pairs(piece_conn: Connection) -> list[JointPair]:
     """Create joint pairs for a connection based on connection type.
 
     Args:
-        base_box: Base piece box
-        target_box: Target piece box
         piece_conn: Connection defining how pieces connect
 
     Returns:
         List of JointPair objects
     """
     if isinstance(piece_conn.type, VanillaConnection):
-        return create_vanilla_joint_pairs(base_box, target_box, piece_conn)
+        return create_vanilla_joint_pairs(piece_conn)
     else:
-        return create_dowel_joint_pairs(base_box, target_box, piece_conn)
+        return create_dowel_joint_pairs(piece_conn)
 
 
 class Assembly(BaseModel, frozen=True):
@@ -169,11 +165,7 @@ class Assembly(BaseModel, frozen=True):
 
         for piece_conn in model.connections.values():
             base_id, target_id = piece_conn.base.piece.id, piece_conn.target.piece.id
-            joint_pairs = _create_joint_pairs(
-                base_box=boxes[base_id],
-                target_box=boxes[target_id],
-                piece_conn=piece_conn,
-            )
+            joint_pairs = _create_joint_pairs(piece_conn)
 
             for joint_pair in joint_pairs:
                 base_joint_id = generate_joint_id(base_id)

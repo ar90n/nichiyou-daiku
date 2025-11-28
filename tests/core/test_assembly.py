@@ -92,17 +92,12 @@ class TestJointPair:
             ),
         )
 
-        # Create joints directly
-        horizontal_box = Box(shape=get_shape(horizontal))
-        vertical_box = Box(shape=get_shape(vertical))
-
-        base_joint = Joint.of_anchor(anchor=piece_conn.base.anchor, box=horizontal_box)
+        # Create joints directly using BoundAnchor
+        base_joint = Joint.of_bound_anchor(piece_conn.base)
         target_joint = project_joint(
-            horizontal_box,
-            vertical_box,
-            base_joint,
-            piece_conn.base.anchor,
-            piece_conn.target.anchor,
+            src_bound=piece_conn.base,
+            dst_bound=piece_conn.target,
+            src_joint=base_joint,
         )
 
         assert isinstance(base_joint, Joint)
