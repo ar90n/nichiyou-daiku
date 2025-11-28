@@ -5,7 +5,7 @@ from nichiyou_daiku.core.assembly import (
     Joint,
 )
 from nichiyou_daiku.core.anchor import Anchor
-from nichiyou_daiku.core.connection import Connection
+from nichiyou_daiku.core.connection import BoundAnchor, Connection
 from typing import cast
 from nichiyou_daiku.core.geometry import (
     Point2D,
@@ -50,22 +50,26 @@ class TestOrientationPreservation:
         # LHS: left contact face with top edge shared face
         # RHS: right contact face with bottom edge shared face
         conn = Connection(
-            lhs=Anchor(
-                contact_face="left", edge_shared_face="top", offset=FromMax(value=100)
+            base=BoundAnchor(
+                piece=p1,
+                anchor=Anchor(
+                    contact_face="left",
+                    edge_shared_face="top",
+                    offset=FromMax(value=100),
+                ),
             ),
-            rhs=Anchor(
-                contact_face="right",
-                edge_shared_face="down",
-                offset=FromMin(value=50),
+            target=BoundAnchor(
+                piece=p2,
+                anchor=Anchor(
+                    contact_face="right",
+                    edge_shared_face="down",
+                    offset=FromMin(value=50),
+                ),
             ),
         )
 
         # Create model and assembly
-        from nichiyou_daiku.core.model import PiecePair
-
-        model = Model.of(
-            pieces=[p1, p2], connections=[(PiecePair(base=p1, target=p2), conn)]
-        )
+        model = Model.of(pieces=[p1, p2], connections=[conn])
         assembly = Assembly.of(model)
 
         # Get the joints from assembly
@@ -93,35 +97,48 @@ class TestOrientationPreservation:
         # Connection 1: vertical front to horizontal bottom
         # This tests front-bottom contact with orientation preservation
         conn1 = Connection(
-            lhs=Anchor(
-                contact_face="front", edge_shared_face="top", offset=FromMax(value=50)
+            base=BoundAnchor(
+                piece=p1,
+                anchor=Anchor(
+                    contact_face="front",
+                    edge_shared_face="top",
+                    offset=FromMax(value=50),
+                ),
             ),
-            rhs=Anchor(
-                contact_face="down",
-                edge_shared_face="front",
-                offset=FromMin(value=100),
+            target=BoundAnchor(
+                piece=p2,
+                anchor=Anchor(
+                    contact_face="down",
+                    edge_shared_face="front",
+                    offset=FromMin(value=100),
+                ),
             ),
         )
 
         # Connection 2: horizontal right to brace left
         # This tests right-left contact with different orientations
         conn2 = Connection(
-            lhs=Anchor(
-                contact_face="right", edge_shared_face="top", offset=FromMax(value=200)
+            base=BoundAnchor(
+                piece=p2,
+                anchor=Anchor(
+                    contact_face="right",
+                    edge_shared_face="top",
+                    offset=FromMax(value=200),
+                ),
             ),
-            rhs=Anchor(
-                contact_face="left", edge_shared_face="top", offset=FromMin(value=150)
+            target=BoundAnchor(
+                piece=p3,
+                anchor=Anchor(
+                    contact_face="left",
+                    edge_shared_face="top",
+                    offset=FromMin(value=150),
+                ),
             ),
         )
 
-        from nichiyou_daiku.core.model import PiecePair
-
         model = Model.of(
             pieces=[p1, p2, p3],
-            connections=[
-                (PiecePair(base=p1, target=p2), conn1),
-                (PiecePair(base=p2, target=p3), conn2),
-            ],
+            connections=[conn1, conn2],
         )
         assembly = Assembly.of(model)
 

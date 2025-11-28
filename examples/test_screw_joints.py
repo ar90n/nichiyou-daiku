@@ -2,9 +2,9 @@
 
 from nichiyou_daiku.core.piece import Piece, PieceType
 from nichiyou_daiku.core.anchor import Anchor
-from nichiyou_daiku.core.connection import Connection, DowelConnection
+from nichiyou_daiku.core.connection import BoundAnchor, Connection, DowelConnection
 from nichiyou_daiku.core.geometry import FromMax, FromMin
-from nichiyou_daiku.core.model import Model, PiecePair
+from nichiyou_daiku.core.model import Model
 from nichiyou_daiku.core.assembly import Assembly
 
 
@@ -28,11 +28,21 @@ def test_face_combination(
 
     # Create screw connection
     conn = Connection(
-        lhs=Anchor(
-            contact_face=lhs_face, edge_shared_face=lhs_edge, offset=FromMax(value=100)
+        base=BoundAnchor(
+            piece=p1,
+            anchor=Anchor(
+                contact_face=lhs_face,
+                edge_shared_face=lhs_edge,
+                offset=FromMax(value=100),
+            ),
         ),
-        rhs=Anchor(
-            contact_face=rhs_face, edge_shared_face=rhs_edge, offset=FromMin(value=50)
+        target=BoundAnchor(
+            piece=p2,
+            anchor=Anchor(
+                contact_face=rhs_face,
+                edge_shared_face=rhs_edge,
+                offset=FromMin(value=50),
+            ),
         ),
         type=DowelConnection(radius=4.0, depth=20.0),
     )
@@ -41,7 +51,7 @@ def test_face_combination(
     try:
         model = Model.of(
             pieces=[p1, p2],
-            connections=[(PiecePair(base=p1, target=p2), conn)],
+            connections=[conn],
             label=f"test_{lhs_face}_{rhs_face}",
         )
 

@@ -10,6 +10,7 @@ from nichiyou_daiku.core.assembly import (
 from nichiyou_daiku.core.piece import Piece, PieceType, get_shape
 from nichiyou_daiku.core.anchor import Anchor
 from nichiyou_daiku.core.connection import (
+    BoundAnchor,
     Connection,
     VanillaConnection,
     DowelConnection,
@@ -73,13 +74,21 @@ class TestJointPair:
 
         # Create L-angle piece connection
         piece_conn = Connection(
-            lhs=Anchor(
-                contact_face="left", edge_shared_face="top", offset=FromMax(value=10)
+            base=BoundAnchor(
+                piece=horizontal,
+                anchor=Anchor(
+                    contact_face="left",
+                    edge_shared_face="top",
+                    offset=FromMax(value=10),
+                ),
             ),
-            rhs=Anchor(
-                contact_face="down",
-                edge_shared_face="right",
-                offset=FromMin(value=10),
+            target=BoundAnchor(
+                piece=vertical,
+                anchor=Anchor(
+                    contact_face="down",
+                    edge_shared_face="right",
+                    offset=FromMin(value=10),
+                ),
             ),
         )
 
@@ -87,13 +96,17 @@ class TestJointPair:
         horizontal_box = Box(shape=get_shape(horizontal))
         vertical_box = Box(shape=get_shape(vertical))
 
-        lhs_joint = Joint.of_anchor(anchor=piece_conn.lhs, box=horizontal_box)
-        rhs_joint = project_joint(
-            horizontal_box, vertical_box, lhs_joint, piece_conn.lhs, piece_conn.rhs
+        base_joint = Joint.of_anchor(anchor=piece_conn.base.anchor, box=horizontal_box)
+        target_joint = project_joint(
+            horizontal_box,
+            vertical_box,
+            base_joint,
+            piece_conn.base.anchor,
+            piece_conn.target.anchor,
         )
 
-        assert isinstance(lhs_joint, Joint)
-        assert isinstance(rhs_joint, Joint)
+        assert isinstance(base_joint, Joint)
+        assert isinstance(target_joint, Joint)
 
 
 class TestAssembly:
@@ -103,24 +116,34 @@ class TestAssembly:
 
     def test_should_create_assembly_with_joints(self):
         """Should create Assembly with a dict of joints."""
-        from nichiyou_daiku.core.model import Model, PiecePair
+        from nichiyou_daiku.core.model import Model
 
         # Create pieces and connection
         p1 = Piece.of(PieceType.PT_2x4, 1000.0, "p1")
         p2 = Piece.of(PieceType.PT_2x4, 800.0, "p2")
 
         conn = Connection(
-            lhs=Anchor(
-                contact_face="front", edge_shared_face="top", offset=FromMax(value=100)
+            base=BoundAnchor(
+                piece=p1,
+                anchor=Anchor(
+                    contact_face="front",
+                    edge_shared_face="top",
+                    offset=FromMax(value=100),
+                ),
             ),
-            rhs=Anchor(
-                contact_face="down", edge_shared_face="front", offset=FromMin(value=50)
+            target=BoundAnchor(
+                piece=p2,
+                anchor=Anchor(
+                    contact_face="down",
+                    edge_shared_face="front",
+                    offset=FromMin(value=50),
+                ),
             ),
         )
 
         model = Model.of(
             pieces=[p1, p2],
-            connections=[(PiecePair(base=p1, target=p2), conn)],
+            connections=[conn],
             label="test_assembly",
         )
 
@@ -135,25 +158,33 @@ class TestAssembly:
 
     def test_should_generate_pilot_holes_for_dowel_connections(self):
         """Should generate pilot holes for dowel-type connections."""
-        from nichiyou_daiku.core.model import Model, PiecePair
+        from nichiyou_daiku.core.model import Model
 
         # Create pieces and dowel connection
         p1 = Piece.of(PieceType.PT_2x4, 1000.0, "p1")
         p2 = Piece.of(PieceType.PT_2x4, 800.0, "p2")
 
         conn = Connection(
-            lhs=Anchor(
-                contact_face="front", edge_shared_face="top", offset=FromMax(value=100)
+            base=BoundAnchor(
+                piece=p1,
+                anchor=Anchor(
+                    contact_face="front",
+                    edge_shared_face="top",
+                    offset=FromMax(value=100),
+                ),
             ),
-            rhs=Anchor(
-                contact_face="down", edge_shared_face="front", offset=FromMin(value=50)
+            target=BoundAnchor(
+                piece=p2,
+                anchor=Anchor(
+                    contact_face="down",
+                    edge_shared_face="front",
+                    offset=FromMin(value=50),
+                ),
             ),
             type=DowelConnection(radius=4.0, depth=20.0),
         )
 
-        model = Model.of(
-            pieces=[p1, p2], connections=[(PiecePair(base=p1, target=p2), conn)]
-        )
+        model = Model.of(pieces=[p1, p2], connections=[conn])
 
         assembly = Assembly.of(model)
 
@@ -179,7 +210,7 @@ class TestDowelJointFaceCombinations:
         ],
     )
     @pytest.mark.parametrize(
-        "lhs_face,lhs_edge,rhs_face,rhs_edge,description",
+        "base_face,base_edge,target_face,target_edge,description",
         [
             # Top/down combinations
             ("top", "front", "down", "front", "top-down"),
@@ -200,7 +231,13 @@ class TestDowelJointFaceCombinations:
         ],
     )
     def test_should_create_joints_for_face_combination(
-        self, connection_type, lhs_face, lhs_edge, rhs_face, rhs_edge, description
+        self,
+        connection_type,
+        base_face,
+        base_edge,
+        target_face,
+        target_edge,
+        description,
     ):
         """Should create correct number of joints for all valid face combinations."""
         # Create pieces
@@ -209,25 +246,31 @@ class TestDowelJointFaceCombinations:
 
         # Create connection
         conn = Connection(
-            lhs=Anchor(
-                contact_face=lhs_face,
-                edge_shared_face=lhs_edge,
-                offset=FromMax(value=100),
+            base=BoundAnchor(
+                piece=p1,
+                anchor=Anchor(
+                    contact_face=base_face,
+                    edge_shared_face=base_edge,
+                    offset=FromMax(value=100),
+                ),
             ),
-            rhs=Anchor(
-                contact_face=rhs_face,
-                edge_shared_face=rhs_edge,
-                offset=FromMin(value=50),
+            target=BoundAnchor(
+                piece=p2,
+                anchor=Anchor(
+                    contact_face=target_face,
+                    edge_shared_face=target_edge,
+                    offset=FromMin(value=50),
+                ),
             ),
             type=connection_type,
         )
 
         # Create model and assembly
-        from nichiyou_daiku.core.model import Model, PiecePair
+        from nichiyou_daiku.core.model import Model
 
         model = Model.of(
             pieces=[p1, p2],
-            connections=[(PiecePair(base=p1, target=p2), conn)],
+            connections=[conn],
             label=f"test_{description}_{connection_type.__class__.__name__}",
         )
         assembly = Assembly.of(model)

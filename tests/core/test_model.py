@@ -1,28 +1,10 @@
 """Tests for model module."""
 
-from nichiyou_daiku.core.model import PiecePair, Model
+from nichiyou_daiku.core.model import Model
 from nichiyou_daiku.core.piece import Piece, PieceType
 from nichiyou_daiku.core.anchor import Anchor
-from nichiyou_daiku.core.connection import Connection
+from nichiyou_daiku.core.connection import BoundAnchor, Connection
 from nichiyou_daiku.core.geometry import FromMax, FromMin
-
-
-class TestPiecePair:
-    """Test PiecePair model."""
-
-    # Basic creation is covered in doctests
-
-    def test_should_support_same_piece_type(self):
-        """Should support pairs with same piece types."""
-        piece1 = Piece.of(PieceType.PT_2x4, 1000.0)
-        piece2 = Piece.of(PieceType.PT_2x4, 1000.0)
-
-        pair = PiecePair(base=piece1, target=piece2)
-
-        assert pair.base.type == pair.target.type
-        assert pair.base.id != pair.target.id  # Different pieces
-
-    # Immutability is covered in doctests
 
 
 class TestModel:
@@ -36,13 +18,21 @@ class TestModel:
         piece2 = Piece.of(PieceType.PT_2x4, 800.0, "p2")
 
         conn = Connection(
-            lhs=Anchor(
-                contact_face="front", edge_shared_face="top", offset=FromMax(value=10)
+            base=BoundAnchor(
+                piece=piece1,
+                anchor=Anchor(
+                    contact_face="front",
+                    edge_shared_face="top",
+                    offset=FromMax(value=10),
+                ),
             ),
-            rhs=Anchor(
-                contact_face="down",
-                edge_shared_face="right",
-                offset=FromMin(value=10),
+            target=BoundAnchor(
+                piece=piece2,
+                anchor=Anchor(
+                    contact_face="down",
+                    edge_shared_face="right",
+                    offset=FromMin(value=10),
+                ),
             ),
         )
 
@@ -79,20 +69,28 @@ class TestModel:
 
         # Create L-angle connection
         l_angle_conn = Connection(
-            lhs=Anchor(
-                contact_face="front", edge_shared_face="top", offset=FromMax(value=10)
+            base=BoundAnchor(
+                piece=horizontal,
+                anchor=Anchor(
+                    contact_face="front",
+                    edge_shared_face="top",
+                    offset=FromMax(value=10),
+                ),
             ),
-            rhs=Anchor(
-                contact_face="down",
-                edge_shared_face="right",
-                offset=FromMin(value=10),
+            target=BoundAnchor(
+                piece=vertical,
+                anchor=Anchor(
+                    contact_face="down",
+                    edge_shared_face="right",
+                    offset=FromMin(value=10),
+                ),
             ),
         )
 
         # Create model
         model = Model.of(
             pieces=[horizontal, vertical],
-            connections=[(PiecePair(base=horizontal, target=vertical), l_angle_conn)],
+            connections=[l_angle_conn],
         )
 
         assert len(model.pieces) == 2
@@ -107,33 +105,46 @@ class TestModel:
         branch2 = Piece.of(PieceType.PT_2x4, 300.0, "branch2")
 
         conn1 = Connection(
-            lhs=Anchor(
-                contact_face="left", edge_shared_face="top", offset=FromMax(value=200)
+            base=BoundAnchor(
+                piece=main,
+                anchor=Anchor(
+                    contact_face="left",
+                    edge_shared_face="top",
+                    offset=FromMax(value=200),
+                ),
             ),
-            rhs=Anchor(
-                contact_face="down",
-                edge_shared_face="front",
-                offset=FromMin(value=10),
+            target=BoundAnchor(
+                piece=branch1,
+                anchor=Anchor(
+                    contact_face="down",
+                    edge_shared_face="front",
+                    offset=FromMin(value=10),
+                ),
             ),
         )
 
         conn2 = Connection(
-            lhs=Anchor(
-                contact_face="right", edge_shared_face="top", offset=FromMax(value=800)
+            base=BoundAnchor(
+                piece=main,
+                anchor=Anchor(
+                    contact_face="right",
+                    edge_shared_face="top",
+                    offset=FromMax(value=800),
+                ),
             ),
-            rhs=Anchor(
-                contact_face="down",
-                edge_shared_face="front",
-                offset=FromMin(value=10),
+            target=BoundAnchor(
+                piece=branch2,
+                anchor=Anchor(
+                    contact_face="down",
+                    edge_shared_face="front",
+                    offset=FromMin(value=10),
+                ),
             ),
         )
 
         model = Model.of(
             pieces=[main, branch1, branch2],
-            connections=[
-                (PiecePair(base=main, target=branch1), conn1),
-                (PiecePair(base=main, target=branch2), conn2),
-            ],
+            connections=[conn1, conn2],
         )
 
         assert len(model.pieces) == 3

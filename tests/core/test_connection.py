@@ -5,12 +5,14 @@ from pydantic import ValidationError
 
 from nichiyou_daiku.core.anchor import Anchor
 from nichiyou_daiku.core.connection import (
+    BoundAnchor,
     Connection,
     ConnectionType,
     VanillaConnection,
     DowelConnection,
 )
 from nichiyou_daiku.core.geometry import Face, Edge, EdgePoint, FromMax, FromMin, Offset
+from nichiyou_daiku.core.piece import Piece, PieceType
 
 
 class TestFromMax:
@@ -179,88 +181,144 @@ class TestConnection:
 
     def test_should_validate_nested_models(self):
         """Should validate all nested models."""
+        p1 = Piece.of(PieceType.PT_2x4, 1000.0, "p1")
+        p2 = Piece.of(PieceType.PT_2x4, 1000.0, "p2")
         # Valid connection
         conn = Connection(
-            lhs=Anchor(
-                contact_face="front", edge_shared_face="top", offset=FromMax(value=50)
+            base=BoundAnchor(
+                piece=p1,
+                anchor=Anchor(
+                    contact_face="front",
+                    edge_shared_face="top",
+                    offset=FromMax(value=50),
+                ),
             ),
-            rhs=Anchor(
-                contact_face="down",
-                edge_shared_face="front",
-                offset=FromMin(value=10),
+            target=BoundAnchor(
+                piece=p2,
+                anchor=Anchor(
+                    contact_face="down",
+                    edge_shared_face="front",
+                    offset=FromMin(value=10),
+                ),
             ),
         )
-        assert conn.lhs.offset.value == 50
-        assert conn.rhs.offset.value == 10
+        assert conn.base.anchor.offset.value == 50
+        assert conn.target.anchor.offset.value == 10
 
         # Invalid nested model should fail
         with pytest.raises(ValidationError):
             Connection(
-                lhs=Anchor(
-                    contact_face="top",
-                    edge_shared_face="left",
-                    offset=FromMax(value=-10),
+                base=BoundAnchor(
+                    piece=p1,
+                    anchor=Anchor(
+                        contact_face="top",
+                        edge_shared_face="left",
+                        offset=FromMax(value=-10),
+                    ),
                 ),
-                rhs=Anchor(
-                    contact_face="left",
-                    edge_shared_face="front",
-                    offset=FromMin(value=10),
+                target=BoundAnchor(
+                    piece=p2,
+                    anchor=Anchor(
+                        contact_face="left",
+                        edge_shared_face="front",
+                        offset=FromMin(value=10),
+                    ),
                 ),
             )
 
     def test_should_represent_complex_connections(self):
         """Should be able to represent various connection types."""
+        base_piece = Piece.of(PieceType.PT_2x4, 1000.0, "base")
+        branch_piece = Piece.of(PieceType.PT_2x4, 500.0, "branch")
+        side_a = Piece.of(PieceType.PT_2x4, 600.0, "side_a")
+        side_b = Piece.of(PieceType.PT_2x4, 600.0, "side_b")
         # T-joint example
         t_joint = Connection(
-            lhs=Anchor(
-                contact_face="left",
-                edge_shared_face="top",
-                offset=FromMax(value=50),  # Center of side face
+            base=BoundAnchor(
+                piece=base_piece,
+                anchor=Anchor(
+                    contact_face="left",
+                    edge_shared_face="top",
+                    offset=FromMax(value=50),  # Center of side face
+                ),
             ),
-            rhs=Anchor(
-                contact_face="down",
-                edge_shared_face="front",
-                offset=FromMin(value=10),
+            target=BoundAnchor(
+                piece=branch_piece,
+                anchor=Anchor(
+                    contact_face="down",
+                    edge_shared_face="front",
+                    offset=FromMin(value=10),
+                ),
             ),
         )
 
         # L-angle example
         l_angle = Connection(
-            lhs=Anchor(
-                contact_face="front",
-                edge_shared_face="top",
-                offset=FromMax(value=25),  # End face
+            base=BoundAnchor(
+                piece=side_a,
+                anchor=Anchor(
+                    contact_face="front",
+                    edge_shared_face="top",
+                    offset=FromMax(value=25),  # End face
+                ),
             ),
-            rhs=Anchor(
-                contact_face="right",
-                edge_shared_face="down",
-                offset=FromMin(value=100),
+            target=BoundAnchor(
+                piece=side_b,
+                anchor=Anchor(
+                    contact_face="right",
+                    edge_shared_face="down",
+                    offset=FromMin(value=100),
+                ),
             ),
         )
 
-        assert t_joint.lhs.contact_face == "left"
-        assert l_angle.lhs.contact_face == "front"
+        assert t_joint.base.anchor.contact_face == "left"
+        assert l_angle.base.anchor.contact_face == "front"
 
     def test_should_have_default_type(self):
         """Should have default connection type of VanillaConnection."""
+        p1 = Piece.of(PieceType.PT_2x4, 1000.0, "p1")
+        p2 = Piece.of(PieceType.PT_2x4, 1000.0, "p2")
         conn = Connection(
-            lhs=Anchor(
-                contact_face="front", edge_shared_face="top", offset=FromMax(value=50)
+            base=BoundAnchor(
+                piece=p1,
+                anchor=Anchor(
+                    contact_face="front",
+                    edge_shared_face="top",
+                    offset=FromMax(value=50),
+                ),
             ),
-            rhs=Anchor(
-                contact_face="down", edge_shared_face="front", offset=FromMin(value=10)
+            target=BoundAnchor(
+                piece=p2,
+                anchor=Anchor(
+                    contact_face="down",
+                    edge_shared_face="front",
+                    offset=FromMin(value=10),
+                ),
             ),
         )
         assert isinstance(conn.type, VanillaConnection)
 
     def test_should_accept_explicit_type(self):
         """Should accept explicitly specified connection type."""
+        p1 = Piece.of(PieceType.PT_2x4, 1000.0, "p1")
+        p2 = Piece.of(PieceType.PT_2x4, 1000.0, "p2")
         conn = Connection(
-            lhs=Anchor(
-                contact_face="front", edge_shared_face="top", offset=FromMax(value=50)
+            base=BoundAnchor(
+                piece=p1,
+                anchor=Anchor(
+                    contact_face="front",
+                    edge_shared_face="top",
+                    offset=FromMax(value=50),
+                ),
             ),
-            rhs=Anchor(
-                contact_face="down", edge_shared_face="front", offset=FromMin(value=10)
+            target=BoundAnchor(
+                piece=p2,
+                anchor=Anchor(
+                    contact_face="down",
+                    edge_shared_face="front",
+                    offset=FromMin(value=10),
+                ),
             ),
             type=DowelConnection(radius=4.0, depth=20.0),
         )
@@ -270,12 +328,24 @@ class TestConnection:
 
     def test_should_serialize_with_type(self):
         """Should serialize Connection including type field."""
+        p1 = Piece.of(PieceType.PT_2x4, 1000.0, "p1")
+        p2 = Piece.of(PieceType.PT_2x4, 1000.0, "p2")
         conn = Connection(
-            lhs=Anchor(
-                contact_face="front", edge_shared_face="top", offset=FromMax(value=50)
+            base=BoundAnchor(
+                piece=p1,
+                anchor=Anchor(
+                    contact_face="front",
+                    edge_shared_face="top",
+                    offset=FromMax(value=50),
+                ),
             ),
-            rhs=Anchor(
-                contact_face="down", edge_shared_face="front", offset=FromMin(value=10)
+            target=BoundAnchor(
+                piece=p2,
+                anchor=Anchor(
+                    contact_face="down",
+                    edge_shared_face="front",
+                    offset=FromMin(value=10),
+                ),
             ),
         )
         data = conn.model_dump()

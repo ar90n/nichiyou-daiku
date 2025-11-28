@@ -66,22 +66,22 @@ def _create_joint_id_generator(piece_ids: list[str]) -> Callable[[str], str]:
 
 
 def _create_joint_pairs(
-    lhs_box: Box, rhs_box: Box, piece_conn: Connection
+    base_box: Box, target_box: Box, piece_conn: Connection
 ) -> list[JointPair]:
     """Create joint pairs for a connection based on connection type.
 
     Args:
-        lhs_box: Left-hand side piece box
-        rhs_box: Right-hand side piece box
+        base_box: Base piece box
+        target_box: Target piece box
         piece_conn: Connection defining how pieces connect
 
     Returns:
         List of JointPair objects
     """
     if isinstance(piece_conn.type, VanillaConnection):
-        return create_vanilla_joint_pairs(lhs_box, rhs_box, piece_conn)
+        return create_vanilla_joint_pairs(base_box, target_box, piece_conn)
     else:
-        return create_dowel_joint_pairs(lhs_box, rhs_box, piece_conn)
+        return create_dowel_joint_pairs(base_box, target_box, piece_conn)
 
 
 class Assembly(BaseModel, frozen=True):
@@ -98,7 +98,7 @@ class Assembly(BaseModel, frozen=True):
         label: Optional label for the assembly
 
     Examples:
-        >>> from nichiyou_daiku.core.model import Model, PiecePair
+        >>> from nichiyou_daiku.core.model import Model
         >>> from nichiyou_daiku.core.piece import Piece, PieceType
         >>> from nichiyou_daiku.core.anchor import Anchor
         >>> from nichiyou_daiku.core.connection import Connection
@@ -106,21 +106,28 @@ class Assembly(BaseModel, frozen=True):
         >>> # Assembly from model
         >>> p1 = Piece.of(PieceType.PT_2x4, 1000.0, "p1")
         >>> p2 = Piece.of(PieceType.PT_2x4, 800.0, "p2")
+        >>> from nichiyou_daiku.core.connection import BoundAnchor
         >>> pc = Connection(
-        ...     lhs=Anchor(
-        ...         contact_face="front",
-        ...         edge_shared_face="top",
-        ...         offset=FromMax(value=100)
+        ...     base=BoundAnchor(
+        ...         piece=p1,
+        ...         anchor=Anchor(
+        ...             contact_face="front",
+        ...             edge_shared_face="top",
+        ...             offset=FromMax(value=100)
+        ...         )
         ...     ),
-        ...     rhs=Anchor(
-        ...         contact_face="down",
-        ...         edge_shared_face="front",
-        ...         offset=FromMin(value=50)
+        ...     target=BoundAnchor(
+        ...         piece=p2,
+        ...         anchor=Anchor(
+        ...             contact_face="down",
+        ...             edge_shared_face="front",
+        ...             offset=FromMin(value=50)
+        ...         )
         ...     )
         ... )
         >>> model = Model.of(
         ...     pieces=[p1, p2],
-        ...     connections=[(PiecePair(base=p1, target=p2), pc)]
+        ...     connections=[pc]
         ... )
         >>> assembly = Assembly.of(model)
         >>> len(assembly.joints)  # VANILLA creates 1 joint pair (2 joints)
@@ -160,29 +167,32 @@ class Assembly(BaseModel, frozen=True):
         pilot_holes: dict[str, list[tuple[Point3D, Hole]]] = {}
         generate_joint_id = _create_joint_id_generator(list(model.pieces.keys()))
 
-        for (lhs_id, rhs_id), piece_conn in model.connections.items():
+        for piece_conn in model.connections.values():
+            base_id, target_id = piece_conn.base.piece.id, piece_conn.target.piece.id
             joint_pairs = _create_joint_pairs(
-                lhs_box=boxes[lhs_id], rhs_box=boxes[rhs_id], piece_conn=piece_conn
+                base_box=boxes[base_id],
+                target_box=boxes[target_id],
+                piece_conn=piece_conn,
             )
 
             for joint_pair in joint_pairs:
-                lhs_joint_id = generate_joint_id(lhs_id)
-                rhs_joint_id = generate_joint_id(rhs_id)
+                base_joint_id = generate_joint_id(base_id)
+                target_joint_id = generate_joint_id(target_id)
 
-                joints[lhs_joint_id] = joint_pair.lhs
-                joints[rhs_joint_id] = joint_pair.rhs
-                joint_conns.append((lhs_joint_id, rhs_joint_id))
+                joints[base_joint_id] = joint_pair.lhs
+                joints[target_joint_id] = joint_pair.rhs
+                joint_conns.append((base_joint_id, target_joint_id))
 
                 if isinstance(piece_conn.type, (DowelConnection, VanillaConnection)):
-                    pilot_holes.setdefault(lhs_id, []).append(
+                    pilot_holes.setdefault(base_id, []).append(
                         _create_pilot_hole_on_joint(
-                            box=boxes[lhs_id],
+                            box=boxes[base_id],
                             joint=joint_pair.lhs,
                         )
                     )
-                    pilot_holes.setdefault(rhs_id, []).append(
+                    pilot_holes.setdefault(target_id, []).append(
                         _create_pilot_hole_on_joint(
-                            box=boxes[rhs_id],
+                            box=boxes[target_id],
                             joint=joint_pair.rhs,
                         )
                     )

@@ -5,9 +5,9 @@ demonstrating different ways pieces can be connected together.
 """
 
 from nichiyou_daiku.core.piece import Piece, PieceType
-from nichiyou_daiku.core.model import Model, PiecePair
+from nichiyou_daiku.core.model import Model
 from nichiyou_daiku.core.anchor import Anchor
-from nichiyou_daiku.core.connection import Connection
+from nichiyou_daiku.core.connection import BoundAnchor, Connection
 from nichiyou_daiku.core.geometry import FromMax, FromMin
 from nichiyou_daiku.core.assembly import Assembly
 from nichiyou_daiku.shell import assembly_to_build123d
@@ -27,21 +27,27 @@ upright = Piece.of(PieceType.PT_2x4, 400.0, "t_upright")  # Vertical piece
 
 # T-Joint: Connect upright to the middle of base beam
 t_joint_connection = Connection(
-    lhs=Anchor(
-        contact_face="front",
-        edge_shared_face="right",
-        offset=FromMin(value=400.0),  # 400mm from the edge (centered on 800mm beam)
+    base=BoundAnchor(
+        piece=base_beam,
+        anchor=Anchor(
+            contact_face="front",
+            edge_shared_face="right",
+            offset=FromMin(value=400.0),  # 400mm from the edge (centered on 800mm beam)
+        ),
     ),
-    rhs=Anchor(
-        contact_face="down",
-        edge_shared_face="front",
-        offset=FromMin(value=44.5),  # Centered on the 89mm width of 2x4
+    target=BoundAnchor(
+        piece=upright,
+        anchor=Anchor(
+            contact_face="down",
+            edge_shared_face="front",
+            offset=FromMin(value=44.5),  # Centered on the 89mm width of 2x4
+        ),
     ),
 )
 
 t_joint_model = Model.of(
     pieces=[base_beam, upright],
-    connections=[(PiecePair(base=base_beam, target=upright), t_joint_connection)],
+    connections=[t_joint_connection],
     label="t_joint",
 )
 
@@ -56,15 +62,23 @@ second_piece = Piece.of(PieceType.PT_2x4, 300.0, "butt_second")
 
 # Butt Joint: Connect end-to-end
 butt_joint_connection = Connection(
-    lhs=Anchor(contact_face="top", edge_shared_face="left", offset=FromMin(value=0)),
-    rhs=Anchor(contact_face="down", edge_shared_face="left", offset=FromMin(value=0)),
+    base=BoundAnchor(
+        piece=first_piece,
+        anchor=Anchor(
+            contact_face="top", edge_shared_face="left", offset=FromMin(value=0)
+        ),
+    ),
+    target=BoundAnchor(
+        piece=second_piece,
+        anchor=Anchor(
+            contact_face="down", edge_shared_face="left", offset=FromMin(value=0)
+        ),
+    ),
 )
 
 butt_joint_model = Model.of(
     pieces=[first_piece, second_piece],
-    connections=[
-        (PiecePair(base=first_piece, target=second_piece), butt_joint_connection)
-    ],
+    connections=[butt_joint_connection],
     label="butt_joint",
 )
 
@@ -79,17 +93,23 @@ side_b = Piece.of(PieceType.PT_2x4, 400.0, "corner_b")
 
 # Corner Joint: Two pieces meeting at 90 degrees
 corner_joint_connection = Connection(
-    lhs=Anchor(
-        contact_face="back", edge_shared_face="right", offset=FromMin(value=0.0)
+    base=BoundAnchor(
+        piece=side_a,
+        anchor=Anchor(
+            contact_face="back", edge_shared_face="right", offset=FromMin(value=0.0)
+        ),
     ),
-    rhs=Anchor(
-        contact_face="left", edge_shared_face="front", offset=FromMin(value=0.0)
+    target=BoundAnchor(
+        piece=side_b,
+        anchor=Anchor(
+            contact_face="left", edge_shared_face="front", offset=FromMin(value=0.0)
+        ),
     ),
 )
 
 corner_joint_model = Model.of(
     pieces=[side_a, side_b],
-    connections=[(PiecePair(base=side_a, target=side_b), corner_joint_connection)],
+    connections=[corner_joint_connection],
     label="corner_joint",
 )
 

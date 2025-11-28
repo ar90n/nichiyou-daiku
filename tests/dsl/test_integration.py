@@ -28,17 +28,17 @@ class TestCompactNotationIntegration:
 
         # Check first connection
         conn1 = model.connections[("beam1", "beam2")]
-        assert conn1.lhs.contact_face == "top"
-        assert conn1.lhs.edge_shared_face == "front"
-        assert isinstance(conn1.lhs.offset, FromMin)
-        assert conn1.lhs.offset.value == 0.0
+        assert conn1.base.anchor.contact_face == "top"
+        assert conn1.base.anchor.edge_shared_face == "front"
+        assert isinstance(conn1.base.anchor.offset, FromMin)
+        assert conn1.base.anchor.offset.value == 0.0
 
         # Check second connection
         conn2 = model.connections[("beam2", "beam3")]
-        assert conn2.lhs.contact_face == "right"
-        assert conn2.lhs.edge_shared_face == "back"
-        assert isinstance(conn2.lhs.offset, FromMax)
-        assert conn2.lhs.offset.value == 50.0
+        assert conn2.base.anchor.contact_face == "right"
+        assert conn2.base.anchor.edge_shared_face == "back"
+        assert isinstance(conn2.base.anchor.offset, FromMax)
+        assert conn2.base.anchor.offset.value == 50.0
 
     def test_complex_table_with_compact_notation(self):
         """Test a more complex table structure with compact notation."""
@@ -62,8 +62,8 @@ class TestCompactNotationIntegration:
 
         # All legs should connect to the bottom of the top
         for (base_id, target_id), conn in model.connections.items():
-            assert conn.lhs.contact_face == "down"
-            assert conn.rhs.contact_face == "top"
+            assert conn.base.anchor.contact_face == "down"
+            assert conn.target.anchor.contact_face == "top"
 
     def test_mixed_notation_in_same_dsl(self):
         """Test using both compact and traditional notation in same DSL."""
@@ -84,15 +84,15 @@ class TestCompactNotationIntegration:
 
         # First connection uses compact notation
         conn1 = model.connections[("p1", "p2")]
-        assert conn1.lhs.contact_face == "top"
-        assert conn1.rhs.contact_face == "back"
+        assert conn1.base.anchor.contact_face == "top"
+        assert conn1.target.anchor.contact_face == "back"
 
         # Second connection uses traditional notation
         conn2 = model.connections[("p2", "p3")]
-        assert conn2.lhs.contact_face == "right"
-        assert conn2.lhs.offset.value == 100.0
-        assert conn2.rhs.contact_face == "left"
-        assert conn2.rhs.offset.value == 50.0
+        assert conn2.base.anchor.contact_face == "right"
+        assert conn2.base.anchor.offset.value == 100.0
+        assert conn2.target.anchor.contact_face == "left"
+        assert conn2.target.anchor.offset.value == 50.0
 
 
 class TestCompactPieceIntegration:
@@ -173,8 +173,8 @@ class TestCompactPieceIntegration:
 
         # Check connections preserve decimal offsets
         conn1 = model.connections[("beam1", "beam2")]
-        assert conn1.lhs.offset.value == 10.5
-        assert conn1.rhs.offset.value == 20.25
+        assert conn1.base.anchor.offset.value == 10.5
+        assert conn1.target.anchor.offset.value == 20.25
 
 
 class TestDSLIntegration:
@@ -268,10 +268,10 @@ class TestDSLIntegration:
 
         for (base_id, target_id), connection in model.connections.items():
             # Check that offsets are properly parsed
-            assert isinstance(connection.lhs.offset, (FromMin, FromMax))
-            assert isinstance(connection.rhs.offset, (FromMin, FromMax))
-            assert connection.lhs.offset.value >= 0
-            assert connection.rhs.offset.value >= 0
+            assert isinstance(connection.base.anchor.offset, (FromMin, FromMax))
+            assert isinstance(connection.target.anchor.offset, (FromMin, FromMax))
+            assert connection.base.anchor.offset.value >= 0
+            assert connection.target.anchor.offset.value >= 0
 
     def test_model_api_compatibility(self):
         """Test that DSL-generated models are compatible with the Model API."""
@@ -291,23 +291,31 @@ class TestDSLIntegration:
         beam1 = Piece.of(PieceType.PT_2x4, 1000.0, "beam1")
         beam2 = Piece.of(PieceType.PT_2x4, 2000.0, "beam2")
 
-        from nichiyou_daiku.core.connection import Anchor, Connection
-        from nichiyou_daiku.core.model import PiecePair
+        from nichiyou_daiku.core.connection import BoundAnchor, Connection
+        from nichiyou_daiku.core.anchor import Anchor
 
         connection = Connection(
-            lhs=Anchor(
-                contact_face="front", edge_shared_face="top", offset=FromMax(value=100)
+            base=BoundAnchor(
+                piece=beam1,
+                anchor=Anchor(
+                    contact_face="front",
+                    edge_shared_face="top",
+                    offset=FromMax(value=100),
+                ),
             ),
-            rhs=Anchor(
-                contact_face="down",
-                edge_shared_face="front",
-                offset=FromMin(value=50),
+            target=BoundAnchor(
+                piece=beam2,
+                anchor=Anchor(
+                    contact_face="down",
+                    edge_shared_face="front",
+                    offset=FromMin(value=50),
+                ),
             ),
         )
 
         api_model = Model.of(
             pieces=[beam1, beam2],
-            connections=[(PiecePair(base=beam1, target=beam2), connection)],
+            connections=[connection],
         )
 
         # Compare models

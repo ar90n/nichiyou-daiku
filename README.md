@@ -401,7 +401,7 @@ For programmatic access, you can use the Python API directly
 
 ```python
 from nichiyou_daiku.core.piece import Piece, PieceType
-from nichiyou_daiku.core.model import Model, PiecePair
+from nichiyou_daiku.core.model import Model
 from nichiyou_daiku.core.anchor import Anchor
 from nichiyou_daiku.core.connection import Connection
 from nichiyou_daiku.core.geometry import FromMin, FromMax
@@ -412,6 +412,8 @@ vertical_post = Piece.of(PieceType.PT_2x4, 400.0, "post")
 
 # Define connection using the simplified API
 connection = Connection(
+    base="beam",
+    target="post",
     lhs=Anchor(
         contact_face="top",
         edge_shared_face="front",
@@ -427,7 +429,7 @@ connection = Connection(
 # Create a model with connected pieces
 model = Model.of(
     pieces=[horizontal_beam, vertical_post],
-    connections=[(PiecePair(base=horizontal_beam, target=vertical_post), connection)]
+    connections=[connection]
 )
 ```
 

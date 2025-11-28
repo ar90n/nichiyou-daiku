@@ -1,8 +1,8 @@
 # %%
 from nichiyou_daiku.core.piece import Piece, PieceType, get_shape
-from nichiyou_daiku.core.model import Model, PiecePair
+from nichiyou_daiku.core.model import Model
 from nichiyou_daiku.core.anchor import Anchor
-from nichiyou_daiku.core.connection import Connection
+from nichiyou_daiku.core.connection import BoundAnchor, Connection
 from nichiyou_daiku.core.geometry import FromMax, FromMin, Offset
 from nichiyou_daiku.core.assembly import Assembly
 from nichiyou_daiku.shell import assembly_to_build123d
@@ -118,32 +118,36 @@ for leg_pos, apron_pos in [
 ]:
     connections.extend(
         [
-            (
-                PiecePair(
-                    base=legs[leg_pos], target=bottom_table_top_aprons[apron_pos]
-                ),
-                Connection(
-                    lhs=Anchor(
+            Connection(
+                base=BoundAnchor(
+                    piece=f"leg_{leg_pos}",
+                    anchor=Anchor(
                         contact_face="back",
                         edge_shared_face="left",
                         offset=BOTTOM_APRON_HEIGHT,
                     ),
-                    rhs=Anchor(
+                ),
+                target=BoundAnchor(
+                    piece=f"bottom_table_top_apron_{apron_pos}",
+                    anchor=Anchor(
                         contact_face="down",
                         edge_shared_face="right",
                         offset=FromMin(value=0),
                     ),
                 ),
             ),
-            (
-                PiecePair(base=legs[leg_pos], target=top_table_top_aprons[apron_pos]),
-                Connection(
-                    lhs=Anchor(
+            Connection(
+                base=BoundAnchor(
+                    piece=f"leg_{leg_pos}",
+                    anchor=Anchor(
                         contact_face="back",
                         edge_shared_face="left",
                         offset=TOP_APRON_HEIGHT,
                     ),
-                    rhs=Anchor(
+                ),
+                target=BoundAnchor(
+                    piece=f"top_table_top_apron_{apron_pos}",
+                    anchor=Anchor(
                         contact_face="down",
                         edge_shared_face="right",
                         offset=FromMax(value=0),
@@ -159,32 +163,36 @@ for leg_pos, apron_pos in [
 ]:
     connections.extend(
         [
-            (
-                PiecePair(
-                    base=legs[leg_pos], target=bottom_table_top_aprons[apron_pos]
-                ),
-                Connection(
-                    lhs=Anchor(
+            Connection(
+                base=BoundAnchor(
+                    piece=f"leg_{leg_pos}",
+                    anchor=Anchor(
                         contact_face="front",
                         edge_shared_face="right",
                         offset=BOTTOM_APRON_HEIGHT,
                     ),
-                    rhs=Anchor(
+                ),
+                target=BoundAnchor(
+                    piece=f"bottom_table_top_apron_{apron_pos}",
+                    anchor=Anchor(
                         contact_face="top",
                         edge_shared_face="left",
                         offset=FromMin(value=0),
                     ),
                 ),
             ),
-            (
-                PiecePair(base=legs[leg_pos], target=top_table_top_aprons[apron_pos]),
-                Connection(
-                    lhs=Anchor(
+            Connection(
+                base=BoundAnchor(
+                    piece=f"leg_{leg_pos}",
+                    anchor=Anchor(
                         contact_face="front",
                         edge_shared_face="right",
                         offset=TOP_APRON_HEIGHT,
                     ),
-                    rhs=Anchor(
+                ),
+                target=BoundAnchor(
+                    piece=f"top_table_top_apron_{apron_pos}",
+                    anchor=Anchor(
                         contact_face="top",
                         edge_shared_face="left",
                         offset=FromMax(value=0),
@@ -196,105 +204,126 @@ for leg_pos, apron_pos in [
 
 connections.extend(
     [
-        (
-            PiecePair(base=legs["left_front"], target=bottom_aprons["left"]),
-            Connection(
-                lhs=Anchor(
+        Connection(
+            base=BoundAnchor(
+                piece="leg_left_front",
+                anchor=Anchor(
                     contact_face="right",
                     edge_shared_face="front",
                     offset=FromMin(value=BOTTOM_APRON_HEIGHT.value + 150.0),
                 ),
-                rhs=Anchor(
+            ),
+            target=BoundAnchor(
+                piece="bottom_apron_left",
+                anchor=Anchor(
                     contact_face="top",
                     edge_shared_face="front",
                     offset=FromMax(value=0),
                 ),
             ),
         ),
-        (
-            PiecePair(base=legs["left_front"], target=top_aprons["left"]),
-            Connection(
-                lhs=Anchor(
+        Connection(
+            base=BoundAnchor(
+                piece="leg_left_front",
+                anchor=Anchor(
                     contact_face="right",
                     edge_shared_face="front",
                     offset=FromMax(value=0),
                 ),
-                rhs=Anchor(
+            ),
+            target=BoundAnchor(
+                piece="top_apron_left",
+                anchor=Anchor(
                     contact_face="top",
                     edge_shared_face="front",
                     offset=FromMax(value=0),
                 ),
             ),
         ),
-        (
-            PiecePair(base=legs["right_front"], target=bottom_aprons["right"]),
-            Connection(
-                lhs=Anchor(
+        Connection(
+            base=BoundAnchor(
+                piece="leg_right_front",
+                anchor=Anchor(
                     contact_face="right",
                     edge_shared_face="back",
                     offset=FromMin(value=BOTTOM_APRON_HEIGHT.value + 150.0),
                 ),
-                rhs=Anchor(
+            ),
+            target=BoundAnchor(
+                piece="bottom_apron_right",
+                anchor=Anchor(
                     contact_face="down",
                     edge_shared_face="front",
                     offset=FromMax(value=0),
                 ),
             ),
         ),
-        (
-            PiecePair(base=legs["right_front"], target=top_aprons["right"]),
-            Connection(
-                lhs=Anchor(
+        Connection(
+            base=BoundAnchor(
+                piece="leg_right_front",
+                anchor=Anchor(
                     contact_face="right",
                     edge_shared_face="back",
                     offset=FromMax(value=0),
                 ),
-                rhs=Anchor(
+            ),
+            target=BoundAnchor(
+                piece="top_apron_right",
+                anchor=Anchor(
                     contact_face="down",
                     edge_shared_face="front",
                     offset=FromMax(value=0),
                 ),
             ),
         ),
-        (
-            PiecePair(base=legs["left_back"], target=bottom_aprons["back"]),
-            Connection(
-                lhs=Anchor(
+        Connection(
+            base=BoundAnchor(
+                piece="leg_left_back",
+                anchor=Anchor(
                     contact_face="back",
                     edge_shared_face="right",
                     offset=FromMin(value=BOTTOM_APRON_HEIGHT.value + 150.0),
                 ),
-                rhs=Anchor(
+            ),
+            target=BoundAnchor(
+                piece="bottom_apron_back",
+                anchor=Anchor(
                     contact_face="down",
                     edge_shared_face="back",
                     offset=FromMax(value=0),
                 ),
             ),
         ),
-        (
-            PiecePair(base=legs["left_back"], target=top_aprons["back"]),
-            Connection(
-                lhs=Anchor(
+        Connection(
+            base=BoundAnchor(
+                piece="leg_left_back",
+                anchor=Anchor(
                     contact_face="back",
                     edge_shared_face="right",
                     offset=FromMax(value=0),
                 ),
-                rhs=Anchor(
+            ),
+            target=BoundAnchor(
+                piece="top_apron_back",
+                anchor=Anchor(
                     contact_face="down",
                     edge_shared_face="back",
                     offset=FromMax(value=0),
                 ),
             ),
         ),
-        (
-            PiecePair(base=legs["left_front"], target=top_aprons["front"]),
-            Connection(
-                lhs=Anchor(
+        Connection(
+            base=BoundAnchor(
+                piece="leg_left_front",
+                anchor=Anchor(
                     contact_face="back",
                     edge_shared_face="left",
                     offset=FromMax(value=0),
                 ),
-                rhs=Anchor(
+            ),
+            target=BoundAnchor(
+                piece="top_apron_front",
+                anchor=Anchor(
                     contact_face="down",
                     edge_shared_face="front",
                     offset=FromMax(value=0),
@@ -312,20 +341,23 @@ def _get_too_piece_offset(ind: int, piece: Piece, interval: float) -> Offset:
 
 def _connect_top_pieces(
     top_pieces: list[Piece], front_apron: Piece, back_apron: Piece, offset: float
-) -> list[tuple[PiecePair, Connection]]:
+) -> list[Connection]:
     return [
         *[
-            (
-                PiecePair(base=front_apron, target=top_piece),
-                Connection(
-                    lhs=Anchor(
+            Connection(
+                base=BoundAnchor(
+                    piece=front_apron.id,
+                    anchor=Anchor(
                         contact_face="back",
                         edge_shared_face="right",
                         offset=FromMin(
                             value=_get_too_piece_offset(i, top_piece, offset)
                         ),
                     ),
-                    rhs=Anchor(
+                ),
+                target=BoundAnchor(
+                    piece=top_piece.id,
+                    anchor=Anchor(
                         contact_face="back",
                         edge_shared_face="top",
                         offset=FromMin(value=0),
@@ -335,10 +367,10 @@ def _connect_top_pieces(
             for i, top_piece in enumerate(top_pieces)
         ],
         *[
-            (
-                PiecePair(base=back_apron, target=top_piece),
-                Connection(
-                    lhs=Anchor(
+            Connection(
+                base=BoundAnchor(
+                    piece=back_apron.id,
+                    anchor=Anchor(
                         contact_face="back",
                         edge_shared_face="left",
                         offset=FromMin(
@@ -347,7 +379,10 @@ def _connect_top_pieces(
                             )
                         ),
                     ),
-                    rhs=Anchor(
+                ),
+                target=BoundAnchor(
+                    piece=top_piece.id,
+                    anchor=Anchor(
                         contact_face="back",
                         edge_shared_face="down",
                         offset=FromMin(value=0),

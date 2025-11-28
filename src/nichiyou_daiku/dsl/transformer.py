@@ -5,8 +5,9 @@ from typing import Any, cast
 
 from lark import Token, Transformer
 
+from nichiyou_daiku.core.anchor import Anchor
 from nichiyou_daiku.core.connection import (
-    Anchor,
+    BoundAnchor,
     Connection,
     ConnectionType,
     DowelConnection,
@@ -14,7 +15,7 @@ from nichiyou_daiku.core.connection import (
 )
 from nichiyou_daiku.core.geometry.face import Face
 from nichiyou_daiku.core.geometry.offset import FromMax, FromMin, Offset
-from nichiyou_daiku.core.model import Model, PiecePair
+from nichiyou_daiku.core.model import Model
 from nichiyou_daiku.core.piece import Piece, PieceType
 from nichiyou_daiku.dsl.exceptions import DSLSemanticError, DSLValidationError
 
@@ -55,7 +56,7 @@ class DSLTransformer(Transformer):
     def __init__(self):
         super().__init__()
         self.pieces: dict[str, Piece] = {}
-        self.connections: list[tuple[PiecePair, Connection]] = []
+        self.connections: list[Connection] = []
 
     def start(self, items: list[Any]) -> Model:
         """Transform the start rule into a Model."""
@@ -167,9 +168,9 @@ class DSLTransformer(Transformer):
         self._validate_connection_components(components)
 
         anchors = self._create_anchors_from_components(components)
-        pieces = self._resolve_piece_references(components.piece_refs)
+        piece_ids = self._validate_piece_references(components.piece_refs)
 
-        self._register_connection(pieces, anchors, components.connection_type)
+        self._register_connection(piece_ids, anchors, components.connection_type)
 
     def _parse_connection_components(self, items: list[Any]) -> ConnectionComponents:
         """Parse items into connection components."""
@@ -235,39 +236,40 @@ class DSLTransformer(Transformer):
         # Compact format
         return (components.compact_anchor_list[0], components.compact_anchor_list[1])
 
-    def _resolve_piece_references(self, piece_refs: list[str]) -> tuple[Piece, Piece]:
-        """Resolve piece references to actual pieces."""
+    def _validate_piece_references(self, piece_refs: list[str]) -> tuple[str, str]:
+        """Validate piece references exist and return their IDs."""
         base_id, target_id = piece_refs
 
-        base_piece = self.pieces.get(base_id)
-        if base_piece is None:
+        if base_id not in self.pieces:
             raise DSLSemanticError(f"Unknown piece reference: {base_id}")
 
-        target_piece = self.pieces.get(target_id)
-        if target_piece is None:
+        if target_id not in self.pieces:
             raise DSLSemanticError(f"Unknown piece reference: {target_id}")
 
-        return base_piece, target_piece
+        return base_id, target_id
 
     def _register_connection(
         self,
-        pieces: tuple[Piece, Piece],
+        piece_ids: tuple[str, str],
         anchors: tuple[Anchor, Anchor],
         connection_type: ConnectionType | None = None,
     ) -> None:
         """Register a connection between pieces."""
-        base_piece, target_piece = pieces
-        lhs_anchor, rhs_anchor = anchors
+        base_id, target_id = piece_ids
+        base_anchor, target_anchor = anchors
 
         # Use VanillaConnection as default if not specified
         conn_type = (
             connection_type if connection_type is not None else VanillaConnection()
         )
 
-        connection = Connection(lhs=lhs_anchor, rhs=rhs_anchor, type=conn_type)
-        piece_pair = PiecePair(base=base_piece, target=target_piece)
+        connection = Connection(
+            base=BoundAnchor(piece=self.pieces[base_id], anchor=base_anchor),
+            target=BoundAnchor(piece=self.pieces[target_id], anchor=target_anchor),
+            type=conn_type,
+        )
 
-        self.connections.append((piece_pair, connection))
+        self.connections.append(connection)
 
     def piece_ref(self, items: list[Token]) -> str:
         """Transform a piece reference."""

@@ -300,34 +300,35 @@ def extract_resources(assembly: Assembly) -> ResourceSummary:
     # Extract anchor information from connections via model
     piece_anchors: Dict[str, list[AnchorInfo]] = {}
 
-    for (lhs_id, rhs_id), connection in assembly.model.connections.items():
-        # Add lhs anchor to base piece
-        if lhs_id not in piece_anchors:
-            piece_anchors[lhs_id] = []
+    for connection in assembly.model.connections.values():
+        base_id, target_id = connection.base.piece.id, connection.target.piece.id
+        # Add base_anchor to base piece
+        if base_id not in piece_anchors:
+            piece_anchors[base_id] = []
 
-        lhs_anchor = connection.lhs
-        offset_type = type(lhs_anchor.offset).__name__
-        piece_anchors[lhs_id].append(
+        base_anchor = connection.base.anchor
+        offset_type = type(base_anchor.offset).__name__
+        piece_anchors[base_id].append(
             AnchorInfo(
-                contact_face=lhs_anchor.contact_face,
-                edge_shared_face=lhs_anchor.edge_shared_face,
+                contact_face=base_anchor.contact_face,
+                edge_shared_face=base_anchor.edge_shared_face,
                 offset_type=offset_type,
-                offset_value=lhs_anchor.offset.value,
+                offset_value=base_anchor.offset.value,
             )
         )
 
-        # Add rhs anchor to target piece
-        if rhs_id not in piece_anchors:
-            piece_anchors[rhs_id] = []
+        # Add target_anchor to target piece
+        if target_id not in piece_anchors:
+            piece_anchors[target_id] = []
 
-        rhs_anchor = connection.rhs
-        offset_type = type(rhs_anchor.offset).__name__
-        piece_anchors[rhs_id].append(
+        target_anchor = connection.target.anchor
+        offset_type = type(target_anchor.offset).__name__
+        piece_anchors[target_id].append(
             AnchorInfo(
-                contact_face=rhs_anchor.contact_face,
-                edge_shared_face=rhs_anchor.edge_shared_face,
+                contact_face=target_anchor.contact_face,
+                edge_shared_face=target_anchor.edge_shared_face,
                 offset_type=offset_type,
-                offset_value=rhs_anchor.offset.value,
+                offset_value=target_anchor.offset.value,
             )
         )
 

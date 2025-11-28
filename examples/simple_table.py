@@ -6,9 +6,9 @@ traditional table construction.
 """
 
 from nichiyou_daiku.core.piece import Piece, PieceType, get_shape
-from nichiyou_daiku.core.model import Model, PiecePair
+from nichiyou_daiku.core.model import Model
 from nichiyou_daiku.core.anchor import Anchor
-from nichiyou_daiku.core.connection import Connection
+from nichiyou_daiku.core.connection import BoundAnchor, Connection
 from nichiyou_daiku.core.geometry import FromMax, FromMin
 from nichiyou_daiku.core.assembly import Assembly
 from nichiyou_daiku.shell import assembly_to_build123d
@@ -68,13 +68,16 @@ connections = []
 # Front Apron Connections (connects leg_1 and leg_2)
 # ----------------------------------------------------------------------------
 connections.append(
-    (
-        PiecePair(base=leg_1, target=apron_front),
-        Connection(
-            lhs=Anchor(
+    Connection(
+        base=BoundAnchor(
+            piece=leg_1,
+            anchor=Anchor(
                 contact_face="left", edge_shared_face="back", offset=FromMax(value=0)
             ),
-            rhs=Anchor(
+        ),
+        target=BoundAnchor(
+            piece=apron_front,
+            anchor=Anchor(
                 contact_face="down", edge_shared_face="back", offset=FromMax(value=0)
             ),
         ),
@@ -82,13 +85,16 @@ connections.append(
 )
 
 connections.append(
-    (
-        PiecePair(base=apron_front, target=leg_2),
-        Connection(
-            lhs=Anchor(
+    Connection(
+        base=BoundAnchor(
+            piece=apron_front,
+            anchor=Anchor(
                 contact_face="top", edge_shared_face="front", offset=FromMax(value=0)
             ),
-            rhs=Anchor(
+        ),
+        target=BoundAnchor(
+            piece=leg_2,
+            anchor=Anchor(
                 contact_face="right", edge_shared_face="front", offset=FromMax(value=0)
             ),
         ),
@@ -99,13 +105,16 @@ connections.append(
 # Back Apron Connections (connects leg_3 and leg_4)
 # ----------------------------------------------------------------------------
 connections.append(
-    (
-        PiecePair(base=leg_3, target=apron_back),
-        Connection(
-            lhs=Anchor(
+    Connection(
+        base=BoundAnchor(
+            piece=leg_3,
+            anchor=Anchor(
                 contact_face="left", edge_shared_face="back", offset=FromMax(value=0)
             ),
-            rhs=Anchor(
+        ),
+        target=BoundAnchor(
+            piece=apron_back,
+            anchor=Anchor(
                 contact_face="down", edge_shared_face="back", offset=FromMax(value=0)
             ),
         ),
@@ -113,13 +122,16 @@ connections.append(
 )
 
 connections.append(
-    (
-        PiecePair(base=leg_4, target=apron_back),
-        Connection(
-            lhs=Anchor(
+    Connection(
+        base=BoundAnchor(
+            piece=leg_4,
+            anchor=Anchor(
                 contact_face="right", edge_shared_face="front", offset=FromMax(value=0)
             ),
-            rhs=Anchor(
+        ),
+        target=BoundAnchor(
+            piece=apron_back,
+            anchor=Anchor(
                 contact_face="top", edge_shared_face="front", offset=FromMax(value=0)
             ),
         ),
@@ -130,15 +142,18 @@ connections.append(
 # Left Apron Connections (connects leg_1 and leg_3)
 # ----------------------------------------------------------------------------
 connections.append(
-    (
-        PiecePair(base=leg_1, target=apron_left),
-        Connection(
-            lhs=Anchor(
+    Connection(
+        base=BoundAnchor(
+            piece=leg_1,
+            anchor=Anchor(
                 contact_face="back",
                 edge_shared_face="right",
                 offset=FromMin(value=APRON_HEIGHT),
             ),
-            rhs=Anchor(
+        ),
+        target=BoundAnchor(
+            piece=apron_left,
+            anchor=Anchor(
                 contact_face="down", edge_shared_face="back", offset=FromMin(value=0)
             ),
         ),
@@ -146,15 +161,18 @@ connections.append(
 )
 
 connections.append(
-    (
-        PiecePair(base=leg_3, target=apron_left),
-        Connection(
-            lhs=Anchor(
+    Connection(
+        base=BoundAnchor(
+            piece=leg_3,
+            anchor=Anchor(
                 contact_face="front",
                 edge_shared_face="right",
                 offset=FromMin(value=APRON_HEIGHT),
             ),
-            rhs=Anchor(
+        ),
+        target=BoundAnchor(
+            piece=apron_left,
+            anchor=Anchor(
                 contact_face="top", edge_shared_face="back", offset=FromMin(value=0)
             ),
         ),
@@ -165,15 +183,18 @@ connections.append(
 # Right Apron Connections (connects leg_2 and leg_4)
 # ----------------------------------------------------------------------------
 connections.append(
-    (
-        PiecePair(base=leg_2, target=apron_right),
-        Connection(
-            lhs=Anchor(
+    Connection(
+        base=BoundAnchor(
+            piece=leg_2,
+            anchor=Anchor(
                 contact_face="back",
                 edge_shared_face="left",
                 offset=FromMin(value=APRON_HEIGHT),
             ),
-            rhs=Anchor(
+        ),
+        target=BoundAnchor(
+            piece=apron_right,
+            anchor=Anchor(
                 contact_face="down", edge_shared_face="front", offset=FromMin(value=0)
             ),
         ),
@@ -181,15 +202,18 @@ connections.append(
 )
 
 connections.append(
-    (
-        PiecePair(base=leg_4, target=apron_right),
-        Connection(
-            lhs=Anchor(
+    Connection(
+        base=BoundAnchor(
+            piece=leg_4,
+            anchor=Anchor(
                 contact_face="front",
                 edge_shared_face="left",
                 offset=FromMin(value=APRON_HEIGHT),
             ),
-            rhs=Anchor(
+        ),
+        target=BoundAnchor(
+            piece=apron_right,
+            anchor=Anchor(
                 contact_face="top", edge_shared_face="front", offset=FromMin(value=0)
             ),
         ),
@@ -202,13 +226,16 @@ connections.append(
 
 # Edge pieces connect to legs
 connections.append(
-    (
-        PiecePair(base=table_top_pieces[0], target=leg_1),
-        Connection(
-            lhs=Anchor(
+    Connection(
+        base=BoundAnchor(
+            piece=table_top_pieces[0],
+            anchor=Anchor(
                 contact_face="back", edge_shared_face="down", offset=FromMin(value=0)
             ),
-            rhs=Anchor(
+        ),
+        target=BoundAnchor(
+            piece=leg_1,
+            anchor=Anchor(
                 contact_face="top", edge_shared_face="front", offset=FromMin(value=0)
             ),
         ),
@@ -216,13 +243,16 @@ connections.append(
 )
 
 connections.append(
-    (
-        PiecePair(base=table_top_pieces[-1], target=leg_2),
-        Connection(
-            lhs=Anchor(
+    Connection(
+        base=BoundAnchor(
+            piece=table_top_pieces[-1],
+            anchor=Anchor(
                 contact_face="back", edge_shared_face="down", offset=FromMin(value=0)
             ),
-            rhs=Anchor(
+        ),
+        target=BoundAnchor(
+            piece=leg_2,
+            anchor=Anchor(
                 contact_face="top", edge_shared_face="front", offset=FromMin(value=0)
             ),
         ),
@@ -232,17 +262,20 @@ connections.append(
 # Middle pieces connect to front apron
 for i in range(1, table_top_piece_num + 1):
     connections.append(
-        (
-            PiecePair(base=apron_front, target=table_top_pieces[i]),
-            Connection(
-                lhs=Anchor(
+        Connection(
+            base=BoundAnchor(
+                piece=apron_front,
+                anchor=Anchor(
                     contact_face="right",
                     edge_shared_face="front",
                     offset=FromMin(
                         value=(i - 1) * LEG_INSET_WIDTH + i * table_top_piece_interval
                     ),
                 ),
-                rhs=Anchor(
+            ),
+            target=BoundAnchor(
+                piece=table_top_pieces[i],
+                anchor=Anchor(
                     contact_face="back", edge_shared_face="top", offset=FromMin(value=0)
                 ),
             ),

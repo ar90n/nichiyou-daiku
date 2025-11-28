@@ -233,7 +233,7 @@ def _create_front_back_dowel_joints_with_offset(
 
 
 def create_vanilla_joint_pairs(
-    lhs_box: Box, rhs_box: Box, piece_conn: Connection
+    base_box: Box, target_box: Box, piece_conn: Connection
 ) -> list[JointPair]:
     """Create a single joint pair at anchor positions for vanilla connections.
 
@@ -241,40 +241,40 @@ def create_vanilla_joint_pairs(
     the offset patterns used for screw joints.
 
     Args:
-        lhs_box: Left-hand side piece box
-        rhs_box: Right-hand side piece box
+        base_box: Base piece box
+        target_box: Target piece box
         piece_conn: Connection defining how pieces connect
 
     Returns:
         List containing a single JointPair at anchor positions
     """
-    lhs_orientation = _create_orientation_from_anchor(piece_conn.lhs)
-    lhs_surface_point = as_surface_point(piece_conn.lhs, lhs_box)
+    base_orientation = _create_orientation_from_anchor(piece_conn.base.anchor)
+    base_surface_point = as_surface_point(piece_conn.base.anchor, base_box)
 
-    lhs_joint = Joint(
-        position=lhs_surface_point,
-        orientation=lhs_orientation,
+    base_joint = Joint(
+        position=base_surface_point,
+        orientation=base_orientation,
     )
 
-    rhs_joint = project_joint(
-        src_box=lhs_box,
-        dst_box=rhs_box,
-        src_joint=lhs_joint,
-        src_anchor=piece_conn.lhs,
-        dst_anchor=piece_conn.rhs,
+    target_joint = project_joint(
+        src_box=base_box,
+        dst_box=target_box,
+        src_joint=base_joint,
+        src_anchor=piece_conn.base.anchor,
+        dst_anchor=piece_conn.target.anchor,
     )
 
-    return [JointPair(lhs=lhs_joint, rhs=rhs_joint)]
+    return [JointPair(lhs=base_joint, rhs=target_joint)]
 
 
 def create_dowel_joint_pairs(
-    lhs_box: Box, rhs_box: Box, piece_conn: Connection
+    base_box: Box, target_box: Box, piece_conn: Connection
 ) -> list[JointPair]:
     """Create dowel joint pairs based on connection configuration.
 
     Args:
-        lhs_box: Left-hand side piece box
-        rhs_box: Right-hand side piece box
+        base_box: Base piece box
+        target_box: Target piece box
         piece_conn: Connection defining how pieces connect
 
     Returns:
@@ -284,77 +284,108 @@ def create_dowel_joint_pairs(
         NotImplementedError: For unsupported connection configurations
         RuntimeError: For invalid connection configurations
     """
-    if piece_conn.lhs.contact_face in ("down", "top"):
-        lhs_0, lhs_1 = _create_top_down_dowel_joints(piece_conn.lhs)
-        rhs_0, rhs_1 = _project_joint_pair(
-            src_box=lhs_box,
-            dst_box=rhs_box,
-            src_joint_0=lhs_0,
-            src_joint_1=lhs_1,
-            src_anchor=piece_conn.lhs,
-            dst_anchor=piece_conn.rhs,
+    if piece_conn.base.anchor.contact_face in ("down", "top"):
+        base_0, base_1 = _create_top_down_dowel_joints(piece_conn.base.anchor)
+        target_0, target_1 = _project_joint_pair(
+            src_box=base_box,
+            dst_box=target_box,
+            src_joint_0=base_0,
+            src_joint_1=base_1,
+            src_anchor=piece_conn.base.anchor,
+            dst_anchor=piece_conn.target.anchor,
         )
-        return [JointPair(lhs=lhs_0, rhs=rhs_0), JointPair(lhs=lhs_1, rhs=rhs_1)]
-    elif piece_conn.rhs.contact_face in ("down", "top"):
-        rhs_0, rhs_1 = _create_top_down_dowel_joints(piece_conn.rhs)
-        lhs_0, lhs_1 = _project_joint_pair(
-            src_box=rhs_box,
-            dst_box=lhs_box,
-            src_joint_0=rhs_0,
-            src_joint_1=rhs_1,
-            src_anchor=piece_conn.rhs,
-            dst_anchor=piece_conn.lhs,
+        return [
+            JointPair(lhs=base_0, rhs=target_0),
+            JointPair(lhs=base_1, rhs=target_1),
+        ]
+    elif piece_conn.target.anchor.contact_face in ("down", "top"):
+        target_0, target_1 = _create_top_down_dowel_joints(piece_conn.target.anchor)
+        base_0, base_1 = _project_joint_pair(
+            src_box=target_box,
+            dst_box=base_box,
+            src_joint_0=target_0,
+            src_joint_1=target_1,
+            src_anchor=piece_conn.target.anchor,
+            dst_anchor=piece_conn.base.anchor,
         )
-        return [JointPair(lhs=lhs_0, rhs=rhs_0), JointPair(lhs=lhs_1, rhs=rhs_1)]
-    elif piece_conn.lhs.contact_face in ("left", "right"):
-        lhs_0, lhs_1, rhs_0, rhs_1 = _create_left_right_dowel_joints(
-            src_box=lhs_box,
-            dst_box=rhs_box,
-            src_anchor=piece_conn.lhs,
-            dst_anchor=piece_conn.rhs,
+        return [
+            JointPair(lhs=base_0, rhs=target_0),
+            JointPair(lhs=base_1, rhs=target_1),
+        ]
+    elif piece_conn.base.anchor.contact_face in ("left", "right"):
+        base_0, base_1, target_0, target_1 = _create_left_right_dowel_joints(
+            src_box=base_box,
+            dst_box=target_box,
+            src_anchor=piece_conn.base.anchor,
+            dst_anchor=piece_conn.target.anchor,
         )
-        return [JointPair(lhs=lhs_0, rhs=rhs_0), JointPair(lhs=lhs_1, rhs=rhs_1)]
-    elif piece_conn.rhs.contact_face in ("left", "right"):
-        rhs_0, rhs_1, lhs_0, lhs_1 = _create_left_right_dowel_joints(
-            src_box=rhs_box,
-            dst_box=lhs_box,
-            src_anchor=piece_conn.rhs,
-            dst_anchor=piece_conn.lhs,
+        return [
+            JointPair(lhs=base_0, rhs=target_0),
+            JointPair(lhs=base_1, rhs=target_1),
+        ]
+    elif piece_conn.target.anchor.contact_face in ("left", "right"):
+        target_0, target_1, base_0, base_1 = _create_left_right_dowel_joints(
+            src_box=target_box,
+            dst_box=base_box,
+            src_anchor=piece_conn.target.anchor,
+            dst_anchor=piece_conn.base.anchor,
         )
-        return [JointPair(lhs=lhs_0, rhs=rhs_0), JointPair(lhs=lhs_1, rhs=rhs_1)]
+        return [
+            JointPair(lhs=base_0, rhs=target_0),
+            JointPair(lhs=base_1, rhs=target_1),
+        ]
 
-    elif piece_conn.lhs.contact_face in (
+    elif piece_conn.base.anchor.contact_face in (
         "front",
         "back",
-    ) and piece_conn.rhs.contact_face in ("front", "back"):
-        is_lhs_shared_face_top_down = piece_conn.lhs.edge_shared_face in ("top", "down")
-        is_rhs_shared_face_top_down = piece_conn.rhs.edge_shared_face in ("top", "down")
-        is_lhs_shared_face_left_right = piece_conn.lhs.edge_shared_face in (
+    ) and piece_conn.target.anchor.contact_face in ("front", "back"):
+        is_base_shared_face_top_down = piece_conn.base.anchor.edge_shared_face in (
+            "top",
+            "down",
+        )
+        is_target_shared_face_top_down = piece_conn.target.anchor.edge_shared_face in (
+            "top",
+            "down",
+        )
+        is_base_shared_face_left_right = piece_conn.base.anchor.edge_shared_face in (
             "left",
             "right",
         )
-        is_rhs_shared_face_left_right = piece_conn.rhs.edge_shared_face in (
-            "left",
-            "right",
+        is_target_shared_face_left_right = (
+            piece_conn.target.anchor.edge_shared_face
+            in (
+                "left",
+                "right",
+            )
         )
 
-        if is_lhs_shared_face_top_down:
-            lhs_0, lhs_1, rhs_0, rhs_1 = _create_front_back_dowel_joints_with_offset(
-                src_box=lhs_box,
-                dst_box=rhs_box,
-                src_anchor=piece_conn.lhs,
-                dst_anchor=piece_conn.rhs,
+        if is_base_shared_face_top_down:
+            base_0, base_1, target_0, target_1 = (
+                _create_front_back_dowel_joints_with_offset(
+                    src_box=base_box,
+                    dst_box=target_box,
+                    src_anchor=piece_conn.base.anchor,
+                    dst_anchor=piece_conn.target.anchor,
+                )
             )
-            return [JointPair(lhs=lhs_0, rhs=rhs_0), JointPair(lhs=lhs_1, rhs=rhs_1)]
-        elif is_rhs_shared_face_top_down:
-            rhs_0, rhs_1, lhs_0, lhs_1 = _create_front_back_dowel_joints_with_offset(
-                src_box=rhs_box,
-                dst_box=lhs_box,
-                src_anchor=piece_conn.rhs,
-                dst_anchor=piece_conn.lhs,
+            return [
+                JointPair(lhs=base_0, rhs=target_0),
+                JointPair(lhs=base_1, rhs=target_1),
+            ]
+        elif is_target_shared_face_top_down:
+            target_0, target_1, base_0, base_1 = (
+                _create_front_back_dowel_joints_with_offset(
+                    src_box=target_box,
+                    dst_box=base_box,
+                    src_anchor=piece_conn.target.anchor,
+                    dst_anchor=piece_conn.base.anchor,
+                )
             )
-            return [JointPair(lhs=lhs_0, rhs=rhs_0), JointPair(lhs=lhs_1, rhs=rhs_1)]
-        elif is_lhs_shared_face_left_right and is_rhs_shared_face_left_right:
+            return [
+                JointPair(lhs=base_0, rhs=target_0),
+                JointPair(lhs=base_1, rhs=target_1),
+            ]
+        elif is_base_shared_face_left_right and is_target_shared_face_left_right:
             raise NotImplementedError(
                 "Dowel joints for left-right to left-right connections are not yet implemented."
             )

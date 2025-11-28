@@ -72,13 +72,13 @@ class TestBasicParsing:
         connection = model.connections[("beam1", "beam2")]
 
         # Check anchors
-        assert connection.lhs.contact_face == "front"
-        assert connection.lhs.edge_shared_face == "top"
-        assert connection.lhs.offset.value == 100.0
+        assert connection.base.anchor.contact_face == "front"
+        assert connection.base.anchor.edge_shared_face == "top"
+        assert connection.base.anchor.offset.value == 100.0
 
-        assert connection.rhs.contact_face == "down"
-        assert connection.rhs.edge_shared_face == "front"
-        assert connection.rhs.offset.value == 50.0
+        assert connection.target.anchor.contact_face == "down"
+        assert connection.target.anchor.edge_shared_face == "front"
+        assert connection.target.anchor.offset.value == 50.0
 
 
 class TestSyntaxErrors:
@@ -151,13 +151,13 @@ class TestCompactNotation:
         connection = model.connections[conn_key]
 
         # Check anchors were transformed correctly
-        assert connection.lhs.contact_face == "top"
-        assert connection.lhs.edge_shared_face == "front"
-        assert connection.lhs.offset.value == 0.0
+        assert connection.base.anchor.contact_face == "top"
+        assert connection.base.anchor.edge_shared_face == "front"
+        assert connection.base.anchor.offset.value == 0.0
 
-        assert connection.rhs.contact_face == "back"
-        assert connection.rhs.edge_shared_face == "down"
-        assert connection.rhs.offset.value == 0.0
+        assert connection.target.anchor.contact_face == "back"
+        assert connection.target.anchor.edge_shared_face == "down"
+        assert connection.target.anchor.offset.value == 0.0
 
     def test_parse_compact_with_various_faces(self):
         """Test parsing compact notation with all face types."""
@@ -180,21 +180,21 @@ class TestCompactNotation:
 
         # Check first connection (T/L and D/R)
         conn1 = model.connections[("p1", "p2")]
-        assert conn1.lhs.contact_face == "top"
-        assert conn1.lhs.edge_shared_face == "left"
-        assert conn1.lhs.offset.value == 10.0
-        assert conn1.rhs.contact_face == "down"
-        assert conn1.rhs.edge_shared_face == "right"
-        assert conn1.rhs.offset.value == 20.0
+        assert conn1.base.anchor.contact_face == "top"
+        assert conn1.base.anchor.edge_shared_face == "left"
+        assert conn1.base.anchor.offset.value == 10.0
+        assert conn1.target.anchor.contact_face == "down"
+        assert conn1.target.anchor.edge_shared_face == "right"
+        assert conn1.target.anchor.offset.value == 20.0
 
         # Check second connection (F/B and L/T)
         conn2 = model.connections[("p3", "p4")]
-        assert conn2.lhs.contact_face == "front"
-        assert conn2.lhs.edge_shared_face == "back"
-        assert conn2.lhs.offset.value == 30.0
-        assert conn2.rhs.contact_face == "left"
-        assert conn2.rhs.edge_shared_face == "top"
-        assert conn2.rhs.offset.value == 40.0
+        assert conn2.base.anchor.contact_face == "front"
+        assert conn2.base.anchor.edge_shared_face == "back"
+        assert conn2.base.anchor.offset.value == 30.0
+        assert conn2.target.anchor.contact_face == "left"
+        assert conn2.target.anchor.edge_shared_face == "top"
+        assert conn2.target.anchor.offset.value == 40.0
 
     def test_parse_mixed_notation_error(self):
         """Test error when mixing compact and JSON notation."""
@@ -227,8 +227,8 @@ class TestCompactNotation:
         model = parse_dsl(dsl)
 
         connection = model.connections[("beam1", "beam2")]
-        assert connection.lhs.offset.value == 12.5
-        assert connection.rhs.offset.value == 37.8
+        assert connection.base.anchor.offset.value == 12.5
+        assert connection.target.anchor.offset.value == 37.8
 
 
 class TestCompactPieceNotation:

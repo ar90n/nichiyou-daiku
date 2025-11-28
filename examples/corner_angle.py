@@ -5,9 +5,9 @@ meet at right angles, like the corner of a picture frame or box.
 """
 
 from nichiyou_daiku.core.piece import Piece, PieceType
-from nichiyou_daiku.core.model import Model, PiecePair
+from nichiyou_daiku.core.model import Model
 from nichiyou_daiku.core.anchor import Anchor
-from nichiyou_daiku.core.connection import Connection
+from nichiyou_daiku.core.connection import BoundAnchor, Connection
 from nichiyou_daiku.core.geometry import FromMin
 from nichiyou_daiku.core.assembly import Assembly
 from nichiyou_daiku.shell import assembly_to_build123d
@@ -27,18 +27,24 @@ piece_b = Piece.of(PieceType.PT_2x4, 400.0, "corner_piece_b")
 # Define the corner connection
 # piece_a's end connects to the side of piece_b
 connection = Connection(
-    lhs=Anchor(contact_face="top", edge_shared_face="front", offset=FromMin(value=0.0)),
-    rhs=Anchor(
-        contact_face="back", edge_shared_face="down", offset=FromMin(value=0.0)
+    base=BoundAnchor(
+        piece=piece_a,
+        anchor=Anchor(
+            contact_face="top", edge_shared_face="front", offset=FromMin(value=0.0)
+        ),
+    ),
+    target=BoundAnchor(
+        piece=piece_b,
+        anchor=Anchor(
+            contact_face="back", edge_shared_face="down", offset=FromMin(value=0.0)
+        ),
     ),
 )
 
 # Build the model
 model = Model.of(
     pieces=[piece_b, piece_a],
-    connections=[
-        (PiecePair(base=piece_a, target=piece_b), connection),
-    ],
+    connections=[connection],
     label="corner_angle_joint_example",
 )
 

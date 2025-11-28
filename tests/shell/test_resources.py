@@ -4,10 +4,10 @@ import json
 
 import pytest
 
-from nichiyou_daiku.core.model import Model, PiecePair
+from nichiyou_daiku.core.model import Model
 from nichiyou_daiku.core.piece import Piece, PieceType
 from nichiyou_daiku.core.anchor import Anchor
-from nichiyou_daiku.core.connection import Connection
+from nichiyou_daiku.core.connection import BoundAnchor, Connection
 from nichiyou_daiku.core.assembly import Assembly
 from nichiyou_daiku.core.geometry import FromMax, FromMin
 from nichiyou_daiku.shell.resources import (
@@ -152,19 +152,25 @@ class TestExtractResources:
 
         # Connection doesn't affect resources, but include for completeness
         conn = Connection(
-            lhs=Anchor(
-                contact_face="front", edge_shared_face="top", offset=FromMax(value=100)
+            base=BoundAnchor(
+                piece=p1,
+                anchor=Anchor(
+                    contact_face="front",
+                    edge_shared_face="top",
+                    offset=FromMax(value=100),
+                ),
             ),
-            rhs=Anchor(
-                contact_face="down",
-                edge_shared_face="front",
-                offset=FromMin(value=50),
+            target=BoundAnchor(
+                piece=p2,
+                anchor=Anchor(
+                    contact_face="down",
+                    edge_shared_face="front",
+                    offset=FromMin(value=50),
+                ),
             ),
         )
 
-        model = Model.of(
-            pieces=[p1, p2], connections=[(PiecePair(base=p1, target=p2), conn)]
-        )
+        model = Model.of(pieces=[p1, p2], connections=[conn])
 
         # Create assembly and extract resources
         assembly = Assembly.of(model)
@@ -255,27 +261,31 @@ class TestExtractResources:
 
         # Create connection
         conn = Connection(
-            lhs=Anchor(
-                contact_face="front",
-                edge_shared_face="top",
-                offset=FromMax(value=100.0),
+            base=BoundAnchor(
+                piece=p1,
+                anchor=Anchor(
+                    contact_face="front",
+                    edge_shared_face="top",
+                    offset=FromMax(value=100.0),
+                ),
             ),
-            rhs=Anchor(
-                contact_face="down",
-                edge_shared_face="front",
-                offset=FromMin(value=50.0),
+            target=BoundAnchor(
+                piece=p2,
+                anchor=Anchor(
+                    contact_face="down",
+                    edge_shared_face="front",
+                    offset=FromMin(value=50.0),
+                ),
             ),
         )
 
-        model = Model.of(
-            pieces=[p1, p2], connections=[(PiecePair(base=p1, target=p2), conn)]
-        )
+        model = Model.of(pieces=[p1, p2], connections=[conn])
 
         # Create assembly and extract resources
         assembly = Assembly.of(model)
         resources = extract_resources(assembly)
 
-        # Check piece-1 has lhs anchor
+        # Check piece-1 has base anchor
         piece1 = next(p for p in resources.pieces if p.id == "piece-1")
         assert len(piece1.anchors) == 1
         assert piece1.anchors[0].contact_face == "front"
@@ -283,7 +293,7 @@ class TestExtractResources:
         assert piece1.anchors[0].offset_type == "FromMax"
         assert piece1.anchors[0].offset_value == 100.0
 
-        # Check piece-2 has rhs anchor
+        # Check piece-2 has target anchor
         piece2 = next(p for p in resources.pieces if p.id == "piece-2")
         assert len(piece2.anchors) == 1
         assert piece2.anchors[0].contact_face == "down"
@@ -300,34 +310,45 @@ class TestExtractResources:
 
         # Create two connections both involving piece-1
         conn1 = Connection(
-            lhs=Anchor(
-                contact_face="front",
-                edge_shared_face="top",
-                offset=FromMax(value=100.0),
+            base=BoundAnchor(
+                piece=p1,
+                anchor=Anchor(
+                    contact_face="front",
+                    edge_shared_face="top",
+                    offset=FromMax(value=100.0),
+                ),
             ),
-            rhs=Anchor(
-                contact_face="down",
-                edge_shared_face="front",
-                offset=FromMin(value=50.0),
+            target=BoundAnchor(
+                piece=p2,
+                anchor=Anchor(
+                    contact_face="down",
+                    edge_shared_face="front",
+                    offset=FromMin(value=50.0),
+                ),
             ),
         )
         conn2 = Connection(
-            lhs=Anchor(
-                contact_face="back", edge_shared_face="left", offset=FromMin(value=25.0)
+            base=BoundAnchor(
+                piece=p1,
+                anchor=Anchor(
+                    contact_face="back",
+                    edge_shared_face="left",
+                    offset=FromMin(value=25.0),
+                ),
             ),
-            rhs=Anchor(
-                contact_face="right",
-                edge_shared_face="down",
-                offset=FromMax(value=75.0),
+            target=BoundAnchor(
+                piece=p3,
+                anchor=Anchor(
+                    contact_face="right",
+                    edge_shared_face="down",
+                    offset=FromMax(value=75.0),
+                ),
             ),
         )
 
         model = Model.of(
             pieces=[p1, p2, p3],
-            connections=[
-                (PiecePair(base=p1, target=p2), conn1),
-                (PiecePair(base=p1, target=p3), conn2),
-            ],
+            connections=[conn1, conn2],
         )
 
         # Create assembly and extract resources
