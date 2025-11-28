@@ -106,11 +106,9 @@ def _project_surface_point(
     """
     src_anchor = src_bound.anchor
     dst_anchor = dst_bound.anchor
-    src_box = src_bound.get_box()
-    dst_box = dst_bound.get_box()
 
-    src_anchor_orientation = as_orientation(src_anchor)
-    dst_anchor_orientation = as_orientation(dst_anchor, flip_dir=True)
+    src_anchor_orientation = as_orientation(src_bound)
+    dst_anchor_orientation = as_orientation(dst_bound, flip_dir=True)
 
     src_anchor_contact_dir = Vector2D.of(
         src_anchor.contact_face, src_anchor.edge_shared_face
@@ -138,8 +136,8 @@ def _project_surface_point(
     flip_u = tr_mat[:, 0].min() < 0
     flip_v = tr_mat[:, 1].min() < 0
 
-    src_anchor_surface_point = as_surface_point(src_anchor, src_box)
-    dst_anchor_surface_point = as_surface_point(dst_anchor, dst_box)
+    src_anchor_surface_point = as_surface_point(src_bound)
+    dst_anchor_surface_point = as_surface_point(dst_bound)
 
     rel_u = src_surface_point.position.u - src_anchor_surface_point.position.u
     rel_v = src_surface_point.position.v - src_anchor_surface_point.position.v

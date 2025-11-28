@@ -148,12 +148,11 @@ def _create_left_right_dowel_joints(
         Tuple of (src_0, src_1, dst_0, dst_1)
     """
     src_anchor = src_bound.anchor
-    src_box = src_bound.get_box()
 
     orientation = _create_orientation_from_anchor(src_anchor)
 
     # Get anchor position to place screws relative to it
-    anchor_sp = as_surface_point(src_anchor, src_box)
+    anchor_sp = as_surface_point(src_bound)
     pos_0 = Point2D(u=0.0, v=anchor_sp.position.v + 25.4)
     pos_1 = Point2D(u=0.0, v=anchor_sp.position.v - 25.4)
 
@@ -189,14 +188,13 @@ def _create_front_back_dowel_joints_with_offset(
         Tuple of (src_0, src_1, dst_0, dst_1)
     """
     src_anchor = src_bound.anchor
-    src_box = src_bound.get_box()
 
     # Dowel placement constants for 2x4 lumber
     dowel_horizontal_offset = 25.4  # 1 inch from center
     dowel_edge_offset = 44.5  # Distance from anchor edge to avoid splitting
 
     orientation = _create_orientation_from_anchor(src_anchor)
-    anchor_sp = as_surface_point(src_anchor, src_box)
+    anchor_sp = as_surface_point(src_bound)
     offset_dir = Vector2D.of(src_anchor.contact_face, src_anchor.edge_shared_face).v
     dowel_v = anchor_sp.position.v - offset_dir * dowel_edge_offset
     pos_0 = Point2D(u=dowel_horizontal_offset, v=dowel_v)
@@ -230,10 +228,9 @@ def create_vanilla_joint_pairs(piece_conn: Connection) -> list[JointPair]:
         List containing a single JointPair at anchor positions
     """
     base_bound = piece_conn.base
-    base_box = base_bound.get_box()
 
     base_orientation = _create_orientation_from_anchor(base_bound.anchor)
-    base_surface_point = as_surface_point(base_bound.anchor, base_box)
+    base_surface_point = as_surface_point(base_bound)
 
     base_joint = Joint(
         position=base_surface_point,

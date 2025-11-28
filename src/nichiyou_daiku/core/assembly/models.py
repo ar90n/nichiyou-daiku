@@ -79,7 +79,6 @@ class Joint(BaseModel, frozen=True):
             Joint with position and orientation based on the anchor
         """
         anchor = bound_anchor.anchor
-        box = bound_anchor.get_box()
 
         up_face = cross_face(anchor.contact_face, anchor.edge_shared_face)
         if flip_dir:
@@ -89,7 +88,7 @@ class Joint(BaseModel, frozen=True):
             up=Vector3D.normal_of(up_face),
         )
 
-        position = as_surface_point(anchor, box)
+        position = as_surface_point(bound_anchor)
         return cls(position=position, orientation=orientation)
 
     @classmethod

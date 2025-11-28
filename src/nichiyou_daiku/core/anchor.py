@@ -71,49 +71,6 @@ def as_edge_point(anchor: Anchor) -> EdgePoint:
     )
 
 
-def as_surface_point(anchor: Anchor, box: Box) -> SurfacePoint:
-    """Convert an anchor to a surface point on a box.
-
-    Args:
-        anchor: The anchor to convert
-        box: The box to get the surface point on
-
-    Returns:
-        SurfacePoint representing the anchor's position on the box surface
-    """
-    return SurfacePoint.of(box, anchor.contact_face, as_edge_point(anchor))
-
-
-def as_point_3d(anchor: Anchor, box: Box) -> Point3D:
-    """Convert an anchor to a 3D point.
-
-    Args:
-        anchor: The anchor to convert
-        box: The box to get the 3D point from
-
-    Returns:
-        Point3D representing the anchor's position in 3D space
-    """
-    surface_point = as_surface_point(anchor, box)
-    return Point3D.of(box, surface_point)
-
-
-def as_orientation(anchor: Anchor, flip_dir: bool = False) -> Orientation:
-    """Get the orientation defined by an anchor.
-
-    Args:
-        anchor: The anchor defining the orientation
-        flip_dir: Whether to flip the up direction
-
-    Returns:
-        Orientation with direction normal to contact_face
-    """
-    up_face = cross_face(anchor.contact_face, anchor.edge_shared_face)
-    if flip_dir:
-        up_face = opposite_face(up_face)
-    return Orientation.of(direction=anchor.contact_face, up=up_face)
-
-
 class BoundAnchor(BaseModel, frozen=True):
     """An anchor bound to a specific piece.
 
@@ -128,10 +85,51 @@ class BoundAnchor(BaseModel, frozen=True):
     piece: Piece
     anchor: Anchor
 
-    def get_box(self) -> Box:
-        """Get the Box for this BoundAnchor's piece.
 
-        Returns:
-            Box with the 3D shape of the piece
-        """
-        return Box(shape=get_shape(self.piece))
+def _get_box(bound: BoundAnchor) -> Box:
+    """Get the Box for a BoundAnchor's piece."""
+    return Box(shape=get_shape(bound.piece))
+
+
+def as_surface_point(bound: BoundAnchor) -> SurfacePoint:
+    """Convert a bound anchor to a surface point.
+
+    Args:
+        bound: The bound anchor to convert
+
+    Returns:
+        SurfacePoint representing the anchor's position on the piece surface
+    """
+    box = _get_box(bound)
+    return SurfacePoint.of(box, bound.anchor.contact_face, as_edge_point(bound.anchor))
+
+
+def as_point_3d(bound: BoundAnchor) -> Point3D:
+    """Convert a bound anchor to a 3D point.
+
+    Args:
+        bound: The bound anchor to convert
+
+    Returns:
+        Point3D representing the anchor's position in 3D space
+    """
+    box = _get_box(bound)
+    surface_point = as_surface_point(bound)
+    return Point3D.of(box, surface_point)
+
+
+def as_orientation(bound: BoundAnchor, flip_dir: bool = False) -> Orientation:
+    """Get the orientation defined by a bound anchor.
+
+    Args:
+        bound: The bound anchor defining the orientation
+        flip_dir: Whether to flip the up direction
+
+    Returns:
+        Orientation with direction normal to contact_face
+    """
+    anchor = bound.anchor
+    up_face = cross_face(anchor.contact_face, anchor.edge_shared_face)
+    if flip_dir:
+        up_face = opposite_face(up_face)
+    return Orientation.of(direction=anchor.contact_face, up=up_face)
