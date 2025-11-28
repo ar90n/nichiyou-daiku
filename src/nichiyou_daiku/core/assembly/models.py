@@ -6,7 +6,7 @@ joints and holes in 3D assemblies.
 
 from pydantic import BaseModel
 
-from ..anchor import BoundAnchor
+from ..anchor import BoundAnchor, as_surface_point
 from ..geometry import (
     Face,
     Orientation3D,
@@ -79,6 +79,7 @@ class Joint(BaseModel, frozen=True):
             Joint with position and orientation based on the anchor
         """
         anchor = bound_anchor.anchor
+        box = bound_anchor.get_box()
 
         up_face = cross_face(anchor.contact_face, anchor.edge_shared_face)
         if flip_dir:
@@ -88,7 +89,7 @@ class Joint(BaseModel, frozen=True):
             up=Vector3D.normal_of(up_face),
         )
 
-        position = bound_anchor.get_surface_point()
+        position = as_surface_point(anchor, box)
         return cls(position=position, orientation=orientation)
 
     @classmethod

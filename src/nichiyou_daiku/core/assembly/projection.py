@@ -6,9 +6,8 @@ between different coordinate systems when connecting pieces.
 
 import numpy as np
 
-from ..anchor import Anchor, BoundAnchor, as_orientation, as_surface_point
+from ..anchor import BoundAnchor, as_orientation, as_surface_point
 from ..geometry import (
-    Box,
     Orientation3D,
     Point2D,
     SurfacePoint,
@@ -61,18 +60,13 @@ def project_joint(
         >>> isinstance(dst_joint.position, SurfacePoint)
         True
     """
-    src_anchor = src_bound.anchor
     dst_anchor = dst_bound.anchor
-    src_box = src_bound.get_box()
-    dst_box = dst_bound.get_box()
 
     # Project position from src to dst coordinate system
     dst_position = _project_surface_point(
-        src_box=src_box,
-        dst_box=dst_box,
+        src_bound=src_bound,
+        dst_bound=dst_bound,
         src_surface_point=src_joint.position,
-        src_anchor=src_anchor,
-        dst_anchor=dst_anchor,
     )
 
     # Calculate orientation for dst (same logic as Joint.of with flip_dir=True)
@@ -88,11 +82,9 @@ def project_joint(
 
 
 def _project_surface_point(
-    src_box: Box,
-    dst_box: Box,
+    src_bound: BoundAnchor,
+    dst_bound: BoundAnchor,
     src_surface_point: SurfacePoint,
-    src_anchor: Anchor,
-    dst_anchor: Anchor,
 ) -> SurfacePoint:
     """Project a surface point from source to destination coordinate system.
 
@@ -100,20 +92,23 @@ def _project_surface_point(
     system to another piece's coordinate system when the two pieces are connected
     via matching anchors.
 
-    This function assumes that src_anchor and dst_anchor represent matching
+    This function assumes that src_bound and dst_bound represent matching
     connection points (i.e., they are at the same position in 3D space when
     the pieces are assembled).
 
     Args:
-        src_box: Box of the source piece
-        dst_box: Box of the destination piece
+        src_bound: BoundAnchor of the source piece
+        dst_bound: BoundAnchor of the destination piece
         src_surface_point: Surface point in source coordinate system
-        src_anchor: Source anchor
-        dst_anchor: Destination anchor (must match with src_anchor)
 
     Returns:
         Surface point in destination coordinate system
     """
+    src_anchor = src_bound.anchor
+    dst_anchor = dst_bound.anchor
+    src_box = src_bound.get_box()
+    dst_box = dst_bound.get_box()
+
     src_anchor_orientation = as_orientation(src_anchor)
     dst_anchor_orientation = as_orientation(dst_anchor, flip_dir=True)
 

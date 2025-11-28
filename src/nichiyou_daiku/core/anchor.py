@@ -135,19 +135,3 @@ class BoundAnchor(BaseModel, frozen=True):
             Box with the 3D shape of the piece
         """
         return Box(shape=get_shape(self.piece))
-
-    def get_surface_point(self) -> SurfacePoint:
-        """Get the surface point for this BoundAnchor.
-
-        Returns:
-            SurfacePoint representing the anchor's position on the piece surface
-        """
-        return as_surface_point(self.anchor, self.get_box())
-
-    def get_point_3d(self) -> Point3D:
-        """Get the 3D point for this BoundAnchor.
-
-        Returns:
-            Point3D representing the anchor's position in 3D space
-        """
-        return as_point_3d(self.anchor, self.get_box())
