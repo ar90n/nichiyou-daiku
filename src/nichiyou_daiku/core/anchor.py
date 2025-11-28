@@ -18,6 +18,10 @@ from nichiyou_daiku.core.geometry import (
     opposite as opposite_face,
     cross as cross_face,
     is_positive,
+    is_adjacent,
+    is_down_to_top_axis,
+    is_left_to_right_axis,
+    is_back_to_front_axis,
 )
 from nichiyou_daiku.core.piece import Piece, get_shape
 
@@ -52,6 +56,33 @@ class Anchor(BaseModel, frozen=True):
     contact_face: Face
     offset: Offset
 
+    @classmethod
+    def of(cls, contact_face: Face, edge_shared_face: Face, offset: Offset) -> "Anchor":
+        """Create an Anchor instance.
+
+        Args:
+            contact_face: The face that makes contact with the other piece
+            edge_shared_face: The face that shares an edge with the contact face
+            offset: The position along the edge
+
+        Returns:
+            Anchor instance
+
+        Raises:
+            ValueError: If contact_face and edge_shared_face are not adjacent
+        """
+        if not is_adjacent(contact_face, edge_shared_face):
+            raise ValueError(
+                f"contact_face '{contact_face}' and edge_shared_face '{edge_shared_face}' "
+                "must be adjacent faces"
+            )
+
+        return cls(
+            contact_face=contact_face,
+            edge_shared_face=edge_shared_face,
+            offset=offset,
+        )
+
 
 def as_edge_point(anchor: Anchor) -> EdgePoint:
     """Convert an anchor to an edge point.
@@ -84,6 +115,63 @@ class BoundAnchor(BaseModel, frozen=True):
 
     piece: Piece
     anchor: Anchor
+
+    @classmethod
+    def of(cls, piece: Piece, anchor: Anchor) -> "BoundAnchor":
+        """Create a BoundAnchor instance.
+
+        Args:
+            piece: The piece this anchor belongs to
+            anchor: The anchor position specification
+
+        Returns:
+            BoundAnchor instance
+
+        Raises:
+            ValueError: If the anchor's offset exceeds piece dimensions
+        """
+        shape = get_shape(piece)
+        box = Box(shape=shape)
+
+        # Get edge from anchor faces
+        edge = _get_pos_dir_edge(anchor.contact_face, anchor.edge_shared_face)
+
+        # Get the length along this edge
+        max_length = _get_edge_length(box, edge)
+
+        # Validate offset
+        offset_value = anchor.offset.value
+        if offset_value < 0 or offset_value > max_length:
+            raise ValueError(
+                f"Offset {offset_value}mm exceeds piece dimension {max_length}mm"
+            )
+
+        return cls(piece=piece, anchor=anchor)
+
+
+def _get_edge_length(box: Box, edge: Edge) -> float:
+    """Get the length of an edge.
+
+    Uses the same logic as coordinates.py:_edge_legnth_of.
+
+    Args:
+        box: The bounding box
+        edge: Edge defined by two adjacent faces
+
+    Returns:
+        Edge length in mm
+    """
+    third_face = cross_face(edge.lhs, edge.rhs)
+    # Z-axis (down to top): length
+    if is_down_to_top_axis(third_face):
+        return box.shape.length
+    # X-axis (left to right): width
+    if is_left_to_right_axis(third_face):
+        return box.shape.width
+    # Y-axis (back to front): height
+    if is_back_to_front_axis(third_face):
+        return box.shape.height
+    raise RuntimeError("Unreachable code reached")
 
 
 def _get_box(bound: BoundAnchor) -> Box:
