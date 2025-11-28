@@ -37,15 +37,21 @@ COMPACT_FROM_MAX: ">"
 
 // ConnectionType (JSON)
 connection_type_props: "{" connection_type_content "}"
-connection_type_content: type_vanilla | type_dowel
+connection_type_content: type_vanilla | type_dowel | type_screw
 type_vanilla: "\"type\"" ":" "\"vanilla\""
 type_dowel: "\"type\"" ":" "\"dowel\"" "," "\"radius\"" ":" NUMBER "," "\"depth\"" ":" NUMBER
+type_screw: "\"type\"" ":" "\"screw\"" "," "\"diameter\"" ":" NUMBER "," "\"length\"" ":" NUMBER
 
 // ConnectionType (Compact)
-compact_connection_type: COMPACT_VANILLA | dowel_compact
+compact_connection_type: COMPACT_VANILLA | dowel_compact | screw_compact
 COMPACT_VANILLA: "V"
 dowel_compact: DOWEL_START NUMBER "," NUMBER ")"
 DOWEL_START: "D("
+screw_compact: SCREW_START (screw_preset | screw_numeric) ")"
+SCREW_START: "S("
+screw_numeric: NUMBER "," NUMBER
+screw_preset: SCREW_TYPE ":" NUMBER "x" NUMBER
+SCREW_TYPE: "Slim" | "Coarse"
 
 // Comment support
 COMMENT: "//" /[^\n]*/

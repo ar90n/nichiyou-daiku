@@ -10,12 +10,14 @@ from nichiyou_daiku.core.connection import (
     Connection,
     ConnectionType,
     DowelConnection,
+    ScrewConnection,
     VanillaConnection,
 )
 from nichiyou_daiku.core.geometry.face import Face
 from nichiyou_daiku.core.geometry.offset import FromMax, FromMin, Offset
 from nichiyou_daiku.core.model import Model
 from nichiyou_daiku.core.piece import Piece, PieceType
+from nichiyou_daiku.core.screw import find_preset
 from nichiyou_daiku.dsl.exceptions import DSLSemanticError, DSLValidationError
 
 
@@ -186,7 +188,9 @@ class DSLTransformer(Transformer):
                 components.anchor_props_list.append(item)
             elif isinstance(item, Anchor):
                 components.compact_anchor_list.append(item)
-            elif isinstance(item, (VanillaConnection, DowelConnection)):
+            elif isinstance(
+                item, (VanillaConnection, DowelConnection, ScrewConnection)
+            ):
                 components.connection_type = item
 
         for item in items:
@@ -469,6 +473,21 @@ class DSLTransformer(Transformer):
         radius, depth = numbers
         return DowelConnection(radius=radius, depth=depth)
 
+    def type_screw(self, items: list[Any]) -> ScrewConnection:
+        """Transform screw connection type (JSON format)."""
+        numbers = [
+            float(item)
+            for item in items
+            if isinstance(item, Token) and item.type == "NUMBER"
+        ]
+        if len(numbers) != 2:
+            raise DSLValidationError(
+                f"Screw connection type requires exactly 2 numbers "
+                f"(diameter, length), got {len(numbers)}"
+            )
+        diameter, length = numbers
+        return ScrewConnection(diameter=diameter, length=length)
+
     # ConnectionType transformers (Compact format)
     def compact_connection_type(self, items: list[Any]) -> ConnectionType:
         """Transform compact connection type."""
@@ -477,8 +496,8 @@ class DSLTransformer(Transformer):
         item = items[0]
         if isinstance(item, Token) and item.type == "COMPACT_VANILLA":
             return VanillaConnection()
-        # At this point, item should be a DowelConnection from dowel_compact
-        if isinstance(item, DowelConnection):
+        # At this point, item should be a DowelConnection or ScrewConnection
+        if isinstance(item, (DowelConnection, ScrewConnection)):
             return item
         return VanillaConnection()  # fallback
 
@@ -496,3 +515,67 @@ class DSLTransformer(Transformer):
             )
         radius, depth = numbers
         return DowelConnection(radius=radius, depth=depth)
+
+    def screw_compact(self, items: list[Any]) -> ScrewConnection:
+        """Transform compact screw connection type.
+
+        Supports both numeric format S(diameter, length) and
+        preset format S(Slim:diameter x length) or S(Coarse:diameter x length).
+        """
+        # screw_compact receives SCREW_START token + (screw_numeric or screw_preset result)
+        # Find the ScrewConnection in items
+        for item in items:
+            if isinstance(item, ScrewConnection):
+                return item
+
+        # Fallback: shouldn't normally reach here with new grammar
+        raise DSLValidationError(
+            f"Invalid screw compact format: {items}"
+        )
+
+    def screw_numeric(self, items: list[Any]) -> ScrewConnection:
+        """Transform numeric screw notation: S(diameter, length)."""
+        numbers = [
+            float(item)
+            for item in items
+            if isinstance(item, Token) and item.type == "NUMBER"
+        ]
+        if len(numbers) != 2:
+            raise DSLValidationError(
+                f"Numeric screw connection requires exactly 2 numbers "
+                f"(diameter, length), got {len(numbers)}"
+            )
+        diameter, length = numbers
+        return ScrewConnection(diameter=diameter, length=length)
+
+    def screw_preset(self, items: list[Any]) -> ScrewConnection:
+        """Transform preset screw notation: Slim:3.3x50 or Coarse:3.8x57."""
+        # items: [SCREW_TYPE token, NUMBER (diameter), NUMBER (length)]
+        screw_type: str | None = None
+        numbers: list[float] = []
+
+        for item in items:
+            if isinstance(item, Token):
+                if item.type == "SCREW_TYPE":
+                    screw_type = str(item)
+                elif item.type == "NUMBER":
+                    numbers.append(float(item))
+
+        if screw_type is None:
+            raise DSLValidationError("Screw preset must specify type (Slim or Coarse)")
+
+        if len(numbers) != 2:
+            raise DSLValidationError(
+                f"Screw preset requires diameter and length, got {len(numbers)} numbers"
+            )
+
+        diameter, length = numbers
+
+        # Validate the preset exists
+        preset = find_preset(screw_type, diameter, length)
+        if preset is None:
+            raise DSLValidationError(
+                f"Unknown {screw_type} screw preset: {diameter}x{int(length)}"
+            )
+
+        return ScrewConnection(diameter=diameter, length=length)
