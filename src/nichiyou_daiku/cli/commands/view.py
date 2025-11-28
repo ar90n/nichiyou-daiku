@@ -82,7 +82,9 @@ def view(ctx: click.Context, file: str, fillet_radius: float) -> None:
     assembly = create_assembly_from_model(model, echo)
 
     # Convert to build123d model
-    compound = convert_assembly_to_build123d(assembly, echo, fillet_radius=fillet_radius)
+    compound = convert_assembly_to_build123d(
+        assembly, echo, fillet_radius=fillet_radius
+    )
 
     # Try different viewers
     viewer_found = try_ocp_vscode_viewer(compound, echo)

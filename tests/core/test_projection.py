@@ -26,7 +26,11 @@ def create_bound_anchor(
 ) -> BoundAnchor:
     """Helper to create BoundAnchor for testing."""
     piece = Piece.of(PieceType.PT_2x4, length, piece_id)
-    offset = FromMin(value=offset_value) if offset_type == "min" else FromMax(value=offset_value)
+    offset = (
+        FromMin(value=offset_value)
+        if offset_type == "min"
+        else FromMax(value=offset_value)
+    )
     anchor = Anchor(
         contact_face=contact_face,
         edge_shared_face=edge_shared_face,
@@ -300,16 +304,16 @@ class TestProjectJointParametrized:
 
         # Verify orientation direction magnitude is 1
         dir_mag = (
-            dst_joint.orientation.direction.x ** 2
-            + dst_joint.orientation.direction.y ** 2
-            + dst_joint.orientation.direction.z ** 2
+            dst_joint.orientation.direction.x**2
+            + dst_joint.orientation.direction.y**2
+            + dst_joint.orientation.direction.z**2
         ) ** 0.5
         assert abs(dir_mag - 1.0) < 0.001
 
         # Verify up direction magnitude is 1
         up_mag = (
-            dst_joint.orientation.up.x ** 2
-            + dst_joint.orientation.up.y ** 2
-            + dst_joint.orientation.up.z ** 2
+            dst_joint.orientation.up.x**2
+            + dst_joint.orientation.up.y**2
+            + dst_joint.orientation.up.z**2
         ) ** 0.5
         assert abs(up_mag - 1.0) < 0.001

@@ -134,7 +134,9 @@ def drawing(
     assembly = create_assembly_from_model(model, echo)
 
     # Create 3D model
-    compound = convert_assembly_to_build123d(assembly, echo, fillet_radius=fillet_radius)
+    compound = convert_assembly_to_build123d(
+        assembly, echo, fillet_radius=fillet_radius
+    )
 
     # Create technical drawing border
     try:

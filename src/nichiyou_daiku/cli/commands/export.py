@@ -113,7 +113,9 @@ def export(
     assembly = create_assembly_from_model(model, echo)
 
     # Convert to build123d
-    compound = convert_assembly_to_build123d(assembly, echo, fillet_radius=fillet_radius)
+    compound = convert_assembly_to_build123d(
+        assembly, echo, fillet_radius=fillet_radius
+    )
 
     # Export to file
     try:
