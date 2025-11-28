@@ -5,14 +5,13 @@ from typing import Optional
 
 import click
 
-from nichiyou_daiku.cli.utils import read_dsl_file, validate_output_path, CliEcho
-from nichiyou_daiku.dsl import (
-    parse_dsl,
-    DSLSyntaxError,
-    DSLSemanticError,
-    DSLValidationError,
+from nichiyou_daiku.cli.utils import (
+    CliEcho,
+    create_assembly_from_model,
+    parse_dsl_to_model,
+    read_dsl_file,
+    validate_output_path,
 )
-from nichiyou_daiku.core.assembly import Assembly
 from nichiyou_daiku.shell import extract_resources, generate_markdown_report
 
 
@@ -63,32 +62,9 @@ def report(
         echo.error(f"Error: {e}")
         sys.exit(1)
 
-    # Parse DSL
-    try:
-        echo.verbose("Parsing DSL file...")
-
-        model = parse_dsl(dsl_content)
-
-        echo.verbose(
-            f"Found {len(model.pieces)} pieces and {len(model.connections)} connections"
-        )
-
-    except (DSLSyntaxError, DSLSemanticError, DSLValidationError) as e:
-        echo.error(f"DSL Error: {e}")
-        sys.exit(1)
-    except Exception as e:
-        echo.error(f"Unexpected error parsing DSL: {e}")
-        sys.exit(1)
-
-    # Create assembly
-    try:
-        echo.verbose("Creating assembly...")
-
-        assembly = Assembly.of(model)
-
-    except Exception as e:
-        echo.error(f"Error creating assembly: {e}")
-        sys.exit(1)
+    # Parse DSL and create assembly
+    model = parse_dsl_to_model(dsl_content, echo)
+    assembly = create_assembly_from_model(model, echo)
 
     # Extract resources
     try:

@@ -1,10 +1,16 @@
 """Common utilities for CLI commands."""
 
+from __future__ import annotations
+
 import sys
 from pathlib import Path
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 import click
+
+if TYPE_CHECKING:
+    from nichiyou_daiku.core.assembly import Assembly
+    from nichiyou_daiku.core.model import Model
 
 
 def read_dsl_file(file_path: str) -> str:
@@ -163,3 +169,106 @@ class CliEcho:
             **kwargs: Additional arguments for click.echo
         """
         self.echo(message, verbose_only=True, **kwargs)
+
+
+def parse_dsl_to_model(dsl_content: str, echo: CliEcho) -> Model:
+    """Parse DSL content to Model with error handling.
+
+    Args:
+        dsl_content: DSL content string
+        echo: CliEcho instance for output
+
+    Returns:
+        Parsed Model object
+
+    Raises:
+        SystemExit: If parsing fails
+    """
+    from nichiyou_daiku.dsl import (
+        DSLSemanticError,
+        DSLSyntaxError,
+        DSLValidationError,
+        parse_dsl,
+    )
+
+    try:
+        echo.verbose("Parsing DSL file...")
+        model = parse_dsl(dsl_content)
+        echo.verbose(
+            f"Found {len(model.pieces)} pieces and {len(model.connections)} connections"
+        )
+        return model
+    except (DSLSyntaxError, DSLSemanticError, DSLValidationError) as e:
+        echo.error(f"DSL Error: {e}")
+        sys.exit(1)
+    except Exception as e:
+        echo.error(f"Unexpected error parsing DSL: {e}")
+        sys.exit(1)
+
+
+def create_assembly_from_model(model: Model, echo: CliEcho) -> Assembly:
+    """Create Assembly from Model with error handling.
+
+    Args:
+        model: Model object
+        echo: CliEcho instance for output
+
+    Returns:
+        Assembly object
+
+    Raises:
+        SystemExit: If assembly creation fails
+    """
+    from nichiyou_daiku.core.assembly import Assembly
+
+    try:
+        echo.verbose("Creating assembly...")
+        return Assembly.of(model)
+    except Exception as e:
+        echo.error(f"Error creating assembly: {e}")
+        sys.exit(1)
+
+
+def ensure_build123d_available(echo: CliEcho) -> None:
+    """Check if build123d is available, exit if not.
+
+    Args:
+        echo: CliEcho instance for output
+
+    Raises:
+        SystemExit: If build123d is not available
+    """
+    from nichiyou_daiku.shell.build123d_export import HAS_BUILD123D
+
+    if not HAS_BUILD123D:
+        echo.error(
+            "Error: build123d is required for this operation.\n"
+            "Please install it with: uv sync --all-extras"
+        )
+        sys.exit(1)
+
+
+def convert_assembly_to_build123d(
+    assembly: Assembly, echo: CliEcho, fillet_radius: float = 5.0
+):
+    """Convert Assembly to build123d Compound with error handling.
+
+    Args:
+        assembly: Assembly object
+        echo: CliEcho instance for output
+        fillet_radius: Fillet radius in mm (default: 5.0)
+
+    Returns:
+        build123d Compound object
+
+    Raises:
+        SystemExit: If conversion fails
+    """
+    from nichiyou_daiku.shell import assembly_to_build123d
+
+    try:
+        echo.verbose("Converting to build123d model...")
+        return assembly_to_build123d(assembly, fillet_radius=fillet_radius)
+    except Exception as e:
+        echo.error(f"Error converting to 3D model: {e}")
+        sys.exit(1)

@@ -4,14 +4,14 @@ import sys
 
 import click
 
-from nichiyou_daiku.cli.utils import read_dsl_file, CliEcho
-from nichiyou_daiku.dsl import (
-    parse_dsl,
-    DSLSyntaxError,
-    DSLSemanticError,
-    DSLValidationError,
+from nichiyou_daiku.cli.utils import (
+    CliEcho,
+    convert_assembly_to_build123d,
+    create_assembly_from_model,
+    ensure_build123d_available,
+    parse_dsl_to_model,
+    read_dsl_file,
 )
-from nichiyou_daiku.core.assembly import Assembly
 
 
 def try_ocp_vscode_viewer(compound, echo: CliEcho) -> bool:
@@ -67,6 +67,9 @@ def view(ctx: click.Context, file: str, fillet_radius: float) -> None:
     """
     echo = CliEcho(ctx)
 
+    # Check build123d availability first
+    ensure_build123d_available(echo)
+
     # Read DSL content
     try:
         dsl_content = read_dsl_file(file)
@@ -74,58 +77,21 @@ def view(ctx: click.Context, file: str, fillet_radius: float) -> None:
         echo.error(f"Error: {e}")
         sys.exit(1)
 
-    # Parse DSL
-    try:
-        echo.verbose("Parsing DSL file...")
+    # Parse DSL and create assembly
+    model = parse_dsl_to_model(dsl_content, echo)
+    assembly = create_assembly_from_model(model, echo)
 
-        model = parse_dsl(dsl_content)
+    # Convert to build123d model
+    compound = convert_assembly_to_build123d(assembly, echo, fillet_radius=fillet_radius)
 
-        echo.verbose(
-            f"Found {len(model.pieces)} pieces and {len(model.connections)} connections"
-        )
+    # Try different viewers
+    viewer_found = try_ocp_vscode_viewer(compound, echo)
 
-    except (DSLSyntaxError, DSLSemanticError, DSLValidationError) as e:
-        echo.error(f"DSL Error: {e}")
-        sys.exit(1)
-    except Exception as e:
-        echo.error(f"Unexpected error parsing DSL: {e}")
-        sys.exit(1)
+    if not viewer_found:
+        viewer_found = try_jupyter_cadquery_viewer(compound, echo)
 
-    # Create assembly
-    try:
-        echo.verbose("Creating 3D assembly...")
-
-        assembly = Assembly.of(model)
-
-    except Exception as e:
-        echo.error(f"Error creating assembly: {e}")
-        sys.exit(1)
-
-    # Try to display with build123d
-    try:
-        from nichiyou_daiku.shell import assembly_to_build123d
-
-        echo.verbose("Converting to build123d model...")
-
-        compound = assembly_to_build123d(assembly, fillet_radius=fillet_radius)
-
-        # Try different viewers
-        viewer_found = try_ocp_vscode_viewer(compound, echo)
-
-        if not viewer_found:
-            viewer_found = try_jupyter_cadquery_viewer(compound, echo)
-
-        if not viewer_found:
-            echo.error("No 3D viewer found. Install ocp-vscode or jupyter-cadquery.")
-            echo.error("\nTo install ocp-vscode:")
-            echo.error("  uv add ocp-vscode")
-            sys.exit(1)
-
-    except ImportError:
-        echo.error("build123d is required for 3D visualization.")
-        echo.error("\nTo install visualization dependencies:")
-        echo.error("  uv sync --all-extras")
-        sys.exit(1)
-    except Exception as e:
-        echo.error(f"Error displaying model: {e}")
+    if not viewer_found:
+        echo.error("No 3D viewer found. Install ocp-vscode or jupyter-cadquery.")
+        echo.error("\nTo install ocp-vscode:")
+        echo.error("  uv add ocp-vscode")
         sys.exit(1)

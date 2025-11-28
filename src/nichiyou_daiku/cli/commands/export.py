@@ -6,10 +6,14 @@ from typing import Optional
 
 import click
 
-from nichiyou_daiku.cli.utils import read_dsl_file, CliEcho
-from nichiyou_daiku.core.assembly import Assembly
-from nichiyou_daiku.dsl import parse_dsl
-from nichiyou_daiku.shell.build123d_export import assembly_to_build123d, HAS_BUILD123D
+from nichiyou_daiku.cli.utils import (
+    CliEcho,
+    convert_assembly_to_build123d,
+    create_assembly_from_model,
+    ensure_build123d_available,
+    parse_dsl_to_model,
+    read_dsl_file,
+)
 
 
 def detect_format_from_extension(suffix: str) -> Optional[str]:
@@ -68,12 +72,7 @@ def export(
     echo = CliEcho(ctx)
 
     # Check if build123d is available
-    if not HAS_BUILD123D:
-        echo.error(
-            "Error: build123d is required for 3D export.\n"
-            "Please install it with: uv add nichiyou-daiku[viz]"
-        )
-        sys.exit(1)
+    ensure_build123d_available(echo)
 
     # Determine output format and filename
     if format and output:
@@ -109,26 +108,12 @@ def export(
         export_format = "step"
 
     # Read and parse DSL file
-    try:
-        dsl_content = read_dsl_file(str(input_file))
-        model = parse_dsl(dsl_content)
-    except Exception as e:
-        echo.error(f"Error parsing DSL file: {e}")
-        sys.exit(1)
-
-    # Create assembly
-    try:
-        assembly = Assembly.of(model)
-    except Exception as e:
-        echo.error(f"Error creating assembly: {e}")
-        sys.exit(1)
+    dsl_content = read_dsl_file(str(input_file))
+    model = parse_dsl_to_model(dsl_content, echo)
+    assembly = create_assembly_from_model(model, echo)
 
     # Convert to build123d
-    try:
-        compound = assembly_to_build123d(assembly, fillet_radius=fillet_radius)
-    except Exception as e:
-        echo.error(f"Error converting to 3D model: {e}")
-        sys.exit(1)
+    compound = convert_assembly_to_build123d(assembly, echo, fillet_radius=fillet_radius)
 
     # Export to file
     try:

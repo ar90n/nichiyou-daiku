@@ -15,6 +15,7 @@ from ..geometry import (
     Vector3D,
     cross as cross_face,
 )
+from .constants import DOWEL_EDGE_OFFSET_MM, DOWEL_HORIZONTAL_OFFSET_MM
 from .models import Joint, JointPair
 from .projection import project_joint
 
@@ -120,13 +121,15 @@ def _create_top_down_dowel_joints(
 
     src_0 = Joint(
         position=SurfacePoint(
-            face=src_anchor.contact_face, position=Point2D(u=25.4, v=0.0)
+            face=src_anchor.contact_face,
+            position=Point2D(u=DOWEL_HORIZONTAL_OFFSET_MM, v=0.0),
         ),
         orientation=orientation,
     )
     src_1 = Joint(
         position=SurfacePoint(
-            face=src_anchor.contact_face, position=Point2D(u=-25.4, v=0.0)
+            face=src_anchor.contact_face,
+            position=Point2D(u=-DOWEL_HORIZONTAL_OFFSET_MM, v=0.0),
         ),
         orientation=orientation,
     )
@@ -153,8 +156,8 @@ def _create_left_right_dowel_joints(
 
     # Get anchor position to place screws relative to it
     anchor_sp = as_surface_point(src_bound)
-    pos_0 = Point2D(u=0.0, v=anchor_sp.position.v + 25.4)
-    pos_1 = Point2D(u=0.0, v=anchor_sp.position.v - 25.4)
+    pos_0 = Point2D(u=0.0, v=anchor_sp.position.v + DOWEL_HORIZONTAL_OFFSET_MM)
+    pos_1 = Point2D(u=0.0, v=anchor_sp.position.v - DOWEL_HORIZONTAL_OFFSET_MM)
 
     src_0, src_1 = _create_joint_pair_from_positions(
         face=src_anchor.contact_face,
@@ -177,8 +180,8 @@ def _create_front_back_dowel_joints_with_offset(
 ) -> tuple[Joint, Joint, Joint, Joint]:
     """Create dowel joints for front/back connections with offset clamping.
 
-    For 2x4 lumber, dowels are placed 1 inch (25.4mm) from center horizontally,
-    and 44.5mm from the anchor edge to avoid splitting.
+    For 2x4 lumber, dowels are placed DOWEL_HORIZONTAL_OFFSET_MM from center
+    horizontally, and DOWEL_EDGE_OFFSET_MM from the anchor edge to avoid splitting.
 
     Args:
         src_bound: Source BoundAnchor (must be front or back face with top/down edge)
@@ -189,16 +192,12 @@ def _create_front_back_dowel_joints_with_offset(
     """
     src_anchor = src_bound.anchor
 
-    # Dowel placement constants for 2x4 lumber
-    dowel_horizontal_offset = 25.4  # 1 inch from center
-    dowel_edge_offset = 44.5  # Distance from anchor edge to avoid splitting
-
     orientation = _create_orientation_from_anchor(src_anchor)
     anchor_sp = as_surface_point(src_bound)
     offset_dir = Vector2D.of(src_anchor.contact_face, src_anchor.edge_shared_face).v
-    dowel_v = anchor_sp.position.v - offset_dir * dowel_edge_offset
-    pos_0 = Point2D(u=dowel_horizontal_offset, v=dowel_v)
-    pos_1 = Point2D(u=-dowel_horizontal_offset, v=dowel_v)
+    dowel_v = anchor_sp.position.v - offset_dir * DOWEL_EDGE_OFFSET_MM
+    pos_0 = Point2D(u=DOWEL_HORIZONTAL_OFFSET_MM, v=dowel_v)
+    pos_1 = Point2D(u=-DOWEL_HORIZONTAL_OFFSET_MM, v=dowel_v)
 
     src_0, src_1 = _create_joint_pair_from_positions(
         face=src_anchor.contact_face,

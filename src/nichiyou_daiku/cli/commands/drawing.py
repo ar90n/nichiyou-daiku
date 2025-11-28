@@ -7,10 +7,14 @@ from typing import Optional
 
 import click
 
-from nichiyou_daiku.cli.utils import read_dsl_file, CliEcho
-from nichiyou_daiku.core.assembly import Assembly
-from nichiyou_daiku.dsl import parse_dsl
-from nichiyou_daiku.shell.build123d_export import assembly_to_build123d, HAS_BUILD123D
+from nichiyou_daiku.cli.utils import (
+    CliEcho,
+    convert_assembly_to_build123d,
+    create_assembly_from_model,
+    ensure_build123d_available,
+    parse_dsl_to_model,
+    read_dsl_file,
+)
 
 
 def project_to_2d(part, viewport_origin, viewport_up, page_origin, scale_factor=1.0):
@@ -107,12 +111,7 @@ def drawing(
     echo = CliEcho(ctx)
 
     # Check build123d availability
-    if not HAS_BUILD123D:
-        echo.error(
-            "Error: build123d is required for technical drawing.\n"
-            "Please install it with: uv add nichiyou-daiku[viz]"
-        )
-        sys.exit(1)
+    ensure_build123d_available(echo)
 
     # Import build123d (after availability check)
     try:
@@ -130,20 +129,12 @@ def drawing(
     drawing_title = title or input_file.stem
 
     # Read and parse DSL
-    try:
-        dsl_content = read_dsl_file(str(input_file))
-        model = parse_dsl(dsl_content)
-    except Exception as e:
-        echo.error(f"Error parsing DSL file: {e}")
-        sys.exit(1)
+    dsl_content = read_dsl_file(str(input_file))
+    model = parse_dsl_to_model(dsl_content, echo)
+    assembly = create_assembly_from_model(model, echo)
 
-    # Create assembly and 3D model
-    try:
-        assembly = Assembly.of(model)
-        compound = assembly_to_build123d(assembly, fillet_radius=fillet_radius)
-    except Exception as e:
-        echo.error(f"Error creating 3D model: {e}")
-        sys.exit(1)
+    # Create 3D model
+    compound = convert_assembly_to_build123d(assembly, echo, fillet_radius=fillet_radius)
 
     # Create technical drawing border
     try:
