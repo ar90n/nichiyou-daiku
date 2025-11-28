@@ -19,6 +19,7 @@ from nichiyou_daiku.core.geometry import (
     cross as cross_face,
     is_positive,
 )
+from nichiyou_daiku.core.piece import Piece, get_shape
 
 
 def _get_pos_dir_edge(contact_face: Face, edge_shared_face: Face) -> Edge:
@@ -111,3 +112,42 @@ def as_orientation(anchor: Anchor, flip_dir: bool = False) -> Orientation:
     if flip_dir:
         up_face = opposite_face(up_face)
     return Orientation.of(direction=anchor.contact_face, up=up_face)
+
+
+class BoundAnchor(BaseModel, frozen=True):
+    """An anchor bound to a specific piece.
+
+    Combines a piece with an anchor position, representing a concrete
+    attachment point on a specific piece.
+
+    Attributes:
+        piece: The piece this anchor belongs to
+        anchor: The anchor position specification
+    """
+
+    piece: Piece
+    anchor: Anchor
+
+    def get_box(self) -> Box:
+        """Get the Box for this BoundAnchor's piece.
+
+        Returns:
+            Box with the 3D shape of the piece
+        """
+        return Box(shape=get_shape(self.piece))
+
+    def get_surface_point(self) -> SurfacePoint:
+        """Get the surface point for this BoundAnchor.
+
+        Returns:
+            SurfacePoint representing the anchor's position on the piece surface
+        """
+        return as_surface_point(self.anchor, self.get_box())
+
+    def get_point_3d(self) -> Point3D:
+        """Get the 3D point for this BoundAnchor.
+
+        Returns:
+            Point3D representing the anchor's position in 3D space
+        """
+        return as_point_3d(self.anchor, self.get_box())
