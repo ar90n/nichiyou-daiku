@@ -5,7 +5,8 @@ from nichiyou_daiku.core.assembly import (
     Joint,
 )
 from nichiyou_daiku.core.anchor import Anchor
-from nichiyou_daiku.core.connection import BoundAnchor, Connection
+from nichiyou_daiku.core.anchor import BoundAnchor
+from nichiyou_daiku.core.connection import Connection
 from typing import cast
 from nichiyou_daiku.core.geometry import (
     Point2D,

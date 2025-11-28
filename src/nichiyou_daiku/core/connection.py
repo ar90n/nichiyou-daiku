@@ -8,7 +8,7 @@ from typing import TypeAlias
 
 from pydantic import BaseModel
 
-from nichiyou_daiku.core.anchor import BoundAnchor
+from nichiyou_daiku.core.anchor import BoundAnchor as _BoundAnchor
 from nichiyou_daiku.core.geometry import Millimeters
 
 
@@ -46,6 +46,6 @@ class Connection(BaseModel, frozen=True):
         type: Connection type (VanillaConnection or DowelConnection)
     """
 
-    base: BoundAnchor
-    target: BoundAnchor
+    base: _BoundAnchor
+    target: _BoundAnchor
     type: ConnectionType = VanillaConnection()

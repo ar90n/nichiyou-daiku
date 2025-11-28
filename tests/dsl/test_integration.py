@@ -291,8 +291,8 @@ class TestDSLIntegration:
         beam1 = Piece.of(PieceType.PT_2x4, 1000.0, "beam1")
         beam2 = Piece.of(PieceType.PT_2x4, 2000.0, "beam2")
 
-        from nichiyou_daiku.core.connection import BoundAnchor, Connection
-        from nichiyou_daiku.core.anchor import Anchor
+        from nichiyou_daiku.core.anchor import Anchor, BoundAnchor
+        from nichiyou_daiku.core.connection import Connection
 
         connection = Connection(
             base=BoundAnchor(

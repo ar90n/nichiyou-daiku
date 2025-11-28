@@ -3,9 +3,8 @@
 import pytest
 from pydantic import ValidationError
 
-from nichiyou_daiku.core.anchor import Anchor
+from nichiyou_daiku.core.anchor import Anchor, BoundAnchor
 from nichiyou_daiku.core.connection import (
-    BoundAnchor,
     Connection,
     ConnectionType,
     VanillaConnection,
