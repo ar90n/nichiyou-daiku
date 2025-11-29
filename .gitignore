@@ -195,11 +195,19 @@ cython_debug/
 .cursorindexingignore
 
 # devcontainer
-.devcontainer
+.devcontainer/
 
 # Claude
 CLAUDE.md
-.claude
+.claude/
+
+# Serena
+.serena/
 
 # Generated project reports
 *_project_report.md
+report.md
+
+# Generated images and SVGs
+*.png
+*.svg
