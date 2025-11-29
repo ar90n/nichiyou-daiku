@@ -122,4 +122,16 @@ class Model(BaseModel, frozen=True):
         connections_dict = {
             (conn.base.piece.id, conn.target.piece.id): conn for conn in connections
         }
+
+        # Validate that all connection pieces exist in pieces_dict
+        for base_id, target_id in connections_dict:
+            if base_id not in pieces_dict:
+                raise ValueError(
+                    f"Connection references unknown base piece: '{base_id}'"
+                )
+            if target_id not in pieces_dict:
+                raise ValueError(
+                    f"Connection references unknown target piece: '{target_id}'"
+                )
+
         return cls(pieces=pieces_dict, connections=connections_dict, label=label)

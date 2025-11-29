@@ -1,5 +1,7 @@
 """Tests for model module."""
 
+import pytest
+
 from nichiyou_daiku.core.model import Model
 from nichiyou_daiku.core.piece import Piece, PieceType
 from nichiyou_daiku.core.anchor import Anchor
@@ -153,3 +155,93 @@ class TestModel:
         # Main piece has connections to both branches
         assert ("main", "branch1") in model.connections
         assert ("main", "branch2") in model.connections
+
+
+class TestModelValidation:
+    """Test Model validation rules."""
+
+    def test_should_raise_error_for_unknown_base_piece(self):
+        """Should raise ValueError when connection references unknown base piece."""
+        piece1 = Piece.of(PieceType.PT_2x4, 1000.0, "p1")
+        piece2 = Piece.of(PieceType.PT_2x4, 800.0, "p2")
+        unknown_piece = Piece.of(PieceType.PT_2x4, 500.0, "unknown")
+
+        # Connection uses unknown_piece as base, but it's not in pieces list
+        conn = Connection(
+            base=BoundAnchor(
+                piece=unknown_piece,
+                anchor=Anchor(
+                    contact_face="front",
+                    edge_shared_face="top",
+                    offset=FromMax(value=10),
+                ),
+            ),
+            target=BoundAnchor(
+                piece=piece2,
+                anchor=Anchor(
+                    contact_face="down",
+                    edge_shared_face="right",
+                    offset=FromMin(value=10),
+                ),
+            ),
+        )
+
+        with pytest.raises(ValueError, match="unknown base piece: 'unknown'"):
+            Model.of(pieces=[piece1, piece2], connections=[conn])
+
+    def test_should_raise_error_for_unknown_target_piece(self):
+        """Should raise ValueError when connection references unknown target piece."""
+        piece1 = Piece.of(PieceType.PT_2x4, 1000.0, "p1")
+        piece2 = Piece.of(PieceType.PT_2x4, 800.0, "p2")
+        unknown_piece = Piece.of(PieceType.PT_2x4, 500.0, "unknown")
+
+        # Connection uses unknown_piece as target, but it's not in pieces list
+        conn = Connection(
+            base=BoundAnchor(
+                piece=piece1,
+                anchor=Anchor(
+                    contact_face="front",
+                    edge_shared_face="top",
+                    offset=FromMax(value=10),
+                ),
+            ),
+            target=BoundAnchor(
+                piece=unknown_piece,
+                anchor=Anchor(
+                    contact_face="down",
+                    edge_shared_face="right",
+                    offset=FromMin(value=10),
+                ),
+            ),
+        )
+
+        with pytest.raises(ValueError, match="unknown target piece: 'unknown'"):
+            Model.of(pieces=[piece1, piece2], connections=[conn])
+
+    def test_should_accept_valid_connections(self):
+        """Should accept connections that reference pieces in the model."""
+        piece1 = Piece.of(PieceType.PT_2x4, 1000.0, "p1")
+        piece2 = Piece.of(PieceType.PT_2x4, 800.0, "p2")
+
+        conn = Connection(
+            base=BoundAnchor(
+                piece=piece1,
+                anchor=Anchor(
+                    contact_face="front",
+                    edge_shared_face="top",
+                    offset=FromMax(value=10),
+                ),
+            ),
+            target=BoundAnchor(
+                piece=piece2,
+                anchor=Anchor(
+                    contact_face="down",
+                    edge_shared_face="right",
+                    offset=FromMin(value=10),
+                ),
+            ),
+        )
+
+        # Should not raise
+        model = Model.of(pieces=[piece1, piece2], connections=[conn])
+        assert len(model.connections) == 1
