@@ -180,6 +180,7 @@ Total waste: 1008mm (9.2%)
 ### Core Library
 - 🪵 Support for standard lumber sizes (2x4 and 1x4)
 - 🔗 Flexible connection system with precise offset control
+- 🔩 Dowel and screw joint support with preset sizes
 - 📐 3D visualization with build123d (optional)
 - 🧩 Piece-oriented design matching real woodworking
 - 📊 Graph-based assembly representation
@@ -362,10 +363,12 @@ nichiyou-daiku supports a Cypher-inspired DSL for more concise model definitions
 (left_side:2x4 =800)    // 800mm tall
 (right_side:2x4 =800)
 (shelf:2x4 =600)        // 600mm wide shelf
+(back_panel:1x4 =600)   // Back support
 
-// Connections using compact notation with dowel joints
-left_side -[RT>100 FT<50 D(4.0, 20.0)]- shelf    // Dowel joint
-right_side -[LT>100 FT<50 D(4.0, 20.0)]- shelf   // Dowel joint
+// Connections using compact notation
+left_side -[RT>100 FT<50 D(:8x30)]- shelf       // Dowel preset
+right_side -[LT>100 FT<50 D(4.0, 20.0)]- shelf  // Dowel custom
+left_side -[BF<0 FB<0 S(Slim:3.3x50)]- back_panel  // Screw preset
 ```
 
 #### DSL Features
@@ -374,7 +377,13 @@ right_side -[LT>100 FT<50 D(4.0, 20.0)]- shelf   // Dowel joint
 - **Compact piece syntax**: `(id:type =length)` instead of JSON
 - **Compact connection syntax**: `[FF<100 TD>50]` for face+offset pairs
 - **Face abbreviations**: T(op), D(own), L(eft), R(ight), F(ront), B(ack)
-- **Connection types**: `V` for vanilla (default), `D(radius, depth)` for dowel joints
+- **Connection types**:
+  - `V` - Vanilla connection (default)
+  - `D(radius, depth)` - Dowel joint with custom dimensions
+  - `D(:8x30)` - Dowel joint using preset (diameter x length)
+  - `S(diameter, length)` - Screw joint with custom dimensions
+  - `S(Slim:3.3x50)` - Slim screw preset
+  - `S(Coarse:3.8x57)` - Coarse thread screw preset
 
 #### DSL CLI Tools
 
