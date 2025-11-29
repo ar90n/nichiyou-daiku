@@ -1,46 +1,6 @@
 """Tests for the validate command."""
 
-from click.testing import CliRunner
-import pytest
-
 from nichiyou_daiku.cli.dsl_cli import cli
-
-
-@pytest.fixture
-def runner():
-    """Create a CLI runner."""
-    return CliRunner()
-
-
-@pytest.fixture
-def valid_dsl():
-    """Valid DSL content."""
-    return """
-(piece1:2x4 {"length": 1000})
-(piece2:1x4 {"length": 800})
-
-piece1 -[{"contact_face": "top", "edge_shared_face": "front", "offset": FromMin(0)}
-         {"contact_face": "down", "edge_shared_face": "left", "offset": FromMax(100)}]- piece2
-"""
-
-
-@pytest.fixture
-def invalid_syntax_dsl():
-    """DSL with syntax error."""
-    return """
-(piece1:INVALID_TYPE {"length": 1000})
-"""
-
-
-@pytest.fixture
-def invalid_semantic_dsl():
-    """DSL with semantic error."""
-    return """
-(piece1:2x4 {"length": 1000})
-
-piece1 -[{"contact_face": "top", "edge_shared_face": "front", "offset": FromMin(0)}
-         {"contact_face": "down", "edge_shared_face": "left", "offset": FromMax(100)}]- unknown_piece
-"""
 
 
 def test_validate_valid_file(runner, tmp_path, valid_dsl):

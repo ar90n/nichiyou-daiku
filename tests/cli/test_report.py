@@ -1,28 +1,6 @@
 """Tests for the report command."""
 
-from click.testing import CliRunner
-import pytest
-
 from nichiyou_daiku.cli.dsl_cli import cli
-
-
-@pytest.fixture
-def runner():
-    """Create a CLI runner."""
-    return CliRunner()
-
-
-@pytest.fixture
-def simple_dsl():
-    """Simple DSL content for testing."""
-    return """
-(leg1:2x4 {"length": 720})
-(leg2:2x4 {"length": 720})
-(apron:1x4 {"length": 600})
-
-leg1 -[{"contact_face": "front", "edge_shared_face": "right", "offset": FromMax(100)}
-       {"contact_face": "left", "edge_shared_face": "down", "offset": FromMin(0)}]- apron
-"""
 
 
 def test_report_to_file(runner, tmp_path, simple_dsl):

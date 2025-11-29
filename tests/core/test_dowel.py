@@ -5,7 +5,6 @@ import pytest
 from nichiyou_daiku.core.dowel import (
     DowelSpec,
     Dowel,
-    DowelPreset,
     as_spec,
     find_preset,
 )
@@ -51,23 +50,16 @@ class TestDowel:
 
     def test_of_should_raise_for_invalid_size(self):
         """Should raise ValueError for unknown size."""
-        with pytest.raises(ValueError, match="Unknown dowel size"):
+        with pytest.raises(ValueError, match="Unknown Dowel"):
             Dowel.of("9x99")
 
 
 class TestAsSpec:
     """Test as_spec function."""
 
-    def test_should_convert_preset_to_spec(self):
-        """Should convert Dowel enum to DowelSpec."""
-        spec = as_spec(Dowel.D8_L30)
-
-        assert spec.diameter == 8.0
-        assert spec.length == 30.0
-
-    def test_should_handle_all_presets(self):
-        """Should correctly convert all preset sizes."""
-        test_cases = [
+    @pytest.mark.parametrize(
+        "preset,expected_diameter,expected_length",
+        [
             (Dowel.D6_L25, 6.0, 25.0),
             (Dowel.D6_L30, 6.0, 30.0),
             (Dowel.D8_L25, 8.0, 25.0),
@@ -76,12 +68,15 @@ class TestAsSpec:
             (Dowel.D10_L30, 10.0, 30.0),
             (Dowel.D10_L40, 10.0, 40.0),
             (Dowel.D12_L40, 12.0, 40.0),
-        ]
-
-        for preset, expected_diameter, expected_length in test_cases:
-            spec = as_spec(preset)
-            assert spec.diameter == expected_diameter
-            assert spec.length == expected_length
+        ],
+    )
+    def test_should_convert_preset_to_spec(
+        self, preset: Dowel, expected_diameter: float, expected_length: float
+    ):
+        """Should correctly convert preset to spec."""
+        spec = as_spec(preset)
+        assert spec.diameter == expected_diameter
+        assert spec.length == expected_length
 
 
 class TestFindPreset:
@@ -105,9 +100,9 @@ class TestFindPreset:
 
         assert preset == Dowel.D8_L30
 
-    def test_should_find_all_presets(self):
-        """Should find all defined presets."""
-        test_cases = [
+    @pytest.mark.parametrize(
+        "diameter,length,expected",
+        [
             (6, 25, Dowel.D6_L25),
             (6, 30, Dowel.D6_L30),
             (8, 25, Dowel.D8_L25),
@@ -116,8 +111,11 @@ class TestFindPreset:
             (10, 30, Dowel.D10_L30),
             (10, 40, Dowel.D10_L40),
             (12, 40, Dowel.D12_L40),
-        ]
-
-        for diameter, length, expected in test_cases:
-            preset = find_preset(diameter, length)
-            assert preset == expected
+        ],
+    )
+    def test_should_find_preset_by_dimensions(
+        self, diameter: float, length: float, expected: Dowel
+    ):
+        """Should find preset by dimensions."""
+        preset = find_preset(diameter, length)
+        assert preset == expected

@@ -126,22 +126,8 @@ class Connection(BaseModel, frozen=True):
                 f"Dowel depth {depth}mm exceeds target piece dimension {target_depth_limit}mm"
             )
 
-        # Validate radius against cross-section
-        base_min_cross = _get_min_cross_section(base_shape, base.anchor.contact_face)
-        target_min_cross = _get_min_cross_section(
-            target_shape, target.anchor.contact_face
-        )
-
-        if radius * 2 > base_min_cross:
-            raise ValueError(
-                f"Dowel diameter {radius * 2}mm exceeds "
-                f"base piece cross-section {base_min_cross}mm"
-            )
-        if radius * 2 > target_min_cross:
-            raise ValueError(
-                f"Dowel diameter {radius * 2}mm exceeds "
-                f"target piece cross-section {target_min_cross}mm"
-            )
+        # Validate diameter against cross-section
+        _validate_fastener_diameter(base, target, spec.diameter, "Dowel")
 
         dowel_conn = DowelConnection(radius=radius, depth=depth)
         return cls(base=base, target=target, type=dowel_conn)
@@ -166,12 +152,13 @@ class Connection(BaseModel, frozen=True):
         Raises:
             ValueError: If screw dimensions exceed piece dimensions
 
-        Example:
-            >>> from nichiyou_daiku.core.screw import ScrewSpec, SlimScrew, get_spec
-            >>> # Using preset screw type
-            >>> conn = Connection.of_screw(base, target, get_spec(SlimScrew.D3_3_L50))
-            >>> # Using custom spec
-            >>> conn = Connection.of_screw(base, target, ScrewSpec(diameter=4.0, length=55.0))
+        Example::
+
+            from nichiyou_daiku.core.screw import ScrewSpec, SlimScrew, as_spec
+            # Using preset screw type
+            conn = Connection.of_screw(base, target, as_spec(SlimScrew.D3_3_L50))
+            # Using custom spec
+            conn = Connection.of_screw(base, target, ScrewSpec(diameter=4.0, length=55.0))
         """
         diameter = spec.diameter
         length = spec.length
@@ -204,21 +191,7 @@ class Connection(BaseModel, frozen=True):
             )
 
         # Validate diameter against cross-section
-        base_min_cross = _get_min_cross_section(base_shape, base.anchor.contact_face)
-        target_min_cross = _get_min_cross_section(
-            target_shape, target.anchor.contact_face
-        )
-
-        if diameter > base_min_cross:
-            raise ValueError(
-                f"Screw diameter {diameter}mm exceeds "
-                f"base piece cross-section {base_min_cross}mm"
-            )
-        if diameter > target_min_cross:
-            raise ValueError(
-                f"Screw diameter {diameter}mm exceeds "
-                f"target piece cross-section {target_min_cross}mm"
-            )
+        _validate_fastener_diameter(base, target, diameter, "Screw")
 
         screw_conn = ScrewConnection(diameter=diameter, length=length)
         return cls(base=base, target=target, type=screw_conn)
@@ -261,3 +234,38 @@ def _get_min_cross_section(shape: Shape3D, face: Face) -> float:
     if is_back_to_front_axis(face):  # front/back → cross section is width x length
         return min(shape.width, shape.length)
     raise RuntimeError("Unreachable code reached")
+
+
+def _validate_fastener_diameter(
+    base: BoundAnchor,
+    target: BoundAnchor,
+    diameter: float,
+    fastener_type: str,
+) -> None:
+    """Validate that fastener diameter fits in both pieces.
+
+    Args:
+        base: BoundAnchor for the base piece
+        target: BoundAnchor for the target piece
+        diameter: Fastener diameter in mm
+        fastener_type: Type name for error messages (e.g., "Dowel", "Screw")
+
+    Raises:
+        ValueError: If diameter exceeds cross-section of either piece
+    """
+    base_shape = get_shape(base.piece)
+    target_shape = get_shape(target.piece)
+
+    base_min_cross = _get_min_cross_section(base_shape, base.anchor.contact_face)
+    target_min_cross = _get_min_cross_section(target_shape, target.anchor.contact_face)
+
+    if diameter > base_min_cross:
+        raise ValueError(
+            f"{fastener_type} diameter {diameter}mm exceeds "
+            f"base piece cross-section {base_min_cross}mm"
+        )
+    if diameter > target_min_cross:
+        raise ValueError(
+            f"{fastener_type} diameter {diameter}mm exceeds "
+            f"target piece cross-section {target_min_cross}mm"
+        )

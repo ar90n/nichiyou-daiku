@@ -10,6 +10,7 @@ from typing import TypeAlias
 from pydantic import BaseModel
 
 from nichiyou_daiku.core.geometry import Millimeters
+from nichiyou_daiku.core.preset_base import StringEnumMixin
 
 
 class ScrewSpec(BaseModel, frozen=True):
@@ -31,7 +32,7 @@ class ScrewSpec(BaseModel, frozen=True):
     length: Millimeters
 
 
-class SlimScrew(Enum):
+class SlimScrew(StringEnumMixin, Enum):
     """Standard slim screw (スリムビス) sizes.
 
     Slim screws are thinner than coarse thread screws and are less likely
@@ -66,26 +67,8 @@ class SlimScrew(Enum):
     # 4.2mm diameter
     D4_2_L90 = "4.2x90"
 
-    @classmethod
-    def of(cls, value: str) -> "SlimScrew":
-        """Create a SlimScrew from a string value.
 
-        Args:
-            value: String in format "diameter x length" (e.g., "3.3x50")
-
-        Returns:
-            SlimScrew enum member
-
-        Raises:
-            ValueError: If the value doesn't match any known size
-        """
-        for member in cls:
-            if member.value == value:
-                return member
-        raise ValueError(f"Unknown slim screw size: {value}")
-
-
-class CoarseThreadScrew(Enum):
+class CoarseThreadScrew(StringEnumMixin, Enum):
     """Standard coarse thread screw (コーススレッド) sizes.
 
     Coarse thread screws have larger pitch and stronger holding power.
@@ -122,24 +105,6 @@ class CoarseThreadScrew(Enum):
     # 5.2mm diameter
     D5_2_L120 = "5.2x120"
 
-    @classmethod
-    def of(cls, value: str) -> "CoarseThreadScrew":
-        """Create a CoarseThreadScrew from a string value.
-
-        Args:
-            value: String in format "diameter x length" (e.g., "3.8x57")
-
-        Returns:
-            CoarseThreadScrew enum member
-
-        Raises:
-            ValueError: If the value doesn't match any known size
-        """
-        for member in cls:
-            if member.value == value:
-                return member
-        raise ValueError(f"Unknown coarse thread screw size: {value}")
-
 
 # Type alias for any preset screw type
 ScrewPreset: TypeAlias = SlimScrew | CoarseThreadScrew
@@ -155,12 +120,12 @@ def as_spec(screw: ScrewPreset) -> ScrewSpec:
         ScrewSpec with the corresponding diameter and length
 
     Example:
-        >>> spec = get_spec(SlimScrew.D3_3_L50)
+        >>> spec = as_spec(SlimScrew.D3_3_L50)
         >>> spec.diameter
         3.3
         >>> spec.length
         50.0
-        >>> spec = get_spec(CoarseThreadScrew.D3_8_L57)
+        >>> spec = as_spec(CoarseThreadScrew.D3_8_L57)
         >>> spec.diameter
         3.8
         >>> spec.length

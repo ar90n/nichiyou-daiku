@@ -26,9 +26,9 @@ class TestDowelPresetParsing:
         assert conn.type.radius == 4.0
         assert conn.type.depth == 30.0
 
-    def test_should_parse_all_standard_presets(self):
-        """Should parse all standard dowel presets."""
-        presets = [
+    @pytest.mark.parametrize(
+        "preset,expected_radius,expected_depth",
+        [
             ("6x25", 3.0, 25.0),
             ("6x30", 3.0, 30.0),
             ("8x25", 4.0, 25.0),
@@ -37,19 +37,22 @@ class TestDowelPresetParsing:
             ("10x30", 5.0, 30.0),
             ("10x40", 5.0, 40.0),
             ("12x40", 6.0, 40.0),
-        ]
+        ],
+    )
+    def test_should_parse_standard_preset(
+        self, preset: str, expected_radius: float, expected_depth: float
+    ):
+        """Should parse standard dowel preset."""
+        dsl = f"""
+        (p1:2x4 =1000)
+        (p2:2x4 =800)
 
-        for preset, expected_radius, expected_depth in presets:
-            dsl = f"""
-            (p1:2x4 =1000)
-            (p2:2x4 =800)
-
-            p1 -[TF<0 BD<0 D(:{preset})]- p2
-            """
-            model = parse_dsl(dsl)
-            conn = model.connections[("p1", "p2")]
-            assert conn.type.radius == expected_radius, f"Failed for preset {preset}"
-            assert conn.type.depth == expected_depth, f"Failed for preset {preset}"
+        p1 -[TF<0 BD<0 D(:{preset})]- p2
+        """
+        model = parse_dsl(dsl)
+        conn = model.connections[("p1", "p2")]
+        assert conn.type.radius == expected_radius
+        assert conn.type.depth == expected_depth
 
     def test_should_reject_invalid_preset(self):
         """Should reject invalid dowel preset."""

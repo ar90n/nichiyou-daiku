@@ -1,7 +1,7 @@
 """AST transformer for converting Lark parse trees to nichiyou-daiku models."""
 
 from dataclasses import dataclass, field
-from typing import Any, cast
+from typing import Any, TypeVar, cast
 
 from lark import Token, Transformer
 
@@ -20,6 +20,9 @@ from nichiyou_daiku.core.piece import Piece, PieceType
 from nichiyou_daiku.core.screw import find_preset as find_screw_preset
 from nichiyou_daiku.core.dowel import find_preset as find_dowel_preset
 from nichiyou_daiku.dsl.exceptions import DSLSemanticError, DSLValidationError
+
+# Type variable for connection types
+T = TypeVar("T", DowelConnection, ScrewConnection)
 
 
 @dataclass
@@ -59,6 +62,69 @@ class DSLTransformer(Transformer):
         super().__init__()
         self.pieces: dict[str, Piece] = {}
         self.connections: list[Connection] = []
+
+    # =========================================================================
+    # Helper methods for reducing code duplication
+    # =========================================================================
+
+    def _extract_numbers(self, items: list[Any], count: int = 2) -> list[float]:
+        """Extract numeric values from transformer items.
+
+        Args:
+            items: List of items from transformer
+            count: Expected number of numeric values
+
+        Returns:
+            List of float values
+
+        Raises:
+            DSLValidationError: If the number of values doesn't match count
+        """
+        numbers = [
+            float(item)
+            for item in items
+            if isinstance(item, Token) and item.type == "NUMBER"
+        ]
+        if len(numbers) != count:
+            raise DSLValidationError(f"Expected {count} numbers, got {len(numbers)}")
+        return numbers
+
+    def _extract_connection_type(
+        self, items: list[Any], conn_type: type[T], type_name: str
+    ) -> T:
+        """Extract a connection type from items.
+
+        Args:
+            items: List of items from transformer
+            conn_type: The connection type class to look for
+            type_name: Human-readable name for error messages
+
+        Returns:
+            The matching connection type instance
+
+        Raises:
+            DSLValidationError: If no matching connection type is found
+        """
+        for item in items:
+            if isinstance(item, conn_type):
+                return item
+        raise DSLValidationError(f"Invalid {type_name} format: {items}")
+
+    def _is_token_type(self, item: Any, token_type: str) -> bool:
+        """Check if an item is a Token of a specific type.
+
+        Args:
+            item: The item to check
+            token_type: The expected token type
+
+        Returns:
+            True if item is a Token of the specified type
+        """
+        return isinstance(item, Token) and item.type == token_type
+
+    # =========================================================================
+    # Entry points
+    # =========================================================================
 
     def start(self, items: list[Any]) -> Model:
         """Transform the start rule into a Model."""
@@ -461,32 +527,12 @@ class DSLTransformer(Transformer):
 
     def type_dowel(self, items: list[Any]) -> DowelConnection:
         """Transform dowel connection type."""
-        # Extract NUMBER tokens from items
-        numbers = [
-            float(item)
-            for item in items
-            if isinstance(item, Token) and item.type == "NUMBER"
-        ]
-        if len(numbers) != 2:
-            raise DSLValidationError(
-                f"Dowel connection type requires exactly 2 numbers (radius, depth), got {len(numbers)}"
-            )
-        radius, depth = numbers
+        radius, depth = self._extract_numbers(items)
         return DowelConnection(radius=radius, depth=depth)
 
     def type_screw(self, items: list[Any]) -> ScrewConnection:
         """Transform screw connection type (JSON format)."""
-        numbers = [
-            float(item)
-            for item in items
-            if isinstance(item, Token) and item.type == "NUMBER"
-        ]
-        if len(numbers) != 2:
-            raise DSLValidationError(
-                f"Screw connection type requires exactly 2 numbers "
-                f"(diameter, length), got {len(numbers)}"
-            )
-        diameter, length = numbers
+        diameter, length = self._extract_numbers(items)
         return ScrewConnection(diameter=diameter, length=length)
 
     # ConnectionType transformers (Compact format)
@@ -508,39 +554,16 @@ class DSLTransformer(Transformer):
         Supports both numeric format D(radius, depth) and
         preset format D(:diameterxlength).
         """
-        # Result from dowel_numeric or dowel_preset is passed through
-        for item in items:
-            if isinstance(item, DowelConnection):
-                return item
-        raise DSLValidationError("Invalid compact dowel connection format")
+        return self._extract_connection_type(items, DowelConnection, "dowel")
 
     def dowel_numeric(self, items: list[Any]) -> DowelConnection:
         """Transform numeric dowel format D(radius, depth)."""
-        numbers = [
-            float(item)
-            for item in items
-            if isinstance(item, Token) and item.type == "NUMBER"
-        ]
-        if len(numbers) != 2:
-            raise DSLValidationError(
-                f"Numeric dowel requires exactly 2 numbers (radius, depth), got {len(numbers)}"
-            )
-        radius, depth = numbers
+        radius, depth = self._extract_numbers(items)
         return DowelConnection(radius=radius, depth=depth)
 
     def dowel_preset(self, items: list[Any]) -> DowelConnection:
         """Transform preset dowel format D(:diameterxlength)."""
-        numbers = [
-            float(item)
-            for item in items
-            if isinstance(item, Token) and item.type == "NUMBER"
-        ]
-        if len(numbers) != 2:
-            raise DSLValidationError(
-                f"Dowel preset requires diameter and length, got {len(numbers)} numbers"
-            )
-
-        diameter, length = numbers
+        diameter, length = self._extract_numbers(items)
 
         # Validate the preset exists
         preset = find_dowel_preset(diameter, length)
@@ -558,54 +581,26 @@ class DSLTransformer(Transformer):
         Supports both numeric format S(diameter, length) and
         preset format S(Slim:diameter x length) or S(Coarse:diameter x length).
         """
-        # screw_compact receives SCREW_START token + (screw_numeric or screw_preset result)
-        # Find the ScrewConnection in items
-        for item in items:
-            if isinstance(item, ScrewConnection):
-                return item
-
-        # Fallback: shouldn't normally reach here with new grammar
-        raise DSLValidationError(
-            f"Invalid screw compact format: {items}"
-        )
+        return self._extract_connection_type(items, ScrewConnection, "screw")
 
     def screw_numeric(self, items: list[Any]) -> ScrewConnection:
         """Transform numeric screw notation: S(diameter, length)."""
-        numbers = [
-            float(item)
-            for item in items
-            if isinstance(item, Token) and item.type == "NUMBER"
-        ]
-        if len(numbers) != 2:
-            raise DSLValidationError(
-                f"Numeric screw connection requires exactly 2 numbers "
-                f"(diameter, length), got {len(numbers)}"
-            )
-        diameter, length = numbers
+        diameter, length = self._extract_numbers(items)
         return ScrewConnection(diameter=diameter, length=length)
 
     def screw_preset(self, items: list[Any]) -> ScrewConnection:
         """Transform preset screw notation: Slim:3.3x50 or Coarse:3.8x57."""
-        # items: [SCREW_TYPE token, NUMBER (diameter), NUMBER (length)]
+        # Extract screw type
         screw_type: str | None = None
-        numbers: list[float] = []
-
         for item in items:
-            if isinstance(item, Token):
-                if item.type == "SCREW_TYPE":
-                    screw_type = str(item)
-                elif item.type == "NUMBER":
-                    numbers.append(float(item))
+            if self._is_token_type(item, "SCREW_TYPE"):
+                screw_type = str(item)
+                break
 
         if screw_type is None:
             raise DSLValidationError("Screw preset must specify type (Slim or Coarse)")
 
-        if len(numbers) != 2:
-            raise DSLValidationError(
-                f"Screw preset requires diameter and length, got {len(numbers)} numbers"
-            )
-
-        diameter, length = numbers
+        diameter, length = self._extract_numbers(items)
 
         # Validate the preset exists
         preset = find_screw_preset(screw_type, diameter, length)

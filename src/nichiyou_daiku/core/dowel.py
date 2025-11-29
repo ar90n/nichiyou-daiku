@@ -9,6 +9,7 @@ from typing import TypeAlias
 from pydantic import BaseModel
 
 from nichiyou_daiku.core.geometry import Millimeters
+from nichiyou_daiku.core.preset_base import StringEnumMixin
 
 
 class DowelSpec(BaseModel, frozen=True):
@@ -30,7 +31,7 @@ class DowelSpec(BaseModel, frozen=True):
     length: Millimeters
 
 
-class Dowel(Enum):
+class Dowel(StringEnumMixin, Enum):
     """Standard wooden dowel sizes.
 
     Common dowel sizes available in Japan, based on standard product offerings.
@@ -61,24 +62,6 @@ class Dowel(Enum):
 
     # 12mm diameter
     D12_L40 = "12x40"
-
-    @classmethod
-    def of(cls, value: str) -> "Dowel":
-        """Create a Dowel from a string value.
-
-        Args:
-            value: String in format "diameter x length" (e.g., "8x30")
-
-        Returns:
-            Dowel enum member
-
-        Raises:
-            ValueError: If the value doesn't match any known size
-        """
-        for member in cls:
-            if member.value == value:
-                return member
-        raise ValueError(f"Unknown dowel size: {value}")
 
 
 # Type alias for future expansion (e.g., different wood types)

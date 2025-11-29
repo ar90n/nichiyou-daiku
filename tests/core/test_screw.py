@@ -44,7 +44,7 @@ class TestSlimScrew:
 
     def test_slim_screw_of_invalid_raises(self):
         """SlimScrew.of should raise ValueError for unknown sizes."""
-        with pytest.raises(ValueError, match="Unknown slim screw"):
+        with pytest.raises(ValueError, match="Unknown SlimScrew"):
             SlimScrew.of("5.0x100")
 
     def test_slim_screw_count(self):
@@ -69,7 +69,7 @@ class TestCoarseThreadScrew:
 
     def test_coarse_thread_of_invalid_raises(self):
         """CoarseThreadScrew.of should raise ValueError for unknown sizes."""
-        with pytest.raises(ValueError, match="Unknown coarse thread"):
+        with pytest.raises(ValueError, match="Unknown CoarseThreadScrew"):
             CoarseThreadScrew.of("6.0x150")
 
     def test_coarse_thread_count(self):
