@@ -367,3 +367,171 @@ class TestAssemblyToBuild123d:
             finally:
                 export_module.HAS_BUILD123D = original_available
                 importlib.reload(export_module)
+
+
+class TestCheckOverlap:
+    """Test check_overlap function."""
+
+    def test_should_handle_import_error_gracefully(self):
+        """Should raise ImportError with helpful message when build123d not available."""
+        import nichiyou_daiku.shell.build123d_export as export_module
+
+        original_available = export_module.HAS_BUILD123D
+
+        try:
+            export_module.HAS_BUILD123D = False
+
+            from nichiyou_daiku.shell.build123d_export import check_overlap
+
+            mock_compound = Mock()
+
+            with pytest.raises(ImportError) as exc_info:
+                check_overlap(mock_compound)
+
+            assert "build123d is required" in str(exc_info.value)
+            assert "pip install nichiyou-daiku[viz]" in str(exc_info.value)
+        finally:
+            export_module.HAS_BUILD123D = original_available
+
+    def test_should_return_no_overlap_when_no_intersection(self):
+        """Should return OverlapResult with has_overlap=False when no intersection."""
+        with patch.dict("sys.modules", {"build123d": MagicMock()}):
+            import nichiyou_daiku.shell.build123d_export as export_module
+
+            original_available = export_module.HAS_BUILD123D
+            export_module.HAS_BUILD123D = True
+
+            try:
+                from nichiyou_daiku.shell.build123d_export import check_overlap
+
+                mock_compound = Mock()
+                mock_compound.do_children_intersect.return_value = (False, (), 0.0)
+
+                result = check_overlap(mock_compound)
+
+                # Use type name check instead of isinstance due to module reload
+                assert type(result).__name__ == "OverlapResult"
+                assert result.has_overlap is False
+                assert result.overlapping_pairs == []
+                assert result.volume == 0.0
+                mock_compound.do_children_intersect.assert_called_once_with(
+                    tolerance=1e-5
+                )
+            finally:
+                export_module.HAS_BUILD123D = original_available
+
+    def test_should_return_overlap_when_intersection_detected(self):
+        """Should return OverlapResult with overlapping pairs when intersection detected."""
+        with patch.dict("sys.modules", {"build123d": MagicMock()}):
+            import nichiyou_daiku.shell.build123d_export as export_module
+
+            original_available = export_module.HAS_BUILD123D
+            export_module.HAS_BUILD123D = True
+
+            try:
+                from nichiyou_daiku.shell.build123d_export import check_overlap
+
+                # Create mock shapes with labels
+                mock_shape1 = Mock()
+                mock_shape1.label = "piece1"
+                mock_shape2 = Mock()
+                mock_shape2.label = "piece2"
+
+                mock_compound = Mock()
+                mock_compound.do_children_intersect.return_value = (
+                    True,
+                    (mock_shape1, mock_shape2),
+                    123.45,
+                )
+
+                result = check_overlap(mock_compound)
+
+                # Use type name check instead of isinstance due to module reload
+                assert type(result).__name__ == "OverlapResult"
+                assert result.has_overlap is True
+                assert result.overlapping_pairs == [("piece1", "piece2")]
+                assert result.volume == 123.45
+            finally:
+                export_module.HAS_BUILD123D = original_available
+
+    def test_should_use_custom_tolerance(self):
+        """Should use custom tolerance when specified."""
+        with patch.dict("sys.modules", {"build123d": MagicMock()}):
+            import nichiyou_daiku.shell.build123d_export as export_module
+
+            original_available = export_module.HAS_BUILD123D
+            export_module.HAS_BUILD123D = True
+
+            try:
+                from nichiyou_daiku.shell.build123d_export import check_overlap
+
+                mock_compound = Mock()
+                mock_compound.do_children_intersect.return_value = (False, (), 0.0)
+
+                check_overlap(mock_compound, tolerance=0.001)
+
+                mock_compound.do_children_intersect.assert_called_once_with(
+                    tolerance=0.001
+                )
+            finally:
+                export_module.HAS_BUILD123D = original_available
+
+    def test_should_handle_missing_labels(self):
+        """Should use '?' for shapes without labels."""
+        with patch.dict("sys.modules", {"build123d": MagicMock()}):
+            import nichiyou_daiku.shell.build123d_export as export_module
+
+            original_available = export_module.HAS_BUILD123D
+            export_module.HAS_BUILD123D = True
+
+            try:
+                from nichiyou_daiku.shell.build123d_export import check_overlap
+
+                # Create mock shapes without labels
+                mock_shape1 = Mock(spec=[])  # Empty spec means no 'label' attribute
+                mock_shape2 = Mock(spec=[])
+
+                mock_compound = Mock()
+                mock_compound.do_children_intersect.return_value = (
+                    True,
+                    (mock_shape1, mock_shape2),
+                    50.0,
+                )
+
+                result = check_overlap(mock_compound)
+
+                assert result.has_overlap is True
+                assert result.overlapping_pairs == [("?", "?")]
+                assert result.volume == 50.0
+            finally:
+                export_module.HAS_BUILD123D = original_available
+
+    def test_should_handle_single_shape_in_intersection(self):
+        """Should return empty pairs when less than 2 shapes returned."""
+        with patch.dict("sys.modules", {"build123d": MagicMock()}):
+            import nichiyou_daiku.shell.build123d_export as export_module
+
+            original_available = export_module.HAS_BUILD123D
+            export_module.HAS_BUILD123D = True
+
+            try:
+                from nichiyou_daiku.shell.build123d_export import check_overlap
+
+                mock_shape = Mock()
+                mock_shape.label = "single_piece"
+
+                mock_compound = Mock()
+                # Edge case: intersection detected but only one shape
+                mock_compound.do_children_intersect.return_value = (
+                    True,
+                    (mock_shape,),
+                    10.0,
+                )
+
+                result = check_overlap(mock_compound)
+
+                assert result.has_overlap is True
+                assert result.overlapping_pairs == []
+                assert result.volume == 10.0
+            finally:
+                export_module.HAS_BUILD123D = original_available

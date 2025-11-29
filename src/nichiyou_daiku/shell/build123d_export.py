@@ -6,6 +6,7 @@ representation to build123d objects that can be visualized in CAD tools.
 
 import math
 from collections import deque
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -351,3 +352,64 @@ def assembly_to_build123d(
                     queue.append(neighbor_piece_id)
 
     return Compound(label=assembly.label or "assembly", children=list(parts.values()))
+
+
+@dataclass
+class OverlapResult:
+    """Result of overlap detection between pieces.
+
+    Attributes:
+        has_overlap: True if any pieces overlap
+        overlapping_pairs: List of (label1, label2) tuples for overlapping pieces
+        volume: Total interference volume in mm³
+    """
+
+    has_overlap: bool
+    overlapping_pairs: list[tuple[str, str]]
+    volume: float
+
+
+def check_overlap(compound: "Compound", tolerance: float = 1e-5) -> OverlapResult:
+    """Detect overlapping pieces in a Compound.
+
+    Uses build123d's do_children_intersect() to check if any children
+    of the compound intersect with each other.
+
+    Args:
+        compound: The Compound from assembly_to_build123d()
+        tolerance: Tolerance for intersection detection (default: 1e-5mm)
+
+    Returns:
+        OverlapResult with detection results
+
+    Raises:
+        ImportError: If build123d is not installed
+
+    Example:
+        >>> from nichiyou_daiku.core.model import Model
+        >>> from nichiyou_daiku.core.assembly import Assembly
+        >>> model = Model.of(pieces=[], connections=[])
+        >>> assembly = Assembly.of(model)
+        >>> compound = assembly_to_build123d(assembly)
+        >>> result = check_overlap(compound)
+        >>> result.has_overlap
+        False
+    """
+    if not HAS_BUILD123D:
+        raise ImportError(
+            "build123d is required for overlap detection. "
+            "Please install it with: pip install nichiyou-daiku[viz]"
+        )
+
+    has_intersection, shapes, volume = compound.do_children_intersect(
+        tolerance=tolerance
+    )
+
+    if not has_intersection:
+        return OverlapResult(has_overlap=False, overlapping_pairs=[], volume=0.0)
+
+    # Extract labels from the intersecting shapes
+    labels = [getattr(s, "label", "?") for s in shapes]
+    pairs = [(labels[0], labels[1])] if len(labels) >= 2 else []
+
+    return OverlapResult(has_overlap=True, overlapping_pairs=pairs, volume=volume)
