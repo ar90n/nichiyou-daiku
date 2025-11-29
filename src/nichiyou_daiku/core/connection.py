@@ -19,6 +19,7 @@ from nichiyou_daiku.core.geometry import (
 )
 from nichiyou_daiku.core.piece import get_shape
 from nichiyou_daiku.core.screw import ScrewSpec
+from nichiyou_daiku.core.dowel import DowelSpec
 
 
 class VanillaConnection(BaseModel, frozen=True):
@@ -88,16 +89,14 @@ class Connection(BaseModel, frozen=True):
         cls,
         base: BoundAnchor,
         target: BoundAnchor,
-        radius: Millimeters,
-        depth: Millimeters,
+        spec: DowelSpec,
     ) -> "Connection":
         """Create a dowel connection between two bound anchors.
 
         Args:
             base: BoundAnchor for the base piece
             target: BoundAnchor for the target piece
-            radius: Dowel radius in mm
-            depth: Dowel depth in mm
+            spec: DowelSpec with diameter and length
 
         Returns:
             Connection instance representing a dowel connection
@@ -105,6 +104,10 @@ class Connection(BaseModel, frozen=True):
         Raises:
             ValueError: If dowel dimensions exceed piece dimensions
         """
+        # Convert diameter to radius
+        radius = spec.diameter / 2
+        depth = spec.length
+
         base_shape = get_shape(base.piece)
         target_shape = get_shape(target.piece)
 

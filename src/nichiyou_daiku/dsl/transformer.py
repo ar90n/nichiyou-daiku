@@ -17,7 +17,8 @@ from nichiyou_daiku.core.geometry.face import Face
 from nichiyou_daiku.core.geometry.offset import FromMax, FromMin, Offset
 from nichiyou_daiku.core.model import Model
 from nichiyou_daiku.core.piece import Piece, PieceType
-from nichiyou_daiku.core.screw import find_preset
+from nichiyou_daiku.core.screw import find_preset as find_screw_preset
+from nichiyou_daiku.core.dowel import find_preset as find_dowel_preset
 from nichiyou_daiku.dsl.exceptions import DSLSemanticError, DSLValidationError
 
 
@@ -502,8 +503,19 @@ class DSLTransformer(Transformer):
         return VanillaConnection()  # fallback
 
     def dowel_compact(self, items: list[Any]) -> DowelConnection:
-        """Transform compact dowel connection type."""
-        # Extract NUMBER tokens from items
+        """Transform compact dowel connection type.
+
+        Supports both numeric format D(radius, depth) and
+        preset format D(:diameterxlength).
+        """
+        # Result from dowel_numeric or dowel_preset is passed through
+        for item in items:
+            if isinstance(item, DowelConnection):
+                return item
+        raise DSLValidationError("Invalid compact dowel connection format")
+
+    def dowel_numeric(self, items: list[Any]) -> DowelConnection:
+        """Transform numeric dowel format D(radius, depth)."""
         numbers = [
             float(item)
             for item in items
@@ -511,10 +523,34 @@ class DSLTransformer(Transformer):
         ]
         if len(numbers) != 2:
             raise DSLValidationError(
-                f"Compact dowel connection requires exactly 2 numbers (radius, depth), got {len(numbers)}"
+                f"Numeric dowel requires exactly 2 numbers (radius, depth), got {len(numbers)}"
             )
         radius, depth = numbers
         return DowelConnection(radius=radius, depth=depth)
+
+    def dowel_preset(self, items: list[Any]) -> DowelConnection:
+        """Transform preset dowel format D(:diameterxlength)."""
+        numbers = [
+            float(item)
+            for item in items
+            if isinstance(item, Token) and item.type == "NUMBER"
+        ]
+        if len(numbers) != 2:
+            raise DSLValidationError(
+                f"Dowel preset requires diameter and length, got {len(numbers)} numbers"
+            )
+
+        diameter, length = numbers
+
+        # Validate the preset exists
+        preset = find_dowel_preset(diameter, length)
+        if preset is None:
+            raise DSLValidationError(
+                f"Unknown dowel preset: {int(diameter)}x{int(length)}"
+            )
+
+        # Convert diameter to radius for DowelConnection
+        return DowelConnection(radius=diameter / 2, depth=length)
 
     def screw_compact(self, items: list[Any]) -> ScrewConnection:
         """Transform compact screw connection type.
@@ -572,7 +608,7 @@ class DSLTransformer(Transformer):
         diameter, length = numbers
 
         # Validate the preset exists
-        preset = find_preset(screw_type, diameter, length)
+        preset = find_screw_preset(screw_type, diameter, length)
         if preset is None:
             raise DSLValidationError(
                 f"Unknown {screw_type} screw preset: {diameter}x{int(length)}"

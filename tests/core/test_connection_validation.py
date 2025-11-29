@@ -4,6 +4,7 @@ import pytest
 
 from nichiyou_daiku.core.anchor import Anchor, BoundAnchor
 from nichiyou_daiku.core.connection import Connection, DowelConnection, ScrewConnection
+from nichiyou_daiku.core.dowel import DowelSpec
 from nichiyou_daiku.core.geometry import FromMin
 from nichiyou_daiku.core.piece import Piece, PieceType
 from nichiyou_daiku.core.screw import ScrewSpec
@@ -43,8 +44,9 @@ class TestDowelConnectionValidation:
         base_bound = create_bound_anchor("base", 1000.0, "front", "top")
         target_bound = create_bound_anchor("target", 800.0, "back", "top")
 
-        # Small dowel that fits in 2x4 cross-section
-        conn = Connection.of_dowel(base_bound, target_bound, radius=4.0, depth=20.0)
+        # Small dowel that fits in 2x4 cross-section (diameter=8mm -> radius=4mm)
+        spec = DowelSpec(diameter=8.0, length=20.0)
+        conn = Connection.of_dowel(base_bound, target_bound, spec=spec)
 
         assert isinstance(conn.type, DowelConnection)
         assert conn.type.radius == 4.0
@@ -56,7 +58,8 @@ class TestDowelConnectionValidation:
         base_bound = create_bound_anchor("base", 1000.0, "front", "top")
         target_bound = create_bound_anchor("target", 800.0, "front", "top")
 
-        conn = Connection.of_dowel(base_bound, target_bound, radius=4.0, depth=38.0)
+        spec = DowelSpec(diameter=8.0, length=38.0)
+        conn = Connection.of_dowel(base_bound, target_bound, spec=spec)
         assert conn.type.depth == 38.0
 
     def test_depth_exceeds_base_piece_raises_error(self):
@@ -65,8 +68,9 @@ class TestDowelConnectionValidation:
         base_bound = create_bound_anchor("base", 1000.0, "front", "top")
         target_bound = create_bound_anchor("target", 800.0, "back", "top")
 
+        spec = DowelSpec(diameter=8.0, length=50.0)
         with pytest.raises(ValueError, match="exceeds base piece dimension"):
-            Connection.of_dowel(base_bound, target_bound, radius=4.0, depth=50.0)
+            Connection.of_dowel(base_bound, target_bound, spec=spec)
 
     def test_depth_exceeds_target_piece_raises_error(self):
         """Dowel depth exceeding target piece dimension should raise error."""
@@ -74,8 +78,9 @@ class TestDowelConnectionValidation:
         base_bound = create_bound_anchor("base", 1000.0, "top", "front")
         target_bound = create_bound_anchor("target", 30.0, "down", "front")
 
+        spec = DowelSpec(diameter=8.0, length=50.0)
         with pytest.raises(ValueError, match="exceeds target piece dimension"):
-            Connection.of_dowel(base_bound, target_bound, radius=4.0, depth=50.0)
+            Connection.of_dowel(base_bound, target_bound, spec=spec)
 
     def test_radius_exceeds_base_cross_section_raises_error(self):
         """Dowel diameter exceeding base cross-section should raise error."""
@@ -84,8 +89,9 @@ class TestDowelConnectionValidation:
         base_bound = create_bound_anchor("base", 1000.0, "front", "top")
         target_bound = create_bound_anchor("target", 800.0, "back", "top")
 
+        spec = DowelSpec(diameter=100.0, length=20.0)  # diameter=100mm > 89mm
         with pytest.raises(ValueError, match="exceeds base piece cross-section"):
-            Connection.of_dowel(base_bound, target_bound, radius=50.0, depth=20.0)
+            Connection.of_dowel(base_bound, target_bound, spec=spec)
 
     def test_radius_exceeds_target_cross_section_raises_error(self):
         """Dowel diameter exceeding target cross-section should raise error."""
@@ -94,8 +100,9 @@ class TestDowelConnectionValidation:
         base_bound = create_bound_anchor("base", 1000.0, "front", "top")
         target_bound = create_bound_anchor("target", 800.0, "top", "front")
 
+        spec = DowelSpec(diameter=40.0, length=20.0)  # diameter=40mm > 38mm
         with pytest.raises(ValueError, match="exceeds target piece cross-section"):
-            Connection.of_dowel(base_bound, target_bound, radius=20.0, depth=20.0)
+            Connection.of_dowel(base_bound, target_bound, spec=spec)
 
     def test_small_dowel_on_top_face(self):
         """Small dowel on top face should succeed."""
@@ -104,7 +111,8 @@ class TestDowelConnectionValidation:
         target_bound = create_bound_anchor("target", 800.0, "down", "front")
 
         # Diameter 16mm < 38mm, should succeed
-        conn = Connection.of_dowel(base_bound, target_bound, radius=8.0, depth=20.0)
+        spec = DowelSpec(diameter=16.0, length=20.0)
+        conn = Connection.of_dowel(base_bound, target_bound, spec=spec)
         assert conn.type.radius == 8.0
 
     def test_dowel_on_different_face_types(self):
@@ -114,7 +122,8 @@ class TestDowelConnectionValidation:
         target_bound = create_bound_anchor("target", 800.0, "right", "top")
 
         # left face: width is 89mm, cross-section min is 38mm (height)
-        conn = Connection.of_dowel(base_bound, target_bound, radius=10.0, depth=50.0)
+        spec = DowelSpec(diameter=20.0, length=50.0)
+        conn = Connection.of_dowel(base_bound, target_bound, spec=spec)
         assert conn.type.depth == 50.0
 
 

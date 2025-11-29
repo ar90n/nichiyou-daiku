@@ -15,9 +15,9 @@ nichiyou-daikuでは3種類の接合方法（ConnectionType）をサポート:
 
 2. DowelConnection
    - ダボ接合
-   - パラメータ: radius (ダボ半径mm), depth (ダボ深さmm)
+   - パラメータ: DowelSpec(diameter, length)
    - 2本のダボが自動配置される
-   - Usage: Connection.of_dowel(..., radius=4.0, depth=20.0)
+   - Usage: Connection.of_dowel(..., spec=DowelSpec(diameter=8.0, length=20.0))
 
 3. ScrewConnection (新規追加)
    - ネジ接合
@@ -34,6 +34,7 @@ from nichiyou_daiku.core.model import Model
 from nichiyou_daiku.core.anchor import Anchor
 from nichiyou_daiku.core.anchor import BoundAnchor
 from nichiyou_daiku.core.connection import Connection
+from nichiyou_daiku.core.dowel import DowelSpec
 from nichiyou_daiku.core.geometry import FromMax, FromMin
 from nichiyou_daiku.core.assembly import Assembly
 from nichiyou_daiku.core.screw import ScrewSpec, CoarseThreadScrew, as_spec
@@ -168,8 +169,7 @@ dowel_connection = Connection.of_dowel(
             offset=FromMin(value=44.5),  # Centered on 89mm width
         ),
     ),
-    radius=4.0,  # ダボ半径 4mm (直径8mm)
-    depth=20.0,  # ダボ深さ 20mm (両側に20mmずつ)
+    spec=DowelSpec(diameter=8.0, length=20.0),  # ダボ直径 8mm, 深さ 20mm
 )
 
 dowel_model = Model.of(

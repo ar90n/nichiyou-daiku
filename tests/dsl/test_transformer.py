@@ -376,20 +376,32 @@ class TestConnectionTypeTransformer:
         assert result.radius == 4.0
         assert result.depth == 20.0
 
-    def test_dowel_compact_transformation(self):
-        """Test compact dowel connection type transformation."""
+    def test_dowel_numeric_transformation(self):
+        """Test compact dowel connection type transformation (numeric format)."""
         from lark import Token
 
         from nichiyou_daiku.core.connection import DowelConnection
 
         transformer = DSLTransformer()
-        result = transformer.dowel_compact(
+        result = transformer.dowel_numeric(
             [Token("NUMBER", "5.0"), Token("NUMBER", "25.0")]
         )
 
         assert isinstance(result, DowelConnection)
         assert result.radius == 5.0
         assert result.depth == 25.0
+
+    def test_dowel_compact_passes_through_connection(self):
+        """Test dowel_compact passes through DowelConnection."""
+        from nichiyou_daiku.core.connection import DowelConnection
+
+        transformer = DSLTransformer()
+        dowel_conn = DowelConnection(radius=4.0, depth=30.0)
+        result = transformer.dowel_compact([dowel_conn])
+
+        assert isinstance(result, DowelConnection)
+        assert result.radius == 4.0
+        assert result.depth == 30.0
 
     def test_compact_connection_type_vanilla(self):
         """Test compact connection type for vanilla."""

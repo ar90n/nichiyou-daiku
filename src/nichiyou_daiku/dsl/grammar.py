@@ -45,8 +45,10 @@ type_screw: "\"type\"" ":" "\"screw\"" "," "\"diameter\"" ":" NUMBER "," "\"leng
 // ConnectionType (Compact)
 compact_connection_type: COMPACT_VANILLA | dowel_compact | screw_compact
 COMPACT_VANILLA: "V"
-dowel_compact: DOWEL_START NUMBER "," NUMBER ")"
+dowel_compact: DOWEL_START (dowel_preset | dowel_numeric) ")"
 DOWEL_START: "D("
+dowel_numeric: NUMBER "," NUMBER
+dowel_preset: ":" NUMBER "x" NUMBER
 screw_compact: SCREW_START (screw_preset | screw_numeric) ")"
 SCREW_START: "S("
 screw_numeric: NUMBER "," NUMBER
