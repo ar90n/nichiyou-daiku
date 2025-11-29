@@ -487,3 +487,91 @@ class TestConnectionTypeIntegration:
         assert isinstance(conn2.type, DowelConnection)
         assert conn2.type.radius == 5.0
         assert conn2.type.depth == 25.0
+
+    def test_json_screw_connection(self):
+        """Test JSON format with ScrewConnection."""
+        from nichiyou_daiku.core.connection import ScrewConnection
+
+        dsl = """
+        (beam1:2x4 {"length": 1000})
+        (beam2:2x4 {"length": 800})
+        beam1 -[{"contact_face": "front", "edge_shared_face": "top", "offset": FromMin(0)}
+                {"contact_face": "back", "edge_shared_face": "top", "offset": FromMin(0)}
+                {"type": "screw", "diameter": 3.5, "length": 50.0}]- beam2
+        """
+
+        model = parse_dsl(dsl)
+        conn = model.connections[("beam1", "beam2")]
+        assert isinstance(conn.type, ScrewConnection)
+        assert conn.type.diameter == 3.5
+        assert conn.type.length == 50.0
+
+    def test_compact_screw_connection(self):
+        """Test compact format with S(diameter, length) ScrewConnection."""
+        from nichiyou_daiku.core.connection import ScrewConnection
+
+        dsl = """
+        (beam1:2x4 =1000)
+        (beam2:2x4 =800)
+        beam1 -[FT<0 BT<0 S(3.5,50.0)]- beam2
+        """
+
+        model = parse_dsl(dsl)
+        conn = model.connections[("beam1", "beam2")]
+        assert isinstance(conn.type, ScrewConnection)
+        assert conn.type.diameter == 3.5
+        assert conn.type.length == 50.0
+
+    def test_compact_screw_connection_with_space(self):
+        """Test compact screw with space after comma."""
+        from nichiyou_daiku.core.connection import ScrewConnection
+
+        dsl = """
+        (beam1:2x4 =1000)
+        (beam2:2x4 =800)
+        beam1 -[FT<0 BT<0 S(3.5, 50.0)]- beam2
+        """
+
+        model = parse_dsl(dsl)
+        conn = model.connections[("beam1", "beam2")]
+        assert isinstance(conn.type, ScrewConnection)
+        assert conn.type.diameter == 3.5
+        assert conn.type.length == 50.0
+
+    def test_mixed_all_connection_types(self):
+        """Test model with vanilla, dowel, and screw connection types."""
+        from nichiyou_daiku.core.connection import (
+            DowelConnection,
+            ScrewConnection,
+            VanillaConnection,
+        )
+
+        dsl = """
+        (beam1:2x4 =1000)
+        (beam2:2x4 =800)
+        (beam3:2x4 =600)
+        (beam4:2x4 =500)
+
+        // Vanilla connection (default)
+        beam1 -[TF>100 BD<50]- beam2
+
+        // Dowel connection
+        beam2 -[LT<0 RT<0 D(5.0,25.0)]- beam3
+
+        // Screw connection
+        beam3 -[FT<0 BT<0 S(3.5,50.0)]- beam4
+        """
+
+        model = parse_dsl(dsl)
+
+        conn1 = model.connections[("beam1", "beam2")]
+        assert isinstance(conn1.type, VanillaConnection)
+
+        conn2 = model.connections[("beam2", "beam3")]
+        assert isinstance(conn2.type, DowelConnection)
+        assert conn2.type.radius == 5.0
+
+        conn3 = model.connections[("beam3", "beam4")]
+        assert isinstance(conn3.type, ScrewConnection)
+        assert conn3.type.diameter == 3.5
+        assert conn3.type.length == 50.0

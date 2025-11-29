@@ -18,6 +18,7 @@ from nichiyou_daiku.core.geometry import (
     is_back_to_front_axis,
 )
 from nichiyou_daiku.core.piece import get_shape
+from nichiyou_daiku.core.screw import ScrewSpec
 
 
 class VanillaConnection(BaseModel, frozen=True):
@@ -39,7 +40,17 @@ class DowelConnection(BaseModel, frozen=True):
     depth: Millimeters
 
 
-ConnectionType: TypeAlias = VanillaConnection | DowelConnection
+class ScrewConnection(BaseModel, frozen=True):
+    """A connection reinforced with screws.
+
+    This represents a connection that uses screws for added strength.
+    """
+
+    diameter: Millimeters
+    length: Millimeters
+
+
+ConnectionType: TypeAlias = VanillaConnection | DowelConnection | ScrewConnection
 
 
 class Connection(BaseModel, frozen=True):
@@ -131,6 +142,83 @@ class Connection(BaseModel, frozen=True):
 
         dowel_conn = DowelConnection(radius=radius, depth=depth)
         return cls(base=base, target=target, type=dowel_conn)
+
+    @classmethod
+    def of_screw(
+        cls,
+        base: BoundAnchor,
+        target: BoundAnchor,
+        spec: ScrewSpec,
+    ) -> "Connection":
+        """Create a screw connection between two bound anchors.
+
+        Args:
+            base: BoundAnchor for the base piece
+            target: BoundAnchor for the target piece
+            spec: Screw specification (diameter and length)
+
+        Returns:
+            Connection instance representing a screw connection
+
+        Raises:
+            ValueError: If screw dimensions exceed piece dimensions
+
+        Example:
+            >>> from nichiyou_daiku.core.screw import ScrewSpec, SlimScrew, get_spec
+            >>> # Using preset screw type
+            >>> conn = Connection.of_screw(base, target, get_spec(SlimScrew.D3_3_L50))
+            >>> # Using custom spec
+            >>> conn = Connection.of_screw(base, target, ScrewSpec(diameter=4.0, length=55.0))
+        """
+        diameter = spec.diameter
+        length = spec.length
+
+        # Validate target contact_face is front or back
+        if target.anchor.contact_face not in ("front", "back"):
+            raise ValueError(
+                f"ScrewConnection target contact_face must be 'front' or 'back', "
+                f"got '{target.anchor.contact_face}'"
+            )
+
+        base_shape = get_shape(base.piece)
+        target_shape = get_shape(target.piece)
+
+        # Validate length against combined depth
+        base_depth = _get_dimension_for_face(base_shape, base.anchor.contact_face)
+        target_depth = _get_dimension_for_face(target_shape, target.anchor.contact_face)
+        max_length = base_depth + target_depth
+
+        if length > max_length:
+            raise ValueError(
+                f"Screw length {length}mm exceeds combined piece depth {max_length}mm"
+            )
+
+        # Validate that screw reaches base piece (must penetrate target)
+        if length <= target_depth:
+            raise ValueError(
+                f"Screw length {length}mm does not reach base piece "
+                f"(target thickness: {target_depth}mm)"
+            )
+
+        # Validate diameter against cross-section
+        base_min_cross = _get_min_cross_section(base_shape, base.anchor.contact_face)
+        target_min_cross = _get_min_cross_section(
+            target_shape, target.anchor.contact_face
+        )
+
+        if diameter > base_min_cross:
+            raise ValueError(
+                f"Screw diameter {diameter}mm exceeds "
+                f"base piece cross-section {base_min_cross}mm"
+            )
+        if diameter > target_min_cross:
+            raise ValueError(
+                f"Screw diameter {diameter}mm exceeds "
+                f"target piece cross-section {target_min_cross}mm"
+            )
+
+        screw_conn = ScrewConnection(diameter=diameter, length=length)
+        return cls(base=base, target=target, type=screw_conn)
 
 
 def _get_dimension_for_face(shape: Shape3D, face: Face) -> float:

@@ -15,6 +15,7 @@ from nichiyou_daiku.core.connection import (
     DowelConnection,
 )
 from nichiyou_daiku.core.geometry import FromMax, FromMin
+from nichiyou_daiku.core.screw import ScrewSpec
 from nichiyou_daiku.core.geometry import (
     Point2D,
     SurfacePoint,
@@ -291,3 +292,186 @@ class TestDowelJointFaceCombinations:
         if isinstance(connection_type, DowelConnection):
             assert "p1_j1" in assembly.joints
             assert "p2_j1" in assembly.joints
+
+
+class TestScrewConnectionHoles:
+    """Test ScrewConnection hole generation.
+
+    ScrewConnection generates holes differently from other connection types:
+    - Target side: through-hole (depth=None) - screw passes through
+    - Base side: depth = screw.length - target_thickness - screw threads into
+    """
+
+    def test_screw_target_through_hole(self):
+        """Target側は貫通穴（depth=None）"""
+        from nichiyou_daiku.core.model import Model
+
+        # Create pieces
+        p1 = Piece.of(PieceType.PT_2x4, 1000.0, "base")
+        p2 = Piece.of(PieceType.PT_2x4, 800.0, "target")
+
+        # Create screw connection
+        # target contact_face="back" → target_depth=height=38mm (for 2x4)
+        # base contact_face="front" → base_depth=height=38mm
+        # screw length=50mm > 38mm, so it reaches base
+        conn = Connection.of_screw(
+            base=BoundAnchor(
+                piece=p1,
+                anchor=Anchor(
+                    contact_face="front",
+                    edge_shared_face="top",
+                    offset=FromMax(value=100),
+                ),
+            ),
+            target=BoundAnchor(
+                piece=p2,
+                anchor=Anchor(
+                    contact_face="back",
+                    edge_shared_face="top",
+                    offset=FromMin(value=50),
+                ),
+            ),
+            spec=ScrewSpec(diameter=4.0, length=50.0),
+        )
+
+        model = Model.of(pieces=[p1, p2], connections=[conn])
+        assembly = Assembly.of(model)
+
+        # Target側の穴を確認
+        assert "target" in assembly.pilot_holes
+        target_holes = assembly.pilot_holes["target"]
+        assert len(target_holes) >= 1
+
+        # Target側は貫通穴（depth=None）
+        _, target_hole = target_holes[0]
+        assert target_hole.depth is None
+
+    def test_screw_base_depth(self):
+        """Base側はscrew.length - target_thicknessの深さ"""
+        from nichiyou_daiku.core.model import Model
+
+        # Create pieces
+        p1 = Piece.of(PieceType.PT_2x4, 1000.0, "base")
+        p2 = Piece.of(PieceType.PT_2x4, 800.0, "target")
+
+        # Create screw connection
+        # target contact_face="back" → target_thickness=height=38mm (for 2x4)
+        # base contact_face="front" → base_depth=height=38mm
+        # screw length=50mm > 38mm, so it reaches base
+        conn = Connection.of_screw(
+            base=BoundAnchor(
+                piece=p1,
+                anchor=Anchor(
+                    contact_face="front",
+                    edge_shared_face="top",
+                    offset=FromMax(value=100),
+                ),
+            ),
+            target=BoundAnchor(
+                piece=p2,
+                anchor=Anchor(
+                    contact_face="back",
+                    edge_shared_face="top",
+                    offset=FromMin(value=50),
+                ),
+            ),
+            spec=ScrewSpec(diameter=4.0, length=50.0),
+        )
+
+        model = Model.of(pieces=[p1, p2], connections=[conn])
+        assembly = Assembly.of(model)
+
+        # Base側の穴を確認
+        assert "base" in assembly.pilot_holes
+        base_holes = assembly.pilot_holes["base"]
+        assert len(base_holes) >= 1
+
+        # Base側の深さ = screw.length - target_thickness
+        # target contact_face="back" → target_thickness = height = 38mm
+        # base_depth = 50.0 - 38.0 = 12.0mm
+        _, base_hole = base_holes[0]
+        assert base_hole.depth == 50.0 - 38.0  # 12.0mm
+
+    def test_screw_hole_diameter(self):
+        """HoleのdiameterはScrewConnection.diameter"""
+        from nichiyou_daiku.core.model import Model
+
+        # Create pieces
+        p1 = Piece.of(PieceType.PT_2x4, 1000.0, "base")
+        p2 = Piece.of(PieceType.PT_2x4, 800.0, "target")
+
+        # Create screw connection with specific diameter
+        # target contact_face="back" → target_depth=height=38mm
+        screw_diameter = 5.0
+        conn = Connection.of_screw(
+            base=BoundAnchor(
+                piece=p1,
+                anchor=Anchor(
+                    contact_face="front",
+                    edge_shared_face="top",
+                    offset=FromMax(value=100),
+                ),
+            ),
+            target=BoundAnchor(
+                piece=p2,
+                anchor=Anchor(
+                    contact_face="back",
+                    edge_shared_face="top",
+                    offset=FromMin(value=50),
+                ),
+            ),
+            spec=ScrewSpec(diameter=screw_diameter, length=50.0),
+        )
+
+        model = Model.of(pieces=[p1, p2], connections=[conn])
+        assembly = Assembly.of(model)
+
+        # 両側の穴のdiameterを確認
+        assert "base" in assembly.pilot_holes
+        assert "target" in assembly.pilot_holes
+
+        _, base_hole = assembly.pilot_holes["base"][0]
+        _, target_hole = assembly.pilot_holes["target"][0]
+
+        assert base_hole.diameter == screw_diameter
+        assert target_hole.diameter == screw_diameter
+
+    def test_screw_creates_two_joint_pairs(self):
+        """ScrewConnectionはDowelと同様に2つのジョイントペアを生成"""
+        from nichiyou_daiku.core.model import Model
+
+        # Create pieces
+        p1 = Piece.of(PieceType.PT_2x4, 1000.0, "base")
+        p2 = Piece.of(PieceType.PT_2x4, 800.0, "target")
+
+        # target contact_face="back" → target_depth=height=38mm
+        conn = Connection.of_screw(
+            base=BoundAnchor(
+                piece=p1,
+                anchor=Anchor(
+                    contact_face="front",
+                    edge_shared_face="top",
+                    offset=FromMax(value=100),
+                ),
+            ),
+            target=BoundAnchor(
+                piece=p2,
+                anchor=Anchor(
+                    contact_face="back",
+                    edge_shared_face="top",
+                    offset=FromMin(value=50),
+                ),
+            ),
+            spec=ScrewSpec(diameter=4.0, length=50.0),
+        )
+
+        model = Model.of(pieces=[p1, p2], connections=[conn])
+        assembly = Assembly.of(model)
+
+        # ScrewConnection creates 2 joint pairs (4 joints) like DowelConnection
+        assert len(assembly.joints) == 4
+        assert len(assembly.joint_conns) == 2
+        assert "base_j0" in assembly.joints
+        assert "base_j1" in assembly.joints
+        assert "target_j0" in assembly.joints
+        assert "target_j1" in assembly.joints

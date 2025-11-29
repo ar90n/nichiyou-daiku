@@ -8,7 +8,13 @@ from collections.abc import Callable
 
 from pydantic import BaseModel
 
-from ..connection import Connection, DowelConnection, VanillaConnection
+from ..connection import (
+    Connection,
+    DowelConnection,
+    ScrewConnection,
+    VanillaConnection,
+    _get_dimension_for_face,
+)
 from ..geometry import Box, Point3D
 from ..model import Model
 from ..piece import get_shape
@@ -31,6 +37,28 @@ def _create_pilot_hole_on_joint(
     """
     point_3d = Point3D.of(box, joint.position)
     hole = Hole(diameter=3.0, depth=5.0)
+    return (point_3d, hole)
+
+
+def _create_screw_hole(
+    box: Box,
+    joint: Joint,
+    diameter: float,
+    depth: float | None,
+) -> tuple[Point3D, Hole]:
+    """Create a screw hole at the joint position.
+
+    Args:
+        box: Box of the piece
+        joint: Joint where the hole is to be created
+        diameter: Hole diameter in mm
+        depth: Hole depth in mm (None for through-hole)
+
+    Returns:
+        Tuple of (3D position of hole, Hole specification)
+    """
+    point_3d = Point3D.of(box, joint.position)
+    hole = Hole(diameter=diameter, depth=depth)
     return (point_3d, hole)
 
 
@@ -174,7 +202,35 @@ class Assembly(BaseModel, frozen=True):
                 joints[target_joint_id] = joint_pair.rhs
                 joint_conns.append((base_joint_id, target_joint_id))
 
-                if isinstance(piece_conn.type, (DowelConnection, VanillaConnection)):
+                if isinstance(piece_conn.type, ScrewConnection):
+                    # ScrewConnection: Target側は貫通穴、Base側はscrew.length - target_thickness
+                    screw = piece_conn.type
+                    target_shape = get_shape(piece_conn.target.piece)
+                    target_thickness = _get_dimension_for_face(
+                        target_shape, piece_conn.target.anchor.contact_face
+                    )
+                    base_depth = screw.length - target_thickness
+
+                    # Target側: 貫通穴
+                    pilot_holes.setdefault(target_id, []).append(
+                        _create_screw_hole(
+                            box=boxes[target_id],
+                            joint=joint_pair.rhs,
+                            diameter=screw.diameter,
+                            depth=None,
+                        )
+                    )
+                    # Base側: ねじ込み深さ
+                    pilot_holes.setdefault(base_id, []).append(
+                        _create_screw_hole(
+                            box=boxes[base_id],
+                            joint=joint_pair.lhs,
+                            diameter=screw.diameter,
+                            depth=base_depth,
+                        )
+                    )
+                elif isinstance(piece_conn.type, (DowelConnection, VanillaConnection)):
+                    # 既存ロジック（固定サイズのパイロットホール）
                     pilot_holes.setdefault(base_id, []).append(
                         _create_pilot_hole_on_joint(
                             box=boxes[base_id],
