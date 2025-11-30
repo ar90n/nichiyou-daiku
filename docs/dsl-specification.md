@@ -1,181 +1,182 @@
 # nichiyou-daiku DSL Specification
 
-nichiyou-daiku DSL (`.nd`ファイル) は、木工家具の設計を簡潔に記述するためのドメイン固有言語です。Cypherライクな構文で、木材ピースとその接続を定義します。
+The nichiyou-daiku DSL (`.nd` files) is a domain-specific language for concisely describing woodworking furniture designs. Using a Cypher-like syntax, you can define lumber pieces and their connections.
 
-## 目次
+## Table of Contents
 
-- [基本構造](#基本構造)
-- [コメント](#コメント)
-- [ピース定義](#ピース定義)
-- [接続定義](#接続定義)
-- [接続タイプ](#接続タイプ)
-- [完全な例](#完全な例)
-- [CLIツール](#cliツール)
+- [Basic Structure](#basic-structure)
+- [Comments](#comments)
+- [Piece Definition](#piece-definition)
+- [Connection Definition](#connection-definition)
+- [Connection Types](#connection-types)
+- [Complete Examples](#complete-examples)
+- [CLI Tools](#cli-tools)
+- [Grammar (EBNF)](#grammar-ebnf)
 
-## 基本構造
+## Basic Structure
 
-`.nd`ファイルは以下の要素で構成されます：
+An `.nd` file consists of the following elements:
 
-1. **コメント** - `//` で始まる行
-2. **ピース定義** - 木材の定義
-3. **接続定義** - ピース間の接続
+1. **Comments** - Lines starting with `//`
+2. **Piece Definitions** - Lumber piece declarations
+3. **Connection Definitions** - Connections between pieces
 
 ```nd
-// コメント
+// Comment
 (piece_id:piece_type =length)
 piece1 -[anchor1 anchor2]- piece2
 ```
 
-## コメント
+## Comments
 
-単一行コメントは `//` で開始します。行末コメントも可能です。
+Single-line comments start with `//`. End-of-line comments are also supported.
 
 ```nd
-// これはコメントです
-(leg:2x4 =720)  // 行末コメント
+// This is a comment
+(leg:2x4 =720)  // End-of-line comment
 
-// 複数行のコメント
-// プロジェクト: ダイニングテーブル
-// 作成日: 2025-07-30
+// Multiple comment lines
+// Project: Dining Table
+// Created: 2025-07-30
 ```
 
-## ピース定義
+## Piece Definition
 
-木材ピースを定義します。
+Defines a lumber piece.
 
-### 構文
+### Syntax
 
 ```
 (piece_id:piece_type =length)
 (piece_id:piece_type {"length": length})
 ```
 
-### パラメータ
+### Parameters
 
-| パラメータ | 説明 | 必須 |
-|-----------|------|------|
-| `piece_id` | ピースの一意な識別子 | はい |
-| `piece_type` | 木材の種類 (`1x4`, `2x4`) | はい |
-| `length` | 長さ (mm) | はい |
+| Parameter | Description | Required |
+|-----------|-------------|----------|
+| `piece_id` | Unique identifier for the piece | Yes |
+| `piece_type` | Type of lumber (`1x4`, `2x4`) | Yes |
+| `length` | Length in millimeters | Yes |
 
-### 木材タイプ
+### Lumber Types
 
-| タイプ | 幅 (mm) | 高さ (mm) | 説明 |
-|--------|---------|-----------|------|
-| `1x4` | 89 | 19 | 1x4材 (ワンバイフォー) |
-| `2x4` | 89 | 38 | 2x4材 (ツーバイフォー) |
+| Type | Width (mm) | Height (mm) | Description |
+|------|------------|-------------|-------------|
+| `1x4` | 89 | 19 | One-by-four lumber |
+| `2x4` | 89 | 38 | Two-by-four lumber |
 
-### 例
+### Examples
 
 ```nd
-// 簡略表記（推奨）
+// Compact notation (recommended)
 (leg_1:2x4 =720)
 (shelf:1x4 =600)
 
-// JSON形式（将来の拡張用）
+// JSON format (for future extensions)
 (leg_2:2x4 {"length": 720})
 ```
 
-## 接続定義
+## Connection Definition
 
-2つのピース間の接続を定義します。
+Defines a connection between two pieces.
 
-### 構文
+### Syntax
 
 ```
 base_piece -[base_anchor target_anchor connection_type?]- target_piece
 ```
 
-### アンカー表記
+### Anchor Notation
 
-アンカーは、ピースのどの面でどの位置に接続するかを指定します。
+An anchor specifies which face of a piece connects and at what position.
 
-#### 簡略表記（推奨）
+#### Compact Notation (Recommended)
 
 ```
-XY<offset  または  XY>offset
+XY<offset  or  XY>offset
 ```
 
-- **X**: 接触面 (contact_face)
-- **Y**: エッジ共有面 (edge_shared_face)
-- **<offset**: FromMin (最小位置からのオフセット)
-- **>offset**: FromMax (最大位置からのオフセット)
+- **X**: Contact face
+- **Y**: Edge shared face
+- **<offset**: FromMin (offset from minimum position)
+- **>offset**: FromMax (offset from maximum position)
 
-#### 面の略記
+#### Face Abbreviations
 
-| 略記 | 面 | 説明 |
-|------|-----|------|
-| `T` | top | 上面 |
-| `D` | down | 下面 |
-| `L` | left | 左面 |
-| `R` | right | 右面 |
-| `F` | front | 前面 |
-| `B` | back | 後面 |
+| Abbrev | Face | Description |
+|--------|------|-------------|
+| `T` | top | Top face |
+| `D` | down | Bottom face |
+| `L` | left | Left face |
+| `R` | right | Right face |
+| `F` | front | Front face |
+| `B` | back | Back face |
 
-#### オフセット
+#### Offset
 
-| 表記 | 意味 | 説明 |
-|------|------|------|
-| `<0` | FromMin(0) | 最小位置から0mm |
-| `<100` | FromMin(100) | 最小位置から100mm |
-| `>0` | FromMax(0) | 最大位置から0mm |
-| `>50` | FromMax(50) | 最大位置から50mm |
+| Notation | Meaning | Description |
+|----------|---------|-------------|
+| `<0` | FromMin(0) | 0mm from minimum position |
+| `<100` | FromMin(100) | 100mm from minimum position |
+| `>0` | FromMax(0) | 0mm from maximum position |
+| `>50` | FromMax(50) | 50mm from maximum position |
 
-### 例
+### Examples
 
 ```nd
-// leg_1の左面・後面エッジ、最大位置から0mmの位置に
-// apron_frontの下面・後面エッジ、最大位置から0mmの位置を接続
+// Connect leg_1's left-back edge at max position
+// to apron_front's down-back edge at max position
 leg_1 -[LB>0 DB>0]- apron_front
 
-// leg_1の後面・右面エッジ、最小位置から100mmの位置に
-// apron_leftの下面・後面エッジ、最小位置から0mmの位置を接続
+// Connect leg_1's back-right edge at 100mm from min
+// to apron_left's down-back edge at min position
 leg_1 -[BR<100 DB<0]- apron_left
 ```
 
-### JSON形式（高度な用途）
+### JSON Format (Advanced Usage)
 
 ```nd
 piece1 -[{"contact_face": "top", "edge_shared_face": "front", "offset": FromMin(0)}
          {"contact_face": "down", "edge_shared_face": "left", "offset": FromMax(100)}]- piece2
 ```
 
-## 接続タイプ
+## Connection Types
 
-接続の種類を指定できます。省略時は `V` (vanilla) になります。
+Specifies the type of connection. Defaults to `V` (vanilla) if omitted.
 
-### Vanilla接続 (V)
+### Vanilla Connection (V)
 
-デフォルトの接続。特別な補強なし。
+Default connection with no special reinforcement.
 
 ```nd
-piece1 -[TF<0 BD<0]- piece2        // 暗黙的にVanilla
-piece1 -[TF<0 BD<0 V]- piece2      // 明示的にVanilla
+piece1 -[TF<0 BD<0]- piece2        // Implicit Vanilla
+piece1 -[TF<0 BD<0 V]- piece2      // Explicit Vanilla
 ```
 
-### ダボ接続 (D)
+### Dowel Connection (D)
 
-ダボ（木ダボ）を使用した接続。
+Connection using wooden dowels.
 
-#### 数値指定
+#### Numeric Specification
 
 ```nd
 piece1 -[TF<0 BD<0 D(radius, depth)]- piece2
 ```
 
-- `radius`: ダボの半径 (mm)
-- `depth`: ダボの深さ (mm)
+- `radius`: Dowel radius in mm
+- `depth`: Dowel depth in mm
 
-#### プリセット指定
+#### Preset Specification
 
 ```nd
 piece1 -[TF<0 BD<0 D(:diameter x length)]- piece2
 ```
 
-利用可能なプリセット:
+Available presets:
 
-| プリセット | 直径 (mm) | 長さ (mm) |
-|------------|-----------|-----------|
+| Preset | Diameter (mm) | Length (mm) |
+|--------|---------------|-------------|
 | `6x25` | 6 | 25 |
 | `6x30` | 6 | 30 |
 | `8x25` | 8 | 25 |
@@ -185,39 +186,39 @@ piece1 -[TF<0 BD<0 D(:diameter x length)]- piece2
 | `10x40` | 10 | 40 |
 | `12x40` | 12 | 40 |
 
-#### 例
+#### Examples
 
 ```nd
-// 数値指定: 半径4mm、深さ20mmのダボ
+// Numeric: radius 4mm, depth 20mm dowel
 piece1 -[TF<0 BD<0 D(4.0, 20.0)]- piece2
 
-// プリセット: 直径8mm、長さ30mmのダボ
+// Preset: 8mm diameter, 30mm length dowel
 piece1 -[TF<0 BD<0 D(:8x30)]- piece2
 ```
 
-### スクリュー接続 (S)
+### Screw Connection (S)
 
-ねじを使用した接続。
+Connection using screws.
 
-#### 数値指定
+#### Numeric Specification
 
 ```nd
 piece1 -[TF<0 BD<0 S(diameter, length)]- piece2
 ```
 
-- `diameter`: ねじの直径 (mm)
-- `length`: ねじの長さ (mm)
+- `diameter`: Screw diameter in mm
+- `length`: Screw length in mm
 
-#### プリセット指定
+#### Preset Specification
 
 ```nd
 piece1 -[TF<0 BD<0 S(Type:diameter x length)]- piece2
 ```
 
-**Slim (スリムねじ)**
+**Slim Screws**
 
-| プリセット | 直径 (mm) | 長さ (mm) |
-|------------|-----------|-----------|
+| Preset | Diameter (mm) | Length (mm) |
+|--------|---------------|-------------|
 | `Slim:3.3x30` | 3.3 | 30 |
 | `Slim:3.3x40` | 3.3 | 40 |
 | `Slim:3.3x50` | 3.3 | 50 |
@@ -230,10 +231,10 @@ piece1 -[TF<0 BD<0 S(Type:diameter x length)]- piece2
 | `Slim:4.2x65` | 4.2 | 65 |
 | `Slim:4.2x75` | 4.2 | 75 |
 
-**Coarse (コーススレッドねじ)**
+**Coarse Thread Screws**
 
-| プリセット | 直径 (mm) | 長さ (mm) |
-|------------|-----------|-----------|
+| Preset | Diameter (mm) | Length (mm) |
+|--------|---------------|-------------|
 | `Coarse:3.8x32` | 3.8 | 32 |
 | `Coarse:3.8x38` | 3.8 | 38 |
 | `Coarse:3.8x45` | 3.8 | 45 |
@@ -246,116 +247,116 @@ piece1 -[TF<0 BD<0 S(Type:diameter x length)]- piece2
 | `Coarse:4.2x75` | 4.2 | 75 |
 | `Coarse:4.2x90` | 4.2 | 90 |
 
-#### 例
+#### Examples
 
 ```nd
-// 数値指定: 直径3.5mm、長さ50mmのねじ
+// Numeric: 3.5mm diameter, 50mm length screw
 piece1 -[BF<0 FB<0 S(3.5, 50)]- piece2
 
-// プリセット: スリムねじ 3.3x50
+// Preset: Slim screw 3.3x50
 piece1 -[BF<0 FB<0 S(Slim:3.3x50)]- piece2
 
-// プリセット: コーススレッド 3.8x57
+// Preset: Coarse thread 3.8x57
 piece1 -[BF<0 FB<0 S(Coarse:3.8x57)]- piece2
 ```
 
-## 完全な例
+## Complete Examples
 
-### コーナー接合
+### Corner Joint
 
 ```nd
-// コーナー接合サンプル
+// Corner joint sample
 (corner_piece_a:2x4 =400)
 (corner_piece_b:2x4 =400)
 
 corner_piece_a -[TF<0 BD<0]- corner_piece_b
 ```
 
-### シンプルテーブル
+### Simple Table
 
 ```nd
 // Simple Table Design
-// 4本脚のテーブル
+// Four-legged table
 
-// 脚
+// Legs
 (leg_1:2x4 =720)
 (leg_2:2x4 =720)
 (leg_3:2x4 =720)
 (leg_4:2x4 =720)
 
-// 幕板
+// Aprons
 (apron_front:2x4 =622)
 (apron_back:2x4 =622)
 (apron_left:2x4 =524)
 (apron_right:2x4 =524)
 
-// 天板
+// Table top pieces
 (table_top_1:2x4 =600)
 (table_top_2:2x4 =600)
 
-// 脚と幕板の接続
+// Leg to apron connections
 leg_1 -[LB>0 DB>0]- apron_front
 leg_2 -[RF>0 TF>0]- apron_front
 leg_3 -[LB>0 DB>0]- apron_back
 leg_4 -[RF>0 TF>0]- apron_back
 
-// サイド幕板の接続
+// Side apron connections
 leg_1 -[BR<100 DB<0]- apron_left
 leg_3 -[FR<100 TB<0]- apron_left
 
-// 天板の接続
+// Table top connections
 table_top_1 -[BD<0 TF<0]- leg_1
 table_top_2 -[BD<0 TF<0]- leg_2
 ```
 
-### ダボ接続を使用した棚
+### Shelf with Dowel Joints
 
 ```nd
-// 棚（ダボ接続）
+// Shelf with dowel connections
 (left_side:2x4 =800)
 (right_side:2x4 =800)
 (shelf:2x4 =600)
 
-// ダボプリセットを使用
+// Using dowel presets
 left_side -[RT>100 FT<50 D(:8x30)]- shelf
 right_side -[LT>100 FT<50 D(:8x30)]- shelf
 ```
 
-## CLIツール
+## CLI Tools
 
-### 構文検証
+### Syntax Validation
 
 ```bash
 nichiyou-daiku validate furniture.nd
 ```
 
-### レポート生成
+### Report Generation
 
 ```bash
 nichiyou-daiku report furniture.nd -o report.md
 nichiyou-daiku report furniture.nd --project-name "My Table"
 ```
 
-### 3Dビュー (build123d必須)
+### 3D View (requires build123d)
 
 ```bash
 nichiyou-daiku view furniture.nd
 ```
 
-### エクスポート (build123d必須)
+### Export (requires build123d)
 
 ```bash
-# STL形式
+# STL format
 nichiyou-daiku export furniture.nd -f stl
 
-# STEP形式
+# STEP format
 nichiyou-daiku export furniture.nd -f step -o model.step
 
-# フィレット半径指定
+# With fillet radius
 nichiyou-daiku export furniture.nd -f stl --fillet-radius 10
 ```
 
-## 文法 (EBNF)
+## Grammar (EBNF)
 
 ```ebnf
 start           = statement+
@@ -394,22 +395,22 @@ SCREW_TYPE              = "Slim" | "Coarse"
 COMMENT         = "//" [^\n]*
 ```
 
-## エラーメッセージ
+## Error Messages
 
-### 構文エラー
+### Syntax Errors
 
 ```
 DSLSyntaxError: Unexpected token at line 5, column 10
 ```
 
-### 意味エラー
+### Semantic Errors
 
 ```
 DSLSemanticError: Unknown piece reference: unknown_piece
 DSLSemanticError: Duplicate piece ID: leg_1
 ```
 
-### 検証エラー
+### Validation Errors
 
 ```
 DSLValidationError: Invalid piece type: 3x4
