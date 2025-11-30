@@ -6,6 +6,7 @@ pieces in different orientations (top/down, left/right, front/back).
 
 from ..anchor import Anchor, BoundAnchor, as_surface_point
 from ..connection import Connection
+from ..piece import get_shape as get_piece_shape
 from ..geometry import (
     Face,
     Orientation3D,
@@ -15,7 +16,7 @@ from ..geometry import (
     Vector3D,
     cross as cross_face,
 )
-from .constants import DOWEL_EDGE_OFFSET_MM, DOWEL_HORIZONTAL_OFFSET_MM
+from .constants import DOWEL_HORIZONTAL_OFFSET_MM
 from .models import Joint, JointPair
 from .projection import project_joint
 
@@ -149,6 +150,9 @@ def _create_left_right_dowel_joints(
 
     Returns:
         Tuple of (src_0, src_1, dst_0, dst_1)
+
+    Raises:
+        ValueError: If joint positions would be outside face boundaries
     """
     src_anchor = src_bound.anchor
 
@@ -158,6 +162,22 @@ def _create_left_right_dowel_joints(
     anchor_sp = as_surface_point(src_bound)
     pos_0 = Point2D(u=0.0, v=anchor_sp.position.v + DOWEL_HORIZONTAL_OFFSET_MM)
     pos_1 = Point2D(u=0.0, v=anchor_sp.position.v - DOWEL_HORIZONTAL_OFFSET_MM)
+
+    # Validate joint positions are within face boundaries
+    src_shape = get_piece_shape(src_bound.piece)
+    half_length = src_shape.length / 2.0
+    if pos_0.v > half_length or pos_0.v < -half_length:
+        raise ValueError(
+            f"Joint position v={pos_0.v} is outside face boundary "
+            f"[{-half_length}, {half_length}]. "
+            f"Anchor offset is too close to edge."
+        )
+    if pos_1.v > half_length or pos_1.v < -half_length:
+        raise ValueError(
+            f"Joint position v={pos_1.v} is outside face boundary "
+            f"[{-half_length}, {half_length}]. "
+            f"Anchor offset is too close to edge."
+        )
 
     src_0, src_1 = _create_joint_pair_from_positions(
         face=src_anchor.contact_face,
@@ -177,6 +197,7 @@ def _create_left_right_dowel_joints(
 def _create_front_back_dowel_joints_with_offset(
     src_bound: BoundAnchor,
     dst_bound: BoundAnchor,
+    v_offset: float,
 ) -> tuple[Joint, Joint, Joint, Joint]:
     """Create dowel joints for front/back connections with offset clamping.
 
@@ -195,7 +216,7 @@ def _create_front_back_dowel_joints_with_offset(
     orientation = _create_orientation_from_anchor(src_anchor)
     anchor_sp = as_surface_point(src_bound)
     offset_dir = Vector2D.of(src_anchor.contact_face, src_anchor.edge_shared_face).v
-    dowel_v = anchor_sp.position.v - offset_dir * DOWEL_EDGE_OFFSET_MM
+    dowel_v = anchor_sp.position.v - offset_dir * v_offset
     pos_0 = Point2D(u=DOWEL_HORIZONTAL_OFFSET_MM, v=dowel_v)
     pos_1 = Point2D(u=-DOWEL_HORIZONTAL_OFFSET_MM, v=dowel_v)
 
@@ -297,18 +318,31 @@ def create_dowel_joint_pairs(piece_conn: Connection) -> list[JointPair]:
             return _make_joint_pairs(base_0, base_1, target_0, target_1)
 
         # Base is left/right
-        case ("left" | "right", _):
-            base_0, base_1, target_0, target_1 = _create_left_right_dowel_joints(
-                src_bound=base_bound,
-                dst_bound=target_bound,
+        case ("left" | "right", "front" | "back"):
+            target_0, target_1, base_0, base_1 = (
+                _create_front_back_dowel_joints_with_offset(
+                    src_bound=target_bound,
+                    dst_bound=base_bound,
+                    v_offset=get_piece_shape(base_bound.piece).height / 2,
+                )
+            )
+            return _make_joint_pairs(base_0, base_1, target_0, target_1)
+
+        case ("front" | "back", "left" | "right"):
+            base_0, base_1, target_0, target_1 = (
+                _create_front_back_dowel_joints_with_offset(
+                    src_bound=base_bound,
+                    dst_bound=target_bound,
+                    v_offset=get_piece_shape(target_bound.piece).height / 2,
+                )
             )
             return _make_joint_pairs(base_0, base_1, target_0, target_1)
 
         # Target is left/right
-        case (_, "left" | "right"):
+        case ("left" | "right", "left" | "right"):
             target_0, target_1, base_0, base_1 = _create_left_right_dowel_joints(
-                src_bound=target_bound,
-                dst_bound=base_bound,
+                src_bound=base_bound,
+                dst_bound=target_bound,
             )
             return _make_joint_pairs(base_0, base_1, target_0, target_1)
 
@@ -324,6 +358,7 @@ def create_dowel_joint_pairs(piece_conn: Connection) -> list[JointPair]:
                         _create_front_back_dowel_joints_with_offset(
                             src_bound=base_bound,
                             dst_bound=target_bound,
+                            v_offset=get_piece_shape(target_bound.piece).width / 2,
                         )
                     )
                     return _make_joint_pairs(base_0, base_1, target_0, target_1)
@@ -334,6 +369,7 @@ def create_dowel_joint_pairs(piece_conn: Connection) -> list[JointPair]:
                         _create_front_back_dowel_joints_with_offset(
                             src_bound=target_bound,
                             dst_bound=base_bound,
+                            v_offset=get_piece_shape(base_bound.piece).width / 2,
                         )
                     )
                     return _make_joint_pairs(base_0, base_1, target_0, target_1)
