@@ -81,6 +81,76 @@ Defines a lumber piece.
 
 Defines a connection between two pieces.
 
+### Connection Model
+
+In nichiyou-daiku, **two pieces always connect by sharing an edge**. This is a fundamental constraint that models real-world woodworking joints.
+
+#### How Connections Work
+
+Each piece is a rectangular box with 6 faces (top, down, left, right, front, back) and 12 edges. When two pieces connect:
+
+1. **Contact Face**: The face of each piece that touches the other piece
+2. **Edge Shared Face**: The face whose edge is shared at the connection point
+3. **Offset**: Position along the shared edge
+
+```
+         ┌─────────────────┐
+         │                 │
+         │   BASE PIECE    │
+         │                 │
+         └────────┬────────┘
+                  │ ← Contact faces touch here
+         ┌────────┴────────┐
+         │                 │
+         │  TARGET PIECE   │
+         │                 │
+         └─────────────────┘
+```
+
+#### Edge Sharing Constraint
+
+The contact faces of both pieces must share a common edge. This means:
+
+- The **contact_face** determines which face touches the other piece
+- The **edge_shared_face** determines which edge of the contact face is aligned
+- The two pieces meet at the edge formed by contact_face ∩ edge_shared_face
+
+```
+Example: T-joint connection
+
+       edge_shared_face = "front"
+              ↓
+    ┌─────────┼─────────┐
+    │         │         │
+    │   contact_face    │  ← BASE (horizontal)
+    │      = "top"      │
+    └─────────┴─────────┘
+              │
+    ┌─────────┴─────────┐
+    │   contact_face    │
+    │     = "down"      │  ← TARGET (vertical)
+    │         │         │
+    │ edge_shared_face  │
+    │    = "front"      │
+    └─────────┴─────────┘
+```
+
+#### Anchor Components
+
+An **anchor** defines a specific point on a piece where a connection occurs:
+
+| Component | Description |
+|-----------|-------------|
+| `contact_face` | The face that touches the other piece |
+| `edge_shared_face` | The face whose edge is shared with contact_face |
+| `offset` | Distance along the shared edge |
+
+**Valid face combinations**: The contact_face and edge_shared_face must be adjacent (not opposite). For example:
+- ✓ `top` + `front` (adjacent faces)
+- ✓ `left` + `back` (adjacent faces)
+- ✗ `top` + `down` (opposite faces - invalid)
+- ✗ `left` + `right` (opposite faces - invalid)
+
 ### Syntax
 
 ```
