@@ -6,7 +6,11 @@ from nichiyou_daiku.core.anchor import BoundAnchor
 from nichiyou_daiku.core.connection import Connection
 from nichiyou_daiku.core.geometry import FromMax, FromMin, Offset
 from nichiyou_daiku.core.assembly import Assembly
-from nichiyou_daiku.shell import assembly_to_build123d
+from nichiyou_daiku.shell import (
+    assembly_to_build123d,
+    extract_resources,
+    generate_markdown_report,
+)
 
 from ocp_vscode import show
 
@@ -434,8 +438,6 @@ model = Model.of(
 # ============================================================================
 # CREATE ASSEMBLY AND EXTRACT RESOURCES
 # ============================================================================
-from nichiyou_daiku.shell import extract_resources, generate_markdown_report
-
 print("Creating assembly...")
 assembly = Assembly.of(model)
 
@@ -463,21 +465,17 @@ report = generate_markdown_report(
     resources,
     project_name="DIY Shelf Project",
     standard_lengths=custom_standard_lengths,
-    include_cut_diagram=True
+    include_cut_diagram=True,
 )
 
-# Save report to file
-report_filename = "shelf_project_report.md"
-with open(report_filename, "w", encoding="utf-8") as f:
-    f.write(report)
-
-print(f"✅ Detailed report saved to: {report_filename}")
-print(f"📋 Report includes cut optimization and purchase recommendations")
+# Print report preview (not saving to file to avoid generated artifacts)
+print("✅ Report generated successfully")
+print("📋 Report includes cut optimization and purchase recommendations")
 
 # Show a preview of the report
-print("\n" + "="*60)
+print("\n" + "=" * 60)
 print("REPORT PREVIEW:")
-print("="*60)
+print("=" * 60)
 print(report[:800] + "\n..." if len(report) > 800 else report)
 
 # ============================================================================
@@ -494,63 +492,3 @@ show(compound)
 print("\nShelf assembly complete!")
 print(f"Shelf dimensions: {SHELF_WIDTH}mm x {SHELF_DEPTH}mm x {SHELF_HEIGHT}mm")
 print(f"Using {len(model.pieces)} pieces with {len(model.connections)} connections")
-
-# %%
-from build123d import *
-
-# --- 2) 三面の投影（可視/不可視エッジを取得） ---
-# Front: +Y から原点を見る（上向き=+Z）
-vis_F, hid_F = compound.project_to_viewport(
-    viewport_origin=(0, +200, 0), viewport_up=(0, 0, 1), look_at=(0, 0, 0)
-)
-# Top: +Z から原点（上向き=+Y）
-vis_T, hid_T = compound.project_to_viewport(
-    viewport_origin=(0, 0, +200), viewport_up=(0, 1, 0), look_at=(0, 0, 0)
-)
-# Right: +X から原点（上向き=+Z）
-vis_R, hid_R = compound.project_to_viewport(
-    viewport_origin=(+200, 0, 0), viewport_up=(0, 0, 1), look_at=(0, 0, 0)
-)
-
-# --- 3) スケール統一（最大寸法→用紙上の幅100mmに収める例） ---
-all_edges = vis_F + hid_F + vis_T + hid_T + vis_R + hid_R
-max_dim = max(*Compound(children=all_edges).bounding_box().size)  # モデルの最大次元
-mm_target = 100.0
-scale = mm_target / max_dim  # 1モデルを100mm幅に
-
-# --- 4) それぞれを用紙上で整列させる（オフセット平行移動） ---
-gap = 30.0 / scale  # mmの間隔をモデル座標に換算
-# 基準は Front を左下近辺に置き、Top をその上、Right を右側へ
-def moved(shapes, dx, dy):
-    loc = Location(Vector(dx, dy, 0))
-    return [s.moved(loc) for s in shapes]
-
-# Front の外接箱
-F_box = Compound(children=vis_F + hid_F).bounding_box()
-F_w, F_h = F_box.size.X, F_box.size.Y
-
-# 置き場の原点（左下起点的に調整）
-x0, y0 = 0.0, 0.0
-vis_F_m = moved(vis_F, x0, y0)
-hid_F_m = moved(hid_F, x0, y0)
-
-# Top は Front の“上”に
-vis_T_m = moved(vis_T, x0, y0 + F_h + gap)
-hid_T_m = moved(hid_T, x0, y0 + F_h + gap)
-
-# Right は Front の“右”に
-vis_R_m = moved(vis_R, x0 + F_w + gap, y0)
-hid_R_m = moved(hid_R, x0 + F_w + gap, y0)
-
-# --- 5) SVG書き出し（線種固定で差分ノイズ低減） ---
-exp = ExportSVG(unit=Unit.MM, scale=scale, line_weight=0.2)
-exp.add_layer("Visible")
-exp.add_layer("Hidden", line_type=LineType.ISO_DOT, line_weight=0.15)
-exp.add_shape(vis_F_m + vis_T_m + vis_R_m, layer="Visible")
-exp.add_shape(hid_F_m + hid_T_m + hid_R_m, layer="Hidden")
-exp.write("three_views.svg")  # ← 三面図SVG
-
-## --- 6) PNG化（サイズ固定：回帰テスト用） ---
-#cairosvg.svg2png(url="three_views.svg", write_to="three_views.png",
-#                 output_width=1600, output_height=1200)
-#print("wrote three_views.svg / three_views.png")
