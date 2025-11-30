@@ -1,37 +1,37 @@
-# 家具設計仕様
+# Furniture Design Specification
 
-## 基本情報
-- 名前: サイドテーブル
-- 出力形式: nd
+## Basic Info
+- Name: Side Table
+- Output format: nd
 
-## 寸法 (mm)
-- 幅: 500
-- 奥行: 400
-- 高さ: 600
+## Dimensions (mm)
+- Width: 500
+- Depth: 400
+- Height: 600
 
-## 材料
-- メイン: 2x4
+## Material
+- Primary: 2x4
 
-## 構造
+## Structure
 
-### 脚
-- 本数: 4
-- 配置: コーナー内側
+### Legs
+- Count: 4
+- Position: corner inset
 
-### 幕板
-- 位置: 上端揃え
+### Aprons
+- Position: flush with top
 
-### 天板
-- あり/なし: あり
-- 材料: 2x4
-- 配置方向: 奥行方向
+### Top Surface
+- Enabled: yes
+- Material: 2x4
+- Direction: depth
 
-### 棚板
-- 枚数: 0
+### Shelves
+- Count: 0
 
-## 接合
-- 種類: ダボ
-- プリセット: 8x30
+## Joints
+- Type: dowel
+- Preset: 8x30
 
-## 備考
-シンプルで頑丈なデザイン
+## Notes
+Simple and sturdy design

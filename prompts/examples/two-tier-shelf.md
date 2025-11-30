@@ -1,38 +1,38 @@
-# 家具設計仕様
+# Furniture Design Specification
 
-## 基本情報
-- 名前: 2段シェルフ
-- 出力形式: nd
+## Basic Info
+- Name: Two-Tier Shelf
+- Output format: nd
 
-## 寸法 (mm)
-- 幅: 600
-- 奥行: 300
-- 高さ: 800
+## Dimensions (mm)
+- Width: 600
+- Depth: 300
+- Height: 800
 
-## 材料
-- メイン: 2x4
+## Material
+- Primary: 2x4
 
-## 構造
+## Structure
 
-### 脚
-- 本数: 4
-- 配置: コーナー内側
+### Legs
+- Count: 4
+- Position: corner inset
 
-### 幕板
-- 位置: 下から150mm、上端揃え
+### Aprons
+- Position: 150mm from bottom, and flush with top
 
-### 天板
-- あり/なし: あり
-- 材料: 1x4
-- 配置方向: 奥行方向
+### Top Surface
+- Enabled: yes
+- Material: 1x4
+- Direction: depth
 
-### 棚板
-- 枚数: 1
-- 高さ: 底面から150mm（下段幕板と同じ位置）
+### Shelves
+- Count: 1
+- Heights: 150mm from bottom (same level as lower aprons)
 
-## 接合
-- 種類: ダボ
-- プリセット: 8x30
+## Joints
+- Type: dowel
+- Preset: 8x30
 
-## 備考
-下段に棚板、上段に天板の2段構造
+## Notes
+Two-tier structure with shelf at bottom and top surface

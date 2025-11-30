@@ -1,37 +1,37 @@
-# 家具設計仕様
+# Furniture Design Specification
 
-## 基本情報
-- 名前:
-- 出力形式: [nd / python]
+## Basic Info
+- Name:
+- Output format: [nd / python]
 
-## 寸法 (mm)
-- 幅:
-- 奥行:
-- 高さ:
+## Dimensions (mm)
+- Width:
+- Depth:
+- Height:
 
-## 材料
-- メイン: [2x4 / 1x4]
+## Material
+- Primary: [2x4 / 1x4]
 
-## 構造
+## Structure
 
-### 脚
-- 本数: [4 / 2 / 0]
-- 配置: [コーナー内側 / コーナー外側]
+### Legs
+- Count: [4 / 2 / 0]
+- Position: [corner inset / corner flush]
 
-### 幕板
-- 位置: [上端揃え / 下から___mm / 上下両方]
+### Aprons
+- Position: [flush with top / ___mm from bottom / top and bottom]
 
-### 天板
-- あり/なし:
-- 材料: [2x4 / 1x4]
-- 配置方向: [幅方向 / 奥行方向]
+### Top Surface
+- Enabled: [yes / no]
+- Material: [2x4 / 1x4]
+- Direction: [width / depth]
 
-### 棚板
-- 枚数:
-- 高さ: [底面から___mm]
+### Shelves
+- Count:
+- Heights: [___mm from bottom]
 
-## 接合
-- 種類: [バニラ / ダボ / ビス]
-- プリセット: [8x30 / Slim:3.3x50 / など]
+## Joints
+- Type: [vanilla / dowel / screw]
+- Preset: [8x30 / Slim:3.3x50 / etc.]
 
-## 備考
+## Notes
