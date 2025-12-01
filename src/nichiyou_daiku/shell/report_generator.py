@@ -432,7 +432,7 @@ def _generate_pilot_holes_section(summary: ResourceSummary) -> str:
         Markdown formatted pilot holes section with tables and ASCII diagrams
     """
     lines = [
-        "## Pilot Holes (下穴ガイド)",
+        "## Pilot Holes",
         "",
     ]
 

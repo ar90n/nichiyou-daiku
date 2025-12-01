@@ -33,7 +33,7 @@ class ScrewSpec(BaseModel, frozen=True):
 
 
 class SlimScrew(StringEnumMixin, Enum):
-    """Standard slim screw (スリムビス) sizes.
+    """Standard slim screw sizes.
 
     Slim screws are thinner than coarse thread screws and are less likely
     to split wood. They typically don't require pilot holes.
@@ -69,7 +69,7 @@ class SlimScrew(StringEnumMixin, Enum):
 
 
 class CoarseThreadScrew(StringEnumMixin, Enum):
-    """Standard coarse thread screw (コーススレッド) sizes.
+    """Standard coarse thread screw sizes.
 
     Coarse thread screws have larger pitch and stronger holding power.
     They are the standard choice for heavy-duty applications.

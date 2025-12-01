@@ -203,7 +203,6 @@ class Assembly(BaseModel, frozen=True):
                 joint_conns.append((base_joint_id, target_joint_id))
 
                 if isinstance(piece_conn.type, ScrewConnection):
-                    # ScrewConnection: Target側は貫通穴、Base側はscrew.length - target_thickness
                     screw = piece_conn.type
                     target_shape = get_shape(piece_conn.target.piece)
                     target_thickness = _get_dimension_for_face(
@@ -211,7 +210,7 @@ class Assembly(BaseModel, frozen=True):
                     )
                     base_depth = screw.length - target_thickness
 
-                    # Target側: 貫通穴
+                    # Target side: through-hole
                     pilot_holes.setdefault(target_id, []).append(
                         _create_screw_hole(
                             box=boxes[target_id],
@@ -220,7 +219,7 @@ class Assembly(BaseModel, frozen=True):
                             depth=None,
                         )
                     )
-                    # Base側: ねじ込み深さ
+                    # Base side: screw thread depth
                     pilot_holes.setdefault(base_id, []).append(
                         _create_screw_hole(
                             box=boxes[base_id],
@@ -230,7 +229,7 @@ class Assembly(BaseModel, frozen=True):
                         )
                     )
                 elif isinstance(piece_conn.type, (DowelConnection, VanillaConnection)):
-                    # 既存ロジック（固定サイズのパイロットホール）
+                    # Fixed-size pilot holes
                     pilot_holes.setdefault(base_id, []).append(
                         _create_pilot_hole_on_joint(
                             box=boxes[base_id],
