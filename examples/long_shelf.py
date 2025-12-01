@@ -15,8 +15,8 @@ from ocp_vscode import show
 # ============================================================================
 SHELF_STAGES = 2
 SHELF_BOTTOM_MARGIN = 150.0
-SHELF_STAGE_HEIGHT = 305.0
-SHELF_TOP_MARGIN = 100.0
+SHELF_STAGE_HEIGHT = 300.0
+SHELF_TOP_MARGIN = 28.0
 SHELF_DEPTH = 420.0
 EXPECTED_SHELF_WIDTH = 1025.0
 
@@ -106,7 +106,7 @@ for i in range(SHELF_STAGES + 1):
                         ),
                     ),
                 ),
-                spec=as_spec(CoarseThreadScrew.D3_8_L35),
+                spec=as_spec(CoarseThreadScrew.D3_8_L30)
             )
         )
         connections.append(
@@ -129,7 +129,7 @@ for i in range(SHELF_STAGES + 1):
                         ),
                     ),
                 ),
-                spec=as_spec(CoarseThreadScrew.D3_8_L35),
+                spec=as_spec(CoarseThreadScrew.D3_8_L30),
             )
         )
 
@@ -265,8 +265,8 @@ print("\nGenerating detailed markdown report...")
 
 # Define custom standard lengths for this project
 custom_standard_lengths = {
-    PieceType.PT_2x4: [2440.0, 3000.0, 3600.0],  # 8ft, ~10ft, 12ft
-    PieceType.PT_1x4: [1800.0, 2400.0, 3000.0],  # 6ft, 8ft, 10ft
+    PieceType.PT_2x4: [1830.0],
+    PieceType.PT_1x4: [1830.0],
 }
 
 report = generate_markdown_report(
