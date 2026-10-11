@@ -1,37 +1,33 @@
 """Export nichiyou-daiku assemblies to build123d format for 3D visualization.
 
-This module provides conversion functions from our internal Assembly
-representation to build123d objects that can be visualized in CAD tools.
+This module renders an Assembly with build123d: each piece becomes a solid
+(filleted, with its pilot holes) placed where the assembly's placement puts it.
 """
 
-import math
-from collections import deque
-from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 import numpy as np
 
 from nichiyou_daiku.core.assembly import (
     Assembly,
-    Joint as NichiyouJoint,
     Hole as NichiyouHole,
 )
 from nichiyou_daiku.core.geometry import (
-    Orientation3D,
     Point3D,
     SurfacePoint,
     Box as NichiyouBox,
 )
+from nichiyou_daiku.core.placement import Pose
 
 # Check if build123d is available
 HAS_BUILD123D = False
 try:
     from build123d import (
         Box,
-        RigidJoint,
         Compound,
         Part,
         Location,
+        Plane,
         Align,
         fillet,
         Axis,
@@ -44,62 +40,16 @@ except ImportError:
 
 if TYPE_CHECKING:
     from build123d import (
-        BoundBox,
         Box,
-        RigidJoint,
         Compound,
         Part,
         Location,
+        Plane,
         Align,
         fillet,
         Axis,
         Cylinder,
     )
-
-
-def _as_euler_angles(
-    orientation: Orientation3D, *, flip_dir: bool = False
-) -> tuple[float, float, float]:
-    dir_vec = np.asarray(
-        [orientation.direction.x, orientation.direction.y, orientation.direction.z],
-        dtype=float,
-    )
-
-    up_vec = np.asarray(
-        [orientation.up.x, orientation.up.y, orientation.up.z], dtype=float
-    )
-
-    if flip_dir:
-        dir_vec = -dir_vec
-
-    dir_vec /= np.linalg.norm(dir_vec)
-    up_vec /= np.linalg.norm(up_vec)
-
-    # Calculate orthonormal basis vectors
-    right = np.cross(dir_vec, up_vec)
-    right /= np.linalg.norm(right)
-
-    up = np.cross(right, dir_vec)
-    up /= np.linalg.norm(up)
-
-    # Create rotation matrix
-    R = np.column_stack((right, up, -dir_vec))
-
-    # Extract Euler angles from rotation matrix
-    sy = R[0, 2]
-    if abs(sy) < 0.999999:
-        ry = math.asin(sy)
-        rx = math.atan2(-R[1, 2], R[2, 2])
-        rz = math.atan2(-R[0, 1], R[0, 0])
-    else:  # gimbal‑lock
-        ry = math.copysign(math.pi / 2, sy)
-        rx = math.atan2(math.copysign(1.0, sy) * R[1, 0], R[1, 1])
-        rz = 0.0
-
-    # Convert radians to degrees
-    angles = np.degrees([rx, ry, rz])
-    angles[np.isclose(angles, 0.0, atol=1e-10)] = 0.0
-    return tuple(angles)
 
 
 def _as_tuple(point: Point3D) -> tuple[float, float, float]:
@@ -200,49 +150,15 @@ def _create_piece_from(
     return piece  # type: ignore
 
 
-def _create_joint_from(
-    joint: NichiyouJoint,
-    box: NichiyouBox,
-    label: str,
-    to_part: "Part",
-    flip_dir: bool = False,
-) -> "RigidJoint":
-    """Create a build123d RigidJoint from a nichiyou Joint.
-
-    Args:
-        joint: The nichiyou Joint to convert
-        box: The box for converting SurfacePoint to Point3D
-        label: Label for the rigid joint
-        to_part: The Part this joint belongs to
-        flip_dir: Whether to flip the direction vector (for target joints)
-
-    Returns:
-        A build123d RigidJoint
-    """
-    orientation = joint.orientation
-    # Convert SurfacePoint to Point3D using the box
-    position = Point3D.of(box, joint.position)
-
-    return RigidJoint(
-        label=label,
-        to_part=to_part,
-        joint_location=Location(
-            _as_tuple(position), _as_euler_angles(orientation, flip_dir=flip_dir)
-        ),
+def _location_of(pose: Pose) -> "Location":
+    rotation = np.array(pose.rotation, dtype=float)
+    return Location(
+        Plane(
+            origin=pose.translation,
+            x_dir=tuple(rotation[:, 0]),
+            z_dir=tuple(rotation[:, 2]),
+        )
     )
-
-
-def _connect(parts, src_joint_id: str, dst_joint_id: str):
-    """Connect two parts using their rigid joints.
-
-    Args:
-        parts: Dictionary mapping part IDs to Part objects
-        src_joint_id: Source joint ID (e.g., "p1_j0")
-        dst_joint_id: Destination joint ID (e.g., "p2_j0")
-    """
-    src_id = src_joint_id.rsplit("_j", 1)[0]
-    dst_id = dst_joint_id.rsplit("_j", 1)[0]
-    parts[src_id].joints[src_joint_id].connect_to(parts[dst_id].joints[dst_joint_id])
 
 
 def assembly_to_build123d(
@@ -251,15 +167,15 @@ def assembly_to_build123d(
 ) -> "Compound":
     """Convert a nichiyou Assembly to a build123d Compound.
 
-    Creates build123d Parts for each piece in the assembly and connects them
-    using RigidJoints based on the assembly's connection information.
+    Creates a build123d Part for each piece and places it where the
+    assembly's placement puts it.
 
     Args:
         assembly: The nichiyou Assembly to convert
         fillet_radius: Radius for edge fillets in mm (default: 5.0, use 0 to disable)
 
     Returns:
-        A build123d Compound containing all connected parts
+        A build123d Compound containing all placed parts
 
     Raises:
         ImportError: If build123d is not installed
@@ -276,184 +192,15 @@ def assembly_to_build123d(
             "build123d is required for 3D visualization. "
             "Please install it with: pip install nichiyou-daiku[viz]"
         )
-    parts = {}
 
-    # Create parts for all pieces
+    parts = []
     for piece_id, box in assembly.boxes.items():
-        if piece_id not in parts:
-            parts[piece_id] = _create_piece_from(
-                piece_id,
-                box,
-                fillet_radius,
-                pilot_holes=assembly.pilot_holes.get(piece_id),
-            )
-
-    # Build graph from connections
-    joints = {}
-    for lhs_joint_id, rhs_joint_id in assembly.joint_conns:
-        lhs_joint = assembly.joints[lhs_joint_id]
-        rhs_joint = assembly.joints[rhs_joint_id]
-
-        # Extract piece IDs from joint IDs
-        lhs_id = lhs_joint_id.rsplit("_j", 1)[0]
-        rhs_id = rhs_joint_id.rsplit("_j", 1)[0]
-
-        joints.setdefault(lhs_id, []).append((lhs_joint_id, rhs_joint_id))
-        _create_joint_from(
-            lhs_joint,
-            assembly.boxes[lhs_id],
-            label=lhs_joint_id,
-            to_part=parts[lhs_id],
+        part = _create_piece_from(
+            piece_id,
+            box,
+            fillet_radius,
+            pilot_holes=assembly.pilot_holes.get(piece_id),
         )
-        joints.setdefault(rhs_id, []).append((rhs_joint_id, lhs_joint_id))
-        _create_joint_from(
-            rhs_joint,
-            assembly.boxes[rhs_id],
-            label=rhs_joint_id,
-            to_part=parts[rhs_id],
-            flip_dir=True,
-        )
+        parts.append(part.locate(_location_of(assembly.placement.poses[piece_id])))
 
-    # BFS traversal: each piece is placed once, by the first joint that
-    # reaches it. Joints that close a loop are left as they are; use
-    # find_joint_mismatches() to see whether they agree with the placement.
-    visited = set()
-
-    # Process each connected component
-    for start_piece in assembly.boxes:
-        if start_piece in visited:
-            continue
-
-        queue = deque([start_piece])
-        visited.add(start_piece)
-
-        while queue:
-            current_piece_id = queue.popleft()
-
-            for current_id, neighbor_id in joints.get(current_piece_id, []):
-                neighbor_piece_id = neighbor_id.rsplit("_j", 1)[0]
-                if neighbor_piece_id in visited:
-                    continue
-                _connect(parts, current_id, neighbor_id)
-                visited.add(neighbor_piece_id)
-                queue.append(neighbor_piece_id)
-
-    return Compound(label=assembly.label or "assembly", children=list(parts.values()))
-
-
-@dataclass
-class OverlapResult:
-    """Result of overlap detection between pieces.
-
-    Attributes:
-        has_overlap: True if any pieces overlap
-        overlapping_pairs: List of (label1, label2) tuples for overlapping pieces
-        volume: Total interference volume in mm³
-    """
-
-    has_overlap: bool
-    overlapping_pairs: list[tuple[str, str]]
-    volume: float
-
-
-def check_overlap(compound: "Compound", tolerance: float = 1e-5) -> OverlapResult:
-    """Detect overlapping pieces in a Compound.
-
-    Intersects every pair of children whose bounding boxes overlap and
-    reports each pair whose common volume exceeds ``tolerance``.
-
-    Args:
-        compound: The Compound from assembly_to_build123d()
-        tolerance: Minimum common volume in mm³ that counts as an overlap
-
-    Returns:
-        OverlapResult with detection results
-
-    Raises:
-        ImportError: If build123d is not installed
-
-    Example:
-        >>> from nichiyou_daiku.core.model import Model
-        >>> from nichiyou_daiku.core.assembly import Assembly
-        >>> model = Model.of(pieces=[], connections=[])
-        >>> assembly = Assembly.of(model)
-        >>> compound = assembly_to_build123d(assembly)
-        >>> result = check_overlap(compound)
-        >>> result.has_overlap
-        False
-    """
-    if not HAS_BUILD123D:
-        raise ImportError(
-            "build123d is required for overlap detection. "
-            "Please install it with: pip install nichiyou-daiku[viz]"
-        )
-
-    children = list(compound.children)
-    pairs: list[tuple[str, str]] = []
-    total_volume = 0.0
-    for i, lhs in enumerate(children):
-        lhs_bbox = lhs.bounding_box()
-        for rhs in children[i + 1 :]:
-            if not _bounding_boxes_overlap(lhs_bbox, rhs.bounding_box()):
-                continue
-            volume = _common_volume(lhs, rhs)
-            if volume > tolerance:
-                pairs.append((lhs.label or "?", rhs.label or "?"))
-                total_volume += volume
-
-    return OverlapResult(
-        has_overlap=bool(pairs), overlapping_pairs=pairs, volume=total_volume
-    )
-
-
-def _common_volume(lhs: "Part", rhs: "Part") -> float:
-    # Intersect the bare solids: Part.intersect re-parents the part's joints
-    # onto the result, which would corrupt later joint checks.
-    volume = 0.0
-    for lhs_solid in lhs.solids():
-        for rhs_solid in rhs.solids():
-            common = lhs_solid.intersect(rhs_solid)
-            if common is not None:
-                volume += sum(solid.volume for solid in common.solids())
-    return volume
-
-
-def _bounding_boxes_overlap(lhs: "BoundBox", rhs: "BoundBox") -> bool:
-    return (
-        lhs.min.X < rhs.max.X
-        and rhs.min.X < lhs.max.X
-        and lhs.min.Y < rhs.max.Y
-        and rhs.min.Y < lhs.max.Y
-        and lhs.min.Z < rhs.max.Z
-        and rhs.min.Z < lhs.max.Z
-    )
-
-
-def find_joint_mismatches(
-    assembly: Assembly, compound: "Compound", tolerance: float = 0.01
-) -> list[tuple[str, str, float]]:
-    """Find connected joints that do not meet after placement.
-
-    Each piece is placed by the first joint that reaches it, so a connection
-    that contradicts the others ends up with its two joints apart.
-
-    Args:
-        assembly: The Assembly the compound was built from
-        compound: The Compound from assembly_to_build123d()
-        tolerance: Maximum distance in mm between joints that still counts as met
-
-    Returns:
-        (joint_id, joint_id, distance in mm) for every pair further apart than
-        ``tolerance``
-    """
-    parts = {child.label: child for child in compound.children}
-    mismatches = []
-    for lhs_joint_id, rhs_joint_id in assembly.joint_conns:
-        lhs_part = parts[lhs_joint_id.rsplit("_j", 1)[0]]
-        rhs_part = parts[rhs_joint_id.rsplit("_j", 1)[0]]
-        lhs_position = lhs_part.joints[lhs_joint_id].location.position
-        rhs_position = rhs_part.joints[rhs_joint_id].location.position
-        distance = (lhs_position - rhs_position).length
-        if distance > tolerance:
-            mismatches.append((lhs_joint_id, rhs_joint_id, distance))
-    return mismatches
+    return Compound(label=assembly.label or "assembly", children=parts)

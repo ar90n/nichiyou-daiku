@@ -1,6 +1,7 @@
 """Geometry tests for build123d export that run against real build123d."""
 
 import math
+from pathlib import Path
 
 import pytest
 
@@ -12,7 +13,6 @@ from nichiyou_daiku.dsl import parse_dsl  # noqa: E402
 from nichiyou_daiku.shell.build123d_export import (  # noqa: E402
     _create_piece_from,
     assembly_to_build123d,
-    check_overlap,
 )
 
 
@@ -94,127 +94,35 @@ def _compound(dsl: str):
     return assembly_to_build123d(Assembly.of(parse_dsl(dsl)), fillet_radius=0)
 
 
-class TestCheckOverlap:
-    def test_reports_every_overlapping_pair(self):
-        # b and c both sit at the same place on a's front face
-        compound = _compound(
-            """
-            (a:2x4 =500)
-            (b:2x4 =300)
-            (c:2x4 =300)
-            (d:2x4 =300)
-            (e:2x4 =300)
-            a -[FL<100 DF<0]- b
-            a -[FL<100 DF<0]- c
-            a -[RF<0 LF<0]- d
-            a -[RF<0 LF<0]- e
-            """
-        )
-        result = check_overlap(compound)
-        assert result.has_overlap
-        assert sorted(tuple(sorted(p)) for p in result.overlapping_pairs) == [
-            ("b", "c"),
-            ("d", "e"),
-        ]
-        assert result.volume == pytest.approx(2 * 89.0 * 38.0 * 300.0, rel=1e-3)
+class TestRendersCorePlacement:
+    @pytest.mark.parametrize(
+        "path",
+        sorted((Path(__file__).parents[2] / "examples" / "nd_files").glob("*.nd")),
+        ids=lambda p: p.name,
+    )
+    def test_each_part_sits_where_the_placement_puts_it(self, path):
+        assembly = Assembly.of(parse_dsl(path.read_text()))
+        compound = assembly_to_build123d(assembly, fillet_radius=0)
+        for child in compound.children:
+            bb = child.bounding_box()
+            low, high = assembly.placement.poses[child.label].bounds(
+                assembly.model.pieces[child.label]
+            )
+            assert (
+                bb.min.X,
+                bb.min.Y,
+                bb.min.Z,
+                bb.max.X,
+                bb.max.Y,
+                bb.max.Z,
+            ) == pytest.approx((low.x, low.y, low.z, high.x, high.y, high.z), abs=1e-6)
 
-    def test_touching_pieces_do_not_overlap(self):
-        compound = _compound(
-            """
-            (a:2x4 =500)
-            (b:2x4 =300)
-            a -[FL<100 DF<0]- b
-            """
-        )
-        assert not check_overlap(compound).has_overlap
-
-    def test_unconnected_piece_left_at_origin_is_reported(self):
-        compound = _compound(
-            """
-            (a:2x4 =500)
-            (b:2x4 =300)
-            (floating:2x4 =300)
-            a -[FL<100 DF<0]- b
-            """
-        )
-        pairs = [tuple(sorted(p)) for p in check_overlap(compound).overlapping_pairs]
-        assert ("a", "floating") in pairs
-
-
-class TestJointMismatches:
-    def test_simple_connection_has_no_mismatch(self):
-        from nichiyou_daiku.shell.build123d_export import find_joint_mismatches
-
+    def test_unconnected_group_is_rendered_beside_the_rest(self):
         assembly = Assembly.of(
             parse_dsl(
-                """
-                (a:2x4 =300)
-                (b:2x4 =300)
-                a -[FL<100 DF<0]- b
-                """
+                "(a:2x4 =500)\n(b:2x4 =300)\n(floating:2x4 =300)\na -[FL<100 DF<0]- b\n"
             )
         )
         compound = assembly_to_build123d(assembly, fillet_radius=0)
-        assert find_joint_mismatches(assembly, compound) == []
-
-    def test_contradicting_connection_is_reported(self):
-        from nichiyou_daiku.shell.build123d_export import find_joint_mismatches
-
-        # a-b fixes b; a-c fixes c; b-c then asks for a position c cannot take
-        assembly = Assembly.of(
-            parse_dsl(
-                """
-                (a:2x4 =500)
-                (b:2x4 =300)
-                (c:2x4 =300)
-                a -[FL<100 DF<0]- b
-                a -[FL>100 DF<0]- c
-                b -[RF<0 LF<0]- c
-                """
-            )
-        )
-        compound = assembly_to_build123d(assembly, fillet_radius=0)
-        mismatches = find_joint_mismatches(assembly, compound)
-        assert len(mismatches) >= 1
-        assert all(distance > 1.0 for _, _, distance in mismatches)
-
-    def test_later_connection_does_not_move_an_already_placed_piece(self):
-        base = """
-            (a:2x4 =500)
-            (b:2x4 =300)
-            (c:2x4 =300)
-            a -[FL<100 DF<0]- b
-            a -[FL>100 DF<0]- c
-        """
-        contradiction = "b -[RF<0 LF<0]- c\n"
-        placed = {ch.label: ch.bounding_box() for ch in _compound(base).children}
-        with_contradiction = {
-            ch.label: ch.bounding_box()
-            for ch in _compound(base + contradiction).children
-        }
-        for label in ("a", "b", "c"):
-            assert tuple(with_contradiction[label].min) == pytest.approx(
-                tuple(placed[label].min)
-            )
-
-
-class TestChecksDoNotDisturbEachOther:
-    def test_overlap_check_leaves_joint_locations_alone(self):
-        from nichiyou_daiku.shell.build123d_export import find_joint_mismatches
-
-        # b and c overlap, so the overlap check intersects them; every joint
-        # is still where its connection put it
-        assembly = Assembly.of(
-            parse_dsl(
-                """
-                (a:2x4 =500)
-                (b:2x4 =300)
-                (c:2x4 =300)
-                a -[FL<100 DF<0]- b
-                a -[FL<100 DF<0]- c
-                """
-            )
-        )
-        compound = assembly_to_build123d(assembly, fillet_radius=0)
-        assert check_overlap(compound).has_overlap
-        assert find_joint_mismatches(assembly, compound) == []
+        floating = {c.label: c for c in compound.children}["floating"]
+        assert floating.bounding_box().min.X == pytest.approx(189.0)

@@ -3,8 +3,6 @@
 Geometry produced with a real build123d is tested in test_build123d_geometry.py.
 """
 
-from unittest.mock import Mock
-
 import pytest
 
 from nichiyou_daiku.core.assembly import Assembly
@@ -27,14 +25,6 @@ def test_assembly_to_build123d_requires_build123d(without_build123d):
 
     with pytest.raises(ImportError) as exc_info:
         export_module.assembly_to_build123d(assembly)
-
-    assert "build123d is required" in str(exc_info.value)
-    assert "pip install nichiyou-daiku[viz]" in str(exc_info.value)
-
-
-def test_check_overlap_requires_build123d(without_build123d):
-    with pytest.raises(ImportError) as exc_info:
-        export_module.check_overlap(Mock())
 
     assert "build123d is required" in str(exc_info.value)
     assert "pip install nichiyou-daiku[viz]" in str(exc_info.value)

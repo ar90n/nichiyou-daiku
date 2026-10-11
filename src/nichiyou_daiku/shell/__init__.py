@@ -26,10 +26,6 @@ __all__ = [
 from .build123d_export import HAS_BUILD123D
 
 if HAS_BUILD123D:
-    from .build123d_export import (  # noqa: F401
-        assembly_to_build123d,
-        check_overlap,
-        find_joint_mismatches,
-    )
+    from .build123d_export import assembly_to_build123d  # noqa: F401
 
-    __all__ += ["assembly_to_build123d", "check_overlap", "find_joint_mismatches"]
+    __all__.append("assembly_to_build123d")
