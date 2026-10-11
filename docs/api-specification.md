@@ -720,7 +720,7 @@ def generate_markdown_report(
     """Generate markdown report with cut optimization."""
 ```
 
-The cut plan allows a 3mm saw kerf per cut and warns about pieces longer than any stock board.
+The cut plan allows a 3mm saw kerf per cut and warns about pieces longer than any stock board. Problems with the design (`ResourceSummary.issues`: contradicting connections, unconnected pieces, fasteners that do not fit, colliding holes) are listed in a Warnings section right after the overview.
 
 **Example:**
 

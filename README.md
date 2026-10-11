@@ -443,7 +443,7 @@ nichiyou-daiku export furniture.nd -o model.step --fillet-radius 10
 nichiyou-daiku drawing furniture.nd -o furniture.pdf
 ```
 
-Commands other than `validate` print a warning and carry on when connections contradict each other or some pieces are not connected.
+Commands other than `validate` print a warning and carry on when connections contradict each other, some pieces are not connected, or fasteners do not fit; `report` also lists these problems in the report itself.
 
 See the `examples/nd_files/` directory for complete DSL examples.
 

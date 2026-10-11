@@ -9,7 +9,7 @@ from typing import Dict, List, Optional, Tuple
 from datetime import datetime
 
 from nichiyou_daiku.core.piece import PieceType
-from .resources import ResourceSummary, PieceResource
+from .resources import ResourceSummary, PieceResource, format_mm
 
 
 @dataclass
@@ -46,14 +46,6 @@ def _get_default_standard_lengths() -> Dict[PieceType, List[float]]:
         PieceType.PT_2x4: [2440.0, 3050.0, 3660.0],  # 8ft, 10ft, 12ft
         PieceType.PT_1x4: [1830.0, 2440.0, 3050.0],  # 6ft, 8ft, 10ft
     }
-
-
-def format_mm(value: float) -> str:
-    """Format a length or volume: 0.1mm steps without a trailing ".0", and
-    two significant digits below 0.1 so small values do not print as 0."""
-    if abs(value) >= 0.1:
-        return f"{value:.1f}".removesuffix(".0")
-    return f"{value:.2g}"
 
 
 DEFAULT_KERF_MM = 3.0
@@ -200,6 +192,20 @@ def _generate_overview_section(summary: ResourceSummary, project_name: str) -> s
 - **Estimated Weight**: ~{estimated_weight_kg:.1f} kg (assuming pine density)
 
 """
+
+
+def _generate_warnings_section(summary: ResourceSummary) -> str:
+    """List the design's problems near the top so they are not missed when
+    building from the report alone."""
+    lines = [
+        "## Warnings",
+        "",
+        "The design has problems. Fix them before building:",
+        "",
+        *(f"- {issue}" for issue in summary.issues),
+        "",
+    ]
+    return "\n".join(lines)
 
 
 def _generate_bill_of_materials(summary: ResourceSummary) -> str:
@@ -607,6 +613,8 @@ def generate_markdown_report(
     sections = []
 
     sections.append(_generate_overview_section(resource_summary, project_name))
+    if resource_summary.issues:
+        sections.append(_generate_warnings_section(resource_summary))
     sections.append(_generate_bill_of_materials(resource_summary))
 
     # Add anchor details after BOM, before pilot holes

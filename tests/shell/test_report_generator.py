@@ -808,3 +808,36 @@ class TestOverviewSize:
             total_volume=0.0,
         )
         assert "Overall Size" not in _generate_overview_section(summary, "P")
+
+
+class TestWarningsSection:
+    def _summary(self, issues: list[str]) -> ResourceSummary:
+        piece = PieceResource(
+            id="a",
+            type=PieceType.PT_2x4,
+            length=500.0,
+            width=89.0,
+            height=38.0,
+            volume=1_691_000.0,
+        )
+        return ResourceSummary(
+            pieces=[piece],
+            total_pieces=1,
+            pieces_by_type={PieceType.PT_2x4: 1},
+            total_length_by_type={PieceType.PT_2x4: 500.0},
+            total_volume=1_691_000.0,
+            issues=issues,
+        )
+
+    def test_issues_come_right_after_the_overview(self):
+        report = generate_markdown_report(self._summary(["Connection a -> b: oops"]))
+        assert "## Warnings" in report
+        assert "- Connection a -> b: oops" in report
+        assert (
+            report.index("## Project Overview")
+            < report.index("## Warnings")
+            < report.index("## Bill of Materials")
+        )
+
+    def test_no_warnings_section_without_issues(self):
+        assert "## Warnings" not in generate_markdown_report(self._summary([]))

@@ -4,12 +4,8 @@ import sys
 
 import click
 
-from nichiyou_daiku.cli.utils import (
-    CliEcho,
-    describe_assembly_issues,
-    read_dsl_file,
-)
-from nichiyou_daiku.shell.report_generator import format_mm
+from nichiyou_daiku.cli.utils import CliEcho, read_dsl_file
+from nichiyou_daiku.shell.resources import describe_assembly_issues, format_mm
 from nichiyou_daiku.core.assembly import Assembly
 from nichiyou_daiku.core.placement import find_overlaps
 from nichiyou_daiku.dsl import (

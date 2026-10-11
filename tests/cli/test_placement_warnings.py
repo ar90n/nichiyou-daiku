@@ -87,3 +87,14 @@ def test_export_warns_about_fasteners_that_do_not_fit(runner, tmp_path):
         in result.output
     )
     assert output.exists()
+
+
+def test_report_file_lists_the_warnings(runner, tmp_path):
+    output = tmp_path / "report.md"
+    result = runner.invoke(
+        cli, ["report", str(_write(tmp_path, CONTRADICTING)), "-o", str(output)]
+    )
+    assert result.exit_code == 0
+    report = output.read_text()
+    assert "## Warnings" in report
+    assert "- Connection b -> c: contact (z) is off by 389mm" in report

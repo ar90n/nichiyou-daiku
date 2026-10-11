@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Optional
 
 import click
 
-from nichiyou_daiku.shell.report_generator import format_mm
+from nichiyou_daiku.shell.resources import describe_assembly_issues
 
 if TYPE_CHECKING:
     from nichiyou_daiku.core.assembly import Assembly
@@ -200,36 +200,6 @@ def parse_dsl_to_model(dsl_content: str, echo: CliEcho) -> Model:
     except Exception as e:
         echo.exception(f"Unexpected error parsing DSL: {e}")
         sys.exit(1)
-
-
-def describe_assembly_issues(assembly: Assembly) -> list[str]:
-    """Human-readable lines for placement conflicts, unconnected pieces and
-    fasteners that do not fit."""
-    placement = assembly.placement
-    issues = []
-    for conflict in placement.conflicts:
-        loop = " -> ".join(conflict.loop)
-        where = f"Connection {conflict.base_id} -> {conflict.target_id}"
-        if conflict.kind == "rotation":
-            issues.append(
-                f"{where}: orientation contradicts the other connections (loop: {loop})"
-            )
-        else:
-            issues.append(
-                f"{where}: {conflict.kind} ({conflict.axis}) is off by "
-                f"{format_mm(abs(conflict.mismatch_mm or 0.0))}mm (loop: {loop})"
-            )
-    if len(placement.groups) > 1:
-        listed = "; ".join(", ".join(group) for group in placement.groups)
-        issues.append(
-            "Some pieces are not connected to each other, so their relative "
-            f"position is undefined (groups: {listed})"
-        )
-    issues += [
-        f"Connection {issue.base_id} -> {issue.target_id}: {issue.message}"
-        for issue in assembly.fastener_issues
-    ]
-    return issues
 
 
 def warn_assembly_issues(assembly: Assembly, echo: CliEcho) -> None:

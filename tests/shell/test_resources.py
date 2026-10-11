@@ -454,3 +454,22 @@ class TestOverallSize:
         )
         assert summary.overall_size is None
         assert summary.size_reference is None
+
+
+class TestIssues:
+    def test_fasteners_that_do_not_fit_are_listed(self):
+        from nichiyou_daiku.dsl import parse_dsl
+
+        # The 1x4's 19mm end is too narrow for a 10mm dowel
+        model = parse_dsl("(a:2x4 =500)\n(b:1x4 =300)\na -[FR<100 DF<0 D(5, 30)]- b\n")
+        summary = extract_resources(Assembly.of(model))
+        assert summary.issues == [
+            "Connection a -> b: contact area 19.0 x 89.0mm is too narrow for a "
+            "10.0mm dowel (needs 20.0mm)"
+        ]
+
+    def test_a_sound_model_has_no_issues(self):
+        from nichiyou_daiku.dsl import parse_dsl
+
+        model = parse_dsl("(a:2x4 =500)\n(b:2x4 =300)\na -[FL<100 DF<0 D(4, 30)]- b\n")
+        assert extract_resources(Assembly.of(model)).issues == []
