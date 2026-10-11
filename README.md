@@ -526,7 +526,9 @@ nichiyou-daiku/
 │       │       ├── view.py, export.py, drawing.py
 │       └── shell/          # External integrations
 │           ├── build123d_export.py
+│           ├── drawing.py
 │           ├── resources.py
+│           ├── cutting.py
 │           └── report_generator.py
 ├── examples/               # Example projects
 │   ├── *.py               # Python examples
