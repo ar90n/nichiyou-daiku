@@ -293,7 +293,7 @@ piece1 -[anchor anchor D(:直径x長さ)]- piece2
 
 #### ルール
 
-- ダボの長さの半分が、各ピースの接触面の法線方向の寸法に収まる必要があります（front/back接触 → 厚み（38または19）、left/right → 89、top/down → ピースの長さ）。
+- ダボの長さの半分は、各ピースの接触面の法線方向の寸法より短くなければなりません。同じだと穴が裏まで抜けるためです（front/back接触 → 厚み（38または19）、left/right → 89、top/down → ピースの長さ）。
 - 穴: 各ピースに 直径 x 長さ/2 の穴があきます。
 - ダボとビス: 接触面の短辺は留め具の直径の 2 倍以上必要です（辺でしか接していない部材には接触面がありません）。満たさない場合は `validate` が報告し、穴はあきません。
 
@@ -368,7 +368,7 @@ piece1 -[anchor anchor S(種類:直径x長さ)]- piece2
 
 - ターゲットのcontact_faceは `front` または `back` でなければなりません（ビスはターゲットの広い面を貫通します）。
 - ビスの長さはターゲットの厚み（2x4は38、1x4は19）より長くなければなりません。
-- ビスの長さは「ベースの接触面の法線方向の寸法（front/back → 厚み、left/right → 89、top/down → ピースの長さ）+ ターゲットの厚み」以下でなければなりません。
+- ビスの長さは「ベースの接触面の法線方向の寸法（front/back → 厚み、left/right → 89、top/down → ピースの長さ）+ ターゲットの厚み」より短くなければなりません。先端がベースの裏に出ないようにするためです。
 - 穴: ターゲットには貫通穴、ベースには (長さ - ターゲットの厚み) の深さの穴があきます。
 
 #### 例
@@ -570,5 +570,5 @@ DSLValidationError: Unknown dowel preset: 9x99
 DSLValidationError: Unknown Slim screw preset: 3.0x100
 DSLValidationError: ScrewConnection target contact_face must be 'front' or 'back', got 'down'
 DSLValidationError: Screw length 35.0mm does not reach base piece (target thickness: 38.0mm)
-DSLValidationError: Dowel depth 20.0mm (half of 40.0mm) exceeds base piece dimension 19.0mm
+DSLValidationError: Dowel depth 20.0mm (half of 40.0mm) would go through the base piece (19.0mm); use a dowel shorter than 38.0mm
 ```

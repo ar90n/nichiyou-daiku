@@ -189,7 +189,7 @@ Dowel rules:
 The screw is driven **through the target into the base**:
 - The **target's contact_face must be `front` or `back`** (its wide face).
 - Screw length must be **greater than the target's thickness** (38 for 2x4, 19 for 1x4).
-- Screw length must be **at most** the base's depth along its contact normal + the target's thickness (base depth: front/back → thickness, left/right → 89, top/down → piece length).
+- Screw length must be **less than** the base's depth along its contact normal + the target's thickness (base depth: front/back → thickness, left/right → 89, top/down → piece length).
 - Holes: a through-hole in the target, and (length - target thickness) deep into the base.
 
 ---

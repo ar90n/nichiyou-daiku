@@ -294,7 +294,7 @@ class Connection(BaseModel, frozen=True):
 | `Connection.of_dowel(base, target, spec)` | ダボ接続を作成 |
 | `Connection.of_screw(base, target, spec)` | ビス接続を作成 |
 
-**検証**（`ValueError` を送出）: ピースを自分自身に接続することはできません。ダボ: ダボの長さの半分が、各ピースの接触面の法線方向の寸法（front/back → 厚み、left/right → 89、top/down → ピースの長さ）に収まる必要があります。ビス: ターゲットの接触面は `front` または `back` で、ターゲットの厚み < 長さ <= ベースの接触面の法線方向の寸法 + ターゲットの厚み である必要があります。
+**検証**（`ValueError` を送出）: ピースを自分自身に接続することはできません。ダボ: ダボの長さの半分が、各ピースの接触面の法線方向の寸法（front/back → 厚み、left/right → 89、top/down → ピースの長さ）より短い必要があります（穴が裏まで抜けないように）。ビス: ターゲットの接触面は `front` または `back` で、ターゲットの厚み < 長さ < ベースの接触面の法線方向の寸法 + ターゲットの厚み である必要があります。
 
 **例:**
 

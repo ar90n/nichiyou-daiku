@@ -100,7 +100,7 @@ When the base is contacted on its narrow face (89mm deep) or its end (piece leng
 
 ## Dowel Fit
 
-A dowel of length L goes L/2 into each piece. L/2 must not exceed each piece's depth along its contact normal (front/back → thickness, left/right → 89, top/down → piece length). For example, every preset fits a 2x4 contacted on its front/back face (38mm), but `12x40` (20mm per piece) does not fit a 1x4 contacted on its front/back face (19mm).
+A dowel of length L goes L/2 into each piece. L/2 must be less than each piece's depth along its contact normal, or the hole comes out on the far face (front/back → thickness, left/right → 89, top/down → piece length). For example, every preset fits a 2x4 contacted on its front/back face (38mm), but `12x40` (20mm per piece) does not fit a 1x4 contacted on its front/back face (19mm).
 
 ## Custom Specifications
 

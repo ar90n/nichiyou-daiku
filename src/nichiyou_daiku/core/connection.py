@@ -159,16 +159,18 @@ class Connection(BaseModel, frozen=True):
 def _validate_dowel(
     base: BoundAnchor, target: BoundAnchor, diameter: float, length: float
 ) -> None:
-    # A dowel of length L is inserted L/2 into each piece.
+    # A dowel of length L is inserted L/2 into each piece; a hole as deep as
+    # the piece is thick would come out on the far face.
     per_piece_depth = length / 2
     for role, bound in (("base", base), ("target", target)):
         limit = _get_dimension_for_face(
             get_shape(bound.piece), bound.anchor.contact_face
         )
-        if per_piece_depth > limit:
+        if per_piece_depth >= limit:
             raise ValueError(
-                f"Dowel depth {per_piece_depth}mm (half of {length}mm) exceeds "
-                f"{role} piece dimension {limit}mm"
+                f"Dowel depth {per_piece_depth}mm (half of {length}mm) would go "
+                f"through the {role} piece ({limit}mm); use a dowel shorter "
+                f"than {2 * limit}mm"
             )
     _validate_fastener_diameter(base, target, diameter, "Dowel")
 
@@ -189,9 +191,10 @@ def _validate_screw(
         get_shape(target.piece), target.anchor.contact_face
     )
     max_length = base_depth + target_depth
-    if length > max_length:
+    if length >= max_length:
         raise ValueError(
-            f"Screw length {length}mm exceeds combined piece depth {max_length}mm"
+            f"Screw length {length}mm would go through the base piece; use a "
+            f"screw shorter than the combined depth {max_length}mm"
         )
     if length <= target_depth:
         raise ValueError(

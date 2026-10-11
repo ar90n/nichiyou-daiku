@@ -293,7 +293,7 @@ Available presets:
 
 #### Rules
 
-- Half the dowel length must fit in each piece along its contact normal: front/back contact → thickness (38 or 19), left/right → 89, top/down → piece length.
+- Half the dowel length must be shorter than each piece's depth along its contact normal, so the hole does not come out on the far face: front/back contact → thickness (38 or 19), left/right → 89, top/down → piece length.
 - Holes: φ diameter x length/2 in each piece.
 - Dowels and screws: the contact area's short side must be at least 2 × the fastener diameter (pieces touching only along an edge have no contact area); otherwise `validate` reports it and no holes are made.
 
@@ -368,7 +368,7 @@ piece1 -[anchor anchor S(Type:DIAMETERxLENGTH)]- piece2
 
 - The target's contact_face must be `front` or `back` (the screw goes through the target's wide face).
 - Screw length must be greater than the target's thickness (38 for 2x4, 19 for 1x4).
-- Screw length must not exceed the base's depth along its contact normal (front/back → thickness, left/right → 89, top/down → piece length) plus the target's thickness.
+- Screw length must be shorter than the base's depth along its contact normal (front/back → thickness, left/right → 89, top/down → piece length) plus the target's thickness, so the tip stays inside the base.
 - Holes: a through-hole in the target and a hole (length - target thickness) deep in the base.
 
 #### Examples
@@ -570,5 +570,5 @@ DSLValidationError: Unknown dowel preset: 9x99
 DSLValidationError: Unknown Slim screw preset: 3.0x100
 DSLValidationError: ScrewConnection target contact_face must be 'front' or 'back', got 'down'
 DSLValidationError: Screw length 35.0mm does not reach base piece (target thickness: 38.0mm)
-DSLValidationError: Dowel depth 20.0mm (half of 40.0mm) exceeds base piece dimension 19.0mm
+DSLValidationError: Dowel depth 20.0mm (half of 40.0mm) would go through the base piece (19.0mm); use a dowel shorter than 38.0mm
 ```

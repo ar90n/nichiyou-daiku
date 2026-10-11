@@ -162,7 +162,7 @@ def fastened_connections(draw) -> Connection:
         base_depth = _get_dimension_for_face(get_shape(base), base_faces[0])
         connection_type = ScrewConnection(
             diameter=draw(st.floats(2.0, 5.0)),
-            length=target_thickness + draw(st.floats(1.0, min(base_depth, 30.0))),
+            length=target_thickness + draw(st.floats(1.0, min(base_depth - 1.0, 30.0))),
         )
     return Connection(
         base=BoundAnchor(piece=base, anchor=anchor(base, base_faces)),

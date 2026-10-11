@@ -294,7 +294,7 @@ class Connection(BaseModel, frozen=True):
 | `Connection.of_dowel(base, target, spec)` | Create dowel connection |
 | `Connection.of_screw(base, target, spec)` | Create screw connection |
 
-**Validation** (raises `ValueError`): a piece cannot connect to itself. Dowel: half the dowel length must fit each piece along its contact normal (front/back → thickness, left/right → 89, top/down → piece length). Screw: the target's contact face must be `front` or `back`, and target thickness < length <= base depth along its contact normal + target thickness.
+**Validation** (raises `ValueError`): a piece cannot connect to itself. Dowel: half the dowel length must be shorter than each piece's depth along its contact normal (front/back → thickness, left/right → 89, top/down → piece length), so the hole stays blind. Screw: the target's contact face must be `front` or `back`, and target thickness < length < base depth along its contact normal + target thickness.
 
 **Example:**
 

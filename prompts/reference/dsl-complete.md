@@ -107,7 +107,7 @@ NUMBER          = /[0-9]+(\.[0-9]+)?/
 | DSLValidationError | "Unknown dowel preset: 9x99" | Non-existent preset |
 | DSLValidationError | "ScrewConnection target contact_face must be 'front' or 'back' ..." | Screw target contacts with another face |
 | DSLValidationError | "Screw length 35.0mm does not reach base piece ..." | Screw not longer than the target thickness |
-| DSLValidationError | "Dowel depth 20.0mm (half of 40.0mm) exceeds ..." | Dowel half-length does not fit a piece |
+| DSLValidationError | "Dowel depth 20.0mm (half of 40.0mm) would go through ..." | Dowel half-length is not shorter than a piece's depth |
 
 Error messages include the line and column of the offending statement.
 
