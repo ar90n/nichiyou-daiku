@@ -6,7 +6,7 @@ connect to each other, including positions and orientations.
 
 from typing import TypeAlias
 
-from pydantic import BaseModel
+from pydantic import BaseModel, model_validator
 
 from nichiyou_daiku.core.anchor import BoundAnchor
 from nichiyou_daiku.core.geometry import (
@@ -84,6 +84,19 @@ class Connection(BaseModel, frozen=True):
 
         return cls(base=base, target=target, type=VanillaConnection())
 
+    @model_validator(mode="after")
+    def _check_connection(self) -> "Connection":
+        if self.base.piece.id == self.target.piece.id:
+            raise ValueError(
+                f"Piece '{self.base.piece.id}' cannot be connected to itself"
+            )
+        match self.type:
+            case DowelConnection(radius=radius, depth=depth):
+                _validate_dowel(self.base, self.target, radius * 2, depth)
+            case ScrewConnection(diameter=diameter, length=length):
+                _validate_screw(self.base, self.target, diameter, length)
+        return self
+
     @classmethod
     def of_dowel(
         cls,
@@ -104,32 +117,7 @@ class Connection(BaseModel, frozen=True):
         Raises:
             ValueError: If dowel dimensions exceed piece dimensions
         """
-        # Convert diameter to radius
-        radius = spec.diameter / 2
-        depth = spec.length
-
-        base_shape = get_shape(base.piece)
-        target_shape = get_shape(target.piece)
-
-        # Validate depth against contact face dimension
-        base_depth_limit = _get_dimension_for_face(base_shape, base.anchor.contact_face)
-        target_depth_limit = _get_dimension_for_face(
-            target_shape, target.anchor.contact_face
-        )
-
-        if depth > base_depth_limit:
-            raise ValueError(
-                f"Dowel depth {depth}mm exceeds base piece dimension {base_depth_limit}mm"
-            )
-        if depth > target_depth_limit:
-            raise ValueError(
-                f"Dowel depth {depth}mm exceeds target piece dimension {target_depth_limit}mm"
-            )
-
-        # Validate diameter against cross-section
-        _validate_fastener_diameter(base, target, spec.diameter, "Dowel")
-
-        dowel_conn = DowelConnection(radius=radius, depth=depth)
+        dowel_conn = DowelConnection(radius=spec.diameter / 2, depth=spec.length)
         return cls(base=base, target=target, type=dowel_conn)
 
     @classmethod
@@ -160,41 +148,54 @@ class Connection(BaseModel, frozen=True):
             # Using custom spec
             conn = Connection.of_screw(base, target, ScrewSpec(diameter=4.0, length=55.0))
         """
-        diameter = spec.diameter
-        length = spec.length
-
-        # Validate target contact_face is front or back
-        if target.anchor.contact_face not in ("front", "back"):
-            raise ValueError(
-                f"ScrewConnection target contact_face must be 'front' or 'back', "
-                f"got '{target.anchor.contact_face}'"
-            )
-
-        base_shape = get_shape(base.piece)
-        target_shape = get_shape(target.piece)
-
-        # Validate length against combined depth
-        base_depth = _get_dimension_for_face(base_shape, base.anchor.contact_face)
-        target_depth = _get_dimension_for_face(target_shape, target.anchor.contact_face)
-        max_length = base_depth + target_depth
-
-        if length > max_length:
-            raise ValueError(
-                f"Screw length {length}mm exceeds combined piece depth {max_length}mm"
-            )
-
-        # Validate that screw reaches base piece (must penetrate target)
-        if length <= target_depth:
-            raise ValueError(
-                f"Screw length {length}mm does not reach base piece "
-                f"(target thickness: {target_depth}mm)"
-            )
-
-        # Validate diameter against cross-section
-        _validate_fastener_diameter(base, target, diameter, "Screw")
-
-        screw_conn = ScrewConnection(diameter=diameter, length=length)
+        screw_conn = ScrewConnection(diameter=spec.diameter, length=spec.length)
         return cls(base=base, target=target, type=screw_conn)
+
+
+def _validate_dowel(
+    base: BoundAnchor, target: BoundAnchor, diameter: float, length: float
+) -> None:
+    # A dowel of length L is inserted L/2 into each piece.
+    per_piece_depth = length / 2
+    for role, bound in (("base", base), ("target", target)):
+        limit = _get_dimension_for_face(
+            get_shape(bound.piece), bound.anchor.contact_face
+        )
+        if per_piece_depth > limit:
+            raise ValueError(
+                f"Dowel depth {per_piece_depth}mm (half of {length}mm) exceeds "
+                f"{role} piece dimension {limit}mm"
+            )
+    _validate_fastener_diameter(base, target, diameter, "Dowel")
+
+
+def _validate_screw(
+    base: BoundAnchor, target: BoundAnchor, diameter: float, length: float
+) -> None:
+    if target.anchor.contact_face not in ("front", "back"):
+        raise ValueError(
+            f"ScrewConnection target contact_face must be 'front' or 'back', "
+            f"got '{target.anchor.contact_face}'"
+        )
+
+    base_depth = _get_dimension_for_face(
+        get_shape(base.piece), base.anchor.contact_face
+    )
+    target_depth = _get_dimension_for_face(
+        get_shape(target.piece), target.anchor.contact_face
+    )
+    max_length = base_depth + target_depth
+    if length > max_length:
+        raise ValueError(
+            f"Screw length {length}mm exceeds combined piece depth {max_length}mm"
+        )
+    if length <= target_depth:
+        raise ValueError(
+            f"Screw length {length}mm does not reach base piece "
+            f"(target thickness: {target_depth}mm)"
+        )
+
+    _validate_fastener_diameter(base, target, diameter, "Screw")
 
 
 def _get_dimension_for_face(shape: Shape3D, face: Face) -> float:

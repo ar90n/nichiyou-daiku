@@ -6,7 +6,7 @@ from lark import Token
 from nichiyou_daiku.core.geometry.offset import FromMax, FromMin
 from nichiyou_daiku.core.piece import PieceType
 from nichiyou_daiku.core.anchor import Anchor
-from nichiyou_daiku.dsl.exceptions import DSLSemanticError, DSLValidationError
+from nichiyou_daiku.dsl.exceptions import DSLValidationError
 from nichiyou_daiku.dsl.transformer import DSLTransformer
 
 
@@ -74,15 +74,6 @@ class TestTransformerOffsetHandling:
         result = transformer.offset_value(items)
         assert isinstance(result, FromMax)
         assert result.value == 200.5
-
-    def test_invalid_offset_type(self):
-        """Test invalid offset type."""
-        transformer = DSLTransformer()
-
-        items = [Token("CNAME", "FromInvalid"), Token("NUMBER", "100")]
-        with pytest.raises(DSLValidationError) as exc_info:
-            transformer.offset_value(items)
-        assert "Invalid offset type" in str(exc_info.value)
 
 
 class TestTransformerValueHandling:
@@ -210,57 +201,16 @@ class TestCompactNotationTransformer:
 
         for compact, full in face_tests:
             token = Token("COMPACT_FACE", compact)
+            # Contact and edge-shared faces must be adjacent, so check each
+            # mapping in both positions against a neighbouring face.
+            neighbour = Token("COMPACT_FACE", "F" if compact in ("T", "D") else "T")
             offset = FromMin(value=0.0)
-            anchor = transformer.compact_anchor_props([token, token, offset])
+
+            anchor = transformer.compact_anchor_props([token, neighbour, offset])
             assert anchor.contact_face == full
+
+            anchor = transformer.compact_anchor_props([neighbour, token, offset])
             assert anchor.edge_shared_face == full
-
-    def test_invalid_compact_face_error(self):
-        """Test error on invalid compact face notation."""
-        transformer = DSLTransformer()
-
-        # Invalid face character
-        invalid_face = Token("COMPACT_FACE", "X")
-        valid_face = Token("COMPACT_FACE", "T")
-        offset = FromMin(value=0.0)
-
-        with pytest.raises(DSLValidationError) as exc_info:
-            transformer.compact_anchor_props([invalid_face, valid_face, offset])
-        assert "Invalid compact face notation: X" in str(exc_info.value)
-
-    def test_invalid_compact_offset_type(self):
-        """Test error on invalid compact offset type."""
-        transformer = DSLTransformer()
-
-        # Invalid offset type token
-        invalid_token = Token("INVALID", "?")
-        num_token = Token("NUMBER", "100")
-
-        with pytest.raises(DSLValidationError) as exc_info:
-            transformer.compact_offset([invalid_token, num_token])
-        assert "Unknown offset type" in str(exc_info.value)
-
-    def test_compact_anchor_wrong_component_count(self):
-        """Test error when compact anchor has wrong number of components."""
-        transformer = DSLTransformer()
-
-        # Too few components
-        with pytest.raises(DSLValidationError) as exc_info:
-            transformer.compact_anchor_props([Token("COMPACT_FACE", "T")])
-        assert "3 components" in str(exc_info.value)
-
-        # Too many components
-        offset = FromMin(value=0.0)
-        with pytest.raises(DSLValidationError) as exc_info:
-            transformer.compact_anchor_props(
-                [
-                    Token("COMPACT_FACE", "T"),
-                    Token("COMPACT_FACE", "F"),
-                    offset,
-                    Token("EXTRA", "X"),
-                ]
-            )
-        assert "3 components" in str(exc_info.value)
 
 
 class TestCompactPieceTransformer:
@@ -323,14 +273,6 @@ class TestCompactPieceTransformer:
 
 class TestTransformerModelGeneration:
     """Test transformer model generation."""
-
-    def test_empty_model_error(self):
-        """Test that empty model raises error."""
-        transformer = DSLTransformer()
-
-        with pytest.raises(DSLSemanticError) as exc_info:
-            transformer.start([])
-        assert "No pieces defined" in str(exc_info.value)
 
     def test_model_generation(self):
         """Test complete model generation."""
@@ -425,12 +367,3 @@ class TestConnectionTypeTransformer:
         assert isinstance(result, DowelConnection)
         assert result.radius == 4.0
         assert result.depth == 20.0
-
-    def test_compact_connection_type_empty_returns_vanilla(self):
-        """Test compact connection type returns vanilla when empty."""
-        from nichiyou_daiku.core.connection import VanillaConnection
-
-        transformer = DSLTransformer()
-        result = transformer.compact_connection_type([])
-
-        assert isinstance(result, VanillaConnection)

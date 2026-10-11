@@ -158,16 +158,19 @@ def find_preset(screw_type: str, diameter: float, length: float) -> ScrewPreset 
         <CoarseThreadScrew.D3_8_L57: '3.8x57'>
         >>> find_preset("Slim", 9.9, 999) is None
         True
+        >>> find_preset("Slim", 3.3, 50.9) is None  # no truncation to 3.3x50
+        True
     """
-    value = f"{diameter}x{int(length)}"
-    if screw_type == "Slim":
-        try:
-            return SlimScrew.of(value)
-        except ValueError:
+    presets: type[SlimScrew] | type[CoarseThreadScrew]
+    match screw_type:
+        case "Slim":
+            presets = SlimScrew
+        case "Coarse":
+            presets = CoarseThreadScrew
+        case _:
             return None
-    elif screw_type == "Coarse":
-        try:
-            return CoarseThreadScrew.of(value)
-        except ValueError:
-            return None
+    for screw in presets:
+        spec = as_spec(screw)
+        if spec.diameter == diameter and spec.length == length:
+            return screw
     return None

@@ -25,6 +25,23 @@ from nichiyou_daiku.core.geometry import (
 )
 
 
+def _edge_length(piece: Piece, contact_face, edge_shared_face) -> float:
+    from nichiyou_daiku.core.geometry import (
+        cross,
+        is_down_to_top_axis,
+        is_left_to_right_axis,
+    )
+    from nichiyou_daiku.core.piece import get_shape
+
+    shape = get_shape(piece)
+    axis_face = cross(contact_face, edge_shared_face)
+    if is_down_to_top_axis(axis_face):
+        return shape.length
+    if is_left_to_right_axis(axis_face):
+        return shape.width
+    return shape.height
+
+
 class TestBox:
     """Test Box model."""
 
@@ -123,7 +140,7 @@ class TestAssembly:
                 anchor=Anchor(
                     contact_face="front",
                     edge_shared_face="top",
-                    offset=FromMax(value=100),
+                    offset=FromMax(value=10),
                 ),
             ),
             target=BoundAnchor(
@@ -165,7 +182,7 @@ class TestAssembly:
                 anchor=Anchor(
                     contact_face="front",
                     edge_shared_face="top",
-                    offset=FromMax(value=100),
+                    offset=FromMax(value=10),
                 ),
             ),
             target=BoundAnchor(
@@ -239,14 +256,14 @@ class TestDowelJointFaceCombinations:
         p1 = Piece.of(PieceType.PT_2x4, 1000.0, "p1")
         p2 = Piece.of(PieceType.PT_2x4, 800.0, "p2")
 
-        # Create connection
+        # Create connection (offsets scaled to each anchor edge's length)
         conn = Connection(
             base=BoundAnchor(
                 piece=p1,
                 anchor=Anchor(
                     contact_face=base_face,
                     edge_shared_face=base_edge,
-                    offset=FromMax(value=100),
+                    offset=FromMax(value=_edge_length(p1, base_face, base_edge) * 0.4),
                 ),
             ),
             target=BoundAnchor(
@@ -254,7 +271,9 @@ class TestDowelJointFaceCombinations:
                 anchor=Anchor(
                     contact_face=target_face,
                     edge_shared_face=target_edge,
-                    offset=FromMin(value=50),
+                    offset=FromMin(
+                        value=_edge_length(p2, target_face, target_edge) * 0.2
+                    ),
                 ),
             ),
             type=connection_type,
@@ -320,7 +339,7 @@ class TestScrewConnectionHoles:
                 anchor=Anchor(
                     contact_face="front",
                     edge_shared_face="top",
-                    offset=FromMax(value=100),
+                    offset=FromMax(value=10),
                 ),
             ),
             target=BoundAnchor(
@@ -364,7 +383,7 @@ class TestScrewConnectionHoles:
                 anchor=Anchor(
                     contact_face="front",
                     edge_shared_face="top",
-                    offset=FromMax(value=100),
+                    offset=FromMax(value=10),
                 ),
             ),
             target=BoundAnchor(
@@ -409,7 +428,7 @@ class TestScrewConnectionHoles:
                 anchor=Anchor(
                     contact_face="front",
                     edge_shared_face="top",
-                    offset=FromMax(value=100),
+                    offset=FromMax(value=10),
                 ),
             ),
             target=BoundAnchor(
@@ -451,7 +470,7 @@ class TestScrewConnectionHoles:
                 anchor=Anchor(
                     contact_face="front",
                     edge_shared_face="top",
-                    offset=FromMax(value=100),
+                    offset=FromMax(value=10),
                 ),
             ),
             target=BoundAnchor(
@@ -475,3 +494,115 @@ class TestScrewConnectionHoles:
         assert "base_j1" in assembly.joints
         assert "target_j0" in assembly.joints
         assert "target_j1" in assembly.joints
+
+
+def _two_piece_assembly(
+    base_anchor: Anchor, target_anchor: Anchor, conn_type
+) -> Assembly:
+    from nichiyou_daiku.core.model import Model
+
+    base = Piece.of(PieceType.PT_2x4, 500.0, "base")
+    target = Piece.of(PieceType.PT_2x4, 300.0, "target")
+    conn = Connection(
+        base=BoundAnchor(piece=base, anchor=base_anchor),
+        target=BoundAnchor(piece=target, anchor=target_anchor),
+        type=conn_type,
+    )
+    return Assembly.of(Model.of(pieces=[base, target], connections=[conn]))
+
+
+class TestDowelJointSides:
+    def test_left_right_dowel_joints_sit_on_their_own_contact_faces(self):
+        assembly = _two_piece_assembly(
+            Anchor(
+                contact_face="right",
+                edge_shared_face="front",
+                offset=FromMin(value=100),
+            ),
+            Anchor(
+                contact_face="left", edge_shared_face="front", offset=FromMin(value=100)
+            ),
+            DowelConnection(radius=4.0, depth=30.0),
+        )
+        for base_id, target_id in assembly.joint_conns:
+            assert assembly.joints[base_id].position.face == "right"
+            assert assembly.joints[target_id].position.face == "left"
+
+
+class TestPilotHoleSpecs:
+    def test_vanilla_connection_drills_no_holes(self):
+        assembly = _two_piece_assembly(
+            Anchor(
+                contact_face="front", edge_shared_face="top", offset=FromMin(value=0)
+            ),
+            Anchor(
+                contact_face="down", edge_shared_face="front", offset=FromMin(value=0)
+            ),
+            VanillaConnection(),
+        )
+        assert assembly.pilot_holes == {}
+
+    def test_dowel_holes_match_dowel_size(self):
+        assembly = _two_piece_assembly(
+            Anchor(
+                contact_face="front", edge_shared_face="top", offset=FromMax(value=35)
+            ),
+            Anchor(
+                contact_face="back", edge_shared_face="down", offset=FromMin(value=20)
+            ),
+            DowelConnection(radius=4.0, depth=30.0),
+        )
+        holes = [hole for holes in assembly.pilot_holes.values() for _, hole in holes]
+        assert len(holes) == 4
+        assert all(hole.diameter == 8.0 for hole in holes)
+        # A 30mm dowel sits 15mm deep in each piece
+        assert all(hole.depth == 15.0 for hole in holes)
+
+    def test_pilot_holes_record_the_face_they_are_drilled_into(self):
+        assembly = _two_piece_assembly(
+            Anchor(
+                contact_face="front", edge_shared_face="top", offset=FromMax(value=35)
+            ),
+            Anchor(
+                contact_face="back", edge_shared_face="down", offset=FromMin(value=20)
+            ),
+            DowelConnection(radius=4.0, depth=30.0),
+        )
+        assert {sp.face for sp, _ in assembly.pilot_holes["base"]} == {"front"}
+        assert {sp.face for sp, _ in assembly.pilot_holes["target"]} == {"back"}
+
+
+class TestJointsOutsidePieces:
+    def test_well_placed_dowels_are_not_reported(self):
+        from nichiyou_daiku.core.assembly import find_joints_outside_pieces
+
+        assembly = _two_piece_assembly(
+            Anchor(
+                contact_face="front", edge_shared_face="top", offset=FromMax(value=35)
+            ),
+            Anchor(
+                contact_face="back", edge_shared_face="down", offset=FromMin(value=20)
+            ),
+            DowelConnection(radius=4.0, depth=30.0),
+        )
+        assert find_joints_outside_pieces(assembly) == []
+
+    def test_dowel_laid_out_beyond_the_piece_is_reported(self):
+        from nichiyou_daiku.core.assembly import find_joints_outside_pieces
+
+        # The dowel layout spreads the pair across the base's 38mm thickness
+        # by more than 38mm, so one dowel lands beside the piece.
+        assembly = _two_piece_assembly(
+            Anchor(
+                contact_face="left", edge_shared_face="top", offset=FromMin(value=19)
+            ),
+            Anchor(
+                contact_face="down",
+                edge_shared_face="front",
+                offset=FromMin(value=44.5),
+            ),
+            DowelConnection(radius=4.0, depth=30.0),
+        )
+        outside = find_joints_outside_pieces(assembly)
+        assert outside
+        assert all(joint_id.startswith("base_j") for joint_id in outside)

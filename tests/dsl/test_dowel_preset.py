@@ -1,8 +1,11 @@
 """Tests for dowel preset DSL parsing."""
 
+import re
+
 import pytest
 
 from nichiyou_daiku.core.connection import DowelConnection
+from nichiyou_daiku.core.dowel import Dowel, find_preset
 from nichiyou_daiku.dsl import parse_dsl
 from nichiyou_daiku.dsl.exceptions import DSLValidationError
 
@@ -101,3 +104,41 @@ class TestDowelPresetParsing:
         conn2 = model.connections[("p2", "p3")]
         assert conn2.type.radius == 4.0
         assert conn2.type.depth == 25.0
+
+    @pytest.mark.parametrize("preset", ["8.9x30.7", "8x30.5", "8.5x30"])
+    def test_should_reject_size_that_only_truncates_to_a_preset(self, preset: str):
+        """Should reject sizes that are not exactly a preset (e.g. 8.9x30.7)."""
+        dsl = f"""
+        (p1:2x4 =1000)
+        (p2:2x4 =800)
+
+        p1 -[TF<0 BD<0 D(:{preset})]- p2
+        """
+        with pytest.raises(
+            DSLValidationError, match=f"Unknown dowel preset: {re.escape(preset)}"
+        ):
+            parse_dsl(dsl)
+
+    def test_should_accept_preset_written_with_decimals(self):
+        """Should accept a preset whose decimals are exactly the preset size."""
+        dsl = """
+        (p1:2x4 =1000)
+        (p2:2x4 =800)
+
+        p1 -[TF<0 BD<0 D(:8.0x30.0)]- p2
+        """
+        model = parse_dsl(dsl)
+        conn = model.connections[("p1", "p2")]
+        assert conn.type == DowelConnection(radius=4.0, depth=30.0)
+
+
+class TestFindDowelPreset:
+    """Test exact dimension lookup of dowel presets."""
+
+    def test_should_not_truncate_dimensions(self):
+        """Should not match a preset after truncating fractional dimensions."""
+        assert find_preset(8.9, 30.7) is None
+
+    def test_should_match_exact_float_dimensions(self):
+        """Should match a preset whose dimensions are equal as floats."""
+        assert find_preset(8.0, 30.0) == Dowel.D8_L30

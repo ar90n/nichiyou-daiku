@@ -22,7 +22,8 @@ from .offset import evaluate as eval_offset
 from .dimensions import Millimeters
 
 
-def _edge_legnth_of(box: Box, edge: Edge) -> Millimeters:
+def edge_length_of(box: Box, edge: Edge) -> Millimeters:
+    """Length of the box edge where the two faces of ``edge`` meet."""
     third_face = cross_face(edge.lhs, edge.rhs)
     # Z-axis (down to top): length
     if is_down_to_top_axis(third_face):
@@ -273,7 +274,7 @@ class Point3D(BaseModel, frozen=True):
 
         direction = Vector3D.of(edge_point.edge)
         offset_length = eval_offset(
-            _edge_legnth_of(box, edge_point.edge), edge_point.offset
+            edge_length_of(box, edge_point.edge), edge_point.offset
         )
 
         return cls(
@@ -477,13 +478,16 @@ class Orientation3D(BaseModel, frozen=True):
 
         direction = info.data["direction"]
 
-        # Calculate dot product
         dot = direction.x * up.x + direction.y * up.y + direction.z * up.z
+        direction_sq = direction.x**2 + direction.y**2 + direction.z**2
+        if direction_sq < 1e-12:
+            raise ValueError("Direction vector has zero magnitude")
 
-        # Orthogonalize: up_ortho = up - (up·direction) * direction
-        up_ortho_x = up.x - dot * direction.x
-        up_ortho_y = up.y - dot * direction.y
-        up_ortho_z = up.z - dot * direction.z
+        # Orthogonalize: up_ortho = up - (up·d / d·d) * d
+        scale = dot / direction_sq
+        up_ortho_x = up.x - scale * direction.x
+        up_ortho_y = up.y - scale * direction.y
+        up_ortho_z = up.z - scale * direction.z
 
         # Normalize
         magnitude = math.sqrt(up_ortho_x**2 + up_ortho_y**2 + up_ortho_z**2)
@@ -586,11 +590,15 @@ class Orientation3D(BaseModel, frozen=True):
         # Rotation around Z
         cz, sz = math.cos(rz), math.sin(rz)
 
-        # Combined rotation matrix (ZYX order)
+        # Combined rotation matrix R = Rx @ Ry @ Rz
         # Direction vector is the transformed Z-axis
         direction = Vector3D(x=sy, y=-sx * cy, z=cx * cy)
 
         # Up vector is the transformed Y-axis
-        up = Vector3D(x=sz * cy + cz * sx * sy, y=cz * cx, z=-sz * sy + cz * sx * cy)
+        up = Vector3D(
+            x=-sz * cy,
+            y=cx * cz - sx * sy * sz,
+            z=sx * cz + cx * sy * sz,
+        )
 
         return cls(direction=direction, up=up)

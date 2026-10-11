@@ -15,51 +15,11 @@ from ..connection import (
     VanillaConnection,
     _get_dimension_for_face,
 )
-from ..geometry import Box, Point3D
+from ..geometry import Box, Point3D, SurfacePoint
 from ..model import Model
 from ..piece import get_shape
 from .models import Hole, Joint, JointPair
 from .joints import create_vanilla_joint_pairs, create_dowel_joint_pairs
-
-
-def _create_pilot_hole_on_joint(
-    box: Box,
-    joint: Joint,
-) -> tuple[Point3D, Hole]:
-    """Create a pilot hole at the joint position.
-
-    Args:
-        box: Box of the piece
-        joint: Joint where the hole is to be created
-
-    Returns:
-        Tuple of (3D position of hole, Hole specification)
-    """
-    point_3d = Point3D.of(box, joint.position)
-    hole = Hole(diameter=3.0, depth=5.0)
-    return (point_3d, hole)
-
-
-def _create_screw_hole(
-    box: Box,
-    joint: Joint,
-    diameter: float,
-    depth: float | None,
-) -> tuple[Point3D, Hole]:
-    """Create a screw hole at the joint position.
-
-    Args:
-        box: Box of the piece
-        joint: Joint where the hole is to be created
-        diameter: Hole diameter in mm
-        depth: Hole depth in mm (None for through-hole)
-
-    Returns:
-        Tuple of (3D position of hole, Hole specification)
-    """
-    point_3d = Point3D.of(box, joint.position)
-    hole = Hole(diameter=diameter, depth=depth)
-    return (point_3d, hole)
 
 
 def _create_joint_id_generator(piece_ids: list[str]) -> Callable[[str], str]:
@@ -118,7 +78,8 @@ class Assembly(BaseModel, frozen=True):
         boxes: Dictionary mapping piece IDs to their 3D boxes
         joints: Dictionary mapping joint IDs to Joint objects
         joint_conns: List of joint ID tuples connecting joints
-        pilot_holes: Dictionary mapping piece IDs to lists of (SurfacePoint, Hole) tuples
+        pilot_holes: Dictionary mapping piece IDs to lists of (SurfacePoint, Hole)
+            tuples; the SurfacePoint names the face the hole is drilled into
         label: Optional label for the assembly
 
     Examples:
@@ -136,7 +97,7 @@ class Assembly(BaseModel, frozen=True):
         ...         anchor=Anchor(
         ...             contact_face="front",
         ...             edge_shared_face="top",
-        ...             offset=FromMax(value=100)
+        ...             offset=FromMax(value=10)
         ...         )
         ...     ),
         ...     target=BoundAnchor(
@@ -163,7 +124,7 @@ class Assembly(BaseModel, frozen=True):
     boxes: dict[str, Box]
     joints: dict[str, Joint]
     joint_conns: list[tuple[str, str]]
-    pilot_holes: dict[str, list[tuple[Point3D, Hole]]]
+    pilot_holes: dict[str, list[tuple[SurfacePoint, Hole]]]
     label: str | None
 
     @classmethod
@@ -187,7 +148,7 @@ class Assembly(BaseModel, frozen=True):
         # Create joints with IDs and joint pairs
         joints: dict[str, Joint] = {}
         joint_conns: list[tuple[str, str]] = []
-        pilot_holes: dict[str, list[tuple[Point3D, Hole]]] = {}
+        pilot_holes: dict[str, list[tuple[SurfacePoint, Hole]]] = {}
         generate_joint_id = _create_joint_id_generator(list(model.pieces.keys()))
 
         for piece_conn in model.connections.values():
@@ -202,46 +163,35 @@ class Assembly(BaseModel, frozen=True):
                 joints[target_joint_id] = joint_pair.rhs
                 joint_conns.append((base_joint_id, target_joint_id))
 
-                if isinstance(piece_conn.type, ScrewConnection):
-                    screw = piece_conn.type
-                    target_shape = get_shape(piece_conn.target.piece)
-                    target_thickness = _get_dimension_for_face(
-                        target_shape, piece_conn.target.anchor.contact_face
-                    )
-                    base_depth = screw.length - target_thickness
-
-                    # Target side: through-hole
-                    pilot_holes.setdefault(target_id, []).append(
-                        _create_screw_hole(
-                            box=boxes[target_id],
-                            joint=joint_pair.rhs,
-                            diameter=screw.diameter,
-                            depth=None,
+                match piece_conn.type:
+                    case ScrewConnection(diameter=diameter, length=length):
+                        target_thickness = _get_dimension_for_face(
+                            get_shape(piece_conn.target.piece),
+                            piece_conn.target.anchor.contact_face,
                         )
-                    )
-                    # Base side: screw thread depth
-                    pilot_holes.setdefault(base_id, []).append(
-                        _create_screw_hole(
-                            box=boxes[base_id],
-                            joint=joint_pair.lhs,
-                            diameter=screw.diameter,
-                            depth=base_depth,
+                        # Through-hole in the target, thread depth in the base
+                        pilot_holes.setdefault(target_id, []).append(
+                            (joint_pair.rhs.position, Hole(diameter=diameter))
                         )
-                    )
-                elif isinstance(piece_conn.type, (DowelConnection, VanillaConnection)):
-                    # Fixed-size pilot holes
-                    pilot_holes.setdefault(base_id, []).append(
-                        _create_pilot_hole_on_joint(
-                            box=boxes[base_id],
-                            joint=joint_pair.lhs,
+                        pilot_holes.setdefault(base_id, []).append(
+                            (
+                                joint_pair.lhs.position,
+                                Hole(
+                                    diameter=diameter, depth=length - target_thickness
+                                ),
+                            )
                         )
-                    )
-                    pilot_holes.setdefault(target_id, []).append(
-                        _create_pilot_hole_on_joint(
-                            box=boxes[target_id],
-                            joint=joint_pair.rhs,
+                    case DowelConnection(radius=radius, depth=depth):
+                        # A dowel of length L sits L/2 deep in each piece
+                        hole = Hole(diameter=radius * 2, depth=depth / 2)
+                        pilot_holes.setdefault(base_id, []).append(
+                            (joint_pair.lhs.position, hole)
                         )
-                    )
+                        pilot_holes.setdefault(target_id, []).append(
+                            (joint_pair.rhs.position, hole)
+                        )
+                    case VanillaConnection():
+                        pass
 
         return cls(
             model=model,
@@ -251,3 +201,32 @@ class Assembly(BaseModel, frozen=True):
             joint_conns=joint_conns,
             pilot_holes=pilot_holes,
         )
+
+
+def find_joints_outside_pieces(
+    assembly: Assembly, tolerance: float = 1e-6
+) -> list[str]:
+    """Find joints whose position lies outside their own piece.
+
+    The dowel layout does not handle every face/edge combination; when it
+    misfires, a dowel (and its hole) ends up beside the piece instead of in it.
+
+    Args:
+        assembly: Assembly to check
+        tolerance: Allowed distance outside the piece in mm
+
+    Returns:
+        IDs of joints that lie outside their piece
+    """
+    outside = []
+    for joint_id, joint in assembly.joints.items():
+        box = assembly.boxes[joint_id.rsplit("_j", 1)[0]]
+        point = Point3D.of(box, joint.position)
+        shape = box.shape
+        if not (
+            -tolerance <= point.x <= shape.width + tolerance
+            and -tolerance <= point.y <= shape.height + tolerance
+            and -tolerance <= point.z <= shape.length + tolerance
+        ):
+            outside.append(joint_id)
+    return outside

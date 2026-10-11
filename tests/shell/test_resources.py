@@ -158,7 +158,7 @@ class TestExtractResources:
                 anchor=Anchor(
                     contact_face="front",
                     edge_shared_face="top",
-                    offset=FromMax(value=100),
+                    offset=FromMax(value=80),
                 ),
             ),
             target=BoundAnchor(
@@ -267,7 +267,7 @@ class TestExtractResources:
                 anchor=Anchor(
                     contact_face="front",
                     edge_shared_face="top",
-                    offset=FromMax(value=100.0),
+                    offset=FromMax(value=80.0),
                 ),
             ),
             target=BoundAnchor(
@@ -292,7 +292,7 @@ class TestExtractResources:
         assert piece1.anchors[0].contact_face == "front"
         assert piece1.anchors[0].edge_shared_face == "top"
         assert piece1.anchors[0].offset_type == "FromMax"
-        assert piece1.anchors[0].offset_value == 100.0
+        assert piece1.anchors[0].offset_value == 80.0
 
         # Check piece-2 has target anchor
         piece2 = next(p for p in resources.pieces if p.id == "piece-2")
@@ -316,7 +316,7 @@ class TestExtractResources:
                 anchor=Anchor(
                     contact_face="front",
                     edge_shared_face="top",
-                    offset=FromMax(value=100.0),
+                    offset=FromMax(value=80.0),
                 ),
             ),
             target=BoundAnchor(
@@ -342,7 +342,7 @@ class TestExtractResources:
                 anchor=Anchor(
                     contact_face="right",
                     edge_shared_face="down",
-                    offset=FromMax(value=75.0),
+                    offset=FromMax(value=30.0),
                 ),
             ),
         )
@@ -363,7 +363,7 @@ class TestExtractResources:
         # First anchor
         assert piece1.anchors[0].contact_face == "front"
         assert piece1.anchors[0].offset_type == "FromMax"
-        assert piece1.anchors[0].offset_value == 100.0
+        assert piece1.anchors[0].offset_value == 80.0
 
         # Second anchor
         assert piece1.anchors[1].contact_face == "back"

@@ -3,7 +3,13 @@
 import pytest
 
 from nichiyou_daiku.core.piece import PieceType
-from nichiyou_daiku.dsl import DSLSyntaxError, parse_dsl
+from nichiyou_daiku.dsl import (
+    DSLSemanticError,
+    DSLSyntaxError,
+    DSLValidationError,
+    parse_dsl,
+)
+from nichiyou_daiku.dsl.parser import DSLParser
 
 
 class TestBasicParsing:
@@ -58,7 +64,7 @@ class TestBasicParsing:
         dsl = """
         (beam1:2x4 {"length": 1000})
         (beam2:2x4 {"length": 1000})
-        beam1 -[{"contact_face": "front", "edge_shared_face": "top", "offset": FromMax(100)}
+        beam1 -[{"contact_face": "front", "edge_shared_face": "top", "offset": FromMax(80)}
               {"contact_face": "down", "edge_shared_face": "front", "offset": FromMin(50)}]- beam2
         """
         model = parse_dsl(dsl)
@@ -74,7 +80,7 @@ class TestBasicParsing:
         # Check anchors
         assert connection.base.anchor.contact_face == "front"
         assert connection.base.anchor.edge_shared_face == "top"
-        assert connection.base.anchor.offset.value == 100.0
+        assert connection.base.anchor.offset.value == 80.0
 
         assert connection.target.anchor.contact_face == "down"
         assert connection.target.anchor.edge_shared_face == "front"
@@ -122,7 +128,7 @@ class TestSyntaxErrors:
         """Test error on unknown piece reference in connection."""
         dsl = """
         (beam1:2x4 {"length": 1000})
-        beam1 -[{"contact_face": "front", "edge_shared_face": "top", "offset": FromMax(100)}
+        beam1 -[{"contact_face": "front", "edge_shared_face": "top", "offset": FromMax(80)}
               {"contact_face": "down", "edge_shared_face": "front", "offset": FromMin(50)}]- beam2
         """
         with pytest.raises(Exception) as exc_info:
@@ -170,8 +176,8 @@ class TestCompactNotation:
         (p6:2x4 {"length": 500})
         
         p1 -[TL<10 DR>20]- p2
-        p3 -[FB<30 LT>40]- p4
-        p5 -[RD<50 BF>60]- p6
+        p3 -[FD<30 LT>35]- p4
+        p5 -[RD<25 BD>60]- p6
         """
         model = parse_dsl(dsl)
 
@@ -187,14 +193,14 @@ class TestCompactNotation:
         assert conn1.target.anchor.edge_shared_face == "right"
         assert conn1.target.anchor.offset.value == 20.0
 
-        # Check second connection (F/B and L/T)
+        # Check second connection (F/D and L/T)
         conn2 = model.connections[("p3", "p4")]
         assert conn2.base.anchor.contact_face == "front"
-        assert conn2.base.anchor.edge_shared_face == "back"
+        assert conn2.base.anchor.edge_shared_face == "down"
         assert conn2.base.anchor.offset.value == 30.0
         assert conn2.target.anchor.contact_face == "left"
         assert conn2.target.anchor.edge_shared_face == "top"
-        assert conn2.target.anchor.offset.value == 40.0
+        assert conn2.target.anchor.offset.value == 35.0
 
     def test_parse_mixed_notation_error(self):
         """Test error when mixing compact and JSON notation."""
@@ -342,3 +348,114 @@ class TestEdgeCases:
         # Should not raise an exception
         model = parse_dsl(dsl, debug=True)
         assert len(model.pieces) == 1
+
+
+class TestPropertyValidation:
+    """Test validation of JSON property objects."""
+
+    ANCHOR = (
+        '{"contact_face": "back", "edge_shared_face": "down", "offset": FromMin(0)}'
+    )
+
+    def connection(self, first_anchor: str) -> str:
+        return f"""
+        (a:2x4 =1000)
+        (b:2x4 =800)
+        a -[{first_anchor} {self.ANCHOR}]- b
+        """
+
+    @pytest.mark.parametrize(
+        "length", ['"720"', "FromMin(720)"], ids=["string", "offset"]
+    )
+    def test_non_numeric_length_rejected(self, length):
+        """Test that a piece length must be a number."""
+        with pytest.raises(DSLValidationError, match="'length' must be a number"):
+            parse_dsl(f'(a:2x4 {{"length": {length}}})')
+
+    @pytest.mark.parametrize(
+        "props,key",
+        [
+            ('{"lenght": 720}', "lenght"),
+            ('{"length": 720, "colour": "red"}', "colour"),
+        ],
+    )
+    def test_unknown_piece_property_rejected(self, props, key):
+        """Test that misspelt or unsupported piece keys are rejected."""
+        with pytest.raises(DSLValidationError, match=f"Unknown piece property '{key}'"):
+            parse_dsl(f"(a:2x4 {props})")
+
+    def test_unknown_anchor_property_rejected(self):
+        """Test that misspelt anchor keys are rejected, not ignored."""
+        anchor = (
+            '{"contct_face": "top", "contact_face": "top", '
+            '"edge_shared_face": "front", "offset": FromMin(0)}'
+        )
+        with pytest.raises(
+            DSLValidationError, match="Unknown anchor property 'contct_face'"
+        ):
+            parse_dsl(self.connection(anchor))
+
+    def test_duplicate_piece_property_rejected(self):
+        """Test that a repeated key is rejected instead of last-wins."""
+        with pytest.raises(DSLValidationError, match="Duplicate property 'length'"):
+            parse_dsl('(a:2x4 {"length": 720, "length": 10})')
+
+    def test_duplicate_anchor_property_rejected(self):
+        """Test that a repeated anchor key is rejected instead of last-wins."""
+        anchor = (
+            '{"contact_face": "top", "contact_face": "down", '
+            '"edge_shared_face": "front", "offset": FromMin(0)}'
+        )
+        with pytest.raises(
+            DSLValidationError, match="Duplicate property 'contact_face'"
+        ):
+            parse_dsl(self.connection(anchor))
+
+    def test_zero_length_in_json_rejected(self):
+        """Test that the core zero-length check surfaces readably."""
+        with pytest.raises(DSLValidationError) as exc_info:
+            parse_dsl('(a:2x4 {"length": 0})')
+        assert "length" in str(exc_info.value)
+        assert "greater than 0" in str(exc_info.value)
+        assert "validation error for" not in str(exc_info.value)
+
+    def test_note_property_allowed(self):
+        """Test that the documented free-form note is still accepted."""
+        model = parse_dsl('(a:2x4 {"length": 720, "note": "front apron"})')
+        assert model.pieces["a"].length == 720.0
+
+
+class TestParserReuse:
+    """Test that a parser instance can be reused safely."""
+
+    DSL = """
+    (a:2x4 =1000)
+    (b:2x4 =800)
+    a -[TF<0 BD<0]- b
+    """
+
+    def test_parse_twice_with_same_parser(self):
+        """Test that parsing twice does not report duplicate pieces."""
+        parser = DSLParser()
+
+        first = parser.parse(self.DSL)
+        second = parser.parse(self.DSL)
+
+        assert first == second
+        assert len(second.pieces) == 2
+        assert len(second.connections) == 1
+
+    def test_failed_parse_does_not_leak_into_next_parse(self):
+        """Test that pieces from a failed parse are not kept."""
+        parser = DSLParser()
+        with pytest.raises(DSLSemanticError):
+            parser.parse("(a:2x4 =1000)\na -[TF<0 BD<0]- missing")
+
+        model = parser.parse("(a:2x4 =500)")
+
+        assert list(model.pieces) == ["a"]
+        assert model.pieces["a"].length == 500.0
+
+    def test_grammar_is_built_once(self):
+        """Test that parsers share one compiled Lark instance."""
+        assert DSLParser()._parser is DSLParser()._parser

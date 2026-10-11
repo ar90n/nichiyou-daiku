@@ -29,15 +29,11 @@ class TestPiece:
 
     # UUID generation is covered in doctests
 
-    def test_should_validate_non_negative_length(self):
-        """Should validate that length is non-negative (zero allowed)."""
+    def test_should_validate_positive_length(self):
+        """Should validate that length is positive."""
         # Valid length
         piece = Piece.of(PieceType.PT_2x4, 100.0)
         assert piece.length == 100.0
-
-        # Zero length should be allowed now
-        piece_zero = Piece(id="test", type=PieceType.PT_2x4, length=0)
-        assert piece_zero.length == 0
 
         # Negative length should fail
         from pydantic import ValidationError
@@ -80,3 +76,17 @@ class TestGetShape:
             assert shape.length == length
             assert shape.width == 89.0
             assert shape.height == 38.0
+
+
+class TestPieceLength:
+    def test_zero_length_is_rejected(self):
+        from pydantic import ValidationError
+
+        with pytest.raises(ValidationError):
+            Piece(id="z", type=PieceType.PT_2x4, length=0)
+
+    def test_infinite_length_is_rejected(self):
+        from pydantic import ValidationError
+
+        with pytest.raises(ValidationError):
+            Piece(id="inf", type=PieceType.PT_2x4, length=float("inf"))

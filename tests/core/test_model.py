@@ -51,19 +51,6 @@ class TestModel:
 
     # Model.of() factory method is covered in doctests
 
-    def test_should_handle_duplicate_piece_ids(self):
-        """Should handle duplicate piece IDs by overwriting."""
-        piece1a = Piece.of(PieceType.PT_2x4, 1000.0, "same-id")
-        piece1b = Piece.of(
-            PieceType.PT_2x4, 2000.0, "same-id"
-        )  # Same ID, different length
-
-        model = Model.of(pieces=[piece1a, piece1b], connections=[])
-
-        # Later piece should overwrite earlier one
-        assert len(model.pieces) == 1
-        assert model.pieces["same-id"].length == 2000.0
-
     def test_should_create_simple_l_angle_model(self):
         """Should create a model representing an L-angle joint."""
         # Create two pieces
@@ -113,7 +100,7 @@ class TestModel:
                 anchor=Anchor(
                     contact_face="left",
                     edge_shared_face="top",
-                    offset=FromMax(value=200),
+                    offset=FromMax(value=20),
                 ),
             ),
             target=BoundAnchor(
@@ -132,7 +119,7 @@ class TestModel:
                 anchor=Anchor(
                     contact_face="right",
                     edge_shared_face="top",
-                    offset=FromMax(value=800),
+                    offset=FromMax(value=30),
                 ),
             ),
             target=BoundAnchor(
@@ -245,3 +232,55 @@ class TestModelValidation:
         # Should not raise
         model = Model.of(pieces=[piece1, piece2], connections=[conn])
         assert len(model.connections) == 1
+
+
+class TestModelIntegrity:
+    """Model.of must not silently drop or mix up pieces and connections."""
+
+    @staticmethod
+    def _conn(base: Piece, target: Piece, base_offset: float = 0.0) -> Connection:
+        return Connection(
+            base=BoundAnchor(
+                piece=base,
+                anchor=Anchor(
+                    contact_face="front",
+                    edge_shared_face="left",
+                    offset=FromMin(value=base_offset),
+                ),
+            ),
+            target=BoundAnchor(
+                piece=target,
+                anchor=Anchor(
+                    contact_face="down",
+                    edge_shared_face="front",
+                    offset=FromMin(value=0),
+                ),
+            ),
+        )
+
+    def test_duplicate_connection_between_same_pair_is_rejected(self):
+        a = Piece.of(PieceType.PT_2x4, 1000.0, "a")
+        b = Piece.of(PieceType.PT_2x4, 500.0, "b")
+        with pytest.raises(ValueError, match="Duplicate connection"):
+            Model.of(
+                pieces=[a, b], connections=[self._conn(a, b, 0), self._conn(a, b, 100)]
+            )
+
+    def test_connection_repeated_in_reverse_direction_is_rejected(self):
+        a = Piece.of(PieceType.PT_2x4, 1000.0, "a")
+        b = Piece.of(PieceType.PT_2x4, 500.0, "b")
+        with pytest.raises(ValueError, match="Duplicate connection"):
+            Model.of(pieces=[a, b], connections=[self._conn(a, b), self._conn(b, a)])
+
+    def test_duplicate_piece_id_is_rejected(self):
+        a1 = Piece.of(PieceType.PT_2x4, 1000.0, "a")
+        a2 = Piece.of(PieceType.PT_2x4, 2000.0, "a")
+        with pytest.raises(ValueError, match="Duplicate piece id"):
+            Model.of(pieces=[a1, a2], connections=[])
+
+    def test_connection_piece_must_match_model_piece(self):
+        a = Piece.of(PieceType.PT_2x4, 1000.0, "a")
+        b = Piece.of(PieceType.PT_2x4, 500.0, "b")
+        stale_a = Piece.of(PieceType.PT_2x4, 2000.0, "a")
+        with pytest.raises(ValueError, match="does not match"):
+            Model.of(pieces=[a, b], connections=[self._conn(stale_a, b)])

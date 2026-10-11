@@ -169,3 +169,37 @@ class TestBoundAnchorValidation:
         anchor = Anchor.of("top", "left", FromMin(value=50))
         with pytest.raises(ValueError, match="exceeds piece dimension"):
             BoundAnchor.of(piece, anchor)
+
+
+class TestConstructorValidation:
+    """Plain constructors must enforce the same rules as the factories.
+
+    The DSL builds Anchor/BoundAnchor with the constructors, so validation
+    that lives only in ``.of()`` is silently skipped.
+    """
+
+    def test_anchor_constructor_rejects_opposite_faces(self):
+        with pytest.raises(ValueError, match="must be adjacent"):
+            Anchor(contact_face="top", edge_shared_face="down", offset=FromMin(value=0))
+
+    def test_anchor_constructor_rejects_same_face(self):
+        with pytest.raises(ValueError, match="must be adjacent"):
+            Anchor(contact_face="top", edge_shared_face="top", offset=FromMin(value=0))
+
+    def test_bound_anchor_constructor_rejects_offset_beyond_edge(self):
+        piece = Piece.of(PieceType.PT_2x4, 300.0, "p")
+        # front+top edge runs along width (89mm)
+        anchor = Anchor(
+            contact_face="front", edge_shared_face="top", offset=FromMin(value=90)
+        )
+        with pytest.raises(ValueError, match="exceeds piece dimension"):
+            BoundAnchor(piece=piece, anchor=anchor)
+
+    def test_bound_anchor_constructor_rejects_from_max_beyond_edge(self):
+        piece = Piece.of(PieceType.PT_2x4, 300.0, "p")
+        # front+left edge runs along length (300mm)
+        anchor = Anchor(
+            contact_face="front", edge_shared_face="left", offset=FromMax(value=301)
+        )
+        with pytest.raises(ValueError, match="exceeds piece dimension"):
+            BoundAnchor(piece=piece, anchor=anchor)

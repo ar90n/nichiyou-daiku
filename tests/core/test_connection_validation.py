@@ -53,14 +53,14 @@ class TestDowelConnectionValidation:
         assert conn.type.depth == 20.0
 
     def test_dowel_depth_at_boundary(self):
-        """Dowel depth at exact boundary should succeed."""
-        # 2x4 height is 38mm
+        """Half the dowel length at the exact piece thickness should succeed."""
+        # 2x4 height is 38mm; a 76mm dowel sits 38mm deep in each piece
         base_bound = create_bound_anchor("base", 1000.0, "front", "top")
         target_bound = create_bound_anchor("target", 800.0, "front", "top")
 
-        spec = DowelSpec(diameter=8.0, length=38.0)
+        spec = DowelSpec(diameter=8.0, length=76.0)
         conn = Connection.of_dowel(base_bound, target_bound, spec=spec)
-        assert conn.type.depth == 38.0
+        assert conn.type.depth == 76.0
 
     def test_depth_exceeds_base_piece_raises_error(self):
         """Dowel depth exceeding base piece dimension should raise error."""
@@ -68,7 +68,7 @@ class TestDowelConnectionValidation:
         base_bound = create_bound_anchor("base", 1000.0, "front", "top")
         target_bound = create_bound_anchor("target", 800.0, "back", "top")
 
-        spec = DowelSpec(diameter=8.0, length=50.0)
+        spec = DowelSpec(diameter=8.0, length=80.0)  # 40mm per piece > 38mm
         with pytest.raises(ValueError, match="exceeds base piece dimension"):
             Connection.of_dowel(base_bound, target_bound, spec=spec)
 
@@ -78,7 +78,7 @@ class TestDowelConnectionValidation:
         base_bound = create_bound_anchor("base", 1000.0, "top", "front")
         target_bound = create_bound_anchor("target", 30.0, "down", "front")
 
-        spec = DowelSpec(diameter=8.0, length=50.0)
+        spec = DowelSpec(diameter=8.0, length=70.0)  # 35mm per piece > 30mm
         with pytest.raises(ValueError, match="exceeds target piece dimension"):
             Connection.of_dowel(base_bound, target_bound, spec=spec)
 
@@ -313,3 +313,72 @@ class TestScrewConnectionValidation:
             base_bound, target_bound, ScrewSpec(diameter=4.0, length=50.0)
         )
         assert conn.type.length == 50.0
+
+
+def _bound_1x4(piece_id: str, contact_face: str, edge_shared_face: str) -> BoundAnchor:
+    piece = Piece.of(PieceType.PT_1x4, 500.0, piece_id)
+    anchor = Anchor(
+        contact_face=contact_face,
+        edge_shared_face=edge_shared_face,
+        offset=FromMin(value=0),
+    )
+    return BoundAnchor(piece=piece, anchor=anchor)
+
+
+class TestConstructorValidation:
+    """``Connection(...)`` must enforce the same rules as the factories."""
+
+    def test_screw_not_reaching_base_is_rejected(self):
+        base = create_bound_anchor("base", 1000, "front", "top")
+        target = create_bound_anchor("target", 800, "front", "top")
+        with pytest.raises(ValueError, match="does not reach base piece"):
+            Connection(
+                base=base,
+                target=target,
+                type=ScrewConnection(diameter=3.5, length=38.0),
+            )
+
+    def test_screw_into_non_front_back_target_is_rejected(self):
+        base = create_bound_anchor("base", 1000, "front", "top")
+        target = create_bound_anchor("target", 800, "top", "front")
+        with pytest.raises(ValueError, match="must be 'front' or 'back'"):
+            Connection(
+                base=base,
+                target=target,
+                type=ScrewConnection(diameter=3.5, length=50.0),
+            )
+
+    def test_dowel_deeper_than_piece_is_rejected(self):
+        base = create_bound_anchor("base", 1000, "front", "top")
+        target = create_bound_anchor("target", 800, "front", "top")
+        with pytest.raises(ValueError, match="exceeds base piece dimension"):
+            Connection(
+                base=base, target=target, type=DowelConnection(radius=4.0, depth=200.0)
+            )
+
+    def test_self_connection_is_rejected(self):
+        piece = Piece.of(PieceType.PT_2x4, 500.0, "a")
+        base = BoundAnchor(
+            piece=piece, anchor=Anchor.of("front", "top", FromMin(value=0))
+        )
+        target = BoundAnchor(
+            piece=piece, anchor=Anchor.of("down", "front", FromMin(value=0))
+        )
+        with pytest.raises(ValueError, match="itself"):
+            Connection(base=base, target=target)
+
+
+class TestDowelDepthIsSplitBetweenPieces:
+    """A dowel of length L sits L/2 deep in each piece."""
+
+    def test_30mm_dowel_fits_between_two_1x4_broad_faces(self):
+        base = _bound_1x4("base", "front", "top")
+        target = _bound_1x4("target", "back", "top")
+        conn = Connection.of_dowel(base, target, DowelSpec(diameter=8.0, length=30.0))
+        assert conn.type == DowelConnection(radius=4.0, depth=30.0)
+
+    def test_dowel_whose_half_exceeds_thickness_is_rejected(self):
+        base = _bound_1x4("base", "front", "top")
+        target = _bound_1x4("target", "back", "top")
+        with pytest.raises(ValueError, match="exceeds base piece dimension"):
+            Connection.of_dowel(base, target, DowelSpec(diameter=8.0, length=40.0))

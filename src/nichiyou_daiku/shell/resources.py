@@ -6,12 +6,11 @@ This module provides functionality to extract and summarize the resources
 
 from typing import Dict
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 
 from nichiyou_daiku.core.assembly import Assembly, Hole
-from nichiyou_daiku.core.geometry import Point3D, Box
+from nichiyou_daiku.core.geometry import Point3D, Box, SurfacePoint
 from nichiyou_daiku.core.piece import PieceType, get_shape
-from nichiyou_daiku.shell.utils import detect_face_from_point
 
 
 class AnchorInfo(BaseModel):
@@ -165,10 +164,6 @@ class ResourceSummary(BaseModel):
     total_length_by_type: Dict[PieceType, float]
     total_volume: float
 
-    model_config = ConfigDict(
-        # Ensure proper JSON serialization
-    )
-
     def pretty_print(self) -> str:
         """Generate a human-readable summary of resources.
 
@@ -215,10 +210,8 @@ class ResourceSummary(BaseModel):
         return "\n".join(lines)
 
 
-def _point3d_to_pilot_hole_info(
-    point: Point3D, hole: Hole, box: Box
-) -> "PilotHoleInfo":
-    """Convert a Point3D and Hole to PilotHoleInfo with edge distances.
+def _pilot_hole_info(position: SurfacePoint, hole: Hole, box: Box) -> "PilotHoleInfo":
+    """Convert a hole position and Hole to PilotHoleInfo with edge distances.
 
     Converts 3D coordinates to distances from edges based on the face.
     The coordinate system is designed so that side faces (left/right/front/back)
@@ -230,14 +223,15 @@ def _point3d_to_pilot_hole_info(
         - front/back: from_length_edge=z, from_width_edge=x
 
     Args:
-        point: 3D position of the hole
+        position: Hole center on the face it is drilled into
         hole: Hole specification (diameter, depth)
         box: Box for dimension reference
 
     Returns:
         PilotHoleInfo with face and edge distances
     """
-    face = detect_face_from_point(point, box)
+    face = position.face
+    point = Point3D.of(box, position)
 
     # Map face to edge distances
     # from_length_edge: distance along the length axis of the piece
@@ -337,7 +331,7 @@ def extract_resources(assembly: Assembly) -> ResourceSummary:
     for piece_id, holes in assembly.pilot_holes.items():
         box = assembly.boxes[piece_id]
         piece_pilot_holes[piece_id] = [
-            _point3d_to_pilot_hole_info(point, hole, box) for point, hole in holes
+            _pilot_hole_info(position, hole, box) for position, hole in holes
         ]
 
     # Extract piece resources from model

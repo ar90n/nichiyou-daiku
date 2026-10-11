@@ -4,7 +4,7 @@ This module defines the Anchor class and related functions for
 specifying where connections occur on pieces.
 """
 
-from pydantic import BaseModel
+from pydantic import BaseModel, model_validator
 
 from nichiyou_daiku.core.geometry import (
     Box,
@@ -17,11 +17,9 @@ from nichiyou_daiku.core.geometry import (
     Point3D,
     opposite as opposite_face,
     cross as cross_face,
+    edge_length_of,
     is_positive,
     is_adjacent,
-    is_down_to_top_axis,
-    is_left_to_right_axis,
-    is_back_to_front_axis,
 )
 from nichiyou_daiku.core.piece import Piece, get_shape
 
@@ -56,6 +54,15 @@ class Anchor(BaseModel, frozen=True):
     contact_face: Face
     offset: Offset
 
+    @model_validator(mode="after")
+    def _check_faces_adjacent(self) -> "Anchor":
+        if not is_adjacent(self.contact_face, self.edge_shared_face):
+            raise ValueError(
+                f"contact_face '{self.contact_face}' and edge_shared_face "
+                f"'{self.edge_shared_face}' must be adjacent faces"
+            )
+        return self
+
     @classmethod
     def of(cls, contact_face: Face, edge_shared_face: Face, offset: Offset) -> "Anchor":
         """Create an Anchor instance.
@@ -71,12 +78,6 @@ class Anchor(BaseModel, frozen=True):
         Raises:
             ValueError: If contact_face and edge_shared_face are not adjacent
         """
-        if not is_adjacent(contact_face, edge_shared_face):
-            raise ValueError(
-                f"contact_face '{contact_face}' and edge_shared_face '{edge_shared_face}' "
-                "must be adjacent faces"
-            )
-
         return cls(
             contact_face=contact_face,
             edge_shared_face=edge_shared_face,
@@ -116,6 +117,20 @@ class BoundAnchor(BaseModel, frozen=True):
     piece: Piece
     anchor: Anchor
 
+    @model_validator(mode="after")
+    def _check_offset_within_edge(self) -> "BoundAnchor":
+        box = Box(shape=get_shape(self.piece))
+        edge = _get_pos_dir_edge(self.anchor.contact_face, self.anchor.edge_shared_face)
+        max_length = edge_length_of(box, edge)
+        offset_value = self.anchor.offset.value
+        if offset_value > max_length:
+            raise ValueError(
+                f"Offset {offset_value}mm exceeds piece dimension {max_length}mm "
+                f"(piece '{self.piece.id}', edge {self.anchor.contact_face}/"
+                f"{self.anchor.edge_shared_face})"
+            )
+        return self
+
     @classmethod
     def of(cls, piece: Piece, anchor: Anchor) -> "BoundAnchor":
         """Create a BoundAnchor instance.
@@ -130,48 +145,7 @@ class BoundAnchor(BaseModel, frozen=True):
         Raises:
             ValueError: If the anchor's offset exceeds piece dimensions
         """
-        shape = get_shape(piece)
-        box = Box(shape=shape)
-
-        # Get edge from anchor faces
-        edge = _get_pos_dir_edge(anchor.contact_face, anchor.edge_shared_face)
-
-        # Get the length along this edge
-        max_length = _get_edge_length(box, edge)
-
-        # Validate offset
-        offset_value = anchor.offset.value
-        if offset_value < 0 or offset_value > max_length:
-            raise ValueError(
-                f"Offset {offset_value}mm exceeds piece dimension {max_length}mm"
-            )
-
         return cls(piece=piece, anchor=anchor)
-
-
-def _get_edge_length(box: Box, edge: Edge) -> float:
-    """Get the length of an edge.
-
-    Uses the same logic as coordinates.py:_edge_legnth_of.
-
-    Args:
-        box: The bounding box
-        edge: Edge defined by two adjacent faces
-
-    Returns:
-        Edge length in mm
-    """
-    third_face = cross_face(edge.lhs, edge.rhs)
-    # Z-axis (down to top): length
-    if is_down_to_top_axis(third_face):
-        return box.shape.length
-    # X-axis (left to right): width
-    if is_left_to_right_axis(third_face):
-        return box.shape.width
-    # Y-axis (back to front): height
-    if is_back_to_front_axis(third_face):
-        return box.shape.height
-    raise RuntimeError("Unreachable code reached")
 
 
 def _get_box(bound: BoundAnchor) -> Box:

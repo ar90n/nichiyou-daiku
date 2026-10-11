@@ -340,7 +340,7 @@ def create_dowel_joint_pairs(piece_conn: Connection) -> list[JointPair]:
 
         # Target is left/right
         case ("left" | "right", "left" | "right"):
-            target_0, target_1, base_0, base_1 = _create_left_right_dowel_joints(
+            base_0, base_1, target_0, target_1 = _create_left_right_dowel_joints(
                 src_bound=base_bound,
                 dst_bound=target_bound,
             )

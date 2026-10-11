@@ -10,7 +10,15 @@ from nichiyou_daiku.core.connection import (
     VanillaConnection,
     DowelConnection,
 )
-from nichiyou_daiku.core.geometry import Face, Edge, EdgePoint, FromMax, FromMin, Offset
+from nichiyou_daiku.core.geometry import (
+    Face,
+    Edge,
+    EdgePoint,
+    FromMax,
+    FromMin,
+    Offset,
+    is_adjacent,
+)
 from nichiyou_daiku.core.piece import Piece, PieceType
 
 
@@ -61,10 +69,10 @@ class TestAnchor:
         """Should accept all face types."""
         all_faces: list[Face] = ["left", "right", "front", "back", "top", "down"]
 
-        # Test all faces
+        # Test all adjacent face pairs
         for contact_face in all_faces:
             for edge_shared_face in all_faces:
-                if contact_face != edge_shared_face:
+                if is_adjacent(contact_face, edge_shared_face):
                     anchor = Anchor(
                         contact_face=contact_face,
                         edge_shared_face=edge_shared_face,
@@ -238,7 +246,7 @@ class TestConnection:
                 anchor=Anchor(
                     contact_face="left",
                     edge_shared_face="top",
-                    offset=FromMax(value=50),  # Center of side face
+                    offset=FromMax(value=19),  # Center of side face
                 ),
             ),
             target=BoundAnchor(
@@ -266,7 +274,7 @@ class TestConnection:
                 anchor=Anchor(
                     contact_face="right",
                     edge_shared_face="down",
-                    offset=FromMin(value=100),
+                    offset=FromMin(value=10),
                 ),
             ),
         )

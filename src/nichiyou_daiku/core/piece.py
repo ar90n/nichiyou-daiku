@@ -5,12 +5,15 @@ nichiyou-daiku woodworking system.
 """
 
 from enum import Enum
-from typing import Type, overload
+from typing import Annotated, Type, overload
 from uuid import uuid4
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from nichiyou_daiku.core.geometry import Millimeters, Shape2D, Shape3D
+
+PieceLength = Annotated[float, Field(gt=0, allow_inf_nan=False)]
+"""A piece length: strictly positive and finite millimeters."""
 
 
 class PieceType(Enum):
@@ -80,7 +83,7 @@ class Piece(BaseModel, frozen=True):
 
     id: str
     type: PieceType
-    length: Millimeters
+    length: PieceLength
 
     @classmethod
     def of(

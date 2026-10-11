@@ -56,7 +56,7 @@ class TestOrientationPreservation:
                 anchor=Anchor(
                     contact_face="left",
                     edge_shared_face="top",
-                    offset=FromMax(value=100),
+                    offset=FromMax(value=20),
                 ),
             ),
             target=BoundAnchor(
@@ -64,7 +64,7 @@ class TestOrientationPreservation:
                 anchor=Anchor(
                     contact_face="right",
                     edge_shared_face="down",
-                    offset=FromMin(value=50),
+                    offset=FromMin(value=10),
                 ),
             ),
         )
@@ -111,7 +111,7 @@ class TestOrientationPreservation:
                 anchor=Anchor(
                     contact_face="down",
                     edge_shared_face="front",
-                    offset=FromMin(value=100),
+                    offset=FromMin(value=50),
                 ),
             ),
         )
@@ -124,7 +124,7 @@ class TestOrientationPreservation:
                 anchor=Anchor(
                     contact_face="right",
                     edge_shared_face="top",
-                    offset=FromMax(value=200),
+                    offset=FromMax(value=20),
                 ),
             ),
             target=BoundAnchor(
@@ -132,7 +132,7 @@ class TestOrientationPreservation:
                 anchor=Anchor(
                     contact_face="left",
                     edge_shared_face="top",
-                    offset=FromMin(value=150),
+                    offset=FromMin(value=15),
                 ),
             ),
         )

@@ -1,5 +1,7 @@
 """Tests for DSL screw preset support."""
 
+import re
+
 import pytest
 
 from nichiyou_daiku.core.connection import ScrewConnection
@@ -36,6 +38,15 @@ class TestFindPreset:
         result = find_preset("Unknown", 3.3, 50)
         assert result is None
 
+    def test_find_preset_does_not_truncate_length(self):
+        """Should not match a preset after truncating a fractional length."""
+        assert find_preset("Slim", 3.3, 50.9) is None
+        assert find_preset("Coarse", 3.8, 57.5) is None
+
+    def test_find_preset_matches_exact_float_dimensions(self):
+        """Should match when dimensions equal the preset as floats."""
+        assert find_preset("Slim", 3.30, 50.0) == SlimScrew.D3_3_L50
+
 
 class TestDSLScrewPresetParsing:
     """Tests for DSL screw preset syntax parsing."""
@@ -45,7 +56,7 @@ class TestDSLScrewPresetParsing:
         dsl = """
         (base:2x4 =600)
         (target:2x4 =300)
-        base -[FB<0 BT<0 S(Slim:3.3x50)]- target
+        base -[FD<0 BT<0 S(Slim:3.3x50)]- target
         """
         model = parse_dsl(dsl)
         assert len(model.connections) == 1
@@ -59,7 +70,7 @@ class TestDSLScrewPresetParsing:
         dsl = """
         (base:2x4 =600)
         (target:2x4 =300)
-        base -[FB<0 BT<0 S(Coarse:3.8x57)]- target
+        base -[FD<0 BT<0 S(Coarse:3.8x57)]- target
         """
         model = parse_dsl(dsl)
         assert len(model.connections) == 1
@@ -73,7 +84,7 @@ class TestDSLScrewPresetParsing:
         dsl = """
         (base:2x4 =600)
         (target:2x4 =300)
-        base -[FB<0 BT<0 S(4.0, 55.0)]- target
+        base -[FD<0 BT<0 S(4.0, 55.0)]- target
         """
         model = parse_dsl(dsl)
         assert len(model.connections) == 1
@@ -87,7 +98,7 @@ class TestDSLScrewPresetParsing:
         dsl = """
         (base:2x4 =600)
         (target:2x4 =300)
-        base -[FB<0 BT<0 S(Slim:9.9x999)]- target
+        base -[FD<0 BT<0 S(Slim:9.9x999)]- target
         """
         with pytest.raises(DSLValidationError, match="Unknown Slim screw preset"):
             parse_dsl(dsl)
@@ -97,9 +108,24 @@ class TestDSLScrewPresetParsing:
         dsl = """
         (base:2x4 =600)
         (target:2x4 =300)
-        base -[FB<0 BT<0 S(Coarse:9.9x999)]- target
+        base -[FD<0 BT<0 S(Coarse:9.9x999)]- target
         """
         with pytest.raises(DSLValidationError, match="Unknown Coarse screw preset"):
+            parse_dsl(dsl)
+
+    @pytest.mark.parametrize("preset", ["Slim:3.3x50.9", "Coarse:3.8x57.5"])
+    def test_reject_size_that_only_truncates_to_a_preset(self, preset):
+        """Should reject sizes that are not exactly a preset (e.g. 3.3x50.9)."""
+        screw_type, size = preset.split(":")
+        dsl = f"""
+        (base:2x4 =600)
+        (target:2x4 =300)
+        base -[FD<0 BT<0 S({preset})]- target
+        """
+        with pytest.raises(
+            DSLValidationError,
+            match=f"Unknown {screw_type} screw preset: {re.escape(size)}",
+        ):
             parse_dsl(dsl)
 
 
@@ -113,8 +139,8 @@ class TestDSLScrewPresetIntegration:
         (leg1:2x4 =300)
         (leg2:2x4 =300)
 
-        base -[FB<0 BT<0 S(Slim:3.3x50)]- leg1
-        base -[FB<100 BT<0 S(Coarse:3.8x57)]- leg2
+        base -[FD<0 BT<0 S(Slim:3.3x50)]- leg1
+        base -[FD<50 BT<0 S(Coarse:3.8x57)]- leg2
         """
         model = parse_dsl(dsl)
         assert len(model.connections) == 2
@@ -138,8 +164,8 @@ class TestDSLScrewPresetIntegration:
         (leg1:2x4 =300)
         (leg2:2x4 =300)
 
-        base -[FB<0 BT<0 S(Slim:3.3x50)]- leg1
-        base -[FB<100 BT<0 S(5.0, 60.0)]- leg2
+        base -[FD<0 BT<0 S(Slim:3.3x50)]- leg1
+        base -[FD<50 BT<0 S(5.0, 60.0)]- leg2
         """
         model = parse_dsl(dsl)
         assert len(model.connections) == 2
@@ -188,8 +214,8 @@ class TestDSLScrewPresetIntegration:
         """Should parse all valid preset sizes."""
         dsl = f"""
         (base:2x4 =600)
-        (target:2x4 =300)
-        base -[FB<0 BT<0 S({preset})]- target
+        (target:1x4 =300)
+        base -[DF<0 BT<0 S({preset})]- target
         """
         model = parse_dsl(dsl)
         conn = list(model.connections.values())[0]

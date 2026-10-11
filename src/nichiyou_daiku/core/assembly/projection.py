@@ -48,7 +48,7 @@ def project_joint(
         >>> # Create two pieces and bound anchors
         >>> src_piece = Piece.of(PieceType.PT_2x4, 1000.0)
         >>> dst_piece = Piece.of(PieceType.PT_2x4, 800.0)
-        >>> src_anchor = Anchor(contact_face="front", edge_shared_face="top", offset=FromMax(value=100))
+        >>> src_anchor = Anchor(contact_face="front", edge_shared_face="top", offset=FromMax(value=10))
         >>> dst_anchor = Anchor(contact_face="down", edge_shared_face="front", offset=FromMin(value=50))
         >>> src_bound = BoundAnchor(piece=src_piece, anchor=src_anchor)
         >>> dst_bound = BoundAnchor(piece=dst_piece, anchor=dst_anchor)

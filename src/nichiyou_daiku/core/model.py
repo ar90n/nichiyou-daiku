@@ -40,7 +40,7 @@ class Model(BaseModel, frozen=True):
         ...         anchor=Anchor(
         ...             contact_face="front",
         ...             edge_shared_face="top",
-        ...             offset=FromMax(value=100)
+        ...             offset=FromMax(value=10)
         ...         )
         ...     ),
         ...     target=BoundAnchor(
@@ -97,7 +97,7 @@ class Model(BaseModel, frozen=True):
             ...         anchor=Anchor(
             ...             contact_face="front",
             ...             edge_shared_face="top",
-            ...             offset=FromMax(value=100)
+            ...             offset=FromMax(value=10)
             ...         )
             ...     ),
             ...     target=BoundAnchor(
@@ -118,20 +118,33 @@ class Model(BaseModel, frozen=True):
             >>> ("piece-1", "piece-2") in model.connections
             True
         """
-        pieces_dict = {piece.id: piece for piece in pieces}
-        connections_dict = {
-            (conn.base.piece.id, conn.target.piece.id): conn for conn in connections
-        }
+        pieces_dict: dict[str, Piece] = {}
+        for piece in pieces:
+            if piece.id in pieces_dict:
+                raise ValueError(f"Duplicate piece id: '{piece.id}'")
+            pieces_dict[piece.id] = piece
 
-        # Validate that all connection pieces exist in pieces_dict
-        for base_id, target_id in connections_dict:
-            if base_id not in pieces_dict:
+        connections_dict: dict[tuple[str, str], Connection] = {}
+        for conn in connections:
+            for role, bound in (("base", conn.base), ("target", conn.target)):
+                known = pieces_dict.get(bound.piece.id)
+                if known is None:
+                    raise ValueError(
+                        f"Connection references unknown {role} piece: '{bound.piece.id}'"
+                    )
+                if known != bound.piece:
+                    raise ValueError(
+                        f"Connection {role} piece '{bound.piece.id}' does not match "
+                        f"the model's piece with the same id"
+                    )
+            key = (conn.base.piece.id, conn.target.piece.id)
+            # Connections are keyed by piece pair, so a second one (in either
+            # direction) would silently replace or duplicate the first.
+            if key in connections_dict or key[::-1] in connections_dict:
                 raise ValueError(
-                    f"Connection references unknown base piece: '{base_id}'"
+                    f"Duplicate connection between '{key[0]}' and '{key[1]}': "
+                    "only one connection per piece pair is supported"
                 )
-            if target_id not in pieces_dict:
-                raise ValueError(
-                    f"Connection references unknown target piece: '{target_id}'"
-                )
+            connections_dict[key] = conn
 
         return cls(pieces=pieces_dict, connections=connections_dict, label=label)

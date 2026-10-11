@@ -4,7 +4,7 @@ This module provides types for representing edges formed by the intersection
 of two faces on a lumber piece.
 """
 
-from pydantic import BaseModel
+from pydantic import BaseModel, model_validator
 
 from .face import Face, is_adjacent as is_adjacent_face
 from .offset import Offset
@@ -31,14 +31,15 @@ class Edge(BaseModel, frozen=True):
     lhs: Face
     rhs: Face
 
-    def __post_init__(self):
-        """Validate that lhs and rhs are adjacent faces."""
+    @model_validator(mode="after")
+    def _check_faces_adjacent(self) -> "Edge":
         if self.lhs == self.rhs:
             raise ValueError(
                 "Left-hand side and right-hand side faces must be different."
             )
         if not is_adjacent_face(self.lhs, self.rhs):
             raise ValueError(f"Faces {self.lhs} and {self.rhs} are not adjacent.")
+        return self
 
 
 class EdgePoint(BaseModel, frozen=True):

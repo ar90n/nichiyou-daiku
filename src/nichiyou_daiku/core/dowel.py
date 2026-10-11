@@ -107,9 +107,11 @@ def find_preset(diameter: float, length: float) -> DowelPreset | None:
         <Dowel.D8_L30: '8x30'>
         >>> find_preset(9, 99) is None
         True
+        >>> find_preset(8.9, 30.7) is None  # no truncation to 8x30
+        True
     """
-    value = f"{int(diameter)}x{int(length)}"
-    try:
-        return Dowel.of(value)
-    except ValueError:
-        return None
+    for dowel in Dowel:
+        spec = as_spec(dowel)
+        if spec.diameter == diameter and spec.length == length:
+            return dowel
+    return None

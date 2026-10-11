@@ -136,3 +136,89 @@ class TestVector3D:
         vector = Vector3D(x=0.707, y=0.707, z=0)
         magnitude = math.sqrt(vector.x**2 + vector.y**2 + vector.z**2)
         assert abs(magnitude - 1.0) < 0.01  # Approximately unit length
+
+
+class TestEdgeValidation:
+    def test_same_faces_are_rejected(self):
+        from nichiyou_daiku.core.geometry import Edge
+
+        with pytest.raises(ValueError, match="must be different"):
+            Edge(lhs="top", rhs="top")
+
+    def test_opposite_faces_are_rejected(self):
+        from nichiyou_daiku.core.geometry import Edge
+
+        with pytest.raises(ValueError, match="not adjacent"):
+            Edge(lhs="top", rhs="down")
+
+
+class TestOffsetSerialization:
+    def test_from_min_survives_json_round_trip(self):
+        from nichiyou_daiku.core.anchor import Anchor
+        from nichiyou_daiku.core.geometry import FromMin
+
+        anchor = Anchor(
+            contact_face="front", edge_shared_face="left", offset=FromMin(value=100)
+        )
+        restored = Anchor.model_validate_json(anchor.model_dump_json())
+        assert restored == anchor
+
+    def test_from_max_survives_json_round_trip(self):
+        from nichiyou_daiku.core.anchor import Anchor
+        from nichiyou_daiku.core.geometry import FromMax
+
+        anchor = Anchor(
+            contact_face="front", edge_shared_face="left", offset=FromMax(value=100)
+        )
+        restored = Anchor.model_validate_json(anchor.model_dump_json())
+        assert restored == anchor
+
+
+class TestOrientation3DFromEuler:
+    @pytest.mark.parametrize(
+        "angles", [(0, 0, 90), (90, 45, 0), (30, 60, 120), (-45, 10, 200)]
+    )
+    def test_up_is_rotated_y_axis_and_orthogonal(self, angles):
+        import math
+
+        from nichiyou_daiku.core.geometry import Orientation3D
+
+        rx, ry, rz = (math.radians(a) for a in angles)
+
+        def rotate(v):
+            x, y, z = v
+            # R = Rx @ Ry @ Rz, matching the direction formula
+            x, y = (
+                x * math.cos(rz) - y * math.sin(rz),
+                x * math.sin(rz) + y * math.cos(rz),
+            )
+            x, z = (
+                x * math.cos(ry) + z * math.sin(ry),
+                -x * math.sin(ry) + z * math.cos(ry),
+            )
+            y, z = (
+                y * math.cos(rx) - z * math.sin(rx),
+                y * math.sin(rx) + z * math.cos(rx),
+            )
+            return (x, y, z)
+
+        orientation = Orientation3D.of(*angles)
+        up = (orientation.up.x, orientation.up.y, orientation.up.z)
+        direction = (
+            orientation.direction.x,
+            orientation.direction.y,
+            orientation.direction.z,
+        )
+        assert direction == pytest.approx(rotate((0, 0, 1)), abs=1e-9)
+        assert up == pytest.approx(rotate((0, 1, 0)), abs=1e-9)
+
+
+class TestOrientation3DOrthogonalization:
+    def test_up_is_orthogonal_to_non_unit_direction(self):
+        from nichiyou_daiku.core.geometry import Orientation3D
+
+        orientation = Orientation3D(
+            direction=Vector3D(x=0.0, y=0.0, z=2.0), up=Vector3D(x=0.0, y=1.0, z=1.0)
+        )
+        d, u = orientation.direction, orientation.up
+        assert d.x * u.x + d.y * u.y + d.z * u.z == pytest.approx(0.0, abs=1e-9)

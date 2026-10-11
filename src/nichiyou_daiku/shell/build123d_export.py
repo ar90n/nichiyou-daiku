@@ -19,9 +19,9 @@ from nichiyou_daiku.core.assembly import (
 from nichiyou_daiku.core.geometry import (
     Orientation3D,
     Point3D,
+    SurfacePoint,
     Box as NichiyouBox,
 )
-from nichiyou_daiku.shell.utils import detect_face_from_point
 
 # Check if build123d is available
 HAS_BUILD123D = False
@@ -44,6 +44,7 @@ except ImportError:
 
 if TYPE_CHECKING:
     from build123d import (
+        BoundBox,
         Box,
         RigidJoint,
         Compound,
@@ -114,21 +115,22 @@ def _as_tuple(point: Point3D) -> tuple[float, float, float]:
 
 
 def _create_hole(
-    point: Point3D,
+    position: SurfacePoint,
     hole: NichiyouHole,
     box: NichiyouBox,
 ) -> "Part":
     """Create a cylinder for hole subtraction at the specified position.
 
     Args:
-        point: The 3D position of the hole center on the box surface
+        position: The hole center on the face it is drilled into
         hole: The hole specification (diameter and depth)
         box: The box containing dimension information
 
     Returns:
         A build123d Part (cylinder) positioned and oriented for subtraction
     """
-    face = detect_face_from_point(point, box)
+    face = position.face
+    point = Point3D.of(box, position)
 
     # Face rotation angles to orient cylinder inward (Z-axis aligned with hole direction)
     face_rotations: dict[str, tuple[float, float, float]] = {
@@ -151,16 +153,14 @@ def _create_hole(
     )
 
     rotation = face_rotations[face]
-    position = _as_tuple(point)
-
-    return cylinder.locate(Location(position, rotation))
+    return cylinder.locate(Location(_as_tuple(point), rotation))
 
 
 def _create_piece_from(
     id: str,
     box: NichiyouBox,
     fillet_radius: float,
-    pilot_holes: list[tuple[Point3D, NichiyouHole]] | None = None,
+    pilot_holes: list[tuple[SurfacePoint, NichiyouHole]] | None = None,
 ) -> "Part":
     """Create a build123d Part from a nichiyou Box.
 
@@ -183,19 +183,17 @@ def _create_piece_from(
         + Part()
     )
 
-    # Apply fillet first
-    if 0 < fillet_radius:
-        filleted = fillet(piece.edges().filter_by(Axis.X), radius=fillet_radius)
-        # Wrap the filleted result in a Part if it's a Compound
-        if hasattr(filleted, "wrapped") and hasattr(Part, "__call__"):
-            piece = Part(filleted.wrapped)
-        else:
-            piece = filleted  # type: ignore
+    # Round the four long edges (the piece's length runs along Z). Two fillets
+    # meeting across the thickness would fail, so keep the radius below half
+    # of the smaller cross-section side.
+    radius = min(fillet_radius, min(box.shape.width, box.shape.height) / 2 * 0.99)
+    if 0 < radius:
+        piece = Part(fillet(piece.edges().filter_by(Axis.Z), radius=radius).wrapped)
 
     # Subtract pilot holes after fillet
     if pilot_holes:
-        for point, hole in pilot_holes:
-            hole_cylinder = _create_hole(point, hole, box)
+        for position, hole in pilot_holes:
+            hole_cylinder = _create_hole(position, hole, box)
             piece = piece - hole_cylinder
 
     piece.label = id
@@ -244,10 +242,7 @@ def _connect(parts, src_joint_id: str, dst_joint_id: str):
     """
     src_id = src_joint_id.rsplit("_j", 1)[0]
     dst_id = dst_joint_id.rsplit("_j", 1)[0]
-    src_joint = parts[src_id].joints.get(f"to_{dst_id}")
-    dst_joint = parts[dst_id].joints.get(f"to_{src_id}")
-    if src_joint and dst_joint:
-        src_joint.connect_to(dst_joint)
+    parts[src_id].joints[src_joint_id].connect_to(parts[dst_id].joints[dst_joint_id])
 
 
 def assembly_to_build123d(
@@ -307,21 +302,22 @@ def assembly_to_build123d(
         _create_joint_from(
             lhs_joint,
             assembly.boxes[lhs_id],
-            label=f"to_{rhs_id}",
+            label=lhs_joint_id,
             to_part=parts[lhs_id],
         )
         joints.setdefault(rhs_id, []).append((rhs_joint_id, lhs_joint_id))
         _create_joint_from(
             rhs_joint,
             assembly.boxes[rhs_id],
-            label=f"to_{lhs_id}",
+            label=rhs_joint_id,
             to_part=parts[rhs_id],
             flip_dir=True,
         )
 
-    # BFS traversal
+    # BFS traversal: each piece is placed once, by the first joint that
+    # reaches it. Joints that close a loop are left as they are; use
+    # find_joint_mismatches() to see whether they agree with the placement.
     visited = set()
-    processed_edges = set()
 
     # Process each connected component
     for start_piece in assembly.boxes:
@@ -334,22 +330,13 @@ def assembly_to_build123d(
         while queue:
             current_piece_id = queue.popleft()
 
-            # Process all neighbors
             for current_id, neighbor_id in joints.get(current_piece_id, []):
-                if (current_id, neighbor_id) in processed_edges:
-                    continue
-                if (neighbor_id, current_id) in processed_edges:
-                    continue
-                processed_edges.add((current_id, neighbor_id))
-                processed_edges.add((neighbor_id, current_id))
-
-                _connect(parts, current_id, neighbor_id)
-
-                # Add neighbor to queue if not visited
                 neighbor_piece_id = neighbor_id.rsplit("_j", 1)[0]
-                if neighbor_piece_id not in visited:
-                    visited.add(neighbor_piece_id)
-                    queue.append(neighbor_piece_id)
+                if neighbor_piece_id in visited:
+                    continue
+                _connect(parts, current_id, neighbor_id)
+                visited.add(neighbor_piece_id)
+                queue.append(neighbor_piece_id)
 
     return Compound(label=assembly.label or "assembly", children=list(parts.values()))
 
@@ -372,12 +359,12 @@ class OverlapResult:
 def check_overlap(compound: "Compound", tolerance: float = 1e-5) -> OverlapResult:
     """Detect overlapping pieces in a Compound.
 
-    Uses build123d's do_children_intersect() to check if any children
-    of the compound intersect with each other.
+    Intersects every pair of children whose bounding boxes overlap and
+    reports each pair whose common volume exceeds ``tolerance``.
 
     Args:
         compound: The Compound from assembly_to_build123d()
-        tolerance: Tolerance for intersection detection (default: 1e-5mm)
+        tolerance: Minimum common volume in mm³ that counts as an overlap
 
     Returns:
         OverlapResult with detection results
@@ -401,15 +388,72 @@ def check_overlap(compound: "Compound", tolerance: float = 1e-5) -> OverlapResul
             "Please install it with: pip install nichiyou-daiku[viz]"
         )
 
-    has_intersection, shapes, volume = compound.do_children_intersect(
-        tolerance=tolerance
+    children = list(compound.children)
+    pairs: list[tuple[str, str]] = []
+    total_volume = 0.0
+    for i, lhs in enumerate(children):
+        lhs_bbox = lhs.bounding_box()
+        for rhs in children[i + 1 :]:
+            if not _bounding_boxes_overlap(lhs_bbox, rhs.bounding_box()):
+                continue
+            volume = _common_volume(lhs, rhs)
+            if volume > tolerance:
+                pairs.append((lhs.label or "?", rhs.label or "?"))
+                total_volume += volume
+
+    return OverlapResult(
+        has_overlap=bool(pairs), overlapping_pairs=pairs, volume=total_volume
     )
 
-    if not has_intersection:
-        return OverlapResult(has_overlap=False, overlapping_pairs=[], volume=0.0)
 
-    # Extract labels from the intersecting shapes
-    labels = [getattr(s, "label", "?") for s in shapes]
-    pairs = [(labels[0], labels[1])] if len(labels) >= 2 else []
+def _common_volume(lhs: "Part", rhs: "Part") -> float:
+    # Intersect the bare solids: Part.intersect re-parents the part's joints
+    # onto the result, which would corrupt later joint checks.
+    volume = 0.0
+    for lhs_solid in lhs.solids():
+        for rhs_solid in rhs.solids():
+            common = lhs_solid.intersect(rhs_solid)
+            if common is not None:
+                volume += sum(solid.volume for solid in common.solids())
+    return volume
 
-    return OverlapResult(has_overlap=True, overlapping_pairs=pairs, volume=volume)
+
+def _bounding_boxes_overlap(lhs: "BoundBox", rhs: "BoundBox") -> bool:
+    return (
+        lhs.min.X < rhs.max.X
+        and rhs.min.X < lhs.max.X
+        and lhs.min.Y < rhs.max.Y
+        and rhs.min.Y < lhs.max.Y
+        and lhs.min.Z < rhs.max.Z
+        and rhs.min.Z < lhs.max.Z
+    )
+
+
+def find_joint_mismatches(
+    assembly: Assembly, compound: "Compound", tolerance: float = 0.01
+) -> list[tuple[str, str, float]]:
+    """Find connected joints that do not meet after placement.
+
+    Each piece is placed by the first joint that reaches it, so a connection
+    that contradicts the others ends up with its two joints apart.
+
+    Args:
+        assembly: The Assembly the compound was built from
+        compound: The Compound from assembly_to_build123d()
+        tolerance: Maximum distance in mm between joints that still counts as met
+
+    Returns:
+        (joint_id, joint_id, distance in mm) for every pair further apart than
+        ``tolerance``
+    """
+    parts = {child.label: child for child in compound.children}
+    mismatches = []
+    for lhs_joint_id, rhs_joint_id in assembly.joint_conns:
+        lhs_part = parts[lhs_joint_id.rsplit("_j", 1)[0]]
+        rhs_part = parts[rhs_joint_id.rsplit("_j", 1)[0]]
+        lhs_position = lhs_part.joints[lhs_joint_id].location.position
+        rhs_position = rhs_part.joints[rhs_joint_id].location.position
+        distance = (lhs_position - rhs_position).length
+        if distance > tolerance:
+            mismatches.append((lhs_joint_id, rhs_joint_id, distance))
+    return mismatches

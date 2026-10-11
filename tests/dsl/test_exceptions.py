@@ -48,6 +48,25 @@ class TestDSLExceptions:
         assert str(exc) == "Invalid value"
         assert isinstance(exc, DSLError)
 
+    def test_semantic_error_with_location(self):
+        """Test semantic error carrying a source location."""
+        exc = DSLSemanticError("Unknown piece reference: x", line=3, column=5)
+        assert str(exc) == "line 3, column 5: Unknown piece reference: x"
+        assert exc.message == "Unknown piece reference: x"
+        assert (exc.line, exc.column) == (3, 5)
+
+    def test_validation_error_with_line_only(self):
+        """Test validation error carrying only a line number."""
+        exc = DSLValidationError("Invalid value", line=4)
+        assert str(exc) == "line 4: Invalid value"
+        assert (exc.line, exc.column) == (4, None)
+
+    def test_errors_without_location(self):
+        """Test that location attributes default to None."""
+        exc = DSLValidationError("Invalid value")
+        assert exc.message == "Invalid value"
+        assert (exc.line, exc.column) == (None, None)
+
     def test_exception_hierarchy(self):
         """Test exception hierarchy."""
         # All DSL exceptions should inherit from DSLError

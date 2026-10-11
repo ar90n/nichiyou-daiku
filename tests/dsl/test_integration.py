@@ -17,7 +17,7 @@ class TestCompactNotationIntegration:
         (beam3:2x4 {"length": 600})
         
         beam1 -[TF<0 BD<0]- beam2
-        beam2 -[RB>50 LT<100]- beam3
+        beam2 -[RB>50 LT<30]- beam3
         """
 
         model = parse_dsl(dsl)
@@ -49,10 +49,10 @@ class TestCompactNotationIntegration:
         (leg3:2x4 {"length": 700})
         (leg4:2x4 {"length": 700})
         
-        top -[DL<50 TF<0]- leg1
-        top -[DR>50 TF<0]- leg2
-        top -[DL<50 TB>0]- leg3
-        top -[DR>50 TB>0]- leg4
+        top -[DL<20 TF<0]- leg1
+        top -[DR>20 TF<0]- leg2
+        top -[DL<20 TB>0]- leg3
+        top -[DR>20 TB>0]- leg4
         """
 
         model = parse_dsl(dsl)
@@ -73,8 +73,8 @@ class TestCompactNotationIntegration:
         (p3:2x4 {"length": 500})
         
         p1 -[TF<0 BD<0]- p2
-        p2 -[{"contact_face": "right", "edge_shared_face": "top", "offset": FromMax(100)}
-              {"contact_face": "left", "edge_shared_face": "down", "offset": FromMin(50)}]- p3
+        p2 -[{"contact_face": "right", "edge_shared_face": "top", "offset": FromMax(30)}
+              {"contact_face": "left", "edge_shared_face": "down", "offset": FromMin(20)}]- p3
         """
 
         model = parse_dsl(dsl)
@@ -90,9 +90,9 @@ class TestCompactNotationIntegration:
         # Second connection uses traditional notation
         conn2 = model.connections[("p2", "p3")]
         assert conn2.base.anchor.contact_face == "right"
-        assert conn2.base.anchor.offset.value == 100.0
+        assert conn2.base.anchor.offset.value == 30.0
         assert conn2.target.anchor.contact_face == "left"
-        assert conn2.target.anchor.offset.value == 50.0
+        assert conn2.target.anchor.offset.value == 20.0
 
 
 class TestCompactPieceIntegration:
@@ -135,8 +135,8 @@ class TestCompactPieceIntegration:
         (p4:1x4 {"length": 600})
         
         p1 -[TF<0 BD<0]- p2
-        p3 -[{"contact_face": "right", "edge_shared_face": "top", "offset": FromMax(100)}
-              {"contact_face": "left", "edge_shared_face": "down", "offset": FromMin(50)}]- p4
+        p3 -[{"contact_face": "right", "edge_shared_face": "top", "offset": FromMax(15)}
+              {"contact_face": "left", "edge_shared_face": "down", "offset": FromMin(10)}]- p4
         """
 
         model = parse_dsl(dsl)
@@ -162,7 +162,7 @@ class TestCompactPieceIntegration:
         (beam3:2x4 =1001.25)
         
         beam1 -[TF<10.5 BD>20.25]- beam2
-        beam2 -[RB<30.333 LT>40.667]- beam3
+        beam2 -[RB<30.333 LT>30.667]- beam3
         """
 
         model = parse_dsl(dsl)
@@ -189,16 +189,16 @@ class TestDSLIntegration:
         (leg3:2x4 {"length": 700})
         (leg4:2x4 {"length": 700})
         
-        top -[{"contact_face": "down", "edge_shared_face": "left", "offset": FromMin(50)}
+        top -[{"contact_face": "down", "edge_shared_face": "left", "offset": FromMin(20)}
               {"contact_face": "top", "edge_shared_face": "front", "offset": FromMin(0)}]- leg1
               
-        top -[{"contact_face": "down", "edge_shared_face": "right", "offset": FromMax(50)}
+        top -[{"contact_face": "down", "edge_shared_face": "right", "offset": FromMax(20)}
               {"contact_face": "top", "edge_shared_face": "front", "offset": FromMin(0)}]- leg2
               
-        top -[{"contact_face": "down", "edge_shared_face": "left", "offset": FromMin(50)}
+        top -[{"contact_face": "down", "edge_shared_face": "left", "offset": FromMin(20)}
               {"contact_face": "top", "edge_shared_face": "back", "offset": FromMax(0)}]- leg3
               
-        top -[{"contact_face": "down", "edge_shared_face": "right", "offset": FromMax(50)}
+        top -[{"contact_face": "down", "edge_shared_face": "right", "offset": FromMax(20)}
               {"contact_face": "top", "edge_shared_face": "back", "offset": FromMax(0)}]- leg4
         """
 
@@ -227,8 +227,8 @@ class TestDSLIntegration:
         (panel1:1x4 {"length": 500})
         (panel2:1x4 {"length": 500})
         
-        frame1 -[{"contact_face": "right", "edge_shared_face": "top", "offset": FromMin(100)}
-                {"contact_face": "left", "edge_shared_face": "top", "offset": FromMin(100)}]- frame2
+        frame1 -[{"contact_face": "right", "edge_shared_face": "top", "offset": FromMin(30)}
+                {"contact_face": "left", "edge_shared_face": "top", "offset": FromMin(30)}]- frame2
                 
         frame1 -[{"contact_face": "front", "edge_shared_face": "down", "offset": FromMin(50)}
                 {"contact_face": "back", "edge_shared_face": "left", "offset": FromMin(0)}]- panel1
@@ -278,7 +278,7 @@ class TestDSLIntegration:
         dsl = """
         (beam1:2x4 {"length": 1000})
         (beam2:2x4 {"length": 2000})
-        beam1 -[{"contact_face": "front", "edge_shared_face": "top", "offset": FromMax(100)}
+        beam1 -[{"contact_face": "front", "edge_shared_face": "top", "offset": FromMax(80)}
                 {"contact_face": "down", "edge_shared_face": "front", "offset": FromMin(50)}]- beam2
         """
 
@@ -300,7 +300,7 @@ class TestDSLIntegration:
                 anchor=Anchor(
                     contact_face="front",
                     edge_shared_face="top",
-                    offset=FromMax(value=100),
+                    offset=FromMax(value=80),
                 ),
             ),
             target=BoundAnchor(
@@ -333,13 +333,13 @@ class TestDSLIntegration:
     def test_whitespace_flexibility(self):
         """Test that DSL is flexible with whitespace."""
         # Compact version
-        dsl_compact = '(a:2x4{"length":1000})(b:2x4{"length":1000})a-[{"contact_face":"front","edge_shared_face":"top","offset":FromMax(100)}{"contact_face":"down","edge_shared_face":"front","offset":FromMin(50)}]-b'
+        dsl_compact = '(a:2x4{"length":1000})(b:2x4{"length":1000})a-[{"contact_face":"front","edge_shared_face":"top","offset":FromMax(80)}{"contact_face":"down","edge_shared_face":"front","offset":FromMin(50)}]-b'
 
         # Spaced version
         dsl_spaced = """
         ( a : 2x4 { "length" : 1000 } )
         ( b : 2x4 { "length" : 1000 } )
-        a -[ { "contact_face" : "front" , "edge_shared_face" : "top" , "offset" : FromMax( 100 ) }
+        a -[ { "contact_face" : "front" , "edge_shared_face" : "top" , "offset" : FromMax( 80 ) }
              { "contact_face" : "down" , "edge_shared_face" : "front" , "offset" : FromMin( 50 ) } ]- b
         """
 
@@ -360,7 +360,7 @@ class TestConnectionTypeIntegration:
         dsl = """
         (beam1:2x4 {"length": 1000})
         (beam2:2x4 {"length": 800})
-        beam1 -[{"contact_face": "front", "edge_shared_face": "top", "offset": FromMax(100)}
+        beam1 -[{"contact_face": "front", "edge_shared_face": "top", "offset": FromMax(80)}
                 {"contact_face": "down", "edge_shared_face": "front", "offset": FromMin(50)}]- beam2
         """
 
@@ -375,7 +375,7 @@ class TestConnectionTypeIntegration:
         dsl = """
         (beam1:2x4 {"length": 1000})
         (beam2:2x4 {"length": 800})
-        beam1 -[{"contact_face": "front", "edge_shared_face": "top", "offset": FromMax(100)}
+        beam1 -[{"contact_face": "front", "edge_shared_face": "top", "offset": FromMax(80)}
                 {"contact_face": "down", "edge_shared_face": "front", "offset": FromMin(50)}
                 {"type": "vanilla"}]- beam2
         """
@@ -391,7 +391,7 @@ class TestConnectionTypeIntegration:
         dsl = """
         (beam1:2x4 {"length": 1000})
         (beam2:2x4 {"length": 800})
-        beam1 -[{"contact_face": "front", "edge_shared_face": "top", "offset": FromMax(100)}
+        beam1 -[{"contact_face": "front", "edge_shared_face": "top", "offset": FromMax(80)}
                 {"contact_face": "down", "edge_shared_face": "front", "offset": FromMin(50)}
                 {"type": "dowel", "radius": 4.0, "depth": 20.0}]- beam2
         """
@@ -409,7 +409,7 @@ class TestConnectionTypeIntegration:
         dsl = """
         (beam1:2x4 =1000)
         (beam2:2x4 =800)
-        beam1 -[TF>100 BD<50]- beam2
+        beam1 -[TF>80 BD<50]- beam2
         """
 
         model = parse_dsl(dsl)
@@ -423,7 +423,7 @@ class TestConnectionTypeIntegration:
         dsl = """
         (beam1:2x4 =1000)
         (beam2:2x4 =800)
-        beam1 -[TF>100 BD<50 V]- beam2
+        beam1 -[TF>80 BD<50 V]- beam2
         """
 
         model = parse_dsl(dsl)
@@ -437,7 +437,7 @@ class TestConnectionTypeIntegration:
         dsl = """
         (beam1:2x4 =1000)
         (beam2:2x4 =800)
-        beam1 -[TF>100 BD<50 D(4.0,20.0)]- beam2
+        beam1 -[TF>80 BD<50 D(4.0,20.0)]- beam2
         """
 
         model = parse_dsl(dsl)
@@ -453,7 +453,7 @@ class TestConnectionTypeIntegration:
         dsl = """
         (beam1:2x4 =1000)
         (beam2:2x4 =800)
-        beam1 -[TF>100 BD<50 D(4.0, 20.0)]- beam2
+        beam1 -[TF>80 BD<50 D(4.0, 20.0)]- beam2
         """
 
         model = parse_dsl(dsl)
@@ -472,7 +472,7 @@ class TestConnectionTypeIntegration:
         (beam3:2x4 =600)
 
         // Vanilla connection (default)
-        beam1 -[TF>100 BD<50]- beam2
+        beam1 -[TF>80 BD<50]- beam2
 
         // Dowel connection
         beam2 -[LB>50 DB>25 D(5.0,25.0)]- beam3
@@ -553,7 +553,7 @@ class TestConnectionTypeIntegration:
         (beam4:2x4 =500)
 
         // Vanilla connection (default)
-        beam1 -[TF>100 BD<50]- beam2
+        beam1 -[TF>80 BD<50]- beam2
 
         // Dowel connection
         beam2 -[LT<0 RT<0 D(5.0,25.0)]- beam3

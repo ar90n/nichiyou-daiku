@@ -21,7 +21,7 @@ def create_bound_anchor(
     contact_face: str,
     edge_shared_face: str,
     offset_type: str = "min",
-    offset_value: float = 100.0,
+    offset_value: float = 10.0,
     piece_id: str = "test",
 ) -> BoundAnchor:
     """Helper to create BoundAnchor for testing."""
@@ -49,7 +49,7 @@ class TestProjectJointIdentity:
             contact_face="front",
             edge_shared_face="top",
             offset_type="max",
-            offset_value=100.0,
+            offset_value=10.0,
             piece_id="src",
         )
         dst_bound = create_bound_anchor(
@@ -57,7 +57,7 @@ class TestProjectJointIdentity:
             contact_face="front",
             edge_shared_face="top",
             offset_type="min",
-            offset_value=50.0,
+            offset_value=5.0,
             piece_id="dst",
         )
 
@@ -81,7 +81,7 @@ class TestProjectJointAxisFlip:
             contact_face="top",
             edge_shared_face="front",
             offset_type="min",
-            offset_value=100.0,
+            offset_value=10.0,
             piece_id="src",
         )
         dst_bound = create_bound_anchor(
@@ -89,7 +89,7 @@ class TestProjectJointAxisFlip:
             contact_face="down",
             edge_shared_face="front",
             offset_type="min",
-            offset_value=50.0,
+            offset_value=5.0,
             piece_id="dst",
         )
 
@@ -105,7 +105,7 @@ class TestProjectJointAxisFlip:
             contact_face="left",
             edge_shared_face="top",
             offset_type="max",
-            offset_value=100.0,
+            offset_value=10.0,
             piece_id="src",
         )
         dst_bound = create_bound_anchor(
@@ -113,7 +113,7 @@ class TestProjectJointAxisFlip:
             contact_face="right",
             edge_shared_face="top",
             offset_type="min",
-            offset_value=50.0,
+            offset_value=5.0,
             piece_id="dst",
         )
 
@@ -133,7 +133,7 @@ class TestProjectJointAxisTranspose:
             contact_face="front",
             edge_shared_face="top",
             offset_type="max",
-            offset_value=100.0,
+            offset_value=10.0,
             piece_id="src",
         )
         dst_bound = create_bound_anchor(
@@ -141,7 +141,7 @@ class TestProjectJointAxisTranspose:
             contact_face="top",
             edge_shared_face="front",
             offset_type="min",
-            offset_value=50.0,
+            offset_value=5.0,
             piece_id="dst",
         )
 
@@ -157,7 +157,7 @@ class TestProjectJointAxisTranspose:
             contact_face="left",
             edge_shared_face="front",
             offset_type="max",
-            offset_value=100.0,
+            offset_value=10.0,
             piece_id="src",
         )
         dst_bound = create_bound_anchor(
@@ -165,7 +165,7 @@ class TestProjectJointAxisTranspose:
             contact_face="front",
             edge_shared_face="left",
             offset_type="min",
-            offset_value=50.0,
+            offset_value=5.0,
             piece_id="dst",
         )
 
@@ -189,7 +189,7 @@ class TestProjectJointOffsetPreservation:
             contact_face="front",
             edge_shared_face="top",
             offset_type="max",
-            offset_value=200.0,
+            offset_value=20.0,
             piece_id="src",
         )
         dst_bound = create_bound_anchor(
@@ -197,7 +197,7 @@ class TestProjectJointOffsetPreservation:
             contact_face="front",
             edge_shared_face="top",
             offset_type="min",
-            offset_value=100.0,
+            offset_value=10.0,
             piece_id="dst",
         )
 
@@ -232,7 +232,7 @@ class TestProjectJointOrientationCalculation:
             contact_face="front",
             edge_shared_face="top",
             offset_type="max",
-            offset_value=100.0,
+            offset_value=10.0,
             piece_id="src",
         )
         dst_bound = create_bound_anchor(
@@ -240,7 +240,7 @@ class TestProjectJointOrientationCalculation:
             contact_face="down",
             edge_shared_face="front",
             offset_type="min",
-            offset_value=50.0,
+            offset_value=5.0,
             piece_id="dst",
         )
 
@@ -282,7 +282,7 @@ class TestProjectJointParametrized:
             contact_face=src_contact,
             edge_shared_face=src_edge,
             offset_type="max",
-            offset_value=100.0,
+            offset_value=10.0,
             piece_id="src",
         )
         dst_bound = create_bound_anchor(
@@ -290,7 +290,7 @@ class TestProjectJointParametrized:
             contact_face=dst_contact,
             edge_shared_face=dst_edge,
             offset_type="min",
-            offset_value=50.0,
+            offset_value=5.0,
             piece_id="dst",
         )
 

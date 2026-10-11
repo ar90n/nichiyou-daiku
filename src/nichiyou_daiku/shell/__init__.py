@@ -21,13 +21,15 @@ __all__ = [
     "AnchorInfo",
 ]
 
-# Only expose assembly_to_build123d if build123d is available
-try:
-    from .build123d_export import HAS_BUILD123D
+# build123d_export imports build123d lazily, so it is always importable;
+# only advertise its functions when build123d is installed.
+from .build123d_export import HAS_BUILD123D
 
-    if HAS_BUILD123D:
-        from .build123d_export import assembly_to_build123d  # noqa: F401
+if HAS_BUILD123D:
+    from .build123d_export import (  # noqa: F401
+        assembly_to_build123d,
+        check_overlap,
+        find_joint_mismatches,
+    )
 
-        __all__.append("assembly_to_build123d")
-except ImportError:
-    pass
+    __all__ += ["assembly_to_build123d", "check_overlap", "find_joint_mismatches"]

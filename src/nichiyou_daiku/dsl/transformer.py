@@ -1,7 +1,6 @@
 """AST transformer for converting Lark parse trees to nichiyou-daiku models."""
 
-from dataclasses import dataclass, field
-from typing import Any, TypeVar, cast
+from typing import Any, cast
 
 from lark import Token, Transformer
 
@@ -17,32 +16,15 @@ from nichiyou_daiku.core.geometry.face import Face
 from nichiyou_daiku.core.geometry.offset import FromMax, FromMin, Offset
 from nichiyou_daiku.core.model import Model
 from nichiyou_daiku.core.piece import Piece, PieceType
+from nichiyou_daiku.core.screw import as_spec as as_screw_spec
 from nichiyou_daiku.core.screw import find_preset as find_screw_preset
+from nichiyou_daiku.core.dowel import as_spec as as_dowel_spec
 from nichiyou_daiku.core.dowel import find_preset as find_dowel_preset
 from nichiyou_daiku.dsl.exceptions import DSLSemanticError, DSLValidationError
 
-# Type variable for connection types
-T = TypeVar("T", DowelConnection, ScrewConnection)
-
-
-@dataclass
-class PieceComponents:
-    """Components parsed from a piece definition."""
-
-    piece_id: str | None = None
-    piece_type: PieceType | None = None
-    props: dict[str, Any] = field(default_factory=dict)
-    length_value: float | None = None
-
-
-@dataclass
-class ConnectionComponents:
-    """Components parsed from a connection definition."""
-
-    piece_refs: list[str] = field(default_factory=list)
-    anchor_props_list: list[dict] = field(default_factory=list)
-    compact_anchor_list: list[Anchor] = field(default_factory=list)
-    connection_type: ConnectionType | None = None
+# Keys accepted in JSON property objects; "note" is a free-form annotation.
+PIECE_PROPERTIES = ("length", "note")
+ANCHOR_PROPERTIES = ("contact_face", "edge_shared_face", "offset")
 
 
 class DSLTransformer(Transformer):
@@ -61,66 +43,7 @@ class DSLTransformer(Transformer):
     def __init__(self):
         super().__init__()
         self.pieces: dict[str, Piece] = {}
-        self.connections: list[Connection] = []
-
-    # =========================================================================
-    # Helper methods for reducing code duplication
-    # =========================================================================
-
-    def _extract_numbers(self, items: list[Any], count: int = 2) -> list[float]:
-        """Extract numeric values from transformer items.
-
-        Args:
-            items: List of items from transformer
-            count: Expected number of numeric values
-
-        Returns:
-            List of float values
-
-        Raises:
-            DSLValidationError: If the number of values doesn't match count
-        """
-        numbers = [
-            float(item)
-            for item in items
-            if isinstance(item, Token) and item.type == "NUMBER"
-        ]
-        if len(numbers) != count:
-            raise DSLValidationError(f"Expected {count} numbers, got {len(numbers)}")
-        return numbers
-
-    def _extract_connection_type(
-        self, items: list[Any], conn_type: type[T], type_name: str
-    ) -> T:
-        """Extract a connection type from items.
-
-        Args:
-            items: List of items from transformer
-            conn_type: The connection type class to look for
-            type_name: Human-readable name for error messages
-
-        Returns:
-            The matching connection type instance
-
-        Raises:
-            DSLValidationError: If no matching connection type is found
-        """
-        for item in items:
-            if isinstance(item, conn_type):
-                return item
-        raise DSLValidationError(f"Invalid {type_name} format: {items}")
-
-    def _is_token_type(self, item: Any, token_type: str) -> bool:
-        """Check if an item is a Token of a specific type.
-
-        Args:
-            item: The item to check
-            token_type: The expected token type
-
-        Returns:
-            True if item is a Token of the specified type
-        """
-        return isinstance(item, Token) and item.type == token_type
+        self.connections: dict[tuple[str, str], Connection] = {}
 
     # =========================================================================
     # Entry points
@@ -128,12 +51,9 @@ class DSLTransformer(Transformer):
 
     def start(self, items: list[Any]) -> Model:
         """Transform the start rule into a Model."""
-        if not self.pieces:
-            raise DSLSemanticError("No pieces defined in the DSL")
-
         return Model.of(
             pieces=list(self.pieces.values()),
-            connections=self.connections,
+            connections=self.connections.values(),
         )
 
     def statement(self, items: list[Any]) -> Any:
@@ -142,63 +62,25 @@ class DSLTransformer(Transformer):
 
     def piece_def(self, items: list[Any]) -> None:
         """Transform a piece definition."""
-        components = self._parse_piece_components(items)
-        piece = self._create_piece_from_components(components)
-        self._register_piece(piece)
+        *id_token, type_token, length_or_props = items
+        if isinstance(length_or_props, dict):
+            length = self._length_from_props(length_or_props)
+        else:
+            length = length_or_props
+        piece_id = str(id_token[0]) if id_token else None
+        self._register_piece(Piece.of(PieceType.of(str(type_token)), length, piece_id))
 
-    def _parse_piece_components(self, items: list[Any]) -> PieceComponents:
-        """Parse items into piece components."""
-        components = PieceComponents()
-
-        for item in items:
-            if not isinstance(item, (Token, dict, float, int)):
-                continue
-
-            if isinstance(item, dict):
-                components.props = item
-            elif isinstance(item, (float, int)):
-                components.length_value = float(item)
-            elif isinstance(item, Token):
-                match item.type:
-                    case "CNAME":
-                        components.piece_id = str(item)
-                    case "PIECE_TYPE":
-                        components.piece_type = self._parse_piece_type(item)
-
-        return components
-
-    def _parse_piece_type(self, token: Token) -> PieceType:
-        """Parse a piece type token."""
-        try:
-            return PieceType.of(str(token))
-        except ValueError:
-            raise DSLValidationError(f"Invalid piece type: {token}")
-
-    def _create_piece_from_components(self, components: PieceComponents) -> Piece:
-        """Create a Piece from parsed components."""
-        # Early return for missing piece type
-        if components.piece_type is None:
-            raise DSLSemanticError("Piece type is required")
-
-        length = self._extract_length(components)
-        return Piece.of(components.piece_type, length, components.piece_id)
-
-    def _extract_length(self, components: PieceComponents) -> float:
-        """Extract length from components."""
-        # Compact notation length takes precedence
-        if components.length_value is not None:
-            return components.length_value
-
-        # Extract from props
-        if "length" not in components.props:
+    def _length_from_props(self, props: dict[str, Any]) -> float:
+        """Extract the piece length from JSON properties."""
+        if "length" not in props:
             raise DSLValidationError("Piece must have a 'length' property")
 
-        try:
-            return float(components.props["length"])
-        except (TypeError, ValueError):
+        length = props["length"]
+        if not isinstance(length, (int, float)):
             raise DSLValidationError(
-                f"Invalid length value: {components.props['length']}"
+                f"Piece property 'length' must be a number, got {length!r}"
             )
+        return float(length)
 
     def _register_piece(self, piece: Piece) -> None:
         """Register a piece, checking for duplicates."""
@@ -208,16 +90,21 @@ class DSLTransformer(Transformer):
 
     def piece_props(self, items: list[Any]) -> dict[str, Any]:
         """Transform piece properties into a dictionary."""
-        if not items:
-            return {}
-        return items[0] if items else {}
+        props = items[0] if items else {}
+        _reject_unknown_properties(props, PIECE_PROPERTIES, "piece")
+        return props
 
     def prop_list(self, items: list[dict[str, Any]]) -> dict[str, Any]:
-        """Combine multiple properties into a single dictionary."""
-        result = {}
+        """Combine properties into a single dictionary, rejecting repeated keys."""
+        result: dict[str, Any] = {}
         for prop in items:
-            result.update(prop)
+            for key, value in prop.items():
+                if key in result:
+                    raise DSLValidationError(f"Duplicate property '{key}'")
+                result[key] = value
         return result
+
+    anchor_prop_list = prop_list
 
     def prop(self, items: list[Any]) -> dict[str, Any]:
         """Transform a single property."""
@@ -232,79 +119,25 @@ class DSLTransformer(Transformer):
 
     def connection_def(self, items: list[Any]) -> None:
         """Transform a connection definition."""
-        components = self._parse_connection_components(items)
-        self._validate_connection_components(components)
+        base_ref, body, target_ref = items
+        base_anchor, target_anchor, *connection_type = body
+        base_id, target_id = self._validate_piece_references([base_ref, target_ref])
 
-        anchors = self._create_anchors_from_components(components)
-        piece_ids = self._validate_piece_references(components.piece_refs)
-
-        self._register_connection(piece_ids, anchors, components.connection_type)
-
-    def _parse_connection_components(self, items: list[Any]) -> ConnectionComponents:
-        """Parse items into connection components."""
-        components = ConnectionComponents()
-
-        def process_item(item: Any) -> None:
-            """Process a single item, recursively handling lists."""
-            if isinstance(item, list):
-                for sub_item in item:
-                    process_item(sub_item)
-            elif isinstance(item, str):
-                components.piece_refs.append(item)
-            elif isinstance(item, dict):
-                components.anchor_props_list.append(item)
-            elif isinstance(item, Anchor):
-                components.compact_anchor_list.append(item)
-            elif isinstance(
-                item, (VanillaConnection, DowelConnection, ScrewConnection)
-            ):
-                components.connection_type = item
-
-        for item in items:
-            process_item(item)
-
-        return components
-
-    def _validate_connection_components(self, components: ConnectionComponents) -> None:
-        """Validate connection components."""
-        # Early return for piece reference validation
-        if len(components.piece_refs) != 2:
-            raise DSLSemanticError("Connection must have exactly two piece references")
-
-        # Check format mixing
-        has_json = bool(components.anchor_props_list)
-        has_compact = bool(components.compact_anchor_list)
-
-        if has_json and has_compact:
+        # Mirrors Model.of, but here the error can point at this statement.
+        if (base_id, target_id) in self.connections or (
+            target_id,
+            base_id,
+        ) in self.connections:
             raise DSLSemanticError(
-                "Connection must use either JSON format or compact format, not both"
+                f"Duplicate connection between '{base_id}' and '{target_id}': "
+                "only one connection per piece pair is supported"
             )
 
-        if has_json and len(components.anchor_props_list) != 2:
-            raise DSLSemanticError(
-                "Connection must have exactly two anchor property sets"
-            )
-
-        if has_compact and len(components.compact_anchor_list) != 2:
-            raise DSLSemanticError(
-                "Connection must have exactly two compact anchor definitions"
-            )
-
-        if not has_json and not has_compact:
-            raise DSLSemanticError("Connection must have anchor definitions")
-
-    def _create_anchors_from_components(
-        self, components: ConnectionComponents
-    ) -> tuple[Anchor, Anchor]:
-        """Create anchors from components."""
-        if components.anchor_props_list:
-            return (
-                self._create_anchor(components.anchor_props_list[0]),
-                self._create_anchor(components.anchor_props_list[1]),
-            )
-
-        # Compact format
-        return (components.compact_anchor_list[0], components.compact_anchor_list[1])
+        self.connections[(base_id, target_id)] = Connection(
+            base=BoundAnchor(piece=self.pieces[base_id], anchor=base_anchor),
+            target=BoundAnchor(piece=self.pieces[target_id], anchor=target_anchor),
+            type=connection_type[0] if connection_type else VanillaConnection(),
+        )
 
     def _validate_piece_references(self, piece_refs: list[str]) -> tuple[str, str]:
         """Validate piece references exist and return their IDs."""
@@ -318,45 +151,13 @@ class DSLTransformer(Transformer):
 
         return base_id, target_id
 
-    def _register_connection(
-        self,
-        piece_ids: tuple[str, str],
-        anchors: tuple[Anchor, Anchor],
-        connection_type: ConnectionType | None = None,
-    ) -> None:
-        """Register a connection between pieces."""
-        base_id, target_id = piece_ids
-        base_anchor, target_anchor = anchors
-
-        # Use VanillaConnection as default if not specified
-        conn_type = (
-            connection_type if connection_type is not None else VanillaConnection()
-        )
-
-        connection = Connection(
-            base=BoundAnchor(piece=self.pieces[base_id], anchor=base_anchor),
-            target=BoundAnchor(piece=self.pieces[target_id], anchor=target_anchor),
-            type=conn_type,
-        )
-
-        self.connections.append(connection)
-
     def piece_ref(self, items: list[Token]) -> str:
         """Transform a piece reference."""
         return str(items[0])
 
-    def anchor_props(self, items: list[Any]) -> dict[str, Any]:
-        """Transform anchor properties."""
-        if not items:
-            return {}
-        return items[0] if items else {}
-
-    def anchor_prop_list(self, items: list[dict[str, Any]]) -> dict[str, Any]:
-        """Combine multiple anchor properties."""
-        result = {}
-        for prop in items:
-            result.update(prop)
-        return result
+    def anchor_props(self, items: list[Any]) -> Anchor:
+        """Transform JSON anchor properties into an Anchor."""
+        return self._create_anchor(items[0] if items else {})
 
     def anchor_prop(self, items: list[Any]) -> dict[str, Any]:
         """Transform a single anchor property."""
@@ -369,40 +170,12 @@ class DSLTransformer(Transformer):
 
         return {key: value}
 
-    def offset_value(self, items: list[Any]) -> Offset:
-        """Transform an offset value."""
-        offset_type = None
-        value = None
-
-        for item in items:
-            if not isinstance(item, Token):
-                continue
-
-            match item.type:
-                case "FROM_MIN":
-                    offset_type = "FromMin"
-                case "FROM_MAX":
-                    offset_type = "FromMax"
-                case "NUMBER":
-                    value = float(item)
-
-        if value is None:
-            raise DSLValidationError("Offset value is required")
-
-        if offset_type is None:
-            raise DSLValidationError(f"Invalid offset type in items: {items}")
-
-        return self._create_offset(offset_type, value)
-
-    def _create_offset(self, offset_type: str, value: float) -> Offset:
-        """Create an Offset instance based on type."""
-        match offset_type:
-            case "FromMin":
-                return FromMin(value=value)
-            case "FromMax":
-                return FromMax(value=value)
-            case _:
-                raise DSLValidationError(f"Unknown offset type: {offset_type}")
+    def offset_value(self, items: list[Token]) -> Offset:
+        """Transform an offset value: FromMin(NUMBER) or FromMax(NUMBER)."""
+        kind, number = items
+        if kind.type == "FROM_MIN":
+            return FromMin(value=float(number))
+        return FromMax(value=float(number))
 
     def value(self, items: list[Any]) -> Any:
         """Transform a value (string, number, or offset)."""
@@ -416,6 +189,7 @@ class DSLTransformer(Transformer):
 
     def _create_anchor(self, props: dict[str, Any]) -> Anchor:
         """Create an Anchor from properties."""
+        _reject_unknown_properties(props, ANCHOR_PROPERTIES, "anchor")
         contact_face = props.get("contact_face")
         edge_shared_face = props.get("edge_shared_face")
         offset = props.get("offset")
@@ -451,62 +225,23 @@ class DSLTransformer(Transformer):
 
     def compact_anchor_props(self, items: list[Any]) -> Anchor:
         """Transform compact anchor properties into an Anchor object."""
-        if len(items) != 3:
-            raise DSLValidationError(
-                f"Compact anchor must have exactly 3 components, got {len(items)}"
-            )
-
-        contact_face = self._parse_compact_face(items[0], "contact")
-        edge_shared_face = self._parse_compact_face(items[1], "edge_shared")
-        offset = items[2]
-
-        if not isinstance(offset, Offset):
-            raise DSLValidationError(f"Invalid offset type: {type(offset)}")
-
+        contact_face, edge_shared_face, offset = items
         return Anchor(
-            contact_face=contact_face, edge_shared_face=edge_shared_face, offset=offset
+            contact_face=self._parse_compact_face(contact_face),
+            edge_shared_face=self._parse_compact_face(edge_shared_face),
+            offset=offset,
         )
 
-    def _parse_compact_face(self, token: Any, context: str) -> Face:
-        """Parse a compact face token."""
-        if not isinstance(token, Token) or token.type != "COMPACT_FACE":
-            raise DSLValidationError(f"Invalid {context} face token: {token}")
+    def _parse_compact_face(self, token: Token) -> Face:
+        """Parse a compact face token (one of T, D, L, R, F, B)."""
+        return cast(Face, self.FACE_MAPPING[str(token)])
 
-        face_char = str(token)
-        if face_char not in self.FACE_MAPPING:
-            raise DSLValidationError(f"Invalid compact face notation: {face_char}")
-
-        return cast(Face, self.FACE_MAPPING[face_char])
-
-    def compact_offset(self, items: list[Any]) -> Offset:
-        """Transform compact offset notation into an Offset object."""
-        if len(items) != 2:
-            raise DSLValidationError(
-                f"Compact offset must have exactly 2 components, got {len(items)}"
-            )
-
-        offset_type_token = items[0]
-        number_token = items[1]
-
-        # Validate number token
-        if not isinstance(number_token, Token) or number_token.type != "NUMBER":
-            raise DSLValidationError(f"Invalid number token: {number_token}")
-        if not isinstance(offset_type_token, Token):
-            raise DSLValidationError(
-                f"Invalid compact offset type: {offset_type_token}"
-            )
-
-        # Use match for cleaner offset type handling
-        value = float(number_token)
-        match offset_type_token.type:
-            case "COMPACT_FROM_MIN":
-                return FromMin(value=value)
-            case "COMPACT_FROM_MAX":
-                return FromMax(value=value)
-            case _:
-                raise DSLValidationError(
-                    f"Unknown offset type: {offset_type_token.type}"
-                )
+    def compact_offset(self, items: list[Token]) -> Offset:
+        """Transform compact offset notation (<NUMBER or >NUMBER)."""
+        kind, number = items
+        if kind.type == "COMPACT_FROM_MIN":
+            return FromMin(value=float(number))
+        return FromMax(value=float(number))
 
     # ConnectionType transformers (JSON format)
     def connection_body(self, items: list[Any]) -> list[Any]:
@@ -526,27 +261,24 @@ class DSLTransformer(Transformer):
         return VanillaConnection()
 
     def type_dowel(self, items: list[Any]) -> DowelConnection:
-        """Transform dowel connection type."""
-        radius, depth = self._extract_numbers(items)
+        """Transform a dowel connection type: JSON or compact D(radius, depth)."""
+        radius, depth = _numbers(items)
         return DowelConnection(radius=radius, depth=depth)
 
+    dowel_numeric = type_dowel
+
     def type_screw(self, items: list[Any]) -> ScrewConnection:
-        """Transform screw connection type (JSON format)."""
-        diameter, length = self._extract_numbers(items)
+        """Transform a screw connection type: JSON or compact S(diameter, length)."""
+        diameter, length = _numbers(items)
         return ScrewConnection(diameter=diameter, length=length)
+
+    screw_numeric = type_screw
 
     # ConnectionType transformers (Compact format)
     def compact_connection_type(self, items: list[Any]) -> ConnectionType:
-        """Transform compact connection type."""
-        if not items:
-            return VanillaConnection()
+        """Transform compact connection type: V, D(...) or S(...)."""
         item = items[0]
-        if isinstance(item, Token) and item.type == "COMPACT_VANILLA":
-            return VanillaConnection()
-        # At this point, item should be a DowelConnection or ScrewConnection
-        if isinstance(item, (DowelConnection, ScrewConnection)):
-            return item
-        return VanillaConnection()  # fallback
+        return VanillaConnection() if isinstance(item, Token) else item
 
     def dowel_compact(self, items: list[Any]) -> DowelConnection:
         """Transform compact dowel connection type.
@@ -554,26 +286,19 @@ class DSLTransformer(Transformer):
         Supports both numeric format D(radius, depth) and
         preset format D(:diameterxlength).
         """
-        return self._extract_connection_type(items, DowelConnection, "dowel")
-
-    def dowel_numeric(self, items: list[Any]) -> DowelConnection:
-        """Transform numeric dowel format D(radius, depth)."""
-        radius, depth = self._extract_numbers(items)
-        return DowelConnection(radius=radius, depth=depth)
+        # items[0] is the DOWEL_START token.
+        return items[-1]
 
     def dowel_preset(self, items: list[Any]) -> DowelConnection:
         """Transform preset dowel format D(:diameterxlength)."""
-        diameter, length = self._extract_numbers(items)
+        diameter, length = _numbers(items)
 
-        # Validate the preset exists
         preset = find_dowel_preset(diameter, length)
         if preset is None:
-            raise DSLValidationError(
-                f"Unknown dowel preset: {int(diameter)}x{int(length)}"
-            )
+            raise DSLValidationError(f"Unknown dowel preset: {_size_text(items)}")
 
-        # Convert diameter to radius for DowelConnection
-        return DowelConnection(radius=diameter / 2, depth=length)
+        spec = as_dowel_spec(preset)
+        return DowelConnection(radius=spec.diameter / 2, depth=spec.length)
 
     def screw_compact(self, items: list[Any]) -> ScrewConnection:
         """Transform compact screw connection type.
@@ -581,32 +306,43 @@ class DSLTransformer(Transformer):
         Supports both numeric format S(diameter, length) and
         preset format S(Slim:diameter x length) or S(Coarse:diameter x length).
         """
-        return self._extract_connection_type(items, ScrewConnection, "screw")
-
-    def screw_numeric(self, items: list[Any]) -> ScrewConnection:
-        """Transform numeric screw notation: S(diameter, length)."""
-        diameter, length = self._extract_numbers(items)
-        return ScrewConnection(diameter=diameter, length=length)
+        # items[0] is the SCREW_START token.
+        return items[-1]
 
     def screw_preset(self, items: list[Any]) -> ScrewConnection:
         """Transform preset screw notation: Slim:3.3x50 or Coarse:3.8x57."""
-        # Extract screw type
-        screw_type: str | None = None
-        for item in items:
-            if self._is_token_type(item, "SCREW_TYPE"):
-                screw_type = str(item)
-                break
+        screw_type = str(items[0])
+        diameter, length = _numbers(items)
 
-        if screw_type is None:
-            raise DSLValidationError("Screw preset must specify type (Slim or Coarse)")
-
-        diameter, length = self._extract_numbers(items)
-
-        # Validate the preset exists
         preset = find_screw_preset(screw_type, diameter, length)
         if preset is None:
             raise DSLValidationError(
-                f"Unknown {screw_type} screw preset: {diameter}x{int(length)}"
+                f"Unknown {screw_type} screw preset: {_size_text(items)}"
             )
 
-        return ScrewConnection(diameter=diameter, length=length)
+        spec = as_screw_spec(preset)
+        return ScrewConnection(diameter=spec.diameter, length=spec.length)
+
+
+def _number_tokens(items: list[Any]) -> list[Token]:
+    return [item for item in items if isinstance(item, Token) and item.type == "NUMBER"]
+
+
+def _numbers(items: list[Any]) -> list[float]:
+    """Extract the NUMBER tokens of a rule as floats."""
+    return [float(token) for token in _number_tokens(items)]
+
+
+def _size_text(items: list[Any]) -> str:
+    """Render a preset size exactly as written, e.g. ``8.9x30.7``."""
+    return "x".join(_number_tokens(items))
+
+
+def _reject_unknown_properties(
+    props: dict[str, Any], allowed: tuple[str, ...], kind: str
+) -> None:
+    for key in props:
+        if key not in allowed:
+            raise DSLValidationError(
+                f"Unknown {kind} property '{key}' (allowed: {', '.join(allowed)})"
+            )

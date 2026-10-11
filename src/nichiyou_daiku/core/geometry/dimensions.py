@@ -9,22 +9,9 @@ from typing import Annotated
 from pydantic import BaseModel, Field
 
 # Use Annotated for both type checking and validation
+# A non-negative float of millimeters, for dimensions where negative values
+# make no sense. The constraint is enforced when used as a pydantic field.
 Millimeters = Annotated[float, Field(ge=0)]
-"""A non-negative float representing millimeters.
-
-Used for all dimensions where negative values don't make sense (width, height, length).
-
->>> from pydantic import ValidationError
->>> import pytest
->>> Millimeters(10.5)
-10.5
->>> Millimeters(0.001)  # Even very small positive values are valid
-0.001
->>> Millimeters(0.0)  # Zero is now allowed
-0.0
->>> with pytest.raises(ValidationError):
-...     Millimeters(-5)  # Negative values are not allowed
-"""
 
 
 class Shape2D(BaseModel, frozen=True):
@@ -37,11 +24,11 @@ class Shape2D(BaseModel, frozen=True):
         height: Height in millimeters (must be non-negative)
 
     Examples:
-        >>> shape = Shape2D(width=38.0, height=89.0)  # 2x4 actual dimensions
+        >>> shape = Shape2D(width=89.0, height=38.0)  # 2x4 actual dimensions
         >>> shape.width
-        38.0
-        >>> shape.height
         89.0
+        >>> shape.height
+        38.0
         >>> # Immutable - cannot modify after creation
         >>> from pydantic import ValidationError
         >>> import pytest
@@ -64,7 +51,7 @@ class Shape3D(BaseModel, frozen=True):
         length: Length in millimeters (must be non-negative)
 
     Examples:
-        >>> shape = Shape3D(width=38.0, height=89.0, length=1000.0)
+        >>> shape = Shape3D(width=89.0, height=38.0, length=1000.0)
         >>> shape.length
         1000.0
         >>> # Zero dimensions are now allowed
@@ -75,7 +62,7 @@ class Shape3D(BaseModel, frozen=True):
         >>> from pydantic import ValidationError
         >>> import pytest
         >>> with pytest.raises(ValidationError):
-        ...     Shape3D(width=38.0, height=89.0, length=-100)
+        ...     Shape3D(width=89.0, height=38.0, length=-100)
     """
 
     width: Millimeters

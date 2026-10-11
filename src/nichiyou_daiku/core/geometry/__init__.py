@@ -28,6 +28,7 @@ from .coordinates import (
     Orientation3D,
     Orientation,
     SurfacePoint,
+    edge_length_of,
 )
 from .offset import Offset, FromMax, FromMin
 
@@ -58,6 +59,7 @@ __all__ = [
     "Point2D",
     "Vector2D",
     "Point3D",
+    "edge_length_of",
     "Vector3D",
     "Orientation",
     "Orientation3D",

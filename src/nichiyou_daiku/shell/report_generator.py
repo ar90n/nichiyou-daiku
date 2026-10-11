@@ -48,16 +48,39 @@ def _get_default_standard_lengths() -> Dict[PieceType, List[float]]:
     }
 
 
-def _optimize_cuts(
+def _mm(value: float) -> str:
+    """Format a length to 0.1mm, dropping a trailing ".0"."""
+    return f"{value:.1f}".removesuffix(".0")
+
+
+DEFAULT_KERF_MM = 3.0
+"""Material removed by each saw cut."""
+
+
+def _oversize_pieces(
     pieces: List[PieceResource], available_lengths: List[float]
+) -> List[PieceResource]:
+    """Pieces longer than every available board (cannot be cut from stock)."""
+    longest = max(available_lengths)
+    return [p for p in pieces if p.length > longest]
+
+
+def _optimize_cuts(
+    pieces: List[PieceResource],
+    available_lengths: List[float],
+    kerf: float = DEFAULT_KERF_MM,
 ) -> List[CutPlan]:
     """Optimize piece cutting to minimize waste.
 
-    Uses a simple first-fit decreasing algorithm to minimize waste.
+    Uses a simple first-fit decreasing algorithm to minimize waste. Every cut
+    removes ``kerf`` mm, except that a piece ending exactly at the board end
+    needs no final cut. Pieces longer than every board are left out; see
+    ``_oversize_pieces``.
 
     Args:
         pieces: List of pieces to cut (all same lumber type)
         available_lengths: Available standard board lengths in mm
+        kerf: Material removed by each saw cut in mm
 
     Returns:
         List of cut plans showing how to cut pieces from standard boards
@@ -70,7 +93,7 @@ def _optimize_cuts(
         ...     PieceResource(id="p2", type=PieceType.PT_2x4, length=800.0,
         ...                  width=89.0, height=38.0, volume=0)
         ... ]
-        >>> plans = _optimize_cuts(pieces, [2440.0])
+        >>> plans = _optimize_cuts(pieces, [2440.0], kerf=3.0)
         >>> len(plans)
         1
         >>> plans[0].board_length
@@ -78,21 +101,23 @@ def _optimize_cuts(
         >>> len(plans[0].cuts)
         2
         >>> plans[0].waste
-        640.0
+        634.0
     """
+    oversize = {p.id for p in _oversize_pieces(pieces, available_lengths)}
     # Sort pieces by length (descending) for better optimization
-    sorted_pieces = sorted(pieces, key=lambda p: p.length, reverse=True)
+    remaining_pieces = sorted(
+        (p for p in pieces if p.id not in oversize),
+        key=lambda p: p.length,
+        reverse=True,
+    )
 
     # Sort available lengths (ascending) to prefer smaller boards when possible
     sorted_lengths = sorted(available_lengths)
 
     cut_plans = []
-    remaining_pieces = sorted_pieces.copy()
-
     while remaining_pieces:
         # Find the best board length for remaining pieces
         best_plan = None
-        best_waste = float("inf")
         best_remaining = remaining_pieces
 
         for board_length in sorted_lengths:
@@ -102,38 +127,38 @@ def _optimize_cuts(
 
             # Try to fit as many pieces as possible
             for piece in remaining_pieces:
-                if used_length + piece.length <= board_length:
+                needed = piece.length + (kerf if cuts else 0.0)
+                if used_length + needed <= board_length:
                     cuts.append((piece.id, piece.length))
-                    used_length += piece.length
+                    used_length += needed
                     temp_remaining.remove(piece)
 
             if cuts:  # If we can fit at least one piece
-                waste = board_length - used_length
-                if waste < best_waste:
-                    best_waste = waste
+                # Separating the offcut takes one more cut
+                waste = max(0.0, board_length - used_length - kerf)
+                if best_plan is None or waste < best_plan.waste:
                     best_plan = CutPlan(
                         board_length=board_length, cuts=cuts, waste=waste
                     )
                     best_remaining = temp_remaining
 
-        if best_plan:
-            cut_plans.append(best_plan)
-            remaining_pieces = best_remaining
-        else:
-            # If no standard length can fit the largest remaining piece
-            # Use the largest available length
-            largest_piece = remaining_pieces[0]
-            largest_length = max(sorted_lengths)
-            cut_plans.append(
-                CutPlan(
-                    board_length=largest_length,
-                    cuts=[(largest_piece.id, largest_piece.length)],
-                    waste=largest_length - largest_piece.length,
-                )
-            )
-            remaining_pieces.remove(largest_piece)
+        # Every remaining piece fits the longest board, so a plan always exists
+        assert best_plan is not None
+        cut_plans.append(best_plan)
+        remaining_pieces = best_remaining
 
     return cut_plans
+
+
+def _oversize_warning(
+    pieces: List[PieceResource], available_lengths: List[float]
+) -> List[str]:
+    longest = max(available_lengths)
+    return [
+        f"- ⚠ {p.id} ({_mm(p.length)}mm) is longer than the longest available "
+        f"board ({longest:.0f}mm) and cannot be cut from stock"
+        for p in _oversize_pieces(pieces, available_lengths)
+    ]
 
 
 def _generate_overview_section(summary: ResourceSummary, project_name: str) -> str:
@@ -187,7 +212,7 @@ def _generate_bill_of_materials(summary: ResourceSummary) -> str:
 
     for piece in sorted_pieces:
         lines.append(
-            f"| {piece.id} | {piece.type.value} | {piece.length:.0f} | "
+            f"| {piece.id} | {piece.type.value} | {_mm(piece.length)} | "
             f"{piece.width:.0f} | {piece.height:.0f} | {piece.volume:,.0f} |"
         )
 
@@ -220,13 +245,16 @@ def _generate_shopping_list(summary: ResourceSummary) -> str:
 
 
 def _generate_purchase_recommendations(
-    summary: ResourceSummary, standard_lengths: Dict[PieceType, List[float]]
+    summary: ResourceSummary,
+    standard_lengths: Dict[PieceType, List[float]],
+    kerf: float = DEFAULT_KERF_MM,
 ) -> str:
     """Generate purchase recommendations with cut optimization.
 
     Args:
         summary: Resource summary data
         standard_lengths: Available standard lengths per piece type
+        kerf: Material removed by each saw cut in mm
 
     Returns:
         Markdown formatted purchase recommendations
@@ -239,7 +267,7 @@ def _generate_purchase_recommendations(
             piece_type, [2440.0]
         )  # Default fallback
 
-        cut_plans = _optimize_cuts(pieces, available_lengths)
+        cut_plans = _optimize_cuts(pieces, available_lengths, kerf)
 
         # Calculate board requirements
         board_counts: Dict[float, int] = {}
@@ -273,21 +301,24 @@ def _generate_purchase_recommendations(
             count = board_counts[board_length]
             lines.append(f"- {count} × {board_length:.0f}mm boards")
 
-        lines.extend(
-            [f"Total waste: {total_waste:.0f}mm ({waste_percentage:.1f}%)", ""]
-        )
+        lines.append(f"Total waste: {_mm(total_waste)}mm ({waste_percentage:.1f}%)")
+        lines.extend(_oversize_warning(pieces, available_lengths))
+        lines.append("")
 
     return "\n".join(lines)
 
 
 def _generate_cut_list(
-    summary: ResourceSummary, standard_lengths: Dict[PieceType, List[float]]
+    summary: ResourceSummary,
+    standard_lengths: Dict[PieceType, List[float]],
+    kerf: float = DEFAULT_KERF_MM,
 ) -> str:
     """Generate optimized cut list with ASCII diagrams.
 
     Args:
         summary: Resource summary data
         standard_lengths: Available standard lengths per piece type
+        kerf: Material removed by each saw cut in mm
 
     Returns:
         Markdown formatted cut list
@@ -298,19 +329,22 @@ def _generate_cut_list(
         pieces = [p for p in summary.pieces if p.type == piece_type]
         available_lengths = standard_lengths.get(piece_type, [2440.0])
 
-        cut_plans = _optimize_cuts(pieces, available_lengths)
+        cut_plans = _optimize_cuts(pieces, available_lengths, kerf)
 
         lines.extend([f"### {piece_type.value} Boards", ""])
+        warnings = _oversize_warning(pieces, available_lengths)
+        if warnings:
+            lines.extend([*warnings, ""])
 
         for i, plan in enumerate(cut_plans, 1):
             lines.append(f"**Board {i}** ({plan.board_length:.0f}mm):")
 
             # Create simple cut list
             for piece_id, length in plan.cuts:
-                lines.append(f"- Cut {length:.0f}mm → {piece_id}")
+                lines.append(f"- Cut {_mm(length)}mm → {piece_id}")
 
             if plan.waste > 0:
-                lines.append(f"- Waste: {plan.waste:.0f}mm")
+                lines.append(f"- Waste: {_mm(plan.waste)}mm")
 
             lines.append("")
 
@@ -343,7 +377,9 @@ def _generate_anchor_details(summary: ResourceSummary) -> str:
 
     for piece in pieces_with_anchors:
         # Piece header with type and length
-        lines.extend([f"### {piece.id} ({piece.type.value}, {piece.length:.0f}mm)", ""])
+        lines.extend(
+            [f"### {piece.id} ({piece.type.value}, {_mm(piece.length)}mm)", ""]
+        )
 
         # Table header
         lines.extend(
@@ -445,9 +481,24 @@ def _generate_pilot_holes_section(summary: ResourceSummary) -> str:
         lines.append("")
         return "\n".join(lines)
 
+    lines.extend(
+        [
+            "Distances are measured on the face the hole is drilled into:",
+            "- front/back faces: *From Length Edge* from the down end, "
+            "*From Width Edge* from the left side",
+            "- left/right faces: *From Length Edge* from the down end, "
+            "*From Width Edge* from the back side",
+            "- top/down (end) faces: *From Length Edge* from the left side, "
+            "*From Width Edge* from the back side",
+            "",
+        ]
+    )
+
     for piece in pieces_with_holes:
         # Piece header
-        lines.extend([f"### {piece.id} ({piece.type.value}, {piece.length:.0f}mm)", ""])
+        lines.extend(
+            [f"### {piece.id} ({piece.type.value}, {_mm(piece.length)}mm)", ""]
+        )
 
         # Table header
         lines.extend(
@@ -462,7 +513,7 @@ def _generate_pilot_holes_section(summary: ResourceSummary) -> str:
 
         # Table rows
         for hole in piece.pilot_holes:
-            depth_str = f"{hole.depth:.1f}mm" if hole.depth else "through"
+            depth_str = f"{hole.depth:.1f}mm" if hole.depth is not None else "through"
             lines.append(
                 f"| {hole.face} | {hole.from_length_edge:.1f}mm | "
                 f"{hole.from_width_edge:.1f}mm | φ{hole.diameter:.1f}mm | {depth_str} |"
@@ -504,6 +555,7 @@ def generate_markdown_report(
     include_cut_diagram: bool = True,
     include_anchor_details: bool = True,
     include_pilot_holes: bool = True,
+    kerf: float = DEFAULT_KERF_MM,
 ) -> str:
     """Generate a complete markdown report from ResourceSummary.
 
@@ -515,6 +567,7 @@ def generate_markdown_report(
         include_cut_diagram: Whether to include cut list section
         include_anchor_details: Whether to include anchor details section
         include_pilot_holes: Whether to include pilot holes section
+        kerf: Material removed by each saw cut in mm, used for cut planning
 
     Returns:
         Complete markdown report as string
@@ -559,11 +612,11 @@ def generate_markdown_report(
 
     sections.append(_generate_shopping_list(resource_summary))
     sections.append(
-        _generate_purchase_recommendations(resource_summary, standard_lengths)
+        _generate_purchase_recommendations(resource_summary, standard_lengths, kerf)
     )
 
     if include_cut_diagram:
-        sections.append(_generate_cut_list(resource_summary, standard_lengths))
+        sections.append(_generate_cut_list(resource_summary, standard_lengths, kerf))
 
     # Add footer
     sections.append("---\n*Report generated by nichiyou-daiku*")

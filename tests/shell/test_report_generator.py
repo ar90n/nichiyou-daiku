@@ -79,7 +79,7 @@ class TestOptimizeCuts:
             ),
         ]
 
-        plans = _optimize_cuts(pieces, [2440.0])
+        plans = _optimize_cuts(pieces, [2440.0], kerf=0.0)
 
         assert len(plans) == 1
         assert plans[0].board_length == 2440.0
@@ -112,7 +112,7 @@ class TestOptimizeCuts:
             ),
         ]
 
-        plans = _optimize_cuts(pieces, [2440.0])
+        plans = _optimize_cuts(pieces, [2440.0], kerf=0.0)
 
         assert len(plans) == 2
         assert all(plan.board_length == 2440.0 for plan in plans)
@@ -132,7 +132,7 @@ class TestOptimizeCuts:
         ]
 
         # Should prefer the 1830mm board over 2440mm to minimize waste
-        plans = _optimize_cuts(pieces, [1830.0, 2440.0])
+        plans = _optimize_cuts(pieces, [1830.0, 2440.0], kerf=0.0)
 
         assert len(plans) == 1
         assert plans[0].board_length == 1830.0
@@ -142,6 +142,58 @@ class TestOptimizeCuts:
         """Should handle empty pieces list gracefully."""
         plans = _optimize_cuts([], [2440.0])
         assert plans == []
+
+
+def _piece(id_: str, length: float) -> PieceResource:
+    return PieceResource(
+        id=id_, type=PieceType.PT_2x4, length=length, width=89.0, height=38.0, volume=0
+    )
+
+
+class TestCutPlanKerf:
+    def test_saw_kerf_is_allowed_between_cuts(self):
+        # 3 x 813 = 2439mm fits 2440 only if the saw removes nothing
+        pieces = [_piece("a", 813.0), _piece("b", 813.0), _piece("c", 813.0)]
+        plans = _optimize_cuts(pieces, [2440.0], kerf=3.0)
+        assert len(plans) == 2
+
+    def test_offcut_excludes_kerf(self):
+        plans = _optimize_cuts(
+            [_piece("a", 1000.0), _piece("b", 800.0)], [2440.0], kerf=3.0
+        )
+        assert plans[0].waste == 634.0
+
+    def test_exact_fit_needs_no_final_cut(self):
+        plans = _optimize_cuts(
+            [_piece("a", 1218.5), _piece("b", 1218.5)], [2440.0], kerf=3.0
+        )
+        assert len(plans) == 1
+        assert plans[0].waste == 0.0
+
+
+class TestOversizePieces:
+    def test_piece_longer_than_every_board_is_not_planned(self):
+        pieces = [_piece("long", 4000.0), _piece("short", 500.0)]
+        plans = _optimize_cuts(pieces, [2440.0, 3050.0, 3660.0], kerf=0.0)
+        planned = [piece_id for plan in plans for piece_id, _ in plan.cuts]
+        assert planned == ["short"]
+        assert all(plan.waste >= 0 for plan in plans)
+
+    def test_report_warns_about_piece_longer_than_every_board(self):
+        summary = ResourceSummary(
+            pieces=[_piece("long", 4000.0)],
+            total_pieces=1,
+            pieces_by_type={PieceType.PT_2x4: 1},
+            total_length_by_type={PieceType.PT_2x4: 4000.0},
+            total_volume=0.0,
+        )
+        lengths = {PieceType.PT_2x4: [2440.0, 3050.0, 3660.0]}
+        for section in (
+            _generate_purchase_recommendations(summary, lengths),
+            _generate_cut_list(summary, lengths),
+        ):
+            assert "long" in section
+            assert "longer than" in section
 
 
 class TestGenerateOverviewSection:
@@ -271,7 +323,7 @@ class TestGeneratePurchaseRecommendations:
         assert "## Purchase Recommendations" in recommendations
         assert "2x4 Lumber (Available: 2440mm, 3050mm)" in recommendations
         assert "1 × 2440mm boards" in recommendations
-        assert "640mm" in recommendations  # Waste calculation
+        assert "634mm" in recommendations  # 640mm less two 3mm saw cuts
 
 
 class TestGenerateCutList:
@@ -315,7 +367,7 @@ class TestGenerateCutList:
         assert "Board 1" in cut_list
         assert "Cut 750mm → leg1" in cut_list
         assert "Cut 750mm → leg2" in cut_list
-        assert "Waste: 940mm" in cut_list
+        assert "Waste: 934mm" in cut_list  # 940mm less two 3mm saw cuts
 
 
 class TestGenerateMarkdownReport:
@@ -687,3 +739,47 @@ class TestGenerateMarkdownReportWithAnchors:
         assert anchor_pos > 0
         assert shopping_pos > 0
         assert bom_pos < anchor_pos < shopping_pos
+
+
+class TestLengthPrecision:
+    def test_half_millimetre_lengths_are_not_rounded_away(self):
+        summary = ResourceSummary(
+            pieces=[_piece("apron", 812.5)],
+            total_pieces=1,
+            pieces_by_type={PieceType.PT_2x4: 1},
+            total_length_by_type={PieceType.PT_2x4: 812.5},
+            total_volume=0.0,
+        )
+        lengths = {PieceType.PT_2x4: [2440.0]}
+        assert "| 812.5 |" in _generate_bill_of_materials(summary)
+        assert "Cut 812.5mm → apron" in _generate_cut_list(summary, lengths)
+
+
+class TestPilotHoleLegend:
+    def test_drilling_guide_says_where_distances_are_measured_from(self):
+        from nichiyou_daiku.shell.report_generator import _generate_pilot_holes_section
+        from nichiyou_daiku.shell.resources import PilotHoleInfo
+
+        piece = _piece("leg", 700.0).model_copy(
+            update={
+                "pilot_holes": [
+                    PilotHoleInfo(
+                        face="front",
+                        from_length_edge=100.0,
+                        from_width_edge=44.5,
+                        diameter=8.0,
+                        depth=15.0,
+                    )
+                ]
+            }
+        )
+        summary = ResourceSummary(
+            pieces=[piece],
+            total_pieces=1,
+            pieces_by_type={PieceType.PT_2x4: 1},
+            total_length_by_type={PieceType.PT_2x4: 700.0},
+            total_volume=0.0,
+        )
+        section = _generate_pilot_holes_section(summary)
+        assert "from the down end" in section
+        assert "from the left side" in section
