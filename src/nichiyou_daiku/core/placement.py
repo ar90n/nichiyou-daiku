@@ -129,6 +129,24 @@ def relative_rotation(base: BoundAnchor, target: BoundAnchor) -> np.ndarray:
     return np.rint(rotation).astype(int)
 
 
+def relative_pose(base: BoundAnchor, target: BoundAnchor) -> Pose:
+    """Pose of the target in the base's local coordinates for one connection."""
+    rotation = relative_rotation(base, target)
+    translation = _anchor_point(base) - rotation @ _anchor_point(target)
+    return Pose(
+        rotation=(
+            (int(rotation[0, 0]), int(rotation[0, 1]), int(rotation[0, 2])),
+            (int(rotation[1, 0]), int(rotation[1, 1]), int(rotation[1, 2])),
+            (int(rotation[2, 0]), int(rotation[2, 1]), int(rotation[2, 2])),
+        ),
+        translation=(
+            float(translation[0]),
+            float(translation[1]),
+            float(translation[2]),
+        ),
+    )
+
+
 def _anchor_point(bound: BoundAnchor) -> np.ndarray:
     point = as_point_3d(bound)
     return np.array([point.x, point.y, point.z])
