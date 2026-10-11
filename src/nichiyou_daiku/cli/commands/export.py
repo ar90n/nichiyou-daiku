@@ -11,8 +11,10 @@ from nichiyou_daiku.cli.utils import (
     convert_assembly_to_build123d,
     create_assembly_from_model,
     ensure_build123d_available,
+    ensure_not_overwriting_input,
     parse_dsl_to_model,
     read_dsl_file,
+    require_output_for_stdin,
 )
 
 
@@ -33,19 +35,61 @@ def detect_format_from_extension(suffix: str) -> Optional[str]:
     return None
 
 
+def resolve_export_target(
+    input_file: Path, output: Optional[Path], format: Optional[str]
+) -> tuple[Path, str]:
+    """Determine the output path and normalized format ('stl' or 'step').
+
+    Raises:
+        click.ClickException: If neither is given, the format cannot be
+            detected, or the -o extension contradicts -f
+    """
+    if format is None:
+        if output is None:
+            raise click.ClickException(
+                "Either output file (-o) or format (-f) must be specified."
+            )
+        detected = detect_format_from_extension(output.suffix)
+        if detected is None:
+            raise click.ClickException(
+                f"Cannot detect format from extension '{output.suffix}'. "
+                "Please specify format with -f option."
+            )
+        return output, detected
+
+    requested = "step" if format == "stp" else format
+    if output is None:
+        return input_file.with_suffix(f".{format}"), requested
+
+    detected = detect_format_from_extension(output.suffix)
+    if detected is not None and detected != requested:
+        raise click.ClickException(
+            f"Output extension '{output.suffix}' does not match format '{format}'."
+        )
+    return output, requested
+
+
 @click.command()
-@click.argument("input_file", type=click.Path(exists=True, path_type=Path))
+@click.argument("input_file", type=str)
 @click.option(
     "-o",
     "--output",
     type=click.Path(path_type=Path),
-    help="Output file path. If not specified, uses input filename with new extension.",
+    help=(
+        "Output file path. If not specified, uses the input filename with the "
+        "format's extension (required when reading from stdin). Never "
+        "overwrites the input file."
+    ),
 )
 @click.option(
     "-f",
     "--format",
     type=click.Choice(["stl", "step", "stp"], case_sensitive=False),
-    help="Export format. If not specified, detected from output file extension.",
+    help=(
+        "Export format. If not specified, detected from the output file "
+        "extension (.stl, .step, .stp). An error is raised if it contradicts "
+        "the output extension."
+    ),
 )
 @click.option(
     "--fillet-radius",
@@ -56,12 +100,14 @@ def detect_format_from_extension(suffix: str) -> Optional[str]:
 @click.pass_context
 def export(
     ctx: click.Context,
-    input_file: Path,
+    input_file: str,
     output: Optional[Path],
     format: Optional[str],
     fillet_radius: float,
 ) -> None:
     """Export DSL file to 3D format (STL or STEP).
+
+    INPUT_FILE: Path to .nd file or '-' for stdin
 
     \b
     Examples:
@@ -74,41 +120,12 @@ def export(
     # Check if build123d is available
     ensure_build123d_available(echo)
 
-    # Determine output format and filename
-    if format and output:
-        # Both specified, use as-is
-        output_path = output
-        export_format = format.lower()
-    elif output and not format:
-        # Output specified, detect format from extension
-        output_path = output
-        export_format = detect_format_from_extension(output.suffix)
-        if export_format is None:
-            echo.error(
-                f"Error: Cannot detect format from extension '{output.suffix}'. "
-                "Please specify format with -f option."
-            )
-            sys.exit(1)
-    elif format and not output:
-        # Format specified, generate output filename
-        export_format = format.lower()
-        if export_format == "stp":
-            export_format = "step"  # Normalize stp to step
-            ext = ".stp"
-        else:
-            ext = f".{export_format}"
-        output_path = input_file.with_suffix(ext)
-    else:
-        # Neither specified
-        echo.error("Error: Either output file (-o) or format (-f) must be specified.")
-        sys.exit(1)
-
-    # Normalize format
-    if export_format == "stp":
-        export_format = "step"
+    require_output_for_stdin(input_file, output)
+    output_path, export_format = resolve_export_target(Path(input_file), output, format)
+    ensure_not_overwriting_input(input_file, output_path)
 
     # Read and parse DSL file
-    dsl_content = read_dsl_file(str(input_file))
+    dsl_content = read_dsl_file(input_file)
     model = parse_dsl_to_model(dsl_content, echo)
     assembly = create_assembly_from_model(model, echo)
 
@@ -123,14 +140,16 @@ def export(
         from build123d import export_stl, export_step
 
         if export_format == "stl":
-            export_stl(compound, str(output_path))
-        elif export_format == "step":
-            export_step(compound, str(output_path))
+            # export_stl reports failure via its return value instead of raising
+            written = export_stl(compound, str(output_path))
         else:
-            echo.error(f"Error: Unsupported format '{export_format}'")
-            sys.exit(1)
-
-        echo.echo(f"Successfully exported to: {output_path}")
+            written = export_step(compound, str(output_path))
     except Exception as e:
-        echo.error(f"Error exporting file: {e}")
+        echo.exception(f"Error exporting file: {e}")
         sys.exit(1)
+
+    if not written or not output_path.is_file():
+        echo.error(f"Error exporting file: could not write {output_path}")
+        sys.exit(1)
+
+    echo.info(f"Successfully exported to: {output_path}")

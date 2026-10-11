@@ -240,3 +240,137 @@ class TestExportCommand:
             elif format == "stl":
                 assert result.exit_code == 0
                 assert output_file.exists()
+
+
+BEAM_DSL = "(beam:2x4 =1000)"
+
+
+@pytest.fixture
+def beam_file(tmp_path: Path) -> Path:
+    dsl_file = tmp_path / "beam.nd"
+    dsl_file.write_text(BEAM_DSL)
+    return dsl_file
+
+
+class TestExportWriteFailures:
+    """Export must not report success when nothing was written."""
+
+    @pytest.mark.parametrize("fmt", ["stl", "step"])
+    def test_missing_output_directory_fails(self, runner, tmp_path, beam_file, fmt):
+        output_file = tmp_path / "no_such_dir" / f"out.{fmt}"
+
+        result = runner.invoke(
+            cli, ["export", str(beam_file), "-o", str(output_file), "-f", fmt]
+        )
+
+        assert result.exit_code == 1
+        assert not output_file.exists()
+        assert "Successfully exported" not in result.output
+        assert "error" in result.stderr.lower()
+
+
+class TestExportOutputSafety:
+    """Export must not write mislabeled files or clobber its own input."""
+
+    @pytest.mark.parametrize(
+        "fmt,extension", [("stl", ".step"), ("stl", ".stp"), ("step", ".stl")]
+    )
+    def test_format_contradicting_output_extension_fails(
+        self, runner, tmp_path, beam_file, fmt, extension
+    ):
+        output_file = tmp_path / f"out{extension}"
+
+        result = runner.invoke(
+            cli, ["export", str(beam_file), "-o", str(output_file), "-f", fmt]
+        )
+
+        assert result.exit_code == 1
+        assert not output_file.exists()
+        assert extension in result.stderr
+
+    @pytest.mark.parametrize("fmt,extension", [("step", ".stp"), ("stp", ".step")])
+    def test_step_aliases_are_compatible(
+        self, runner, tmp_path, beam_file, fmt, extension
+    ):
+        output_file = tmp_path / f"out{extension}"
+
+        result = runner.invoke(
+            cli, ["export", str(beam_file), "-o", str(output_file), "-f", fmt]
+        )
+
+        assert result.exit_code == 0
+        assert output_file.exists()
+
+    def test_unknown_output_extension_with_explicit_format_is_allowed(
+        self, runner, tmp_path, beam_file
+    ):
+        output_file = tmp_path / "out.mesh"
+
+        result = runner.invoke(
+            cli, ["export", str(beam_file), "-o", str(output_file), "-f", "stl"]
+        )
+
+        assert result.exit_code == 0
+        assert output_file.exists()
+
+    def test_derived_output_never_overwrites_input(self, runner, tmp_path):
+        dsl_file = tmp_path / "design.step"
+        dsl_file.write_text(BEAM_DSL)
+
+        result = runner.invoke(cli, ["export", str(dsl_file), "-f", "step"])
+
+        assert result.exit_code == 1
+        assert dsl_file.read_text() == BEAM_DSL
+        assert "input" in result.stderr.lower()
+
+    def test_explicit_output_never_overwrites_input(self, runner, tmp_path):
+        dsl_file = tmp_path / "design.stl"
+        dsl_file.write_text(BEAM_DSL)
+
+        result = runner.invoke(cli, ["export", str(dsl_file), "-o", str(dsl_file)])
+
+        assert result.exit_code == 1
+        assert dsl_file.read_text() == BEAM_DSL
+        assert "input" in result.stderr.lower()
+
+
+class TestExportInputHandling:
+    """Export accepts '-' for stdin and exits 1 on a missing file."""
+
+    def test_reads_from_stdin_with_output(self, runner, tmp_path):
+        output_file = tmp_path / "out.stl"
+
+        result = runner.invoke(
+            cli, ["export", "-", "-o", str(output_file)], input=BEAM_DSL
+        )
+
+        assert result.exit_code == 0, result.output
+        assert output_file.exists()
+
+    def test_stdin_requires_output(self, runner, tmp_path):
+        result = runner.invoke(cli, ["export", "-", "-f", "stl"], input=BEAM_DSL)
+
+        assert result.exit_code == 1
+        assert "stdin" in result.stderr
+        assert "-o" in result.stderr
+
+    def test_missing_input_file_exits_1(self, runner, tmp_path):
+        missing = tmp_path / "missing.nd"
+
+        result = runner.invoke(cli, ["export", str(missing), "-f", "stl"])
+
+        assert result.exit_code == 1
+        assert "File not found" in result.stderr
+
+
+def test_export_status_message_goes_to_stderr(runner, tmp_path, beam_file):
+    output_file = tmp_path / "out.stl"
+
+    result = runner.invoke(
+        cli, ["-v", "export", str(beam_file), "-o", str(output_file)]
+    )
+
+    assert result.exit_code == 0
+    assert result.stdout == ""
+    assert "Successfully exported to" in result.stderr
+    assert "Parsing DSL file..." in result.stderr

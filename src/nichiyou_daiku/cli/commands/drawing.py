@@ -1,6 +1,7 @@
 """Generate technical drawing (PDF) from DSL file."""
 
 import sys
+import tempfile
 from datetime import date
 from pathlib import Path
 from typing import Optional
@@ -12,8 +13,10 @@ from nichiyou_daiku.cli.utils import (
     convert_assembly_to_build123d,
     create_assembly_from_model,
     ensure_build123d_available,
+    ensure_not_overwriting_input,
     parse_dsl_to_model,
     read_dsl_file,
+    require_output_for_stdin,
 )
 
 
@@ -46,12 +49,15 @@ def project_to_2d(part, viewport_origin, viewport_up, page_origin, scale_factor=
 
 
 @click.command()
-@click.argument("input_file", type=click.Path(exists=True, path_type=Path))
+@click.argument("input_file", type=str)
 @click.option(
     "-o",
     "--output",
     type=click.Path(path_type=Path),
-    help="Output PDF file path (default: <input>.pdf)",
+    help=(
+        "Output file path (default: <input>.pdf, required for stdin). "
+        "Use a .svg extension to write SVG instead of PDF."
+    ),
 )
 @click.option(
     "--title",
@@ -85,7 +91,7 @@ def project_to_2d(part, viewport_origin, viewport_up, page_origin, scale_factor=
 @click.pass_context
 def drawing(
     ctx: click.Context,
-    input_file: Path,
+    input_file: str,
     output: Optional[Path],
     title: Optional[str],
     drawing_number: str,
@@ -94,6 +100,8 @@ def drawing(
     page_size: str,
 ) -> None:
     """Generate technical drawing (PDF) with orthographic views.
+
+    INPUT_FILE: Path to .nd file or '-' for stdin
 
     Creates technical drawing with:
     - Top view (plan)
@@ -125,11 +133,15 @@ def drawing(
         sys.exit(1)
 
     # Determine output path and title
-    output_path = output or input_file.with_suffix(".pdf")
-    drawing_title = title or input_file.stem
+    require_output_for_stdin(input_file, output)
+    output_path = output or Path(input_file).with_suffix(".pdf")
+    ensure_not_overwriting_input(input_file, output_path)
+    write_svg_only = output_path.suffix.lower() == ".svg"
+    source_stem = output_path.stem if input_file == "-" else Path(input_file).stem
+    drawing_title = title or source_stem
 
     # Read and parse DSL
-    dsl_content = read_dsl_file(str(input_file))
+    dsl_content = read_dsl_file(input_file)
     model = parse_dsl_to_model(dsl_content, echo)
     assembly = create_assembly_from_model(model, echo)
 
@@ -161,7 +173,7 @@ def drawing(
         )
         border_size = border.bounding_box().size
     except Exception as e:
-        echo.error(f"Error creating drawing border: {e}")
+        echo.exception(f"Error creating drawing border: {e}")
         sys.exit(1)
 
     # Generate projections
@@ -294,7 +306,7 @@ def drawing(
         hidden_lines.extend(side_hid)
 
     except Exception as e:
-        echo.error(f"Error generating projections: {e}")
+        echo.exception(f"Error generating projections: {e}")
         sys.exit(1)
 
     # Export to SVG
@@ -309,23 +321,22 @@ def drawing(
         exporter.add_shape(hidden_lines, layer="Hidden")
         exporter.add_shape(border, layer="Visible")
 
-        # Write to temporary SVG
-        svg_path = output_path.with_suffix(".svg")
-        exporter.write(str(svg_path))
+        if write_svg_only:
+            exporter.write(str(output_path))
 
     except Exception as e:
-        echo.error(f"Error exporting SVG: {e}")
+        echo.exception(f"Error exporting SVG: {e}")
         sys.exit(1)
 
-    # Convert SVG to PDF
-    try:
-        cairosvg.svg2pdf(url=str(svg_path), write_to=str(output_path))
+    if not write_svg_only:
+        # Render via a private temp SVG so files next to the output are untouched
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            svg_path = Path(tmp_dir) / "drawing.svg"
+            try:
+                exporter.write(str(svg_path))
+                cairosvg.svg2pdf(url=str(svg_path), write_to=str(output_path))
+            except Exception as e:
+                echo.exception(f"Error converting to PDF: {e}")
+                sys.exit(1)
 
-        # Clean up temporary SVG
-        svg_path.unlink()
-
-        echo.echo(f"Successfully created technical drawing: {output_path}")
-
-    except Exception as e:
-        echo.error(f"Error converting to PDF: {e}")
-        sys.exit(1)
+    echo.info(f"Successfully created technical drawing: {output_path}")

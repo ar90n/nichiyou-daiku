@@ -13,6 +13,7 @@ from nichiyou_daiku.cli.utils import (
     validate_output_path,
 )
 from nichiyou_daiku.shell import extract_resources, generate_markdown_report
+from nichiyou_daiku.shell.report_generator import DEFAULT_KERF_MM
 
 
 @click.command()
@@ -39,6 +40,13 @@ from nichiyou_daiku.shell import extract_resources, generate_markdown_report
     default=True,
     help="Include pilot holes drilling guide in report",
 )
+@click.option(
+    "--kerf",
+    type=click.FloatRange(min=0),
+    default=DEFAULT_KERF_MM,
+    show_default=True,
+    help="Material removed by each saw cut (mm), used for the cut plan",
+)
 @click.pass_context
 def report(
     ctx: click.Context,
@@ -48,6 +56,7 @@ def report(
     include_cut_diagram: bool,
     include_anchor_details: bool,
     include_pilot_holes: bool,
+    kerf: float,
 ) -> None:
     """Generate a markdown report from DSL file.
 
@@ -55,12 +64,7 @@ def report(
     """
     echo = CliEcho(ctx)
 
-    # Read DSL content
-    try:
-        dsl_content = read_dsl_file(file)
-    except click.ClickException as e:
-        echo.error(f"Error: {e}")
-        sys.exit(1)
+    dsl_content = read_dsl_file(file)
 
     # Parse DSL and create assembly
     model = parse_dsl_to_model(dsl_content, echo)
@@ -73,7 +77,7 @@ def report(
         resources = extract_resources(assembly)
 
     except Exception as e:
-        echo.error(f"Error extracting resources: {e}")
+        echo.exception(f"Error extracting resources: {e}")
         sys.exit(1)
 
     # Generate report
@@ -86,26 +90,21 @@ def report(
             include_cut_diagram=include_cut_diagram,
             include_anchor_details=include_anchor_details,
             include_pilot_holes=include_pilot_holes,
+            kerf=kerf,
         )
 
     except Exception as e:
-        echo.error(f"Error generating report: {e}")
+        echo.exception(f"Error generating report: {e}")
         sys.exit(1)
 
-    # Output report
+    output_path = validate_output_path(output)
+    if output_path is None:
+        click.echo(report_content)
+        return
+
     try:
-        output_path = validate_output_path(output)
-
-        if output_path:
-            output_path.write_text(report_content, encoding="utf-8")
-            echo.echo(f"Report written to: {output_path}")
-        else:
-            # Output to stdout
-            click.echo(report_content)
-
-    except click.ClickException as e:
-        echo.error(f"Output error: {e}")
-        sys.exit(1)
+        output_path.write_text(report_content, encoding="utf-8")
     except Exception as e:
-        echo.error(f"Unexpected error writing output: {e}")
+        echo.exception(f"Error writing output: {e}")
         sys.exit(1)
+    echo.info(f"Report written to: {output_path}")

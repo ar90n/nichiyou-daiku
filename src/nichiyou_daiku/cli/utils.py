@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import logging
 import sys
+import traceback
 from pathlib import Path
 from typing import TYPE_CHECKING, Optional
 
@@ -41,16 +43,31 @@ def read_dsl_file(file_path: str) -> str:
         raise click.ClickException(f"Error reading file: {e}")
 
 
+class _StderrEchoHandler(logging.Handler):
+    """Log handler that resolves stderr at emit time via click.echo.
+
+    A plain StreamHandler would bind the stderr object present at setup,
+    which goes stale when stderr is swapped (e.g. click's CliRunner).
+    """
+
+    def emit(self, record: logging.LogRecord) -> None:
+        try:
+            click.echo(self.format(record), err=True)
+        except Exception:
+            self.handleError(record)
+
+
 def setup_logging(debug: bool, verbose: bool, quiet: bool) -> None:
-    """Configure logging based on CLI flags.
+    """Configure the nichiyou_daiku logger based on CLI flags.
+
+    Only the package logger is configured; the root logger is left alone so
+    third-party libraries (e.g. build123d) do not flood the output under -v/-d.
 
     Args:
         debug: Enable debug logging
         verbose: Enable verbose logging
         quiet: Minimize output
     """
-    import logging
-
     if quiet:
         level = logging.ERROR
     elif debug:
@@ -60,7 +77,14 @@ def setup_logging(debug: bool, verbose: bool, quiet: bool) -> None:
     else:
         level = logging.WARNING
 
-    logging.basicConfig(level=level, format="%(levelname)s: %(message)s")
+    logger = logging.getLogger("nichiyou_daiku")
+    logger.setLevel(level)
+    for handler in list(logger.handlers):
+        if isinstance(handler, _StderrEchoHandler):
+            logger.removeHandler(handler)
+    handler = _StderrEchoHandler()
+    handler.setFormatter(logging.Formatter("%(levelname)s: %(message)s"))
+    logger.addHandler(handler)
 
 
 def validate_output_path(output_path: Optional[str]) -> Optional[Path]:
@@ -92,6 +116,35 @@ def validate_output_path(output_path: Optional[str]) -> Optional[Path]:
         raise click.ClickException(f"Output path is not a file: {output_path}")
 
     return path
+
+
+def require_output_for_stdin(input_file: str, output: Optional[Path]) -> None:
+    """Require -o when reading from stdin, since no output name can be derived.
+
+    Raises:
+        click.ClickException: If input is stdin and no output path was given
+    """
+    if input_file == "-" and output is None:
+        raise click.ClickException(
+            "An output file (-o) is required when reading from stdin ('-')."
+        )
+
+
+def ensure_not_overwriting_input(input_file: str, output_path: Path) -> None:
+    """Refuse to write output over the input DSL file.
+
+    Args:
+        input_file: Input path as given on the command line ('-' for stdin)
+        output_path: Path the command is about to write
+
+    Raises:
+        click.ClickException: If both paths refer to the same file
+    """
+    if input_file != "-" and Path(input_file).resolve() == output_path.resolve():
+        raise click.ClickException(
+            f"Refusing to overwrite the input file: {input_file}. "
+            "Choose a different output path with -o."
+        )
 
 
 def _echo_with_flags(
@@ -131,6 +184,7 @@ class CliEcho:
         """
         self._quiet = ctx.obj.get("quiet", False)
         self._verbose = ctx.obj.get("verbose", False)
+        self._debug = ctx.obj.get("debug", False)
 
     def echo(
         self, message: str, *, err: bool = False, verbose_only: bool = False, **kwargs
@@ -161,14 +215,40 @@ class CliEcho:
         """
         click.echo(message, err=True, **kwargs)
 
+    def exception(self, message: str) -> None:
+        """Echo error message for the exception being handled.
+
+        With --debug, the full traceback is printed to stderr as well.
+
+        Args:
+            message: Error message to display
+        """
+        self.error(message)
+        if self._debug:
+            click.echo(traceback.format_exc(), err=True, nl=False)
+
+    def info(self, message: str, **kwargs) -> None:
+        """Echo status message to stderr (suppressed by --quiet).
+
+        Status goes to stderr so stdout carries only command output
+        (e.g. `report x.nd > r.md` stays pure markdown).
+
+        Args:
+            message: Status message to display
+            **kwargs: Additional arguments for click.echo
+        """
+        if not self._quiet:
+            click.echo(message, err=True, **kwargs)
+
     def verbose(self, message: str, **kwargs) -> None:
-        """Echo verbose message (only shown with --verbose).
+        """Echo progress message to stderr (only shown with --verbose).
 
         Args:
             message: Verbose message to display
             **kwargs: Additional arguments for click.echo
         """
-        self.echo(message, verbose_only=True, **kwargs)
+        if self._verbose:
+            self.info(message, **kwargs)
 
 
 def parse_dsl_to_model(dsl_content: str, echo: CliEcho) -> Model:
@@ -202,7 +282,7 @@ def parse_dsl_to_model(dsl_content: str, echo: CliEcho) -> Model:
         echo.error(f"DSL Error: {e}")
         sys.exit(1)
     except Exception as e:
-        echo.error(f"Unexpected error parsing DSL: {e}")
+        echo.exception(f"Unexpected error parsing DSL: {e}")
         sys.exit(1)
 
 
@@ -225,7 +305,7 @@ def create_assembly_from_model(model: Model, echo: CliEcho) -> Assembly:
         echo.verbose("Creating assembly...")
         return Assembly.of(model)
     except Exception as e:
-        echo.error(f"Error creating assembly: {e}")
+        echo.exception(f"Error creating assembly: {e}")
         sys.exit(1)
 
 
@@ -270,5 +350,5 @@ def convert_assembly_to_build123d(
         echo.verbose("Converting to build123d model...")
         return assembly_to_build123d(assembly, fillet_radius=fillet_radius)
     except Exception as e:
-        echo.error(f"Error converting to 3D model: {e}")
+        echo.exception(f"Error converting to 3D model: {e}")
         sys.exit(1)

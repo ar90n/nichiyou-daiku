@@ -1,6 +1,9 @@
 """Tests for the validate command."""
 
+import pytest
+
 from nichiyou_daiku.cli.dsl_cli import cli
+from nichiyou_daiku.shell.build123d_export import HAS_BUILD123D
 
 
 def test_validate_valid_file(runner, tmp_path, valid_dsl):
@@ -86,3 +89,132 @@ def test_validate_missing_file(runner):
 
     assert result.exit_code == 1
     assert "File not found" in result.output
+
+
+def _validate(runner, tmp_path, dsl, *args):
+    dsl_file = tmp_path / "design.nd"
+    dsl_file.write_text(dsl)
+    return runner.invoke(cli, ["validate", *args, str(dsl_file)])
+
+
+needs_build123d = pytest.mark.skipif(
+    not HAS_BUILD123D, reason="geometry checks need build123d"
+)
+
+
+def test_validate_reports_model_is_valid(runner, tmp_path, valid_dsl):
+    result = _validate(runner, tmp_path, valid_dsl)
+    assert result.exit_code == 0
+    assert "✓ Model is valid" in result.output
+
+
+def test_validate_reports_assembly_errors(runner, tmp_path):
+    # The dowel layout does not support this face/edge combination yet
+    result = _validate(
+        runner,
+        tmp_path,
+        """
+        (a:2x4 =500)
+        (b:2x4 =500)
+        a -[FL<100 BL<100 D(4, 30)]- b
+        """,
+    )
+    assert result.exit_code == 1
+    assert "✗ Assembly error" in result.output
+
+
+def test_validate_reports_dowels_outside_the_piece(runner, tmp_path):
+    result = _validate(
+        runner,
+        tmp_path,
+        """
+        (base:2x4 =500)
+        (target:2x4 =300)
+        base -[LT<19 DF<44.5 D(4, 30)]- target
+        """,
+    )
+    assert result.exit_code == 1
+    assert "outside" in result.output
+    assert "base" in result.output
+
+
+@needs_build123d
+def test_validate_reports_overlapping_pieces(runner, tmp_path):
+    result = _validate(
+        runner,
+        tmp_path,
+        """
+        (a:2x4 =500)
+        (b:2x4 =300)
+        (c:2x4 =300)
+        a -[FL<100 DF<0]- b
+        a -[FL<100 DF<0]- c
+        """,
+    )
+    assert result.exit_code == 1
+    assert "overlap" in result.output
+    assert "b" in result.output and "c" in result.output
+
+
+@needs_build123d
+def test_validate_reports_contradicting_connections(runner, tmp_path):
+    result = _validate(
+        runner,
+        tmp_path,
+        """
+        (a:2x4 =500)
+        (b:2x4 =300)
+        (c:2x4 =300)
+        a -[FL<100 DF<0]- b
+        a -[FL>100 DF<0]- c
+        b -[RF<0 LF<0]- c
+        """,
+    )
+    assert result.exit_code == 1
+    assert "apart" in result.output
+
+
+@needs_build123d
+def test_validate_rejects_unconnected_pieces(runner, tmp_path):
+    result = _validate(
+        runner,
+        tmp_path,
+        """
+        (a:2x4 =500)
+        (b:2x4 =300)
+        (floating:2x4 =300)
+        a -[FL<100 DF<0]- b
+        """,
+    )
+    assert result.exit_code == 1
+    assert "not connected" in result.output
+    assert "floating" in result.output
+    # Unconnected groups have no relative position, so they are not
+    # reported as overlapping each other
+    assert "overlap" not in result.output
+
+
+def test_validate_debug_prints_traceback_for_assembly_errors(runner, tmp_path):
+    dsl_file = tmp_path / "design.nd"
+    dsl_file.write_text("(a:2x4 =500)\n(b:2x4 =500)\na -[FL<100 BL<100 D(4, 30)]- b\n")
+    result = runner.invoke(cli, ["-d", "validate", str(dsl_file)])
+    assert result.exit_code == 1
+    assert "Traceback" in result.output
+
+
+@needs_build123d
+def test_validate_geometry_checks_can_be_skipped(runner, tmp_path):
+    result = _validate(
+        runner,
+        tmp_path,
+        """
+        (a:2x4 =500)
+        (b:2x4 =300)
+        (c:2x4 =300)
+        a -[FL<100 DF<0]- b
+        a -[FL<100 DF<0]- c
+        """,
+        "--no-geometry",
+    )
+    assert result.exit_code == 0
+    assert "overlap" not in result.output
