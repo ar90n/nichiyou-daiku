@@ -7,13 +7,16 @@ accepted constraint holds exactly and contradictions are reported rather
 than averaged out.
 """
 
+from collections import deque
 from typing import Literal
 
 import numpy as np
 from pydantic import BaseModel
 
-from .anchor import BoundAnchor
+from .anchor import BoundAnchor, as_point_3d
+from .connection import Connection
 from .geometry import Face, Point3D, Vector3D
+from .model import Model
 from .piece import Piece, get_shape
 
 Axis = Literal["x", "y", "z"]
@@ -121,3 +124,211 @@ def relative_rotation(base: BoundAnchor, target: BoundAnchor) -> np.ndarray:
     e_target = _normal(target.anchor.edge_shared_face)
     rotation = _frame(-n_base, e_base) @ _frame(n_target, e_target).T
     return np.rint(rotation).astype(int)
+
+
+def _anchor_point(bound: BoundAnchor) -> np.ndarray:
+    point = as_point_3d(bound)
+    return np.array([point.x, point.y, point.z])
+
+
+def _axis_index(direction: np.ndarray) -> int:
+    return int(np.argmax(np.abs(direction)))
+
+
+def _path(adjacency: dict[str, list[str]], start: str, goal: str) -> tuple[str, ...]:
+    """Shortest path from start to goal; neighbours in insertion order."""
+    previous: dict[str, str | None] = {start: None}
+    queue = deque([start])
+    while queue:
+        node = queue.popleft()
+        if node == goal:
+            break
+        for neighbour in adjacency.get(node, []):
+            if neighbour not in previous:
+                previous[neighbour] = node
+                queue.append(neighbour)
+    path = [goal]
+    while (step := previous.get(path[-1])) is not None:
+        path.append(step)
+    return tuple(reversed(path))
+
+
+class _AxisOffsets:
+    """Weighted union-find along one axis: offset[x] is t[x] - t[parent[x]]."""
+
+    def __init__(self, ids: list[str]) -> None:
+        self.parent = {i: i for i in ids}
+        self.offset = {i: 0.0 for i in ids}
+
+    def find(self, node: str) -> tuple[str, float]:
+        """Root of ``node`` and t[node] - t[root]."""
+        path = []
+        while self.parent[node] != node:
+            path.append(node)
+            node = self.parent[node]
+        root = node
+        total = 0.0
+        for item in reversed(path):
+            total += self.offset[item]
+            self.offset[item] = total
+            self.parent[item] = root
+        return root, (self.offset[path[0]] if path else 0.0)
+
+    def require(self, base: str, target: str, difference: float) -> float | None:
+        """Require t[target] - t[base] == difference; return the mismatch if not."""
+        base_root, base_offset = self.find(base)
+        target_root, target_offset = self.find(target)
+        if base_root == target_root:
+            mismatch = difference - (target_offset - base_offset)
+            return None if abs(mismatch) <= TOLERANCE_MM else mismatch
+        self.parent[target_root] = base_root
+        self.offset[target_root] = difference + base_offset - target_offset
+        return None
+
+
+def _round(value: float) -> float:
+    return round(float(value), 6) + 0.0
+
+
+def solve_placement(model: Model) -> Placement:
+    """Place every piece so that all consistent connection constraints hold.
+
+    Connections are taken in declaration order; a constraint that contradicts
+    the ones accepted before it is reported in ``conflicts`` and ignored.
+    """
+    piece_ids = list(model.pieces)
+    rotation = {pid: np.eye(3, dtype=int) for pid in piece_ids}
+    group_of = {pid: pid for pid in piece_ids}
+    members = {pid: [pid] for pid in piece_ids}
+    conflicts: list[Conflict] = []
+    accepted: list[Connection] = []
+    rotation_graph: dict[str, list[str]] = {}
+
+    # Step 1: orientations
+    for connection in model.connections.values():
+        base_id, target_id = connection.base.piece.id, connection.target.piece.id
+        required = rotation[base_id] @ relative_rotation(
+            connection.base, connection.target
+        )
+        if group_of[base_id] == group_of[target_id]:
+            if not np.array_equal(rotation[target_id], required):
+                conflicts.append(
+                    Conflict(
+                        base_id=base_id,
+                        target_id=target_id,
+                        kind="rotation",
+                        loop=_path(rotation_graph, base_id, target_id),
+                    )
+                )
+                continue
+        else:
+            correction = required @ rotation[target_id].T
+            moved = group_of[target_id]
+            for member in members[moved]:
+                rotation[member] = correction @ rotation[member]
+                group_of[member] = group_of[base_id]
+            members[group_of[base_id]].extend(members.pop(moved))
+        accepted.append(connection)
+        rotation_graph.setdefault(base_id, []).append(target_id)
+        rotation_graph.setdefault(target_id, []).append(base_id)
+
+    # Express every group in the frame of its first declared piece, so the
+    # position constraints below are written in world axes.
+    order = {pid: i for i, pid in enumerate(piece_ids)}
+    groups = sorted(
+        (sorted(group, key=order.__getitem__) for group in members.values()),
+        key=lambda group: order[group[0]],
+    )
+    for group in groups:
+        to_root = rotation[group[0]].T
+        for member in group:
+            rotation[member] = to_root @ rotation[member]
+
+    # Step 2: positions, one world axis at a time
+    offsets = {axis: _AxisOffsets(piece_ids) for axis in AXES}
+    axis_graph: dict[Axis, dict[str, list[str]]] = {axis: {} for axis in AXES}
+    for connection in accepted:
+        base_id, target_id = connection.base.piece.id, connection.target.piece.id
+        base_rot, target_rot = rotation[base_id], rotation[target_id]
+        difference = base_rot @ _anchor_point(
+            connection.base
+        ) - target_rot @ _anchor_point(connection.target)
+        kinds: dict[int, ConstraintKind] = {
+            _axis_index(
+                base_rot @ _normal(connection.base.anchor.contact_face)
+            ): "contact",
+            _axis_index(
+                base_rot @ _normal(connection.base.anchor.edge_shared_face)
+            ): "flush",
+        }
+        for index, axis in enumerate(AXES):
+            mismatch = offsets[axis].require(
+                base_id, target_id, float(difference[index])
+            )
+            if mismatch is None:
+                axis_graph[axis].setdefault(base_id, []).append(target_id)
+                axis_graph[axis].setdefault(target_id, []).append(base_id)
+            else:
+                conflicts.append(
+                    Conflict(
+                        base_id=base_id,
+                        target_id=target_id,
+                        kind=kinds.get(index, "edge"),
+                        axis=axis,
+                        mismatch_mm=_round(mismatch),
+                        loop=_path(axis_graph[axis], base_id, target_id),
+                    )
+                )
+
+    # Step 3: positions relative to each group's first declared piece
+    poses: dict[str, Pose] = {}
+    free_axes: dict[str, frozenset[Axis]] = {}
+    for group in groups:
+        root = group[0]
+        root_position = np.array([offsets[axis].find(root)[1] for axis in AXES])
+        for member in group:
+            position = np.array([offsets[axis].find(member)[1] for axis in AXES])
+            free: frozenset[Axis] = frozenset(
+                axis
+                for axis in AXES
+                if offsets[axis].find(member)[0] != offsets[axis].find(root)[0]
+            )
+            if free:
+                free_axes[member] = free
+            matrix = rotation[member]
+            poses[member] = Pose(
+                rotation=(
+                    (int(matrix[0, 0]), int(matrix[0, 1]), int(matrix[0, 2])),
+                    (int(matrix[1, 0]), int(matrix[1, 1]), int(matrix[1, 2])),
+                    (int(matrix[2, 0]), int(matrix[2, 1]), int(matrix[2, 2])),
+                ),
+                translation=(
+                    _round(position[0] - root_position[0]),
+                    _round(position[1] - root_position[1]),
+                    _round(position[2] - root_position[2]),
+                ),
+            )
+
+    # Step 4: lay unconnected groups side by side along +X
+    right_edge: float | None = None
+    for group in groups:
+        low_x = min(poses[m].bounds(model.pieces[m])[0].x for m in group)
+        high_x = max(poses[m].bounds(model.pieces[m])[1].x for m in group)
+        shift = 0.0 if right_edge is None else right_edge + GROUP_GAP_MM - low_x
+        if shift:
+            for member in group:
+                x, y, z = poses[member].translation
+                poses[member] = Pose(
+                    rotation=poses[member].rotation,
+                    translation=(_round(x + shift), y, z),
+                )
+        right_edge = (
+            high_x + shift if right_edge is None else max(right_edge, high_x + shift)
+        )
+
+    return Placement(
+        poses=poses,
+        groups=tuple(tuple(group) for group in groups),
+        conflicts=tuple(conflicts),
+        free_axes=free_axes,
+    )
