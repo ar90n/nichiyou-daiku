@@ -7,13 +7,13 @@ Prompts for generating nichiyou-daiku furniture design code using LLMs (Claude S
 ```
 prompts/
 ├── README.md                    # This file
-├── system.md                    # Core system prompt (~500 lines)
+├── system.md                    # Core system prompt (~390 lines)
 ├── user-template.md             # User input template
 │
 ├── reference/                   # Optional reference documents
 │   ├── presets.md               # All fastener presets
-│   ├── dsl-complete.md          # Complete DSL specification
-│   └── python-api.md            # Complete Python API
+│   ├── dsl-complete.md          # Grammar, JSON notation, errors, CLI (supplements system.md)
+│   └── python-api.md            # Complete Python API (needed for Python output)
 │
 └── examples/
     ├── user-specs/              # User input examples
@@ -29,7 +29,7 @@ prompts/
 
 ## Usage Patterns
 
-### Pattern A: Minimal (~5,500 tokens)
+### Pattern A: Minimal (~4,200 tokens)
 
 For simple furniture. Uses only the core system prompt.
 
@@ -49,7 +49,7 @@ response = client.messages.create(
 print(response.content[0].text)
 ```
 
-### Pattern B: Standard (~7,000 tokens) - Recommended
+### Pattern B: Standard (~5,500 tokens) - Recommended
 
 Includes fastener preset reference for better accuracy.
 
@@ -65,7 +65,7 @@ response = client.messages.create(
 )
 ```
 
-### Pattern C: Full (~10,000 tokens)
+### Pattern C: Full (~7,500 tokens)
 
 For complex designs requiring complete reference.
 
@@ -146,10 +146,12 @@ nichiyou-daiku report generated.nd -o report.md
 
 | Pattern | Files Included | Est. Tokens |
 |---------|----------------|-------------|
-| Minimal | system.md | ~5,500 |
-| Standard | + presets.md | ~7,000 |
-| Full | + dsl-complete.md | ~10,000 |
-| Full+ | + python-api.md | ~13,000 |
+| Minimal | system.md | ~4,200 |
+| Standard | + presets.md | ~5,500 |
+| Full | + dsl-complete.md + example | ~7,500 |
+| Full+ | + python-api.md | ~10,600 |
+
+Estimates are characters / 4. The Python API lives only in `reference/python-api.md`; include it whenever you want Python output.
 
 All patterns fit comfortably within modern LLM context windows (100K+ tokens).
 

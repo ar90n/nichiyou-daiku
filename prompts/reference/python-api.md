@@ -235,6 +235,7 @@ class Assembly(BaseModel, frozen=True):
     fasteners: tuple[Fastener, ...]           # Dowels and screws, laid out in each contact area
     fastener_issues: tuple[LayoutIssue, ...]  # Connections whose fasteners do not fit
     pilot_holes: dict[str, list[tuple[SurfacePoint, Hole]]]  # piece ID -> holes; SurfacePoint names the drilled face
+    placement: Placement      # World placement of every piece
     label: str | None
 
 # Create assembly from model
