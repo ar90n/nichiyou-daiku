@@ -332,3 +332,47 @@ def solve_placement(model: Model) -> Placement:
         conflicts=tuple(conflicts),
         free_axes=free_axes,
     )
+
+
+def find_overlaps(model: Model, placement: Placement) -> tuple[Overlap, ...]:
+    """Pairs of pieces whose boxes share volume (holes and fillets ignored)."""
+    boxes = [
+        (piece_id, placement.poses[piece_id].bounds(piece))
+        for piece_id, piece in model.pieces.items()
+    ]
+    overlaps = []
+    for i, (lhs, (lhs_low, lhs_high)) in enumerate(boxes):
+        for rhs, (rhs_low, rhs_high) in boxes[i + 1 :]:
+            sizes = (
+                min(lhs_high.x, rhs_high.x) - max(lhs_low.x, rhs_low.x),
+                min(lhs_high.y, rhs_high.y) - max(lhs_low.y, rhs_low.y),
+                min(lhs_high.z, rhs_high.z) - max(lhs_low.z, rhs_low.z),
+            )
+            if all(size > 0 for size in sizes):
+                volume = sizes[0] * sizes[1] * sizes[2]
+                if volume > TOLERANCE_MM:
+                    overlaps.append(Overlap(lhs=lhs, rhs=rhs, volume=volume))
+    return tuple(overlaps)
+
+
+def overall_bounds(model: Model, placement: Placement) -> tuple[Point3D, Point3D]:
+    """Smallest world box containing every piece."""
+    if not model.pieces:
+        origin = Point3D(x=0.0, y=0.0, z=0.0)
+        return origin, origin
+    boxes = [
+        placement.poses[piece_id].bounds(piece)
+        for piece_id, piece in model.pieces.items()
+    ]
+    return (
+        Point3D(
+            x=min(low.x for low, _ in boxes),
+            y=min(low.y for low, _ in boxes),
+            z=min(low.z for low, _ in boxes),
+        ),
+        Point3D(
+            x=max(high.x for _, high in boxes),
+            y=max(high.y for _, high in boxes),
+            z=max(high.z for _, high in boxes),
+        ),
+    )

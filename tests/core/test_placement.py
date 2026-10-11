@@ -21,7 +21,13 @@ from nichiyou_daiku.core.geometry import (
 )
 from nichiyou_daiku.core.model import Model
 from nichiyou_daiku.core.piece import Piece, PieceType, get_shape
-from nichiyou_daiku.core.placement import Pose, relative_rotation, solve_placement
+from nichiyou_daiku.core.placement import (
+    Pose,
+    find_overlaps,
+    overall_bounds,
+    relative_rotation,
+    solve_placement,
+)
 from nichiyou_daiku.dsl import parse_dsl
 
 FACES = ["top", "down", "left", "right", "front", "back"]
@@ -279,3 +285,39 @@ def test_shifting_a_loop_closing_connection_reports_exactly_that_shift(shift):
     assert (conflict.base_id, conflict.target_id) == ("leg_4", "apron_right")
     assert (conflict.kind, conflict.axis) == ("edge", "z")
     assert conflict.mismatch_mm == pytest.approx(shift, abs=1e-5)
+
+
+class TestOverlaps:
+    def test_touching_pieces_do_not_overlap(self):
+        model = parse_dsl("(a:2x4 =500)\n(b:2x4 =300)\na -[FL<100 DF<0]- b\n")
+        assert find_overlaps(model, solve_placement(model)) == ()
+
+    def test_every_overlapping_pair_is_reported_with_its_volume(self):
+        model = parse_dsl(
+            "(a:2x4 =500)\n(b:2x4 =300)\n(c:2x4 =300)\n(d:2x4 =300)\n(e:2x4 =300)\n"
+            "a -[FL<100 DF<0]- b\na -[FL<100 DF<0]- c\n"
+            "a -[RF<0 LF<0]- d\na -[RF<0 LF<0]- e\n"
+        )
+        overlaps = find_overlaps(model, solve_placement(model))
+        assert [(o.lhs, o.rhs) for o in overlaps] == [("b", "c"), ("d", "e")]
+        assert [o.volume for o in overlaps] == pytest.approx([89 * 38 * 300] * 2)
+
+    def test_laid_out_groups_do_not_overlap(self):
+        model = parse_dsl(
+            "(a:2x4 =500)\n(b:2x4 =300)\n(floating:2x4 =300)\n(spare:1x4 =900)\n"
+            "a -[FL<100 DF<0]- b\n"
+        )
+        assert find_overlaps(model, solve_placement(model)) == ()
+
+
+class TestOverallBounds:
+    def test_bounds_cover_every_piece(self):
+        model = parse_dsl("(a:2x4 =500)\n(b:2x4 =300)\na -[FL<100 DF<0]- b\n")
+        low, high = overall_bounds(model, solve_placement(model))
+        assert (low.x, low.y, low.z) == (0.0, 0.0, 0.0)
+        assert (high.x, high.y, high.z) == (89.0, 338.0, 500.0)
+
+    def test_empty_model_has_empty_bounds(self):
+        model = Model.of(pieces=[], connections=[])
+        low, high = overall_bounds(model, solve_placement(model))
+        assert low == high == Point3D(x=0.0, y=0.0, z=0.0)
