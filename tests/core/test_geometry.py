@@ -222,3 +222,16 @@ class TestOrientation3DOrthogonalization:
         )
         d, u = orientation.direction, orientation.up
         assert d.x * u.x + d.y * u.y + d.z * u.z == pytest.approx(0.0, abs=1e-9)
+
+
+class TestSurfacePointFromPoint:
+    @pytest.mark.parametrize("face", ["top", "down", "left", "right", "front", "back"])
+    @pytest.mark.parametrize("u,v", [(0.0, 0.0), (10.5, -7.25), (-30.0, 12.0)])
+    def test_round_trips_through_point3d(self, face, u, v):
+        from nichiyou_daiku.core.geometry import Box, Point2D, Point3D, SurfacePoint
+
+        box = Box(shape=Shape3D(width=89.0, height=38.0, length=500.0))
+        surface_point = SurfacePoint(face=face, position=Point2D(u=u, v=v))
+        back = SurfacePoint.from_point(box, face, Point3D.of(box, surface_point))
+        assert back.face == face
+        assert (back.position.u, back.position.v) == pytest.approx((u, v))

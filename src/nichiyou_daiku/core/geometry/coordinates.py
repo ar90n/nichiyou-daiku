@@ -148,41 +148,44 @@ class SurfacePoint(BaseModel, frozen=True):
         if edge.lhs != face and edge.rhs != face:
             raise ValueError(f"Edge {edge} does not belong to face {face}")
 
-        # Convert EdgePoint to Point3D using standard logic
-        point_3d = Point3D._of_edge_point(box, edge_point)
+        return cls.from_point(box, face, Point3D._of_edge_point(box, edge_point))
 
-        # Project Point3D to face's 2D coordinates with origin at face center
-        # RIGHT-HANDED coordinate systems (u × v = direction):
-        # Must match _of_surface_point inversely
-        #
+    @classmethod
+    def from_point(cls, box: Box, face: Face, point: "Point3D") -> "SurfacePoint":
+        """Express a point lying on ``face`` in that face's 2D coordinates.
+
+        Inverse of ``Point3D.of(box, surface_point)``.
+
+        Args:
+            box: The piece's box
+            face: The face the point lies on
+            point: The point in the piece's local coordinates
+
+        Returns:
+            SurfacePoint with 2D coordinates centred on the face
+        """
+        # Face frames are right-handed (u x v = outward normal), centred on the face:
         # - top:   u=+X, v=+Y
-        # - down:  u=-X, v=+Y (u-axis flipped)
-        # - left:  u=-Y, v=+Z (u-axis flipped)
+        # - down:  u=-X, v=+Y
+        # - left:  u=-Y, v=+Z
         # - right: u=+Y, v=+Z
-        # - front: u=-X, v=+Z (u-axis flipped)
+        # - front: u=-X, v=+Z
         # - back:  u=+X, v=+Z
-
+        width, height, length = box.shape.width, box.shape.height, box.shape.length
         if face == "top":
-            u = point_3d.x - box.shape.width / 2
-            v = point_3d.y - box.shape.height / 2
+            u, v = point.x - width / 2, point.y - height / 2
         elif face == "down":
-            u = box.shape.width / 2 - point_3d.x  # u=-X, so flip
-            v = point_3d.y - box.shape.height / 2
+            u, v = width / 2 - point.x, point.y - height / 2
         elif face == "left":
-            u = box.shape.height / 2 - point_3d.y  # u=-Y, so flip
-            v = point_3d.z - box.shape.length / 2
+            u, v = height / 2 - point.y, point.z - length / 2
         elif face == "right":
-            u = point_3d.y - box.shape.height / 2
-            v = point_3d.z - box.shape.length / 2
+            u, v = point.y - height / 2, point.z - length / 2
         elif face == "front":
-            u = box.shape.width / 2 - point_3d.x  # u=-X, so flip
-            v = point_3d.z - box.shape.length / 2
+            u, v = width / 2 - point.x, point.z - length / 2
         elif face == "back":
-            u = point_3d.x - box.shape.width / 2
-            v = point_3d.z - box.shape.length / 2
+            u, v = point.x - width / 2, point.z - length / 2
         else:
             raise ValueError(f"Invalid face: {face}")
-
         return cls(face=face, position=Point2D(u=u, v=v))
 
 
