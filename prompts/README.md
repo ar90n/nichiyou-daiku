@@ -7,7 +7,7 @@ Prompts for generating nichiyou-daiku furniture design code using LLMs (Claude S
 ```
 prompts/
 ├── README.md                    # This file
-├── system.md                    # Core system prompt (~400 lines)
+├── system.md                    # Core system prompt (~500 lines)
 ├── user-template.md             # User input template
 │
 ├── reference/                   # Optional reference documents
@@ -21,6 +21,7 @@ prompts/
     │   └── two-tier-shelf.md
     ├── nd-output/               # Expected ND script outputs
     │   ├── side-table.nd
+    │   ├── two-tier-shelf.nd
     │   └── corner-joint.nd
     └── python-output/           # Expected Python outputs
         └── simple-table.py
@@ -28,7 +29,7 @@ prompts/
 
 ## Usage Patterns
 
-### Pattern A: Minimal (~2,500 tokens)
+### Pattern A: Minimal (~5,500 tokens)
 
 For simple furniture. Uses only the core system prompt.
 
@@ -48,7 +49,7 @@ response = client.messages.create(
 print(response.content[0].text)
 ```
 
-### Pattern B: Standard (~3,100 tokens) - Recommended
+### Pattern B: Standard (~7,000 tokens) - Recommended
 
 Includes fastener preset reference for better accuracy.
 
@@ -64,7 +65,7 @@ response = client.messages.create(
 )
 ```
 
-### Pattern C: Full (~8,000 tokens)
+### Pattern C: Full (~10,000 tokens)
 
 For complex designs requiring complete reference.
 
@@ -145,10 +146,10 @@ nichiyou-daiku report generated.nd -o report.md
 
 | Pattern | Files Included | Est. Tokens |
 |---------|----------------|-------------|
-| Minimal | system.md | ~2,500 |
-| Standard | + presets.md | ~3,100 |
-| Full | + dsl-complete.md | ~5,500 |
-| Full+ | + python-api.md | ~8,000 |
+| Minimal | system.md | ~5,500 |
+| Standard | + presets.md | ~7,000 |
+| Full | + dsl-complete.md | ~10,000 |
+| Full+ | + python-api.md | ~13,000 |
 
 All patterns fit comfortably within modern LLM context windows (100K+ tokens).
 
@@ -161,7 +162,7 @@ Simple, concise DSL. Best for most furniture.
 ```nd
 (leg_1:2x4 =720)
 (apron:2x4 =600)
-leg_1 -[LB>0 DB<0 D(:8x30)]- apron
+leg_1 -[LB>0 DB>0 D(:8x30)]- apron
 ```
 
 ### Python Code

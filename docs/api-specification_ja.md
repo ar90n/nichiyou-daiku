@@ -58,8 +58,8 @@ nichiyou_daiku/
 from nichiyou_daiku.core.piece import PieceType
 
 class PieceType(Enum):
-    PT_2x4 = "2x4"  # 89mm × 38mm 断面
-    PT_1x4 = "1x4"  # 89mm × 19mm 断面
+    PT_2x4 = "2x4"  # 89mm（幅）× 38mm（厚み）断面
+    PT_1x4 = "1x4"  # 89mm（幅）× 19mm（厚み）断面
 ```
 
 **メソッド:**
@@ -71,6 +71,7 @@ class PieceType(Enum):
 **例:**
 
 ```python
+>>> from nichiyou_daiku.core.piece import Piece, PieceType, get_shape
 >>> PieceType.of("2x4")
 <PieceType.PT_2x4: '2x4'>
 
@@ -88,7 +89,7 @@ from nichiyou_daiku.core.piece import Piece, PieceType
 class Piece(BaseModel, frozen=True):
     id: str              # 一意の識別子
     type: PieceType      # 木材タイプ
-    length: float        # 長さ（ミリメートル）
+    length: float        # 長さ（ミリメートル、0より大きい）
 ```
 
 **ファクトリメソッド:**
@@ -140,6 +141,8 @@ from nichiyou_daiku.core.piece import get_shape
 1000.0
 ```
 
+各ピースは固有のローカル座標系を持ちます: X = 幅（`width`）、Y = 厚み（`height`）、Z = 長さ（`length`）。
+
 ### Anchor（アンカー）
 
 ピース上の接続点を指定。
@@ -162,27 +165,26 @@ class Anchor(BaseModel, frozen=True):
 
 2つのピースは常にエッジを共有して接続します。アンカーは以下を定義します：
 1. `contact_face`: どの面が他のピースと接触するか
-2. `edge_shared_face`: 接触面のどのエッジが揃えられるか
+2. `edge_shared_face`: 隣接する面。アンカーは2つの面が交わるエッジ上にある
 3. `offset`: そのエッジ上の位置
 
-```
-      edge_shared_face = "front"
-              ↓
-    ┌─────────┼─────────┐
-    │         │         │
-    │   contact_face    │  ← ピースA
-    │      = "top"      │
-    └─────────┴─────────┘
-              │
-    ┌─────────┴─────────┐
-    │   contact_face    │
-    │     = "down"      │  ← ピースB
-    └───────────────────┘
-```
+エッジは2つの面の両方に垂直な軸に沿って伸びます：
+
+| 面の組み合わせ（順不同） | エッジの方向 | エッジの長さ (2x4 / 1x4) | `FromMin(v)` の基準 | `FromMax(v)` の基準 |
+|--------------------------|--------------|--------------------------|---------------------|---------------------|
+| top/down + front/back | 幅方向 (X) | 89 / 89 | left側 | right側 |
+| top/down + left/right | 厚み方向 (Y) | 38 / 19 | back側 | front側 |
+| front/back + left/right | 長さ方向 (Z) | L / L | down端 | top端 |
+
+オフセットがエッジの長さを超えると `BoundAnchor` は `ValueError` を送出します。
+
+**配置:** 接続はターゲットをベースに対して次のように配置します。(1) 2つのcontact_faceが面同士で接する、(2) 2つのedge_shared_faceが同じ平面上で同じ向きを向く（面一）、(3) 2つのアンカー点が一致する。ターゲット側が `FromMin` ならターゲットの最小側の端（down/left/back）が、`FromMax` なら最大側の端（top/right/front）がその点に来ます。
+
+例（床 z=0 に立てた2x4の脚 L=700 と2x4の幕板 L=500）: 脚のベースアンカー `front`/`left`/`FromMin(100)` と幕板のターゲットアンカー `down`/`front`/`FromMin(0)`（DSL では `leg -[FL<100 DF<0]- apron`）では、幕板のdown端が脚のfront面に接し、幕板のfront面が脚のleft面と面一になり、幕板のleft側が床から100mmの点に来るため、幕板は z=11..100 を占めます。幕板側を `FromMax(0)` にすると z=100..189 になります。
 
 **有効な面の組み合わせ:**
 
-`contact_face`と`edge_shared_face`は隣接している必要があります（対向不可）：
+`contact_face`と`edge_shared_face`は隣接している必要があります（同じ面・対向面は不可）：
 
 | 有効 | 無効 |
 |------|------|
@@ -199,10 +201,12 @@ class Anchor(BaseModel, frozen=True):
 **例:**
 
 ```python
+>>> from nichiyou_daiku.core.anchor import Anchor, BoundAnchor
+>>> from nichiyou_daiku.core.geometry import FromMin, FromMax
 >>> anchor = Anchor(
 ...     contact_face="front",
 ...     edge_shared_face="top",
-...     offset=FromMax(value=100)
+...     offset=FromMax(value=50)
 ... )
 >>> anchor.contact_face
 'front'
@@ -233,7 +237,7 @@ class BoundAnchor(BaseModel, frozen=True):
 >>> anchor = Anchor(
 ...     contact_face="front",
 ...     edge_shared_face="top",
-...     offset=FromMax(value=100)
+...     offset=FromMax(value=50)  # front/topのエッジは幅89mmの方向に伸びる
 ... )
 >>> bound = BoundAnchor(piece=piece, anchor=anchor)
 ```
@@ -259,7 +263,7 @@ class VanillaConnection(BaseModel, frozen=True):
 class DowelConnection(BaseModel, frozen=True):
     """ダボで補強された接続"""
     radius: float  # ダボ半径（mm）
-    depth: float   # ダボ深さ（mm）
+    depth: float   # ダボの全長（mm）。半分ずつ各ピースに入る
 
 class ScrewConnection(BaseModel, frozen=True):
     """ビスで補強された接続"""
@@ -290,20 +294,27 @@ class Connection(BaseModel, frozen=True):
 | `Connection.of_dowel(base, target, spec)` | ダボ接続を作成 |
 | `Connection.of_screw(base, target, spec)` | ビス接続を作成 |
 
+**検証**（`ValueError` を送出）: ピースを自分自身に接続することはできません。ダボ: ダボの長さの半分が、各ピースの接触面の法線方向の寸法（front/back → 厚み、left/right → 89、top/down → ピースの長さ）に収まる必要があります。ビス: ターゲットの接触面は `front` または `back` で、ターゲットの厚み < 長さ <= ベースの接触面の法線方向の寸法 + ターゲットの厚み である必要があります。
+
 **例:**
 
 ```python
+>>> from nichiyou_daiku.core.connection import Connection
 >>> from nichiyou_daiku.core.dowel import Dowel, as_spec
+>>> leg = Piece.of(PieceType.PT_2x4, 720.0, "leg")
+>>> apron = Piece.of(PieceType.PT_2x4, 600.0, "apron")
+>>> leg_anchor = Anchor(contact_face="left", edge_shared_face="back", offset=FromMax(value=0))
+>>> apron_anchor = Anchor(contact_face="down", edge_shared_face="back", offset=FromMax(value=0))
 
 >>> conn = Connection(
-...     base=BoundAnchor(piece=piece1, anchor=anchor1),
-...     target=BoundAnchor(piece=piece2, anchor=anchor2),
+...     base=BoundAnchor(piece=leg, anchor=leg_anchor),
+...     target=BoundAnchor(piece=apron, anchor=apron_anchor),
 ... )
 
 # ダボ接続
->>> conn = Connection.of_dowel(
-...     base=BoundAnchor(piece=piece1, anchor=anchor1),
-...     target=BoundAnchor(piece=piece2, anchor=anchor2),
+>>> dowel_conn = Connection.of_dowel(
+...     base=BoundAnchor(piece=leg, anchor=leg_anchor),
+...     target=BoundAnchor(piece=apron, anchor=apron_anchor),
 ...     spec=as_spec(Dowel.D8_L30),
 ... )
 ```
@@ -327,23 +338,20 @@ class Model(BaseModel, frozen=True):
 |---------|------|
 | `Model.of(pieces, connections, label=None)` | イテラブルから作成 |
 
+`Model.of` は、ピースIDの重複、`pieces` に含まれないピースを参照する接続、同じ (base, target) の組に対する2つ目の接続に対して `ValueError` を送出します。
+
 **例:**
 
 ```python
->>> piece1 = Piece.of(PieceType.PT_2x4, 1000.0, "piece-1")
->>> piece2 = Piece.of(PieceType.PT_2x4, 800.0, "piece-2")
->>> conn = Connection(
-...     base=BoundAnchor(piece=piece1, anchor=anchor1),
-...     target=BoundAnchor(piece=piece2, anchor=anchor2),
-... )
+>>> from nichiyou_daiku.core.model import Model
 >>> model = Model.of(
-...     pieces=[piece1, piece2],
+...     pieces=[leg, apron],
 ...     connections=[conn],
 ...     label="マイテーブル"
 ... )
 >>> len(model.pieces)
 2
->>> ("piece-1", "piece-2") in model.connections
+>>> ("leg", "apron") in model.connections
 True
 ```
 
@@ -359,7 +367,7 @@ class Assembly(BaseModel, frozen=True):
     boxes: dict[str, Box]                     # ピースID -> 3Dバウンディングボックス
     joints: dict[str, Joint]                  # ジョイントID -> Joint
     joint_conns: list[tuple[str, str]]        # 接続されたジョイントIDペア
-    pilot_holes: dict[str, list[tuple[Point3D, Hole]]]  # ピースID -> 穴
+    pilot_holes: dict[str, list[tuple[SurfacePoint, Hole]]]  # ピースID -> 穴（SurfacePointは穴をあける面を示す）
     label: str | None                         # オプションのラベル
 ```
 
@@ -372,12 +380,15 @@ class Assembly(BaseModel, frozen=True):
 **例:**
 
 ```python
+>>> from nichiyou_daiku.core.assembly import Assembly
 >>> assembly = Assembly.of(model)
->>> len(assembly.joints)
-2  # 1つのジョイントペアは2つのジョイントを作成
+>>> len(assembly.joints)  # 1つのバニラ接続は1つのジョイントペア（2つのジョイント）を作成
+2
 >>> len(assembly.joint_conns)
 1
 ```
+
+**下穴:** ダボ接続では各ピースにダボ径・深さ 長さ/2 の穴、ビス接続ではターゲットに貫通穴、ベースに深さ (長さ - ターゲットの厚み) の穴が追加されます。バニラ接続では穴はありません。
 
 ## ジオメトリモジュール
 
@@ -389,12 +400,12 @@ class Assembly(BaseModel, frozen=True):
 from nichiyou_daiku.core.geometry import FromMin, FromMax, Offset
 
 class FromMin(BaseModel, frozen=True):
-    """最小（開始）位置からのオフセット"""
-    value: float  # 距離（mm）
+    """エッジの最小側の端（down端 / left側 / back側）からのオフセット"""
+    value: float  # 距離（mm）、0以上
 
 class FromMax(BaseModel, frozen=True):
-    """最大（終了）位置からのオフセット"""
-    value: float  # 距離（mm）
+    """エッジの最大側の端（top端 / right側 / front側）からのオフセット"""
+    value: float  # 距離（mm）、0以上
 
 Offset = FromMin | FromMax
 ```
@@ -402,8 +413,8 @@ Offset = FromMin | FromMax
 **例:**
 
 ```python
->>> offset1 = FromMin(value=100)  # 開始から100mm
->>> offset2 = FromMax(value=50)   # 終端から50mm
+>>> offset1 = FromMin(value=100)  # 最小側の端から100mm
+>>> offset2 = FromMax(value=50)   # 最大側の端から50mm
 ```
 
 ### Face（面）
@@ -411,20 +422,31 @@ Offset = FromMin | FromMax
 矩形ピースの6つの面。
 
 ```python
+from typing import Literal
+
 Face = Literal["top", "down", "left", "right", "front", "back"]
 ```
 
-**面の図:**
+面の名前はピースのローカル座標系（X = 幅、Y = 厚み、Z = 長さ）に基づきます：
+
+| 面 | 法線 | 種類 | 2x4でのサイズ |
+|----|------|------|---------------|
+| top | +Z | 長さ方向の最大側の木口面 | 89 × 38 |
+| down | -Z | 長さ方向の最小側の木口面 | 89 × 38 |
+| front | +Y | 広い面 | 89 × 長さ |
+| back | -Y | 広い面 | 89 × 長さ |
+| right | +X | 細い面 | 38 × 長さ |
+| left | -X | 細い面 | 38 × 長さ |
+
+**面の図**（断面図。top端 = +Z を手前に向けて見た場合）:
 
 ```
-        top（上面）
-           │
-  left ────┼──── right
-（左面）    │    （右面）
-         down（下面）
-
-  back ────┼──── front
-（背面）         （前面）
+                 front (+Y)
+            ┌──────────────────┐
+  left (-X) │                  │ right (+X)
+            └──────────────────┘
+                 back (-Y)
+            ←─────── 89 ───────→
 ```
 
 **ユーティリティ関数:**
@@ -469,6 +491,7 @@ class Dowel(Enum):
 **例:**
 
 ```python
+>>> from nichiyou_daiku.core.dowel import Dowel, as_spec
 >>> dowel = Dowel.of("8x30")
 >>> spec = as_spec(dowel)
 >>> spec.diameter
@@ -533,6 +556,7 @@ class CoarseThreadScrew(Enum):
 **例:**
 
 ```python
+>>> from nichiyou_daiku.core.screw import SlimScrew, as_spec
 >>> screw = SlimScrew.of("3.3x50")
 >>> spec = as_spec(screw)
 >>> spec.diameter
@@ -573,10 +597,11 @@ from nichiyou_daiku.dsl import (
 **例:**
 
 ```python
+>>> from nichiyou_daiku.dsl import parse_dsl
 >>> dsl = """
 ... (leg:2x4 =720)
 ... (apron:2x4 =600)
-... leg -[FR>100 DB<0]- apron
+... leg -[LB>0 DB>0]- apron
 ... """
 >>> model = parse_dsl(dsl)
 >>> len(model.pieces)
@@ -605,8 +630,12 @@ def extract_resources(assembly: Assembly) -> ResourceSummary:
 **例:**
 
 ```python
->>> resources = extract_resources(assembly)
->>> resources.pretty_print()
+>>> from nichiyou_daiku.shell import extract_resources
+>>> assembly = Assembly.of(model)
+>>> resources = extract_resources(assembly)  # 引数はModelではなくAssembly
+>>> resources.total_pieces
+2
+>>> summary_text = resources.pretty_print()  # 人が読める形式の概要
 ```
 
 ### レポート生成
@@ -615,23 +644,29 @@ def extract_resources(assembly: Assembly) -> ResourceSummary:
 from nichiyou_daiku.shell import generate_markdown_report
 
 def generate_markdown_report(
-    resources: ResourceSummary,
+    resource_summary: ResourceSummary,
     project_name: str = "Woodworking Project",
     standard_lengths: dict[PieceType, list[float]] | None = None,
     include_cut_diagram: bool = True,
+    include_anchor_details: bool = True,
+    include_pilot_holes: bool = True,
 ) -> str:
     """カット最適化付きMarkdownレポートを生成"""
 ```
 
+木取り計画では1カットごとに3mmののこ刃厚（切りしろ）を見込み、どの定尺材よりも長いピースがあれば警告します。
+
 **例:**
 
 ```python
+>>> from nichiyou_daiku.shell import generate_markdown_report
 >>> report = generate_markdown_report(
 ...     resources,
 ...     project_name="マイテーブル",
 ...     include_cut_diagram=True,
 ... )
->>> print(report)
+>>> report.splitlines()[0]
+'# マイテーブル Report'
 ```
 
 ### 3Dエクスポート（オプション）
@@ -651,13 +686,16 @@ def assembly_to_build123d(
 **例:**
 
 ```python
+>>> from nichiyou_daiku.shell import assembly_to_build123d
 >>> compound = assembly_to_build123d(assembly, fillet_radius=2.0)
 >>> # ocp-vscodeで使用するか、STL/STEPにエクスポート
 ```
 
 ## 完全な例
 
-### シンプルテーブル
+### シンプルなフレーム
+
+2本の脚と、その間に脚のtopと面一で入る幕板。
 
 ```python
 from nichiyou_daiku.core.piece import Piece, PieceType
@@ -665,7 +703,7 @@ from nichiyou_daiku.core.anchor import Anchor, BoundAnchor
 from nichiyou_daiku.core.connection import Connection
 from nichiyou_daiku.core.model import Model
 from nichiyou_daiku.core.assembly import Assembly
-from nichiyou_daiku.core.geometry import FromMin, FromMax
+from nichiyou_daiku.core.geometry import FromMax
 
 # ピースを作成
 leg1 = Piece.of(PieceType.PT_2x4, 720.0, "leg1")
@@ -674,31 +712,14 @@ apron = Piece.of(PieceType.PT_2x4, 600.0, "apron")
 
 # 接続を定義
 connections = [
+    # leg1 -[LB>0 DB>0]- apron
     Connection(
         base=BoundAnchor(
             piece=leg1,
             anchor=Anchor(
-                contact_face="front",
-                edge_shared_face="right",
-                offset=FromMax(value=100)
-            )
-        ),
-        target=BoundAnchor(
-            piece=apron,
-            anchor=Anchor(
-                contact_face="down",
+                contact_face="left",
                 edge_shared_face="back",
-                offset=FromMin(value=0)
-            )
-        )
-    ),
-    Connection(
-        base=BoundAnchor(
-            piece=leg2,
-            anchor=Anchor(
-                contact_face="front",
-                edge_shared_face="left",
-                offset=FromMax(value=100)
+                offset=FromMax(value=0)
             )
         ),
         target=BoundAnchor(
@@ -710,13 +731,32 @@ connections = [
             )
         )
     ),
+    # leg2 -[RF>0 TF>0]- apron
+    Connection(
+        base=BoundAnchor(
+            piece=leg2,
+            anchor=Anchor(
+                contact_face="right",
+                edge_shared_face="front",
+                offset=FromMax(value=0)
+            )
+        ),
+        target=BoundAnchor(
+            piece=apron,
+            anchor=Anchor(
+                contact_face="top",
+                edge_shared_face="front",
+                offset=FromMax(value=0)
+            )
+        )
+    ),
 ]
 
-# モデルとアセンブリを作成
+# モデルとアセンブリを作成（全体 778 × 38 × 720mm）
 model = Model.of(
     pieces=[leg1, leg2, apron],
     connections=connections,
-    label="シンプルテーブル"
+    label="シンプルなフレーム"
 )
 assembly = Assembly.of(model)
 ```
@@ -728,13 +768,13 @@ from nichiyou_daiku.dsl import parse_dsl
 from nichiyou_daiku.core.assembly import Assembly
 
 dsl = """
-// ダボ接合のシンプルテーブル
+// ダボ接合のシンプルなフレーム
 (leg1:2x4 =720)
 (leg2:2x4 =720)
 (apron:2x4 =600)
 
-leg1 -[FR>100 DB<0 D(:8x30)]- apron
-leg2 -[FL>100 DB>0 D(:8x30)]- apron
+leg1 -[LB>0 DB>0 D(:8x30)]- apron
+leg2 -[RF>0 TF>0 D(:8x30)]- apron
 """
 
 model = parse_dsl(dsl)
@@ -743,13 +783,28 @@ assembly = Assembly.of(model)
 
 ### ビス接続を使用
 
-```python
-from nichiyou_daiku.core.screw import SlimScrew, as_spec
-from nichiyou_daiku.core.connection import Connection
+ビスはターゲット（接触面が `front` または `back`）を貫通してベースに打ち込まれます。
 
+```python
+from nichiyou_daiku.core.piece import Piece, PieceType
+from nichiyou_daiku.core.anchor import Anchor, BoundAnchor
+from nichiyou_daiku.core.connection import Connection
+from nichiyou_daiku.core.geometry import FromMin
+from nichiyou_daiku.core.screw import SlimScrew, as_spec
+
+post = Piece.of(PieceType.PT_2x4, 600.0, "post")
+rail = Piece.of(PieceType.PT_2x4, 400.0, "rail")
+
+# 柱のdown端から300mmの位置で、柱のfront面に横木をビス留め
 conn = Connection.of_screw(
-    base=BoundAnchor(piece=leg, anchor=leg_anchor),
-    target=BoundAnchor(piece=apron, anchor=apron_anchor),
+    base=BoundAnchor(
+        piece=post,
+        anchor=Anchor(contact_face="front", edge_shared_face="left", offset=FromMin(value=300)),
+    ),
+    target=BoundAnchor(
+        piece=rail,
+        anchor=Anchor(contact_face="back", edge_shared_face="top", offset=FromMin(value=0)),
+    ),
     spec=as_spec(SlimScrew.D3_3_L50),
 )
 ```
@@ -757,10 +812,13 @@ conn = Connection.of_screw(
 または DSL を使用:
 
 ```python
-dsl = """
-(leg:2x4 =720)
-(apron:2x4 =600)
+from nichiyou_daiku.dsl import parse_dsl
 
-leg -[FR>100 FB<0 S(Slim:3.3x50)]- apron
+dsl = """
+(post:2x4 =600)
+(rail:2x4 =400)
+
+post -[FL<300 BT<0 S(Slim:3.3x50)]- rail
 """
+model = parse_dsl(dsl)
 ```

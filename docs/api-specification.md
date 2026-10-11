@@ -58,8 +58,8 @@ Enumeration of supported lumber types.
 from nichiyou_daiku.core.piece import PieceType
 
 class PieceType(Enum):
-    PT_2x4 = "2x4"  # 89mm × 38mm cross-section
-    PT_1x4 = "1x4"  # 89mm × 19mm cross-section
+    PT_2x4 = "2x4"  # 89mm (width) × 38mm (thickness) cross-section
+    PT_1x4 = "1x4"  # 89mm (width) × 19mm (thickness) cross-section
 ```
 
 **Methods:**
@@ -71,6 +71,7 @@ class PieceType(Enum):
 **Example:**
 
 ```python
+>>> from nichiyou_daiku.core.piece import Piece, PieceType, get_shape
 >>> PieceType.of("2x4")
 <PieceType.PT_2x4: '2x4'>
 
@@ -88,7 +89,7 @@ from nichiyou_daiku.core.piece import Piece, PieceType
 class Piece(BaseModel, frozen=True):
     id: str              # Unique identifier
     type: PieceType      # Lumber type
-    length: float        # Length in millimeters
+    length: float        # Length in millimeters (must be > 0)
 ```
 
 **Factory Methods:**
@@ -140,6 +141,8 @@ from nichiyou_daiku.core.piece import get_shape
 1000.0
 ```
 
+Each piece has its own local frame: X = width (`width`), Y = thickness (`height`), Z = length (`length`).
+
 ### Anchor
 
 Specifies a connection point on a piece.
@@ -162,27 +165,26 @@ class Anchor(BaseModel, frozen=True):
 
 Two pieces always connect by sharing an edge. The anchor defines:
 1. `contact_face`: Which face touches the other piece
-2. `edge_shared_face`: Which edge of the contact face is aligned
+2. `edge_shared_face`: An adjacent face; the anchor lies on the edge where the two faces meet
 3. `offset`: Position along that edge
 
-```
-         edge_shared_face = "front"
-                ↓
-    ┌───────────┼───────────┐
-    │           │           │
-    │    contact_face       │  ← Piece A
-    │       = "top"         │
-    └───────────┴───────────┘
-                │
-    ┌───────────┴───────────┐
-    │    contact_face       │
-    │      = "down"         │  ← Piece B
-    └───────────────────────┘
-```
+The edge runs along the axis perpendicular to both faces:
+
+| Face pair (either order) | Edge runs along | Edge length (2x4 / 1x4) | `FromMin(v)` measured from | `FromMax(v)` measured from |
+|--------------------------|-----------------|-------------------------|----------------------------|----------------------------|
+| top/down + front/back | width (X) | 89 / 89 | left side | right side |
+| top/down + left/right | thickness (Y) | 38 / 19 | back side | front side |
+| front/back + left/right | length (Z) | L / L | down end | top end |
+
+`BoundAnchor` raises `ValueError` if the offset exceeds the edge length.
+
+**Placement:** a connection places the target against the base so that (1) the two contact faces touch face to face, (2) the two edge_shared faces lie in one plane and face the same way, and (3) the two anchor points coincide. With `FromMin` on the target its min end/side (down/left/back) sits on the point; with `FromMax` its max end/side (top/right/front) does.
+
+Example (2x4 leg L=700 standing on the floor z=0, 2x4 apron L=500): base anchor `front`/`left`/`FromMin(100)` on the leg and target anchor `down`/`front`/`FromMin(0)` on the apron (DSL `leg -[FL<100 DF<0]- apron`) put the apron's down end on the leg's front face, the apron's front face flush with the leg's left face, and the apron's left side on the point 100mm above the floor, so the apron occupies z=11..100. With `FromMax(0)` on the apron it occupies z=100..189.
 
 **Valid Face Combinations:**
 
-The `contact_face` and `edge_shared_face` must be adjacent (not opposite):
+The `contact_face` and `edge_shared_face` must be adjacent (not the same, not opposite):
 
 | Valid | Invalid |
 |-------|---------|
@@ -199,10 +201,12 @@ The `contact_face` and `edge_shared_face` must be adjacent (not opposite):
 **Example:**
 
 ```python
+>>> from nichiyou_daiku.core.anchor import Anchor, BoundAnchor
+>>> from nichiyou_daiku.core.geometry import FromMin, FromMax
 >>> anchor = Anchor(
 ...     contact_face="front",
 ...     edge_shared_face="top",
-...     offset=FromMax(value=100)
+...     offset=FromMax(value=50)
 ... )
 >>> anchor.contact_face
 'front'
@@ -233,7 +237,7 @@ class BoundAnchor(BaseModel, frozen=True):
 >>> anchor = Anchor(
 ...     contact_face="front",
 ...     edge_shared_face="top",
-...     offset=FromMax(value=100)
+...     offset=FromMax(value=50)  # front/top edge runs across the 89mm width
 ... )
 >>> bound = BoundAnchor(piece=piece, anchor=anchor)
 ```
@@ -259,7 +263,7 @@ class VanillaConnection(BaseModel, frozen=True):
 class DowelConnection(BaseModel, frozen=True):
     """Connection reinforced with dowels."""
     radius: float  # Dowel radius in mm
-    depth: float   # Dowel depth in mm
+    depth: float   # Total dowel length in mm (half goes into each piece)
 
 class ScrewConnection(BaseModel, frozen=True):
     """Connection reinforced with screws."""
@@ -290,20 +294,27 @@ class Connection(BaseModel, frozen=True):
 | `Connection.of_dowel(base, target, spec)` | Create dowel connection |
 | `Connection.of_screw(base, target, spec)` | Create screw connection |
 
+**Validation** (raises `ValueError`): a piece cannot connect to itself. Dowel: half the dowel length must fit each piece along its contact normal (front/back → thickness, left/right → 89, top/down → piece length). Screw: the target's contact face must be `front` or `back`, and target thickness < length <= base depth along its contact normal + target thickness.
+
 **Example:**
 
 ```python
+>>> from nichiyou_daiku.core.connection import Connection
 >>> from nichiyou_daiku.core.dowel import Dowel, as_spec
+>>> leg = Piece.of(PieceType.PT_2x4, 720.0, "leg")
+>>> apron = Piece.of(PieceType.PT_2x4, 600.0, "apron")
+>>> leg_anchor = Anchor(contact_face="left", edge_shared_face="back", offset=FromMax(value=0))
+>>> apron_anchor = Anchor(contact_face="down", edge_shared_face="back", offset=FromMax(value=0))
 
 >>> conn = Connection(
-...     base=BoundAnchor(piece=piece1, anchor=anchor1),
-...     target=BoundAnchor(piece=piece2, anchor=anchor2),
+...     base=BoundAnchor(piece=leg, anchor=leg_anchor),
+...     target=BoundAnchor(piece=apron, anchor=apron_anchor),
 ... )
 
 # With dowel
->>> conn = Connection.of_dowel(
-...     base=BoundAnchor(piece=piece1, anchor=anchor1),
-...     target=BoundAnchor(piece=piece2, anchor=anchor2),
+>>> dowel_conn = Connection.of_dowel(
+...     base=BoundAnchor(piece=leg, anchor=leg_anchor),
+...     target=BoundAnchor(piece=apron, anchor=apron_anchor),
 ...     spec=as_spec(Dowel.D8_L30),
 ... )
 ```
@@ -327,23 +338,20 @@ class Model(BaseModel, frozen=True):
 |--------|-------------|
 | `Model.of(pieces, connections, label=None)` | Create from iterables |
 
+`Model.of` raises `ValueError` for duplicate piece IDs, connections that reference pieces not in `pieces`, and a second connection for the same (base, target) pair.
+
 **Example:**
 
 ```python
->>> piece1 = Piece.of(PieceType.PT_2x4, 1000.0, "piece-1")
->>> piece2 = Piece.of(PieceType.PT_2x4, 800.0, "piece-2")
->>> conn = Connection(
-...     base=BoundAnchor(piece=piece1, anchor=anchor1),
-...     target=BoundAnchor(piece=piece2, anchor=anchor2),
-... )
+>>> from nichiyou_daiku.core.model import Model
 >>> model = Model.of(
-...     pieces=[piece1, piece2],
+...     pieces=[leg, apron],
 ...     connections=[conn],
 ...     label="My Table"
 ... )
 >>> len(model.pieces)
 2
->>> ("piece-1", "piece-2") in model.connections
+>>> ("leg", "apron") in model.connections
 True
 ```
 
@@ -359,7 +367,7 @@ class Assembly(BaseModel, frozen=True):
     boxes: dict[str, Box]                     # Piece ID -> 3D bounding box
     joints: dict[str, Joint]                  # Joint ID -> Joint
     joint_conns: list[tuple[str, str]]        # Connected joint ID pairs
-    pilot_holes: dict[str, list[tuple[Point3D, Hole]]]  # Piece ID -> holes
+    pilot_holes: dict[str, list[tuple[SurfacePoint, Hole]]]  # Piece ID -> holes (SurfacePoint names the drilled face)
     label: str | None                         # Optional label
 ```
 
@@ -372,12 +380,15 @@ class Assembly(BaseModel, frozen=True):
 **Example:**
 
 ```python
+>>> from nichiyou_daiku.core.assembly import Assembly
 >>> assembly = Assembly.of(model)
->>> len(assembly.joints)
-2  # One joint pair creates 2 joints
+>>> len(assembly.joints)  # one vanilla connection creates one joint pair (2 joints)
+2
 >>> len(assembly.joint_conns)
 1
 ```
+
+**Pilot holes:** a dowel connection adds a hole of the dowel diameter, length/2 deep, to each piece; a screw connection adds a through-hole to the target and a hole (length - target thickness) deep to the base; vanilla connections add none.
 
 ## Geometry Module
 
@@ -389,12 +400,12 @@ Position along an edge, measured from either end.
 from nichiyou_daiku.core.geometry import FromMin, FromMax, Offset
 
 class FromMin(BaseModel, frozen=True):
-    """Offset from minimum (start) position."""
-    value: float  # Distance in mm
+    """Offset from the min end of the edge (down end / left side / back side)."""
+    value: float  # Distance in mm, >= 0
 
 class FromMax(BaseModel, frozen=True):
-    """Offset from maximum (end) position."""
-    value: float  # Distance in mm
+    """Offset from the max end of the edge (top end / right side / front side)."""
+    value: float  # Distance in mm, >= 0
 
 Offset = FromMin | FromMax
 ```
@@ -402,8 +413,8 @@ Offset = FromMin | FromMax
 **Example:**
 
 ```python
->>> offset1 = FromMin(value=100)  # 100mm from start
->>> offset2 = FromMax(value=50)   # 50mm from end
+>>> offset1 = FromMin(value=100)  # 100mm from the min end
+>>> offset2 = FromMax(value=50)   # 50mm from the max end
 ```
 
 ### Face
@@ -411,19 +422,31 @@ Offset = FromMin | FromMax
 Six faces of a rectangular piece.
 
 ```python
+from typing import Literal
+
 Face = Literal["top", "down", "left", "right", "front", "back"]
 ```
 
-**Face Diagram:**
+Faces are named in the piece's local frame (X = width, Y = thickness, Z = length):
+
+| Face | Normal | Kind | Size on a 2x4 |
+|------|--------|------|---------------|
+| top | +Z | end face at the max end of the length | 89 × 38 |
+| down | -Z | end face at the min end of the length | 89 × 38 |
+| front | +Y | wide face | 89 × length |
+| back | -Y | wide face | 89 × length |
+| right | +X | narrow face | 38 × length |
+| left | -X | narrow face | 38 × length |
+
+**Face Diagram** (cross-section, looking at the top end; top = +Z points at you):
 
 ```
-        top
-         │
-  left ──┼── right
-         │
-       down
-
-  back ──┼── front
+                 front (+Y)
+            ┌──────────────────┐
+  left (-X) │                  │ right (+X)
+            └──────────────────┘
+                 back (-Y)
+            ←─────── 89 ───────→
 ```
 
 **Utility Functions:**
@@ -468,6 +491,7 @@ class Dowel(Enum):
 **Example:**
 
 ```python
+>>> from nichiyou_daiku.core.dowel import Dowel, as_spec
 >>> dowel = Dowel.of("8x30")
 >>> spec = as_spec(dowel)
 >>> spec.diameter
@@ -532,6 +556,7 @@ class CoarseThreadScrew(Enum):
 **Example:**
 
 ```python
+>>> from nichiyou_daiku.core.screw import SlimScrew, as_spec
 >>> screw = SlimScrew.of("3.3x50")
 >>> spec = as_spec(screw)
 >>> spec.diameter
@@ -572,10 +597,11 @@ from nichiyou_daiku.dsl import (
 **Example:**
 
 ```python
+>>> from nichiyou_daiku.dsl import parse_dsl
 >>> dsl = """
 ... (leg:2x4 =720)
 ... (apron:2x4 =600)
-... leg -[FR>100 DB<0]- apron
+... leg -[LB>0 DB>0]- apron
 ... """
 >>> model = parse_dsl(dsl)
 >>> len(model.pieces)
@@ -604,8 +630,12 @@ def extract_resources(assembly: Assembly) -> ResourceSummary:
 **Example:**
 
 ```python
->>> resources = extract_resources(assembly)
->>> resources.pretty_print()
+>>> from nichiyou_daiku.shell import extract_resources
+>>> assembly = Assembly.of(model)
+>>> resources = extract_resources(assembly)  # takes an Assembly, not a Model
+>>> resources.total_pieces
+2
+>>> summary_text = resources.pretty_print()  # human-readable summary
 ```
 
 ### Report Generation
@@ -614,23 +644,29 @@ def extract_resources(assembly: Assembly) -> ResourceSummary:
 from nichiyou_daiku.shell import generate_markdown_report
 
 def generate_markdown_report(
-    resources: ResourceSummary,
+    resource_summary: ResourceSummary,
     project_name: str = "Woodworking Project",
     standard_lengths: dict[PieceType, list[float]] | None = None,
     include_cut_diagram: bool = True,
+    include_anchor_details: bool = True,
+    include_pilot_holes: bool = True,
 ) -> str:
     """Generate markdown report with cut optimization."""
 ```
 
+The cut plan allows a 3mm saw kerf per cut and warns about pieces longer than any stock board.
+
 **Example:**
 
 ```python
+>>> from nichiyou_daiku.shell import generate_markdown_report
 >>> report = generate_markdown_report(
 ...     resources,
 ...     project_name="My Table",
 ...     include_cut_diagram=True,
 ... )
->>> print(report)
+>>> report.splitlines()[0]
+'# My Table Report'
 ```
 
 ### 3D Export (Optional)
@@ -650,13 +686,16 @@ def assembly_to_build123d(
 **Example:**
 
 ```python
+>>> from nichiyou_daiku.shell import assembly_to_build123d
 >>> compound = assembly_to_build123d(assembly, fillet_radius=2.0)
 >>> # Use with ocp-vscode or export to STL/STEP
 ```
 
 ## Complete Examples
 
-### Simple Table
+### Simple Frame
+
+Two legs and an apron between them, flush with the leg tops.
 
 ```python
 from nichiyou_daiku.core.piece import Piece, PieceType
@@ -664,7 +703,7 @@ from nichiyou_daiku.core.anchor import Anchor, BoundAnchor
 from nichiyou_daiku.core.connection import Connection
 from nichiyou_daiku.core.model import Model
 from nichiyou_daiku.core.assembly import Assembly
-from nichiyou_daiku.core.geometry import FromMin, FromMax
+from nichiyou_daiku.core.geometry import FromMax
 
 # Create pieces
 leg1 = Piece.of(PieceType.PT_2x4, 720.0, "leg1")
@@ -673,31 +712,14 @@ apron = Piece.of(PieceType.PT_2x4, 600.0, "apron")
 
 # Define connections
 connections = [
+    # leg1 -[LB>0 DB>0]- apron
     Connection(
         base=BoundAnchor(
             piece=leg1,
             anchor=Anchor(
-                contact_face="front",
-                edge_shared_face="right",
-                offset=FromMax(value=100)
-            )
-        ),
-        target=BoundAnchor(
-            piece=apron,
-            anchor=Anchor(
-                contact_face="down",
+                contact_face="left",
                 edge_shared_face="back",
-                offset=FromMin(value=0)
-            )
-        )
-    ),
-    Connection(
-        base=BoundAnchor(
-            piece=leg2,
-            anchor=Anchor(
-                contact_face="front",
-                edge_shared_face="left",
-                offset=FromMax(value=100)
+                offset=FromMax(value=0)
             )
         ),
         target=BoundAnchor(
@@ -709,13 +731,32 @@ connections = [
             )
         )
     ),
+    # leg2 -[RF>0 TF>0]- apron
+    Connection(
+        base=BoundAnchor(
+            piece=leg2,
+            anchor=Anchor(
+                contact_face="right",
+                edge_shared_face="front",
+                offset=FromMax(value=0)
+            )
+        ),
+        target=BoundAnchor(
+            piece=apron,
+            anchor=Anchor(
+                contact_face="top",
+                edge_shared_face="front",
+                offset=FromMax(value=0)
+            )
+        )
+    ),
 ]
 
-# Create model and assembly
+# Create model and assembly (overall 778 × 38 × 720mm)
 model = Model.of(
     pieces=[leg1, leg2, apron],
     connections=connections,
-    label="Simple Table"
+    label="Simple Frame"
 )
 assembly = Assembly.of(model)
 ```
@@ -727,13 +768,13 @@ from nichiyou_daiku.dsl import parse_dsl
 from nichiyou_daiku.core.assembly import Assembly
 
 dsl = """
-// Simple table with dowel joints
+// Simple frame with dowel joints
 (leg1:2x4 =720)
 (leg2:2x4 =720)
 (apron:2x4 =600)
 
-leg1 -[FR>100 DB<0 D(:8x30)]- apron
-leg2 -[FL>100 DB>0 D(:8x30)]- apron
+leg1 -[LB>0 DB>0 D(:8x30)]- apron
+leg2 -[RF>0 TF>0 D(:8x30)]- apron
 """
 
 model = parse_dsl(dsl)
@@ -742,13 +783,28 @@ assembly = Assembly.of(model)
 
 ### With Screw Connections
 
-```python
-from nichiyou_daiku.core.screw import SlimScrew, as_spec
-from nichiyou_daiku.core.connection import Connection
+The screw goes through the target (contact face `front` or `back`) into the base.
 
+```python
+from nichiyou_daiku.core.piece import Piece, PieceType
+from nichiyou_daiku.core.anchor import Anchor, BoundAnchor
+from nichiyou_daiku.core.connection import Connection
+from nichiyou_daiku.core.geometry import FromMin
+from nichiyou_daiku.core.screw import SlimScrew, as_spec
+
+post = Piece.of(PieceType.PT_2x4, 600.0, "post")
+rail = Piece.of(PieceType.PT_2x4, 400.0, "rail")
+
+# Rail screwed across the post's front face, 300mm above the post's down end
 conn = Connection.of_screw(
-    base=BoundAnchor(piece=leg, anchor=leg_anchor),
-    target=BoundAnchor(piece=apron, anchor=apron_anchor),
+    base=BoundAnchor(
+        piece=post,
+        anchor=Anchor(contact_face="front", edge_shared_face="left", offset=FromMin(value=300)),
+    ),
+    target=BoundAnchor(
+        piece=rail,
+        anchor=Anchor(contact_face="back", edge_shared_face="top", offset=FromMin(value=0)),
+    ),
     spec=as_spec(SlimScrew.D3_3_L50),
 )
 ```
@@ -756,10 +812,13 @@ conn = Connection.of_screw(
 Or using DSL:
 
 ```python
-dsl = """
-(leg:2x4 =720)
-(apron:2x4 =600)
+from nichiyou_daiku.dsl import parse_dsl
 
-leg -[FR>100 FB<0 S(Slim:3.3x50)]- apron
+dsl = """
+(post:2x4 =600)
+(rail:2x4 =400)
+
+post -[FL<300 BT<0 S(Slim:3.3x50)]- rail
 """
+model = parse_dsl(dsl)
 ```

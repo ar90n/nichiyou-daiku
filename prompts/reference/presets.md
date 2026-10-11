@@ -83,39 +83,64 @@ spec = as_spec(screw)  # ScrewSpec(diameter=3.8, length=57.0)
 
 ## Screw Selection Guide
 
-| Joint Type | Recommended Screw |
-|------------|-------------------|
-| 2x4 to 2x4 (38mm + 38mm) | Slim 3.8x65, Coarse 3.8x57 |
-| 2x4 to 1x4 (38mm + 19mm) | Slim 3.3x45, Coarse 3.8x40 |
-| 1x4 to 1x4 (19mm + 19mm) | Slim 3.3x30, Coarse 3.8x30 |
+The screw is driven through the **target** (contacted on its front/back face) into the **base**. The library enforces:
 
-**Rule of thumb**: Screw length should be approximately 2/3 of total joint thickness.
+- length > target thickness (38 for 2x4, 19 for 1x4)
+- length <= target thickness + base depth along its contact normal (front/back → thickness, left/right → 89, top/down → piece length)
+
+Recommended sizes when the base is also contacted on a wide (front/back) face:
+
+| Target → Base | Allowed length | Recommended Screw |
+|---------------|----------------|-------------------|
+| 2x4 → 2x4 (38mm + 38mm) | 39-76mm | Slim 3.8x65, Coarse 3.8x57 |
+| 1x4 → 2x4 (19mm + 38mm) | 20-57mm | Slim 3.3x45, Coarse 3.8x40 |
+| 1x4 → 1x4 (19mm + 19mm) | 20-38mm | Slim 3.3x30, Coarse 3.8x30 |
+
+When the base is contacted on its narrow face (89mm deep) or its end (piece length deep), longer screws are allowed.
+
+## Dowel Fit
+
+A dowel of length L goes L/2 into each piece. L/2 must not exceed each piece's depth along its contact normal (front/back → thickness, left/right → 89, top/down → piece length). For example, every preset fits a 2x4 contacted on its front/back face (38mm), but `12x40` (20mm per piece) does not fit a 1x4 contacted on its front/back face (19mm).
 
 ## Custom Specifications
 
-For non-preset dimensions, use numeric values in DSL:
+For non-preset dimensions, use numeric values in DSL. The dowel form is `D(radius, total length)`; the screw form is `S(diameter, length)`:
 
 ```nd
-// Custom dowel: radius 5mm, depth 25mm
-piece1 -[TF<0 BD<0 D(5.0, 25.0)]- piece2
-
-// Custom screw: diameter 4mm, length 60mm
-piece1 -[BT<0 FT<0 S(4.0, 60.0)]- piece2
+(post:2x4 =600)
+(rail_high:2x4 =400)
+(rail_low:2x4 =400)
+post -[FL<300 BT<0 D(5, 30)]- rail_high   // Custom dowel: radius 5mm (10mm diameter), total length 30mm
+post -[FL<100 BT<0 S(4, 60)]- rail_low    // Custom screw: diameter 4mm, length 60mm
 ```
 
-Or in Python:
+Or in Python (`DowelConnection.depth` is the total dowel length):
 ```python
-from nichiyou_daiku.core.connection import DowelConnection, ScrewConnection
+from nichiyou_daiku.core.piece import Piece, PieceType
+from nichiyou_daiku.core.anchor import Anchor, BoundAnchor
+from nichiyou_daiku.core.connection import Connection, DowelConnection, ScrewConnection
+from nichiyou_daiku.core.geometry import FromMin
+
+post = Piece.of(PieceType.PT_2x4, 600.0, "post")
+rail = Piece.of(PieceType.PT_2x4, 400.0, "rail")
+base = BoundAnchor(
+    piece=post,
+    anchor=Anchor(contact_face="front", edge_shared_face="left", offset=FromMin(value=300)),
+)
+target = BoundAnchor(
+    piece=rail,
+    anchor=Anchor(contact_face="back", edge_shared_face="top", offset=FromMin(value=0)),
+)
 
 dowel_conn = Connection(
-    base=...,
-    target=...,
-    type=DowelConnection(radius=5.0, depth=25.0)
+    base=base,
+    target=target,
+    type=DowelConnection(radius=5.0, depth=30.0),
 )
 
 screw_conn = Connection(
-    base=...,
-    target=...,
-    type=ScrewConnection(diameter=4.0, length=60.0)
+    base=base,
+    target=target,
+    type=ScrewConnection(diameter=4.0, length=60.0),
 )
 ```

@@ -19,9 +19,9 @@ An `.nd` file consists of the following elements:
 
 1. **Comments** - Lines starting with `//`
 2. **Piece Definitions** - Lumber piece declarations
-3. **Connection Definitions** - Connections between pieces
+3. **Connection Definitions** - Connections between pieces (a piece must be defined before a connection refers to it)
 
-```nd
+```text
 // Comment
 (piece_id:piece_type =length)
 piece1 -[anchor1 anchor2]- piece2
@@ -46,7 +46,7 @@ Defines a lumber piece.
 
 ### Syntax
 
-```
+```text
 (piece_id:piece_type =length)
 (piece_id:piece_type {"length": length})
 ```
@@ -55,14 +55,14 @@ Defines a lumber piece.
 
 | Parameter | Description | Required |
 |-----------|-------------|----------|
-| `piece_id` | Unique identifier for the piece | Yes |
+| `piece_id` | Unique identifier for the piece (letters, digits, underscores; must not start with a digit) | Yes (if omitted, a UUID is generated and the piece cannot be referenced) |
 | `piece_type` | Type of lumber (`1x4`, `2x4`) | Yes |
-| `length` | Length in millimeters | Yes |
+| `length` | Length in millimeters, greater than 0 | Yes |
 
 ### Lumber Types
 
-| Type | Width (mm) | Height (mm) | Description |
-|------|------------|-------------|-------------|
+| Type | Width (mm) | Thickness (mm) | Description |
+|------|------------|----------------|-------------|
 | `1x4` | 89 | 19 | One-by-four lumber |
 | `2x4` | 89 | 38 | Two-by-four lumber |
 
@@ -81,81 +81,104 @@ Defines a lumber piece.
 
 Defines a connection between two pieces.
 
+### Piece Frame and Faces
+
+Every piece is a box with its own local frame:
+
+- **X** = width (89mm)
+- **Y** = thickness (38mm for 2x4, 19mm for 1x4)
+- **Z** = length
+
+```
+Cross-section, looking at the top end (top = +Z points at you):
+
+                 front (+Y)
+            ┌──────────────────┐
+  left (-X) │                  │ right (+X)     thickness: 38 (2x4) / 19 (1x4)
+            └──────────────────┘
+                 back (-Y)
+            ←─────── 89 ───────→
+
+top (+Z) / down (-Z): the two END faces (89 x thickness); the length runs along Z
+front / back: WIDE faces (89 x length)
+left / right: NARROW faces (thickness x length)
+```
+
+| Face | Normal | Kind | Size on a 2x4 |
+|------|--------|------|---------------|
+| `top` | +Z | end face at the max end of the length | 89 x 38 |
+| `down` | -Z | end face at the min end of the length | 89 x 38 |
+| `front` | +Y | wide face | 89 x length |
+| `back` | -Y | wide face | 89 x length |
+| `right` | +X | narrow face | 38 x length |
+| `left` | -X | narrow face | 38 x length |
+
+Face names are local to each piece: `top`/`down` are always the two ends of a piece, even when the piece lies horizontally.
+
 ### Connection Model
 
 In nichiyou-daiku, **two pieces always connect by sharing an edge**. This is a fundamental constraint that models real-world woodworking joints.
 
-#### How Connections Work
-
-Each piece is a rectangular box with 6 faces (top, down, left, right, front, back) and 12 edges. When two pieces connect:
-
-1. **Contact Face**: The face of each piece that touches the other piece
-2. **Edge Shared Face**: The face whose edge is shared at the connection point
-3. **Offset**: Position along the shared edge
-
-```
-         ┌─────────────────┐
-         │                 │
-         │   BASE PIECE    │
-         │                 │
-         └────────┬────────┘
-                  │ ← Contact faces touch here
-         ┌────────┴────────┐
-         │                 │
-         │  TARGET PIECE   │
-         │                 │
-         └─────────────────┘
-```
-
-#### Edge Sharing Constraint
-
-The contact faces of both pieces must share a common edge. This means:
-
-- The **contact_face** determines which face touches the other piece
-- The **edge_shared_face** determines which edge of the contact face is aligned
-- The two pieces meet at the edge formed by contact_face ∩ edge_shared_face
-
-```
-Example: T-joint connection
-
-       edge_shared_face = "front"
-              ↓
-    ┌─────────┼─────────┐
-    │         │         │
-    │   contact_face    │  ← BASE (horizontal)
-    │      = "top"      │
-    └─────────┴─────────┘
-              │
-    ┌─────────┴─────────┐
-    │   contact_face    │
-    │     = "down"      │  ← TARGET (vertical)
-    │         │         │
-    │ edge_shared_face  │
-    │    = "front"      │
-    └─────────┴─────────┘
-```
-
 #### Anchor Components
 
-An **anchor** defines a specific point on a piece where a connection occurs:
+Each connection has two **anchors**, one per piece:
 
 | Component | Description |
 |-----------|-------------|
 | `contact_face` | The face that touches the other piece |
-| `edge_shared_face` | The face whose edge is shared with contact_face |
-| `offset` | Distance along the shared edge |
+| `edge_shared_face` | A face adjacent to contact_face; the anchor lies on the edge where the two faces meet |
+| `offset` | Position of the anchor point along that edge |
 
-**Valid face combinations**: The contact_face and edge_shared_face must be adjacent (not opposite). For example:
+**Valid face combinations**: contact_face and edge_shared_face must be adjacent (not the same face, not opposite faces). For example:
 - ✓ `top` + `front` (adjacent faces)
 - ✓ `left` + `back` (adjacent faces)
 - ✗ `top` + `down` (opposite faces - invalid)
 - ✗ `left` + `right` (opposite faces - invalid)
+- ✗ `front` + `back` (opposite faces - invalid)
+
+#### Edge Direction and Offset
+
+The edge runs along the axis perpendicular to both faces, which decides what the offset measures:
+
+| Face pair (either order) | Edge runs along | Edge length (2x4 / 1x4) | FromMin (`<v`) measured from | FromMax (`>v`) measured from |
+|--------------------------|-----------------|-------------------------|------------------------------|------------------------------|
+| top/down + front/back | width (X) | 89 / 89 | left side | right side |
+| top/down + left/right | thickness (Y) | 38 / 19 | back side | front side |
+| front/back + left/right | length (Z) | L / L | down end | top end |
+
+The offset must not exceed the edge length; for example `TL<50` on a 2x4 is an error because the top/left edge is only 38mm long.
+
+#### Placement Rules
+
+For `base -[base_anchor target_anchor]- target`, the target is placed so that:
+
+1. **Contact**: the two contact faces touch face to face.
+2. **Flush**: the two edge_shared faces lie in one plane and face the same way.
+3. **Point**: the two anchor points coincide. With `<` on the target, its min end/side (down/left/back) sits on the point; with `>`, its max end/side (top/right/front) does.
+
+#### Worked Example
+
+A 2x4 leg (L=700) standing on the floor (z=0) and a 2x4 apron (L=500):
+
+```nd
+(leg:2x4 =700)
+(apron:2x4 =500)
+leg -[FL<100 DF<0]- apron
+```
+
+- `FL<100` (leg): the leg's front face is the contact face; the front/left edge runs along the leg's length; the point is 100mm above the leg's down end.
+- `DF<0` (apron): the apron's down end touches the leg's front face, so the apron runs straight out from the leg; the apron's front face is flush with the leg's left face; the apron's left side sits on the point, so its 89mm width hangs below it. The apron occupies z=11..100.
+- With `DF>0`, the apron's right side sits on the point: z=100..189.
+- With `FL>100`, the point is 100mm below the leg's top (z=600): z=511..600.
+- `leg -[RF<100 LF<0]- apron` stands the apron against the leg's right face (front faces flush), from z=100 up to z=600.
 
 ### Syntax
 
-```
+```text
 base_piece -[base_anchor target_anchor connection_type?]- target_piece
 ```
+
+Only one connection per base/target pair is allowed, and a piece cannot connect to itself.
 
 ### Anchor Notation
 
@@ -163,52 +186,61 @@ An anchor specifies which face of a piece connects and at what position.
 
 #### Compact Notation (Recommended)
 
-```
+```text
 XY<offset  or  XY>offset
 ```
 
 - **X**: Contact face
 - **Y**: Edge shared face
-- **<offset**: FromMin (offset from minimum position)
-- **>offset**: FromMax (offset from maximum position)
+- **<offset**: FromMin (offset from the min end of the edge)
+- **>offset**: FromMax (offset from the max end of the edge)
 
 #### Face Abbreviations
 
 | Abbrev | Face | Description |
 |--------|------|-------------|
-| `T` | top | Top face |
-| `D` | down | Bottom face |
-| `L` | left | Left face |
-| `R` | right | Right face |
-| `F` | front | Front face |
-| `B` | back | Back face |
+| `T` | top | End face at the max end of the length (+Z) |
+| `D` | down | End face at the min end of the length (-Z) |
+| `L` | left | Narrow face (-X) |
+| `R` | right | Narrow face (+X) |
+| `F` | front | Wide face (+Y) |
+| `B` | back | Wide face (-Y) |
+
+`B` is **back**, not bottom. The bottom end of a piece is `D` (down), so "front face + bottom end" is `FD` or `DF`; `FB`/`BF` is invalid.
 
 #### Offset
 
 | Notation | Meaning | Description |
 |----------|---------|-------------|
-| `<0` | FromMin(0) | 0mm from minimum position |
-| `<100` | FromMin(100) | 100mm from minimum position |
-| `>0` | FromMax(0) | 0mm from maximum position |
-| `>50` | FromMax(50) | 50mm from maximum position |
+| `<0` | FromMin(0) | At the min end of the edge (down end / left side / back side) |
+| `<100` | FromMin(100) | 100mm from the min end |
+| `>0` | FromMax(0) | At the max end of the edge (top end / right side / front side) |
+| `>50` | FromMax(50) | 50mm from the max end |
 
 ### Examples
 
 ```nd
-// Connect leg_1's left-back edge at max position
-// to apron_front's down-back edge at max position
+(leg_1:2x4 =720)
+(apron_front:2x4 =600)
+(apron_left:2x4 =400)
+
+// leg_1's left face, left/back edge at the leg's top (>0);
+// apron_front's down end, down/back edge at its right side (>0):
+// apron_front runs out of leg_1's left face, flush with the leg top
 leg_1 -[LB>0 DB>0]- apron_front
 
-// Connect leg_1's back-right edge at 100mm from min
-// to apron_left's down-back edge at min position
+// leg_1's back face, back/right edge 100mm above its down end;
+// apron_left's down end, down/back edge at its left side (<0)
 leg_1 -[BR<100 DB<0]- apron_left
 ```
 
 ### JSON Format (Advanced Usage)
 
 ```nd
-piece1 -[{"contact_face": "top", "edge_shared_face": "front", "offset": FromMin(0)}
-         {"contact_face": "down", "edge_shared_face": "left", "offset": FromMax(100)}]- piece2
+(leg:2x4 =700)
+(apron:2x4 =500)
+leg -[{"contact_face": "front", "edge_shared_face": "left", "offset": FromMin(100)}
+      {"contact_face": "down", "edge_shared_face": "front", "offset": FromMin(0)}]- apron
 ```
 
 ## Connection Types
@@ -217,11 +249,14 @@ Specifies the type of connection. Defaults to `V` (vanilla) if omitted.
 
 ### Vanilla Connection (V)
 
-Default connection with no special reinforcement.
+Default connection with no special reinforcement and no holes.
 
 ```nd
-piece1 -[TF<0 BD<0]- piece2        // Implicit Vanilla
-piece1 -[TF<0 BD<0 V]- piece2      // Explicit Vanilla
+(a:2x4 =400)
+(b:2x4 =400)
+(c:2x4 =400)
+a -[TF<0 BD<0]- b        // Implicit Vanilla
+a -[FL<200 DF<0 V]- c    // Explicit Vanilla
 ```
 
 ### Dowel Connection (D)
@@ -230,17 +265,17 @@ Connection using wooden dowels.
 
 #### Numeric Specification
 
-```nd
-piece1 -[TF<0 BD<0 D(radius, depth)]- piece2
+```text
+piece1 -[anchor anchor D(radius, length)]- piece2
 ```
 
 - `radius`: Dowel radius in mm
-- `depth`: Dowel depth in mm
+- `length`: **Total** dowel length in mm; half of it goes into each piece
 
 #### Preset Specification
 
-```nd
-piece1 -[TF<0 BD<0 D(:diameter x length)]- piece2
+```text
+piece1 -[anchor anchor D(:DIAMETERxLENGTH)]- piece2
 ```
 
 Available presets:
@@ -256,24 +291,33 @@ Available presets:
 | `10x40` | 10 | 40 |
 | `12x40` | 12 | 40 |
 
+#### Rules
+
+- Half the dowel length must fit in each piece along its contact normal: front/back contact → thickness (38 or 19), left/right → 89, top/down → piece length.
+- Holes: φ diameter x length/2 in each piece.
+
 #### Examples
 
 ```nd
-// Numeric: radius 4mm, depth 20mm dowel
-piece1 -[TF<0 BD<0 D(4.0, 20.0)]- piece2
+(a:2x4 =400)
+(b:2x4 =400)
+(c:2x4 =400)
 
-// Preset: 8mm diameter, 30mm length dowel
-piece1 -[TF<0 BD<0 D(:8x30)]- piece2
+// Preset: 8mm diameter, 30mm total length
+a -[TF<0 BD<0 D(:8x30)]- b
+
+// Numeric: radius 4mm, total length 30mm (15mm into each piece)
+a -[FL<200 DF<0 D(4, 30)]- c
 ```
 
 ### Screw Connection (S)
 
-Connection using screws.
+Connection using screws. The screw is driven through the target into the base.
 
 #### Numeric Specification
 
-```nd
-piece1 -[TF<0 BD<0 S(diameter, length)]- piece2
+```text
+piece1 -[anchor anchor S(diameter, length)]- piece2
 ```
 
 - `diameter`: Screw diameter in mm
@@ -281,53 +325,67 @@ piece1 -[TF<0 BD<0 S(diameter, length)]- piece2
 
 #### Preset Specification
 
-```nd
-piece1 -[TF<0 BD<0 S(Type:diameter x length)]- piece2
+```text
+piece1 -[anchor anchor S(Type:DIAMETERxLENGTH)]- piece2
 ```
 
 **Slim Screws**
 
 | Preset | Diameter (mm) | Length (mm) |
 |--------|---------------|-------------|
+| `Slim:3.3x25` | 3.3 | 25 |
 | `Slim:3.3x30` | 3.3 | 30 |
+| `Slim:3.3x35` | 3.3 | 35 |
 | `Slim:3.3x40` | 3.3 | 40 |
+| `Slim:3.3x45` | 3.3 | 45 |
 | `Slim:3.3x50` | 3.3 | 50 |
-| `Slim:3.3x65` | 3.3 | 65 |
-| `Slim:3.8x30` | 3.8 | 30 |
-| `Slim:3.8x40` | 3.8 | 40 |
-| `Slim:3.8x50` | 3.8 | 50 |
+| `Slim:3.8x55` | 3.8 | 55 |
+| `Slim:3.8x60` | 3.8 | 60 |
 | `Slim:3.8x65` | 3.8 | 65 |
-| `Slim:4.2x50` | 4.2 | 50 |
-| `Slim:4.2x65` | 4.2 | 65 |
-| `Slim:4.2x75` | 4.2 | 75 |
+| `Slim:3.8x70` | 3.8 | 70 |
+| `Slim:3.8x75` | 3.8 | 75 |
+| `Slim:4.2x90` | 4.2 | 90 |
 
 **Coarse Thread Screws**
 
 | Preset | Diameter (mm) | Length (mm) |
 |--------|---------------|-------------|
-| `Coarse:3.8x32` | 3.8 | 32 |
-| `Coarse:3.8x38` | 3.8 | 38 |
+| `Coarse:3.8x25` | 3.8 | 25 |
+| `Coarse:3.8x30` | 3.8 | 30 |
+| `Coarse:3.8x35` | 3.8 | 35 |
+| `Coarse:3.8x40` | 3.8 | 40 |
 | `Coarse:3.8x45` | 3.8 | 45 |
-| `Coarse:3.8x51` | 3.8 | 51 |
+| `Coarse:3.8x50` | 3.8 | 50 |
 | `Coarse:3.8x57` | 3.8 | 57 |
-| `Coarse:3.8x65` | 3.8 | 65 |
-| `Coarse:3.8x75` | 3.8 | 75 |
-| `Coarse:3.8x90` | 3.8 | 90 |
 | `Coarse:4.2x65` | 4.2 | 65 |
 | `Coarse:4.2x75` | 4.2 | 75 |
-| `Coarse:4.2x90` | 4.2 | 90 |
+| `Coarse:4.5x90` | 4.5 | 90 |
+| `Coarse:4.5x100` | 4.5 | 100 |
+| `Coarse:5.2x120` | 5.2 | 120 |
+
+#### Rules
+
+- The target's contact_face must be `front` or `back` (the screw goes through the target's wide face).
+- Screw length must be greater than the target's thickness (38 for 2x4, 19 for 1x4).
+- Screw length must not exceed the base's depth along its contact normal (front/back → thickness, left/right → 89, top/down → piece length) plus the target's thickness.
+- Holes: a through-hole in the target and a hole (length - target thickness) deep in the base.
 
 #### Examples
 
 ```nd
-// Numeric: 3.5mm diameter, 50mm length screw
-piece1 -[BF<0 FB<0 S(3.5, 50)]- piece2
+(post:2x4 =600)
+(rail:2x4 =400)
+(rail_low:2x4 =400)
+(cleat:2x4 =400)
 
-// Preset: Slim screw 3.3x50
-piece1 -[BF<0 FB<0 S(Slim:3.3x50)]- piece2
+// Preset: Slim screw 3.3x50, rail screwed across the post's front face
+post -[FL<300 BT<0 S(Slim:3.3x50)]- rail
 
-// Preset: Coarse thread 3.8x57
-piece1 -[BF<0 FB<0 S(Coarse:3.8x57)]- piece2
+// Numeric: 3.5mm diameter, 50mm length
+post -[FL<100 BT<0 S(3.5, 50)]- rail_low
+
+// Preset: Coarse thread 3.8x57, cleat screwed face to face behind the post
+post -[BT<0 FT<0 S(Coarse:3.8x57)]- cleat
 ```
 
 ## Complete Examples
@@ -335,7 +393,7 @@ piece1 -[BF<0 FB<0 S(Coarse:3.8x57)]- piece2
 ### Corner Joint
 
 ```nd
-// Corner joint sample
+// Corner joint sample: corner_piece_b lies across corner_piece_a's top end
 (corner_piece_a:2x4 =400)
 (corner_piece_b:2x4 =400)
 
@@ -344,57 +402,64 @@ corner_piece_a -[TF<0 BD<0]- corner_piece_b
 
 ### Simple Table
 
-```nd
-// Simple Table Design
-// Four-legged table
+Legs show their 89mm side to the front and their 38mm side to the sides. All aprons stand 89mm tall between the legs, flush with the leg tops, so the front/back aprons are W - 2x89 and the side aprons D - 2x38 long.
 
-// Legs
+```nd
+// Simple Table Design: 800 (W) x 600 (D) x 758 (H)
+
+// Legs: leg_1 front-left, leg_2 front-right, leg_3 back-left, leg_4 back-right
 (leg_1:2x4 =720)
 (leg_2:2x4 =720)
 (leg_3:2x4 =720)
 (leg_4:2x4 =720)
 
-// Aprons
+// Aprons: 800 - 2x89 = 622, 600 - 2x38 = 524
 (apron_front:2x4 =622)
 (apron_back:2x4 =622)
 (apron_left:2x4 =524)
 (apron_right:2x4 =524)
 
-// Table top pieces
+// Table top boards (2x4, running front to back)
 (table_top_1:2x4 =600)
 (table_top_2:2x4 =600)
 
-// Leg to apron connections
+// Leg to front/back apron connections
 leg_1 -[LB>0 DB>0]- apron_front
 leg_2 -[RF>0 TF>0]- apron_front
 leg_3 -[LB>0 DB>0]- apron_back
 leg_4 -[RF>0 TF>0]- apron_back
 
 // Side apron connections
-leg_1 -[BR<100 DB<0]- apron_left
-leg_3 -[FR<100 TB<0]- apron_left
+leg_1 -[BR>0 DB>0]- apron_left
+leg_3 -[FR>0 TB>0]- apron_left
+leg_2 -[BL>0 DF>0]- apron_right
+leg_4 -[FL>0 TF>0]- apron_right
 
-// Table top connections
+// Table top connections: the outer boards rest on the leg tops
 table_top_1 -[BD<0 TF<0]- leg_1
 table_top_2 -[BD<0 TF<0]- leg_2
 ```
 
+See [`examples/nd_files/simple_table_compact.nd`](../examples/nd_files/simple_table_compact.nd) for a larger example with a full table top (there the side aprons sit 100mm above the floor, `BR<100`).
+
 ### Shelf with Dowel Joints
 
 ```nd
-// Shelf with dowel connections
+// Shelf with dowel connections: 676 (W) x 89 (D) x 800 (H)
 (left_side:2x4 =800)
 (right_side:2x4 =800)
 (shelf:2x4 =600)
 
-// Using dowel presets
-left_side -[RT>100 FT<50 D(:8x30)]- shelf
-right_side -[LT>100 FT<50 D(:8x30)]- shelf
+// Shelf ends on the sides' wide faces, shelf underside 300mm above the floor
+left_side -[BL<300 DL<0 D(:8x30)]- shelf
+right_side -[FL<300 TL<0 D(:8x30)]- shelf
 ```
 
 ## CLI Tools
 
-### Syntax Validation
+### Validation
+
+Checks the model described by the file.
 
 ```bash
 nichiyou-daiku validate furniture.nd
@@ -426,6 +491,12 @@ nichiyou-daiku export furniture.nd -f step -o model.step
 nichiyou-daiku export furniture.nd -f stl --fillet-radius 10
 ```
 
+### Technical Drawing (requires build123d)
+
+```bash
+nichiyou-daiku drawing furniture.nd -o furniture.pdf
+```
+
 ## Grammar (EBNF)
 
 ```ebnf
@@ -449,6 +520,10 @@ anchor_prop_list     = anchor_prop ("," anchor_prop)*
 anchor_prop          = ESCAPED_STRING ":" (ESCAPED_STRING | offset_value)
 offset_value         = "FromMin" "(" NUMBER ")" | "FromMax" "(" NUMBER ")"
 
+connection_type_props = "{" ( '"type": "vanilla"'
+                            | '"type": "dowel", "radius": ' NUMBER ', "depth": ' NUMBER
+                            | '"type": "screw", "diameter": ' NUMBER ', "length": ' NUMBER ) "}"
+
 compact_anchor       = COMPACT_FACE COMPACT_FACE compact_offset
 compact_offset       = "<" NUMBER | ">" NUMBER
 COMPACT_FACE         = "T" | "D" | "L" | "R" | "F" | "B"
@@ -462,28 +537,37 @@ screw_preset            = SCREW_TYPE ":" NUMBER "x" NUMBER
 screw_numeric           = NUMBER "," NUMBER
 SCREW_TYPE              = "Slim" | "Coarse"
 
-COMMENT         = "//" [^\n]*
+COMMENT         = "//" [^\n]*     (ignored)
 ```
+
+In the JSON dowel type, `depth` is the total dowel length, as in `D(radius, length)`.
 
 ## Error Messages
 
+Errors report the line and column of the offending statement.
+
 ### Syntax Errors
 
-```
-DSLSyntaxError: Unexpected token at line 5, column 10
+```text
+DSLSyntaxError: Syntax error at line 1, column 4: Unexpected token '3'. Expected: piece type (1x4, 2x4)
 ```
 
 ### Semantic Errors
 
-```
+```text
 DSLSemanticError: Unknown piece reference: unknown_piece
 DSLSemanticError: Duplicate piece ID: leg_1
+DSLSemanticError: Duplicate connection between 'a' and 'b': only one connection per piece pair is supported
 ```
 
 ### Validation Errors
 
-```
-DSLValidationError: Invalid piece type: 3x4
+```text
+DSLValidationError: contact_face 'front' and edge_shared_face 'back' must be adjacent faces
+DSLValidationError: Offset 50.0mm exceeds piece dimension 38.0mm (piece 'a', edge top/left)
 DSLValidationError: Unknown dowel preset: 9x99
 DSLValidationError: Unknown Slim screw preset: 3.0x100
+DSLValidationError: ScrewConnection target contact_face must be 'front' or 'back', got 'down'
+DSLValidationError: Screw length 35.0mm does not reach base piece (target thickness: 38.0mm)
+DSLValidationError: Dowel depth 20.0mm (half of 40.0mm) exceeds base piece dimension 19.0mm
 ```

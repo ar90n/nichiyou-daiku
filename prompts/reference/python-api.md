@@ -11,7 +11,7 @@ nichiyou_daiku/
 │   ├── anchor.py   # Anchor, BoundAnchor
 │   ├── connection.py # Connection, ConnectionType
 │   ├── model.py    # Model
-│   ├── assembly.py # Assembly
+│   ├── assembly/   # Assembly (3D placement, joints, pilot holes)
 │   ├── dowel.py    # Dowel presets
 │   ├── screw.py    # Screw presets
 │   └── geometry/   # Offset, Face utilities
@@ -44,7 +44,7 @@ from nichiyou_daiku.core.screw import (
 )
 
 # DSL parsing
-from nichiyou_daiku.dsl import parse_dsl, DSLError, DSLSyntaxError, DSLSemanticError
+from nichiyou_daiku.dsl import parse_dsl, DSLError, DSLSyntaxError, DSLSemanticError, DSLValidationError
 ```
 
 ## Piece Module
@@ -55,8 +55,8 @@ from nichiyou_daiku.dsl import parse_dsl, DSLError, DSLSyntaxError, DSLSemanticE
 from nichiyou_daiku.core.piece import PieceType
 
 class PieceType(Enum):
-    PT_2x4 = "2x4"  # 89mm x 38mm cross-section
-    PT_1x4 = "1x4"  # 89mm x 19mm cross-section
+    PT_2x4 = "2x4"  # 89mm (width) x 38mm (thickness) cross-section
+    PT_1x4 = "1x4"  # 89mm (width) x 19mm (thickness) cross-section
 
 # Create from string
 PieceType.of("2x4")  # Returns PieceType.PT_2x4
@@ -70,7 +70,7 @@ from nichiyou_daiku.core.piece import Piece, PieceType
 class Piece(BaseModel, frozen=True):
     id: str          # Unique identifier
     type: PieceType  # Lumber type
-    length: float    # Length in mm
+    length: float    # Length in mm (must be > 0)
 
 # Factory method
 piece = Piece.of(PieceType.PT_2x4, 720.0, "leg_1")
@@ -84,16 +84,18 @@ from nichiyou_daiku.core.piece import get_shape, PieceType, Piece
 
 # Get 2D cross-section
 shape2d = get_shape(PieceType.PT_2x4)
-shape2d.width   # 89.0
-shape2d.height  # 38.0
+shape2d.width   # 89.0  (local X)
+shape2d.height  # 38.0  (thickness, local Y)
 
 # Get 3D dimensions
 piece = Piece.of(PieceType.PT_2x4, 1000.0)
 shape3d = get_shape(piece)
 shape3d.width   # 89.0
 shape3d.height  # 38.0
-shape3d.length  # 1000.0
+shape3d.length  # 1000.0  (local Z)
 ```
+
+Each piece has its own local frame: X = width, Y = thickness (`height` in `Shape2D`/`Shape3D`), Z = length.
 
 ## Anchor Module
 
@@ -118,9 +120,23 @@ anchor = Anchor(
 
 **Face type:** `"top" | "down" | "left" | "right" | "front" | "back"`
 
+| Face | Normal | Kind |
+|------|--------|------|
+| top / down | +Z / -Z | end faces (89 x thickness) |
+| front / back | +Y / -Y | wide faces (89 x length) |
+| right / left | +X / -X | narrow faces (thickness x length) |
+
+`contact_face` and `edge_shared_face` must be adjacent (not the same, not opposite); `Anchor` raises `ValueError` otherwise. The anchor point lies on the edge where the two faces meet:
+
+| Face pair | Edge runs along | `FromMin(v)` measured from | `FromMax(v)` measured from |
+|-----------|-----------------|----------------------------|----------------------------|
+| top/down + front/back | width (0-89) | left side | right side |
+| top/down + left/right | thickness (0-38 / 0-19) | back side | front side |
+| front/back + left/right | length (0-L) | down end | top end |
+
 **Offset types:**
-- `FromMin(value=n)`: n mm from start
-- `FromMax(value=n)`: n mm from end
+- `FromMin(value=n)`: n mm from the min end of the edge
+- `FromMax(value=n)`: n mm from the max end of the edge
 
 ### BoundAnchor
 
@@ -131,7 +147,8 @@ class BoundAnchor(BaseModel, frozen=True):
     piece: Piece    # Associated piece
     anchor: Anchor  # Position on piece
 
-bound = BoundAnchor(piece=leg, anchor=anchor)
+leg = Piece.of(PieceType.PT_2x4, 720.0, "leg")
+bound = BoundAnchor(piece=leg, anchor=anchor)  # ValueError if the offset exceeds the edge length
 ```
 
 ## Connection Module
@@ -148,8 +165,8 @@ from nichiyou_daiku.core.connection import (
 # Vanilla (no reinforcement)
 vanilla = VanillaConnection()
 
-# Dowel
-dowel = DowelConnection(radius=4.0, depth=15.0)
+# Dowel (depth = total dowel length; half goes into each piece)
+dowel = DowelConnection(radius=4.0, depth=30.0)
 
 # Screw
 screw = ScrewConnection(diameter=3.3, length=50.0)
@@ -164,6 +181,9 @@ class Connection(BaseModel, frozen=True):
     base: BoundAnchor       # Base piece (stays fixed)
     target: BoundAnchor     # Target piece (attaches)
     type: ConnectionType    # Default: VanillaConnection()
+
+# Placement: the contact faces touch, the edge_shared faces are flush,
+# and the two anchor points coincide.
 
 # Vanilla connection
 conn = Connection(
@@ -214,12 +234,14 @@ class Assembly(BaseModel, frozen=True):
     boxes: dict[str, Box]      # Piece 3D positions
     joints: dict[str, Joint]   # Joint information
     joint_conns: list[tuple[str, str]]
-    pilot_holes: dict[str, list[tuple[Point3D, Hole]]]
+    pilot_holes: dict[str, list[tuple[SurfacePoint, Hole]]]  # piece ID -> holes; SurfacePoint names the drilled face
     label: str | None
 
 # Create assembly from model
 assembly = Assembly.of(model)
 ```
+
+Pilot holes: a dowel makes a hole of its diameter, length/2 deep, in each piece; a screw makes a through-hole in the target and a hole (length - target thickness) deep in the base; vanilla connections make no holes.
 
 ## Geometry Module
 
@@ -244,7 +266,7 @@ from nichiyou_daiku.core.geometry.face import opposite, cross, is_adjacent
 
 opposite("top")       # "down"
 opposite("left")      # "right"
-cross("top", "front") # "left" or "right"
+cross("top", "front") # "left"
 is_adjacent("top", "front")  # True
 is_adjacent("top", "down")   # False
 ```
@@ -331,11 +353,16 @@ from nichiyou_daiku.dsl import (
 dsl = """
 (leg:2x4 =720)
 (apron:2x4 =600)
-leg -[FR>100 DB<0 D(:8x30)]- apron
+leg -[LB>0 DB>0 D(:8x30)]- apron
 """
 model = parse_dsl(dsl)
 
-# Error handling
+# Error handling ("FB": front and back are opposite faces)
+invalid_dsl = """
+(leg:2x4 =720)
+(apron:2x4 =600)
+leg -[FB<0 DB>0]- apron
+"""
 try:
     model = parse_dsl(invalid_dsl)
 except DSLSyntaxError as e:
@@ -351,10 +378,12 @@ except DSLValidationError as e:
 ### Resource Extraction
 
 ```python
+from nichiyou_daiku.core.assembly import Assembly
 from nichiyou_daiku.shell import extract_resources, ResourceSummary
 
-resources = extract_resources(assembly)
-resources.pretty_print()
+assembly = Assembly.of(model)
+resources = extract_resources(assembly)  # takes an Assembly, not a Model
+print(resources.pretty_print())
 ```
 
 ### Report Generation
@@ -370,21 +399,26 @@ report = generate_markdown_report(
 print(report)
 ```
 
+The cut plan allows a 3mm saw kerf per cut and warns about pieces longer than any stock board.
+
 ### 3D Export (requires build123d)
 
 ```python
+from build123d import export_stl, export_step
 from nichiyou_daiku.shell import assembly_to_build123d
 
 compound = assembly_to_build123d(assembly, fillet_radius=5.0)
 
 # Export to STL
-compound.export_stl("model.stl")
+export_stl(compound, "model.stl")
 
 # Export to STEP
-compound.export_step("model.step")
+export_step(compound, "model.step")
 ```
 
 ## Complete Example
+
+Two legs and an apron between them, flush with the leg tops (the front apron of the verified table pattern).
 
 ```python
 from nichiyou_daiku.core.piece import Piece, PieceType
@@ -392,7 +426,7 @@ from nichiyou_daiku.core.anchor import Anchor, BoundAnchor
 from nichiyou_daiku.core.connection import Connection
 from nichiyou_daiku.core.model import Model
 from nichiyou_daiku.core.assembly import Assembly
-from nichiyou_daiku.core.geometry import FromMin, FromMax
+from nichiyou_daiku.core.geometry import FromMax
 from nichiyou_daiku.core.dowel import Dowel, as_spec as dowel_spec
 
 # Create pieces
@@ -400,34 +434,14 @@ leg1 = Piece.of(PieceType.PT_2x4, 720.0, "leg1")
 leg2 = Piece.of(PieceType.PT_2x4, 720.0, "leg2")
 apron = Piece.of(PieceType.PT_2x4, 600.0, "apron")
 
-# Define connections with dowel joints
+# leg1 -[LB>0 DB>0 D(:8x30)]- apron
 conn1 = Connection.of_dowel(
     base=BoundAnchor(
         piece=leg1,
         anchor=Anchor(
-            contact_face="front",
-            edge_shared_face="right",
-            offset=FromMax(value=100)
-        )
-    ),
-    target=BoundAnchor(
-        piece=apron,
-        anchor=Anchor(
-            contact_face="down",
+            contact_face="left",
             edge_shared_face="back",
-            offset=FromMin(value=0)
-        )
-    ),
-    spec=dowel_spec(Dowel.D8_L30),
-)
-
-conn2 = Connection.of_dowel(
-    base=BoundAnchor(
-        piece=leg2,
-        anchor=Anchor(
-            contact_face="front",
-            edge_shared_face="left",
-            offset=FromMax(value=100)
+            offset=FromMax(value=0)
         )
     ),
     target=BoundAnchor(
@@ -441,7 +455,28 @@ conn2 = Connection.of_dowel(
     spec=dowel_spec(Dowel.D8_L30),
 )
 
-# Build model and assembly
+# leg2 -[RF>0 TF>0 D(:8x30)]- apron
+conn2 = Connection.of_dowel(
+    base=BoundAnchor(
+        piece=leg2,
+        anchor=Anchor(
+            contact_face="right",
+            edge_shared_face="front",
+            offset=FromMax(value=0)
+        )
+    ),
+    target=BoundAnchor(
+        piece=apron,
+        anchor=Anchor(
+            contact_face="top",
+            edge_shared_face="front",
+            offset=FromMax(value=0)
+        )
+    ),
+    spec=dowel_spec(Dowel.D8_L30),
+)
+
+# Build model and assembly (overall 778 x 38 x 720mm)
 model = Model.of(
     pieces=[leg1, leg2, apron],
     connections=[conn1, conn2],
@@ -462,8 +497,8 @@ dsl = """
 (leg2:2x4 =720)
 (apron:2x4 =600)
 
-leg1 -[FR>100 DB<0 D(:8x30)]- apron
-leg2 -[FL>100 DB>0 D(:8x30)]- apron
+leg1 -[LB>0 DB>0 D(:8x30)]- apron
+leg2 -[RF>0 TF>0 D(:8x30)]- apron
 """
 
 model = parse_dsl(dsl)
