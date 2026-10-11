@@ -365,8 +365,8 @@ from nichiyou_daiku.core.assembly import Assembly
 class Assembly(BaseModel, frozen=True):
     model: Model                              # ソースモデル
     boxes: dict[str, Box]                     # ピースID -> 3Dバウンディングボックス
-    joints: dict[str, Joint]                  # ジョイントID -> Joint
-    joint_conns: list[tuple[str, str]]        # 接続されたジョイントIDペア
+    fasteners: tuple[Fastener, ...]           # 各接触面に並べたダボ・ビス
+    fastener_issues: tuple[LayoutIssue, ...]  # 留め具が入らない接続
     pilot_holes: dict[str, list[tuple[SurfacePoint, Hole]]]  # ピースID -> 穴（SurfacePointは穴をあける面を示す）
     placement: Placement                      # 各部材の世界座標での配置
     label: str | None                         # オプションのラベル
@@ -383,13 +383,30 @@ class Assembly(BaseModel, frozen=True):
 ```python
 >>> from nichiyou_daiku.core.assembly import Assembly
 >>> assembly = Assembly.of(model)
->>> len(assembly.joints)  # 1つのバニラ接続は1つのジョイントペア（2つのジョイント）を作成
-2
->>> len(assembly.joint_conns)
-1
+>>> len(assembly.fasteners)  # バニラ接続には留め具がない
+0
 ```
 
 **下穴:** ダボ接続では各ピースにダボ径・深さ 長さ/2 の穴、ビス接続ではターゲットに貫通穴、ベースに深さ (長さ - ターゲットの厚み) の穴が追加されます。バニラ接続では穴はありません。
+
+**留め具:** ダボとビスは、2 つの接触面が重なる長方形の中に並べる。短辺方向は中央、長辺方向は 1/4 と 3/4 の位置（長辺が直径の 4 倍未満なら中央に 1 本）。重なりの短辺が直径の 2 倍未満、または部材が辺でしか接していない場合は留め具を作らず `LayoutIssue` になる。`validate` はこれを報告し、ほかのコマンドは警告して続行する。
+
+```python
+class Fastener(BaseModel, frozen=True):
+    base_id: str
+    target_id: str
+    kind: Literal["dowel", "screw"]
+    base_position: SurfacePoint    # base の接触面上の位置
+    target_position: SurfacePoint  # target の接触面上の位置
+    base_hole: Hole
+    target_hole: Hole
+
+class LayoutIssue(BaseModel, frozen=True):
+    base_id: str
+    target_id: str
+    kind: Literal["dowel", "screw"]
+    message: str
+```
 
 ### Placement（部材配置）
 

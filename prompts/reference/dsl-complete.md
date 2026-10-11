@@ -189,6 +189,7 @@ a -[FL<200 DF<0 D(4, 30)]- c   // Numeric (radius, total length)
 **Available presets:** 6x25, 6x30, 8x25, 8x30, 8x40, 10x30, 10x40, 12x40
 
 - The length is the total dowel length; half goes into each piece.
+- Dowels (and screws) are placed inside the area where the two contact faces overlap: centred across its short side, at 1/4 and 3/4 of its long side (one in the middle if the long side is under 4 × diameter). If the short side is under 2 × diameter the connection gets no fasteners and `validate` reports it.
 - Half the length must fit in each piece along its contact normal: front/back → thickness, left/right → 89, top/down → piece length.
 - Holes: φ diameter x length/2 in each piece.
 

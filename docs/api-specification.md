@@ -365,8 +365,8 @@ from nichiyou_daiku.core.assembly import Assembly
 class Assembly(BaseModel, frozen=True):
     model: Model                              # Source model
     boxes: dict[str, Box]                     # Piece ID -> 3D bounding box
-    joints: dict[str, Joint]                  # Joint ID -> Joint
-    joint_conns: list[tuple[str, str]]        # Connected joint ID pairs
+    fasteners: tuple[Fastener, ...]           # Dowels and screws, laid out in each contact area
+    fastener_issues: tuple[LayoutIssue, ...]  # Connections whose fasteners do not fit
     pilot_holes: dict[str, list[tuple[SurfacePoint, Hole]]]  # Piece ID -> holes (SurfacePoint names the drilled face)
     placement: Placement                      # World placement of every piece
     label: str | None                         # Optional label
@@ -383,13 +383,30 @@ class Assembly(BaseModel, frozen=True):
 ```python
 >>> from nichiyou_daiku.core.assembly import Assembly
 >>> assembly = Assembly.of(model)
->>> len(assembly.joints)  # one vanilla connection creates one joint pair (2 joints)
-2
->>> len(assembly.joint_conns)
-1
+>>> len(assembly.fasteners)  # a vanilla connection has no fasteners
+0
 ```
 
 **Pilot holes:** a dowel connection adds a hole of the dowel diameter, length/2 deep, to each piece; a screw connection adds a through-hole to the target and a hole (length - target thickness) deep to the base; vanilla connections add none.
+
+**Fasteners:** dowels and screws are laid out inside the rectangle where the two contact faces overlap: across the middle of its short side, and at 1/4 and 3/4 of its long side (one in the middle when the long side is shorter than 4 × diameter). A contact area narrower than 2 × diameter, or pieces that only touch along an edge, give a `LayoutIssue` instead of fasteners; `validate` reports it and other commands warn and carry on.
+
+```python
+class Fastener(BaseModel, frozen=True):
+    base_id: str
+    target_id: str
+    kind: Literal["dowel", "screw"]
+    base_position: SurfacePoint    # on the base's contact face
+    target_position: SurfacePoint  # on the target's contact face
+    base_hole: Hole
+    target_hole: Hole
+
+class LayoutIssue(BaseModel, frozen=True):
+    base_id: str
+    target_id: str
+    kind: Literal["dowel", "screw"]
+    message: str
+```
 
 ### Placement
 

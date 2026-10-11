@@ -11,7 +11,7 @@ nichiyou_daiku/
 │   ├── anchor.py   # Anchor, BoundAnchor
 │   ├── connection.py # Connection, ConnectionType
 │   ├── model.py    # Model
-│   ├── assembly/   # Assembly (3D placement, joints, pilot holes)
+│   ├── assembly/   # Assembly (placement, fasteners, pilot holes)
 │   ├── dowel.py    # Dowel presets
 │   ├── screw.py    # Screw presets
 │   └── geometry/   # Offset, Face utilities
@@ -232,8 +232,8 @@ from nichiyou_daiku.core.assembly import Assembly
 class Assembly(BaseModel, frozen=True):
     model: Model
     boxes: dict[str, Box]      # Piece 3D positions
-    joints: dict[str, Joint]   # Joint information
-    joint_conns: list[tuple[str, str]]
+    fasteners: tuple[Fastener, ...]           # Dowels and screws, laid out in each contact area
+    fastener_issues: tuple[LayoutIssue, ...]  # Connections whose fasteners do not fit
     pilot_holes: dict[str, list[tuple[SurfacePoint, Hole]]]  # piece ID -> holes; SurfacePoint names the drilled face
     label: str | None
 
