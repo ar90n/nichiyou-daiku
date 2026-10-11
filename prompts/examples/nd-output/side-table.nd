@@ -1,0 +1,72 @@
+// Side Table
+// Dimensions: 500mm (W) x 400mm (D) x 600mm (H)
+// Material: 2x4
+// Joint: Dowel 8x30
+
+// ============================================
+// Legs (4x) - 600mm height minus the 38mm top boards
+// leg_fl: front-left, leg_fr: front-right
+// leg_bl: back-left, leg_br: back-right
+// ============================================
+(leg_fl:2x4 =562)
+(leg_fr:2x4 =562)
+(leg_bl:2x4 =562)
+(leg_br:2x4 =562)
+
+// ============================================
+// Aprons
+// Front/back run between the legs' 89mm sides: 500 - 2*89 = 322mm
+// Left/right run between the legs' 38mm sides: 400 - 2*38 = 324mm
+// ============================================
+(apron_front:2x4 =322)
+(apron_back:2x4 =322)
+(apron_left:2x4 =324)
+(apron_right:2x4 =324)
+
+// ============================================
+// Top boards - 400mm in the depth direction
+// 5 boards: 5*89 = 445mm, leaving 4 gaps of (500 - 445) / 4 = 13.75mm
+// ============================================
+(top_1:2x4 =400)
+(top_2:2x4 =400)
+(top_3:2x4 =400)
+(top_4:2x4 =400)
+(top_5:2x4 =400)
+
+// ============================================
+// Front apron to legs (flush with top)
+// Following simple_table_compact pattern
+// ============================================
+leg_fl -[LB>0 DB>0 D(:8x30)]- apron_front
+leg_fr -[RF>0 TF>0 D(:8x30)]- apron_front
+
+// ============================================
+// Back apron to legs
+// ============================================
+leg_bl -[LB>0 DB>0 D(:8x30)]- apron_back
+leg_br -[RF>0 TF>0 D(:8x30)]- apron_back
+
+// ============================================
+// Left apron to legs (flush with top: 562 - 89 = 473mm up the leg)
+// Side aprons connect to leg's front/back faces
+// ============================================
+leg_fl -[BR<473 DB<0 D(:8x30)]- apron_left
+leg_bl -[FR<473 TB<0 D(:8x30)]- apron_left
+
+// ============================================
+// Right apron to legs
+// ============================================
+leg_fr -[BL<473 DF<0 D(:8x30)]- apron_right
+leg_br -[FL<473 TF<0 D(:8x30)]- apron_right
+
+// ============================================
+// Top boards to frame
+// End boards sit on the front legs
+// Middle boards sit on the front apron, one gap + one board apart:
+// offsets 13.75, 116.5 (13.75 + 89 + 13.75), 219.25
+// ============================================
+top_1 -[BD<0 TF<0 D(:8x30)]- leg_fl
+apron_front -[RF<13.75 BT<0 D(:8x30)]- top_2
+apron_front -[RF<116.5 BT<0 D(:8x30)]- top_3
+apron_front -[RF<219.25 BT<0 D(:8x30)]- top_4
+top_5 -[BD<0 TF<0 D(:8x30)]- leg_fr
