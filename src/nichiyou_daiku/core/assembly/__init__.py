@@ -5,26 +5,19 @@ This module converts the abstract model representation into concrete
 
 Public API:
     - Hole: Specification for pilot holes
-    - Joint: A joint point with position and orientation
-    - JointPair: A pair of joints connecting two pieces
-    - Assembly: Complete 3D assembly with all joints
+    - Assembly: Complete 3D assembly with placement, fasteners and pilot holes
     - Fastener / LayoutIssue / layout_fasteners: Dowels and screws in the contact area
-    - project_joint: Project joint between coordinate systems
 """
 
 from .builder import Assembly
 from .fasteners import layout_fasteners
-from .models import Fastener, FastenerKind, Hole, Joint, JointPair, LayoutIssue
-from .projection import project_joint
+from .models import Fastener, FastenerKind, Hole, LayoutIssue
 
 __all__ = [
     "Hole",
-    "Joint",
-    "JointPair",
     "Assembly",
     "Fastener",
     "FastenerKind",
     "LayoutIssue",
     "layout_fasteners",
-    "project_joint",
 ]

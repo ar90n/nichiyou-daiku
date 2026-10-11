@@ -13,9 +13,7 @@ from nichiyou_daiku.core.geometry import (
     EdgePoint,
     SurfacePoint,
     Offset,
-    Orientation,
     Point3D,
-    opposite as opposite_face,
     cross as cross_face,
     edge_length_of,
     is_positive,
@@ -178,20 +176,3 @@ def as_point_3d(bound: BoundAnchor) -> Point3D:
     box = _get_box(bound)
     surface_point = as_surface_point(bound)
     return Point3D.of(box, surface_point)
-
-
-def as_orientation(bound: BoundAnchor, flip_dir: bool = False) -> Orientation:
-    """Get the orientation defined by a bound anchor.
-
-    Args:
-        bound: The bound anchor defining the orientation
-        flip_dir: Whether to flip the up direction
-
-    Returns:
-        Orientation with direction normal to contact_face
-    """
-    anchor = bound.anchor
-    up_face = cross_face(anchor.contact_face, anchor.edge_shared_face)
-    if flip_dir:
-        up_face = opposite_face(up_face)
-    return Orientation.of(direction=anchor.contact_face, up=up_face)

@@ -22,11 +22,8 @@ from .edge import Edge, EdgePoint
 from .corner import Corner
 from .coordinates import (
     Point2D,
-    Vector2D,
     Point3D,
     Vector3D,
-    Orientation3D,
-    Orientation,
     SurfacePoint,
     edge_length_of,
 )
@@ -57,12 +54,9 @@ __all__ = [
     "Corner",
     # From coordinates
     "Point2D",
-    "Vector2D",
     "Point3D",
     "edge_length_of",
     "Vector3D",
-    "Orientation",
-    "Orientation3D",
     "SurfacePoint",
     # From offset
     "Offset",

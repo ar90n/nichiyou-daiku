@@ -174,56 +174,6 @@ class TestOffsetSerialization:
         assert restored == anchor
 
 
-class TestOrientation3DFromEuler:
-    @pytest.mark.parametrize(
-        "angles", [(0, 0, 90), (90, 45, 0), (30, 60, 120), (-45, 10, 200)]
-    )
-    def test_up_is_rotated_y_axis_and_orthogonal(self, angles):
-        import math
-
-        from nichiyou_daiku.core.geometry import Orientation3D
-
-        rx, ry, rz = (math.radians(a) for a in angles)
-
-        def rotate(v):
-            x, y, z = v
-            # R = Rx @ Ry @ Rz, matching the direction formula
-            x, y = (
-                x * math.cos(rz) - y * math.sin(rz),
-                x * math.sin(rz) + y * math.cos(rz),
-            )
-            x, z = (
-                x * math.cos(ry) + z * math.sin(ry),
-                -x * math.sin(ry) + z * math.cos(ry),
-            )
-            y, z = (
-                y * math.cos(rx) - z * math.sin(rx),
-                y * math.sin(rx) + z * math.cos(rx),
-            )
-            return (x, y, z)
-
-        orientation = Orientation3D.of(*angles)
-        up = (orientation.up.x, orientation.up.y, orientation.up.z)
-        direction = (
-            orientation.direction.x,
-            orientation.direction.y,
-            orientation.direction.z,
-        )
-        assert direction == pytest.approx(rotate((0, 0, 1)), abs=1e-9)
-        assert up == pytest.approx(rotate((0, 1, 0)), abs=1e-9)
-
-
-class TestOrientation3DOrthogonalization:
-    def test_up_is_orthogonal_to_non_unit_direction(self):
-        from nichiyou_daiku.core.geometry import Orientation3D
-
-        orientation = Orientation3D(
-            direction=Vector3D(x=0.0, y=0.0, z=2.0), up=Vector3D(x=0.0, y=1.0, z=1.0)
-        )
-        d, u = orientation.direction, orientation.up
-        assert d.x * u.x + d.y * u.y + d.z * u.z == pytest.approx(0.0, abs=1e-9)
-
-
 class TestSurfacePointFromPoint:
     @pytest.mark.parametrize("face", ["top", "down", "left", "right", "front", "back"])
     @pytest.mark.parametrize("u,v", [(0.0, 0.0), (10.5, -7.25), (-30.0, 12.0)])
