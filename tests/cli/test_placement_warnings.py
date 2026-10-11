@@ -72,3 +72,18 @@ def test_report_warns_about_fasteners_that_do_not_fit(runner, tmp_path):
         "Warning: Connection a -> b: contact area 19.0 x 89.0mm is too narrow"
         in result.output
     )
+
+
+@pytest.mark.skipif(not HAS_BUILD123D, reason="export needs build123d")
+def test_export_warns_about_fasteners_that_do_not_fit(runner, tmp_path):
+    source = "(a:2x4 =500)\n(b:1x4 =300)\na -[FL<100 DF<0 D(5, 30)]- b\n"
+    output = tmp_path / "design.step"
+    result = runner.invoke(
+        cli, ["export", str(_write(tmp_path, source)), "-f", "step", "-o", str(output)]
+    )
+    assert result.exit_code == 0
+    assert (
+        "Warning: Connection a -> b: contact area 19.0 x 89.0mm is too narrow"
+        in result.output
+    )
+    assert output.exists()

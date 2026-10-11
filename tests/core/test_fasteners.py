@@ -103,6 +103,17 @@ class TestLayoutFasteners:
         assert issue is None
         assert [_base_point(connection, f) for f in fasteners] == [(0.0, 19.0, 81.0)]
 
+    def test_square_contact_with_room_for_two_uses_the_lower_axis(self):
+        # 38 x 38 contact on a's left face (axes y and z): y is the long side
+        connection, fasteners, issue = _layout(
+            "(a:2x4 =500)\n(b:2x4 =300)\na -[LF<100 TL<0 D(4, 30)]- b\n"
+        )
+        assert issue is None
+        assert [_base_point(connection, f) for f in fasteners] == [
+            (0.0, 9.5, 81.0),
+            (0.0, 28.5, 81.0),
+        ]
+
     def test_edge_only_contact_is_reported(self):
         _, fasteners, issue = _layout(
             "(a:2x4 =500)\n(b:2x4 =300)\na -[FT<0 DF<0 D(4, 30)]- b\n"
@@ -195,6 +206,26 @@ def fastened_connections(draw) -> Connection:
     )
 
 
+def _follows_layout_rule(points, low, sizes, long_axis, short_axis, diameter, slack):
+    """Centred across the short side; at 1/4 and 3/4 of the long side, or in
+    the middle when L/2 < 2d (either is fine within slack of the boundary)."""
+    long_size, short_size = sizes[long_axis], sizes[short_axis]
+    if any(
+        abs(p[short_axis] - low[short_axis] - short_size / 2) > slack for p in points
+    ):
+        return False
+    along = sorted(p[long_axis] - low[long_axis] for p in points)
+    expected = []
+    if long_size / 2 >= 2 * diameter - slack:
+        expected.append([long_size / 4, 3 * long_size / 4])
+    if long_size / 2 < 2 * diameter + slack:
+        expected.append([long_size / 2])
+    return any(
+        len(e) == len(along) and all(abs(a - b) <= slack for a, b in zip(along, e))
+        for e in expected
+    )
+
+
 @given(fastened_connections())
 @settings(max_examples=300, deadline=None)
 def test_fasteners_sit_inside_the_shared_contact_area(connection):
@@ -240,12 +271,17 @@ def test_fasteners_sit_inside_the_shared_contact_area(connection):
             )
         )
         assert on_base == pytest.approx(on_target, abs=slack)
-        for axis in in_plane:
-            assert (
-                low[axis] + diameter - slack
-                <= on_base[axis]
-                <= high[axis] - diameter + slack
-            )
         points.append(on_base)
-    if len(points) == 2:
-        assert np.linalg.norm(points[0] - points[1]) >= 2 * diameter - slack
+
+    # The base is the first piece, so world axes are the base's axes; on a
+    # tie the lower-numbered axis is the long one.
+    first, second = in_plane
+    assignments = [(first, second), (second, first)]
+    if abs(sizes[first] - sizes[second]) > slack:
+        assignments = [
+            assignments[0] if sizes[first] > sizes[second] else assignments[1]
+        ]
+    assert any(
+        _follows_layout_rule(points, low, sizes, long_axis, short_axis, diameter, slack)
+        for long_axis, short_axis in assignments
+    )

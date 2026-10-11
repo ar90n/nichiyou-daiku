@@ -1,5 +1,8 @@
 """Tests for the validate command."""
 
+import subprocess
+import sys
+
 from nichiyou_daiku.cli.dsl_cli import cli
 
 
@@ -205,23 +208,24 @@ def test_validate_debug_prints_traceback_for_assembly_errors(
     assert "Traceback" in result.output
 
 
-def test_validate_does_not_need_build123d(runner, tmp_path, monkeypatch):
-    import nichiyou_daiku.shell.build123d_export as export_module
-
-    monkeypatch.setattr(export_module, "HAS_BUILD123D", False)
-    result = _validate(
-        runner,
-        tmp_path,
-        """
-        (a:2x4 =500)
-        (b:2x4 =300)
-        (c:2x4 =300)
-        a -[FL<100 DF<0]- b
-        a -[FL<100 DF<0]- c
-        """,
+def test_validate_does_not_need_build123d(tmp_path):
+    # Run in a fresh interpreter where importing build123d fails
+    design = tmp_path / "design.nd"
+    design.write_text(
+        "(a:2x4 =500)\n(b:2x4 =300)\n(c:2x4 =300)\n"
+        "a -[FL<100 DF<0]- b\na -[FL<100 DF<0]- c\n"
     )
-    assert result.exit_code == 1
-    assert "Pieces 'b' and 'c' overlap (1014600.0mm³)" in result.output
+    script = (
+        "import sys\n"
+        "sys.modules['build123d'] = None\n"
+        "from nichiyou_daiku.cli.dsl_cli import cli\n"
+        f"cli(['validate', {str(design)!r}])\n"
+    )
+    result = subprocess.run(
+        [sys.executable, "-c", script], capture_output=True, text=True
+    )
+    assert result.returncode == 1
+    assert "Pieces 'b' and 'c' overlap (1014600.0mm³)" in result.stdout + result.stderr
 
 
 def test_validate_reports_orientation_conflicts(runner, tmp_path):
