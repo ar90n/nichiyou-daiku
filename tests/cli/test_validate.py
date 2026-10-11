@@ -1,7 +1,5 @@
 """Tests for the validate command."""
 
-import pytest
-
 from nichiyou_daiku.cli.dsl_cli import cli
 
 
