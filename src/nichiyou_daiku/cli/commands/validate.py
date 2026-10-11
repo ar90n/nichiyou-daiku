@@ -6,11 +6,11 @@ import click
 
 from nichiyou_daiku.cli.utils import (
     CliEcho,
-    describe_placement_issues,
+    describe_assembly_issues,
     format_mm,
     read_dsl_file,
 )
-from nichiyou_daiku.core.assembly import Assembly, find_joints_outside_pieces
+from nichiyou_daiku.core.assembly import Assembly
 from nichiyou_daiku.core.placement import find_overlaps
 from nichiyou_daiku.dsl import (
     parse_dsl,
@@ -42,7 +42,7 @@ def validate(ctx: click.Context, file: str) -> None:
 
     Checks the syntax, builds the assembly and solves the placement, then
     reports contradicting connections, unconnected pieces, overlapping
-    pieces and dowels that fall outside their piece.
+    pieces and fasteners that do not fit their joint.
 
     FILE: Path to .nd file or '-' for stdin
     """
@@ -88,12 +88,7 @@ def validate(ctx: click.Context, file: str) -> None:
         report_validation_error(echo, "Assembly error", e)
         sys.exit(1)
 
-    problems = [
-        f"Joint {joint_id} lies outside piece "
-        f"'{joint_id.rsplit('_j', 1)[0]}': the dowel layout does not fit this joint"
-        for joint_id in find_joints_outside_pieces(assembly)
-    ]
-    problems += describe_placement_issues(assembly.placement)
+    problems = describe_assembly_issues(assembly)
     problems += [
         f"Pieces '{overlap.lhs}' and '{overlap.rhs}' overlap "
         f"({format_mm(overlap.volume)}mm³)"

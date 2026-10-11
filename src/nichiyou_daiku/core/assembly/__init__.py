@@ -8,12 +8,13 @@ Public API:
     - Joint: A joint point with position and orientation
     - JointPair: A pair of joints connecting two pieces
     - Assembly: Complete 3D assembly with all joints
-    - find_joints_outside_pieces: Joints the dowel layout put beside their piece
+    - Fastener / LayoutIssue / layout_fasteners: Dowels and screws in the contact area
     - project_joint: Project joint between coordinate systems
 """
 
-from .builder import Assembly, find_joints_outside_pieces
-from .models import Hole, Joint, JointPair
+from .builder import Assembly
+from .fasteners import layout_fasteners
+from .models import Fastener, FastenerKind, Hole, Joint, JointPair, LayoutIssue
 from .projection import project_joint
 
 __all__ = [
@@ -21,6 +22,9 @@ __all__ = [
     "Joint",
     "JointPair",
     "Assembly",
-    "find_joints_outside_pieces",
+    "Fastener",
+    "FastenerKind",
+    "LayoutIssue",
+    "layout_fasteners",
     "project_joint",
 ]

@@ -217,12 +217,15 @@ def test_fasteners_sit_inside_the_shared_contact_area(connection):
         case ScrewConnection(diameter=screw_diameter):
             diameter = screw_diameter
 
+    # World poses are rounded to 1e-6mm while the layout uses the exact
+    # relative pose, so allow that much slack at the S = 2d boundary.
+    slack = 1e-5
     if issue is not None:
         assert fasteners == ()
-        assert shortest <= 1e-6 or shortest < 2 * diameter
+        assert shortest <= slack or shortest < 2 * diameter + slack
         return
 
-    assert shortest >= 2 * diameter - 1e-9
+    assert shortest >= 2 * diameter - slack
     assert len(fasteners) in (1, 2)
     points = []
     for fastener in fasteners:
@@ -236,13 +239,13 @@ def test_fasteners_sit_inside_the_shared_contact_area(connection):
                 Point3D.of(Box(shape=get_shape(target)), fastener.target_position)
             )
         )
-        assert on_base == pytest.approx(on_target, abs=1e-6)
+        assert on_base == pytest.approx(on_target, abs=slack)
         for axis in in_plane:
             assert (
-                low[axis] + diameter - 1e-6
+                low[axis] + diameter - slack
                 <= on_base[axis]
-                <= high[axis] - diameter + 1e-6
+                <= high[axis] - diameter + slack
             )
         points.append(on_base)
     if len(points) == 2:
-        assert np.linalg.norm(points[0] - points[1]) >= 2 * diameter - 1e-6
+        assert np.linalg.norm(points[0] - points[1]) >= 2 * diameter - slack

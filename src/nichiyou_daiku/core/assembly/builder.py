@@ -1,236 +1,88 @@
 """Assembly builder for creating 3D assemblies from models.
 
-This module contains the Assembly class that orchestrates the
-creation of 3D assembly information from abstract model definitions.
+This module contains the Assembly class that turns a Model into placed
+pieces with their fasteners and pilot holes.
 """
-
-from collections.abc import Callable
 
 from pydantic import BaseModel
 
-from ..connection import (
-    Connection,
-    DowelConnection,
-    ScrewConnection,
-    VanillaConnection,
-    _get_dimension_for_face,
-)
-from ..geometry import Box, Point3D, SurfacePoint
+from ..geometry import Box, SurfacePoint
 from ..model import Model
 from ..piece import get_shape
-from .models import Hole, Joint, JointPair
-from .joints import create_vanilla_joint_pairs, create_dowel_joint_pairs
 from ..placement import Placement, solve_placement
-
-
-def _create_joint_id_generator(piece_ids: list[str]) -> Callable[[str], str]:
-    """Create a joint ID generator function with encapsulated state.
-
-    Returns a closure that generates sequential joint IDs for each piece.
-    The counter state is encapsulated within the closure.
-
-    Args:
-        piece_ids: List of piece IDs to initialize counters for
-
-    Returns:
-        A function that generates the next joint ID for a given piece_id
-
-    Example:
-        >>> generate_id = _create_joint_id_generator(["p1", "p2"])
-        >>> generate_id("p1")
-        'p1_j0'
-        >>> generate_id("p1")
-        'p1_j1'
-        >>> generate_id("p2")
-        'p2_j0'
-    """
-    counters: dict[str, int] = {piece_id: 0 for piece_id in piece_ids}
-
-    def generate_next(piece_id: str) -> str:
-        joint_id = f"{piece_id}_j{counters[piece_id]}"
-        counters[piece_id] += 1
-        return joint_id
-
-    return generate_next
-
-
-def _create_joint_pairs(piece_conn: Connection) -> list[JointPair]:
-    """Create joint pairs for a connection based on connection type.
-
-    Args:
-        piece_conn: Connection defining how pieces connect
-
-    Returns:
-        List of JointPair objects
-    """
-    if isinstance(piece_conn.type, VanillaConnection):
-        return create_vanilla_joint_pairs(piece_conn)
-    else:
-        return create_dowel_joint_pairs(piece_conn)
+from .fasteners import layout_fasteners
+from .models import Fastener, Hole, LayoutIssue
 
 
 class Assembly(BaseModel, frozen=True):
-    """Complete 3D assembly with all joints.
-
-    Represents the final assembly ready for 3D visualization.
+    """Complete 3D assembly: placed pieces, fasteners and pilot holes.
 
     Attributes:
         model: The source model with piece and connection definitions
         boxes: Dictionary mapping piece IDs to their 3D boxes
-        joints: Dictionary mapping joint IDs to Joint objects
-        joint_conns: List of joint ID tuples connecting joints
+        fasteners: Dowels and screws laid out in each connection's contact area
+        fastener_issues: Connections whose fasteners could not be laid out
         pilot_holes: Dictionary mapping piece IDs to lists of (SurfacePoint, Hole)
             tuples; the SurfacePoint names the face the hole is drilled into
         placement: World placement of every piece, solved from the connections
         label: Optional label for the assembly
 
     Examples:
-        >>> from nichiyou_daiku.core.model import Model
-        >>> from nichiyou_daiku.core.piece import Piece, PieceType
-        >>> from nichiyou_daiku.core.anchor import Anchor, BoundAnchor
-        >>> from nichiyou_daiku.core.connection import Connection
-        >>> from nichiyou_daiku.core.geometry import FromMax, FromMin
-        >>> # Assembly from model
-        >>> p1 = Piece.of(PieceType.PT_2x4, 1000.0, "p1")
-        >>> p2 = Piece.of(PieceType.PT_2x4, 800.0, "p2")
-        >>> pc = Connection(
-        ...     base=BoundAnchor(
-        ...         piece=p1,
-        ...         anchor=Anchor(
-        ...             contact_face="front",
-        ...             edge_shared_face="top",
-        ...             offset=FromMax(value=10)
-        ...         )
-        ...     ),
-        ...     target=BoundAnchor(
-        ...         piece=p2,
-        ...         anchor=Anchor(
-        ...             contact_face="down",
-        ...             edge_shared_face="front",
-        ...             offset=FromMin(value=50)
-        ...         )
-        ...     )
+        >>> from nichiyou_daiku.dsl import parse_dsl
+        >>> assembly = Assembly.of(
+        ...     parse_dsl("(a:2x4 =500)\\n(b:2x4 =300)\\na -[FL<100 DF<0 D(4, 30)]- b\\n")
         ... )
-        >>> model = Model.of(
-        ...     pieces=[p1, p2],
-        ...     connections=[pc]
-        ... )
-        >>> assembly = Assembly.of(model)
-        >>> len(assembly.joints)  # VANILLA creates 1 joint pair (2 joints)
+        >>> len(assembly.fasteners)
         2
-        >>> len(assembly.joint_conns)
-        1
+        >>> [hole.diameter for _, hole in assembly.pilot_holes["a"]]
+        [8.0, 8.0]
     """
 
     model: Model
     boxes: dict[str, Box]
-    joints: dict[str, Joint]
-    joint_conns: list[tuple[str, str]]
+    fasteners: tuple[Fastener, ...]
+    fastener_issues: tuple[LayoutIssue, ...]
     pilot_holes: dict[str, list[tuple[SurfacePoint, Hole]]]
     placement: Placement
     label: str | None
 
     @classmethod
     def of(cls, model: Model) -> "Assembly":
-        """Create an Assembly instance from a Model.
-
-        Converts the abstract model into a concrete 3D assembly.
-        Generates pilot holes for dowel connections.
+        """Create an Assembly from a Model.
 
         Args:
             model: Model containing pieces and connections
 
         Returns:
-            Assembly with 3D connection information and pilot holes
+            Assembly with placement, fasteners and pilot holes
         """
-
         boxes = {
             piece.id: Box(shape=get_shape(piece)) for piece in model.pieces.values()
         }
 
-        # Create joints with IDs and joint pairs
-        joints: dict[str, Joint] = {}
-        joint_conns: list[tuple[str, str]] = []
+        fasteners: list[Fastener] = []
+        issues: list[LayoutIssue] = []
+        for connection in model.connections.values():
+            laid_out, issue = layout_fasteners(connection)
+            fasteners.extend(laid_out)
+            if issue is not None:
+                issues.append(issue)
+
         pilot_holes: dict[str, list[tuple[SurfacePoint, Hole]]] = {}
-        generate_joint_id = _create_joint_id_generator(list(model.pieces.keys()))
-
-        for piece_conn in model.connections.values():
-            base_id, target_id = piece_conn.base.piece.id, piece_conn.target.piece.id
-            joint_pairs = _create_joint_pairs(piece_conn)
-
-            for joint_pair in joint_pairs:
-                base_joint_id = generate_joint_id(base_id)
-                target_joint_id = generate_joint_id(target_id)
-
-                joints[base_joint_id] = joint_pair.lhs
-                joints[target_joint_id] = joint_pair.rhs
-                joint_conns.append((base_joint_id, target_joint_id))
-
-                match piece_conn.type:
-                    case ScrewConnection(diameter=diameter, length=length):
-                        target_thickness = _get_dimension_for_face(
-                            get_shape(piece_conn.target.piece),
-                            piece_conn.target.anchor.contact_face,
-                        )
-                        # Through-hole in the target, thread depth in the base
-                        pilot_holes.setdefault(target_id, []).append(
-                            (joint_pair.rhs.position, Hole(diameter=diameter))
-                        )
-                        pilot_holes.setdefault(base_id, []).append(
-                            (
-                                joint_pair.lhs.position,
-                                Hole(
-                                    diameter=diameter, depth=length - target_thickness
-                                ),
-                            )
-                        )
-                    case DowelConnection(radius=radius, depth=depth):
-                        # A dowel of length L sits L/2 deep in each piece
-                        hole = Hole(diameter=radius * 2, depth=depth / 2)
-                        pilot_holes.setdefault(base_id, []).append(
-                            (joint_pair.lhs.position, hole)
-                        )
-                        pilot_holes.setdefault(target_id, []).append(
-                            (joint_pair.rhs.position, hole)
-                        )
-                    case VanillaConnection():
-                        pass
+        for fastener in fasteners:
+            pilot_holes.setdefault(fastener.base_id, []).append(
+                (fastener.base_position, fastener.base_hole)
+            )
+            pilot_holes.setdefault(fastener.target_id, []).append(
+                (fastener.target_position, fastener.target_hole)
+            )
 
         return cls(
             model=model,
             label=model.label,
             boxes=boxes,
-            joints=joints,
-            joint_conns=joint_conns,
+            fasteners=tuple(fasteners),
+            fastener_issues=tuple(issues),
             pilot_holes=pilot_holes,
             placement=solve_placement(model),
         )
-
-
-def find_joints_outside_pieces(
-    assembly: Assembly, tolerance: float = 1e-6
-) -> list[str]:
-    """Find joints whose position lies outside their own piece.
-
-    The dowel layout does not handle every face/edge combination; when it
-    misfires, a dowel (and its hole) ends up beside the piece instead of in it.
-
-    Args:
-        assembly: Assembly to check
-        tolerance: Allowed distance outside the piece in mm
-
-    Returns:
-        IDs of joints that lie outside their piece
-    """
-    outside = []
-    for joint_id, joint in assembly.joints.items():
-        box = assembly.boxes[joint_id.rsplit("_j", 1)[0]]
-        point = Point3D.of(box, joint.position)
-        shape = box.shape
-        if not (
-            -tolerance <= point.x <= shape.width + tolerance
-            and -tolerance <= point.y <= shape.height + tolerance
-            and -tolerance <= point.z <= shape.length + tolerance
-        ):
-            outside.append(joint_id)
-    return outside

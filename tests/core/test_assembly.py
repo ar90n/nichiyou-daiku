@@ -1,618 +1,79 @@
 """Tests for assembly module."""
 
-import pytest
-
-from nichiyou_daiku.core.assembly import (
-    Joint,
-    Assembly,
-    project_joint,
-)
-from nichiyou_daiku.core.piece import Piece, PieceType, get_shape
 from nichiyou_daiku.core.anchor import Anchor, BoundAnchor
-from nichiyou_daiku.core.connection import (
-    Connection,
-    VanillaConnection,
-    DowelConnection,
-)
-from nichiyou_daiku.core.geometry import FromMax, FromMin
-from nichiyou_daiku.core.screw import ScrewSpec
-from nichiyou_daiku.core.geometry import (
-    Point2D,
-    SurfacePoint,
-    Vector3D,
-    Box,
-    Orientation3D,
-)
+from nichiyou_daiku.core.assembly import Assembly, Hole
+from nichiyou_daiku.core.connection import Connection
+from nichiyou_daiku.core.geometry import Box, FromMin
+from nichiyou_daiku.core.model import Model
+from nichiyou_daiku.core.piece import Piece, PieceType, get_shape
+from nichiyou_daiku.core.placement import solve_placement
+from nichiyou_daiku.dsl import parse_dsl
+
+T_JOINT = "(leg:2x4 =700)\n(apron:2x4 =500)\nleg -[FL<100 DF<0 {kind}]- apron\n"
 
 
-def _edge_length(piece: Piece, contact_face, edge_shared_face) -> float:
-    from nichiyou_daiku.core.geometry import (
-        cross,
-        is_down_to_top_axis,
-        is_left_to_right_axis,
-    )
-    from nichiyou_daiku.core.piece import get_shape
-
-    shape = get_shape(piece)
-    axis_face = cross(contact_face, edge_shared_face)
-    if is_down_to_top_axis(axis_face):
-        return shape.length
-    if is_left_to_right_axis(axis_face):
-        return shape.width
-    return shape.height
+def _assembly(source: str) -> Assembly:
+    return Assembly.of(parse_dsl(source))
 
 
 class TestBox:
-    """Test Box model."""
-
-    # Basic creation is covered in doctests
-
     def test_should_handle_different_piece_lengths(self):
-        """Should create boxes with correct dimensions for different piece lengths."""
-        lengths = [500.0, 1000.0, 2000.0]
-
-        for length in lengths:
-            piece = Piece.of(PieceType.PT_2x4, length)
-            box = Box(shape=get_shape(piece))
-            assert box.shape.length == length
-            assert box.shape.width == 89.0
-            assert box.shape.height == 38.0
-
-
-class TestJoint:
-    """Test Joint model."""
-
-    # Basic creation is covered in doctests
-
-    def test_should_support_negative_direction_vectors(self):
-        """Should support joints with negative direction vectors."""
-        position = SurfacePoint(face="top", position=Point2D(u=0.0, v=0.0))
-        orientation = Orientation3D.of(
-            direction=Vector3D(x=-1.0, y=0.0, z=0.0), up=Vector3D(x=0.0, y=0.0, z=1.0)
-        )
-
-        joint = Joint(position=position, orientation=orientation)
-
-        assert joint.orientation.direction.x == -1.0
-
-
-class TestJointPair:
-    """Test JointPair model."""
-
-    # Basic creation is covered in doctests
-
-    # JointPair.of() method is covered in doctests
-
-    def test_should_represent_l_angle_connection(self):
-        """Should be able to represent L-angle connection."""
-        # Create pieces for L-angle
-        horizontal = Piece.of(PieceType.PT_2x4, 400.0, "horizontal")
-        vertical = Piece.of(PieceType.PT_2x4, 300.0, "vertical")
-
-        # Create L-angle piece connection
-        piece_conn = Connection(
-            base=BoundAnchor(
-                piece=horizontal,
-                anchor=Anchor(
-                    contact_face="left",
-                    edge_shared_face="top",
-                    offset=FromMax(value=10),
-                ),
-            ),
-            target=BoundAnchor(
-                piece=vertical,
-                anchor=Anchor(
-                    contact_face="down",
-                    edge_shared_face="right",
-                    offset=FromMin(value=10),
-                ),
-            ),
-        )
-
-        # Create joints directly using BoundAnchor
-        base_joint = Joint.of_bound_anchor(piece_conn.base)
-        target_joint = project_joint(
-            src_bound=piece_conn.base,
-            dst_bound=piece_conn.target,
-            src_joint=base_joint,
-        )
-
-        assert isinstance(base_joint, Joint)
-        assert isinstance(target_joint, Joint)
-
-
-class TestAssembly:
-    """Test Assembly model."""
-
-    # Basic creation is covered in doctests
-
-    def test_should_create_assembly_with_joints(self):
-        """Should create Assembly with a dict of joints."""
-        from nichiyou_daiku.core.model import Model
-
-        # Create pieces and connection
-        p1 = Piece.of(PieceType.PT_2x4, 1000.0, "p1")
-        p2 = Piece.of(PieceType.PT_2x4, 800.0, "p2")
-
-        conn = Connection(
-            base=BoundAnchor(
-                piece=p1,
-                anchor=Anchor(
-                    contact_face="front",
-                    edge_shared_face="top",
-                    offset=FromMax(value=10),
-                ),
-            ),
-            target=BoundAnchor(
-                piece=p2,
-                anchor=Anchor(
-                    contact_face="down",
-                    edge_shared_face="front",
-                    offset=FromMin(value=50),
-                ),
-            ),
-        )
-
-        model = Model.of(
-            pieces=[p1, p2],
-            connections=[conn],
-            label="test_assembly",
-        )
-
-        assembly = Assembly.of(model)
-
-        # VANILLA connections create 1 JointPair (2 joints) at anchor positions
-        assert len(assembly.joints) == 2
-        assert "p1_j0" in assembly.joints
-        assert "p2_j0" in assembly.joints
-        assert len(assembly.joint_conns) == 1
-        assert assembly.joint_conns[0] == ("p1_j0", "p2_j0")
-
-    def test_should_generate_pilot_holes_for_dowel_connections(self):
-        """Should generate pilot holes for dowel-type connections."""
-        from nichiyou_daiku.core.model import Model
-
-        # Create pieces and dowel connection
-        p1 = Piece.of(PieceType.PT_2x4, 1000.0, "p1")
-        p2 = Piece.of(PieceType.PT_2x4, 800.0, "p2")
-
-        conn = Connection(
-            base=BoundAnchor(
-                piece=p1,
-                anchor=Anchor(
-                    contact_face="front",
-                    edge_shared_face="top",
-                    offset=FromMax(value=10),
-                ),
-            ),
-            target=BoundAnchor(
-                piece=p2,
-                anchor=Anchor(
-                    contact_face="down",
-                    edge_shared_face="front",
-                    offset=FromMin(value=50),
-                ),
-            ),
-            type=DowelConnection(radius=4.0, depth=20.0),
-        )
-
-        model = Model.of(pieces=[p1, p2], connections=[conn])
-
-        assembly = Assembly.of(model)
-
-        # Verify pilot_holes is a dict
-        assert isinstance(assembly.pilot_holes, dict)
-
-        # Once _calculate_pilot_holes_for_connection is implemented,
-        # we can add more specific assertions here.
-        # For now, just check the structure exists and is empty (stub returns [])
-        # When implemented, this test should verify actual holes are generated
-
-    # Assembly.of() method is covered in doctests
-
-
-class TestDowelJointFaceCombinations:
-    """Test dowel joint implementation for all face combinations."""
-
-    @pytest.mark.parametrize(
-        "connection_type",
-        [
-            VanillaConnection(),
-            DowelConnection(radius=4.0, depth=20.0),
-        ],
-    )
-    @pytest.mark.parametrize(
-        "base_face,base_edge,target_face,target_edge,description",
-        [
-            # Top/down combinations
-            ("top", "front", "down", "front", "top-down"),
-            ("down", "back", "top", "back", "down-top"),
-            # Top/down with left/right
-            ("top", "front", "left", "top", "top-left"),
-            ("down", "back", "right", "down", "down-right"),
-            ("left", "top", "down", "front", "left-down"),
-            ("right", "top", "top", "front", "right-top"),
-            # Top/down with front/back
-            ("top", "left", "front", "top", "top-front"),
-            ("down", "right", "back", "down", "down-back"),
-            # Left/right with front/back
-            ("left", "front", "front", "left", "left-front"),
-            ("right", "back", "back", "right", "right-back"),
-            # Front/back with top/down edges
-            ("front", "top", "back", "down", "front-back-topdown"),
-        ],
-    )
-    def test_should_create_joints_for_face_combination(
-        self,
-        connection_type,
-        base_face,
-        base_edge,
-        target_face,
-        target_edge,
-        description,
-    ):
-        """Should create correct number of joints for all valid face combinations."""
-        # Create pieces
-        p1 = Piece.of(PieceType.PT_2x4, 1000.0, "p1")
-        p2 = Piece.of(PieceType.PT_2x4, 800.0, "p2")
-
-        # Create connection (offsets scaled to each anchor edge's length)
-        conn = Connection(
-            base=BoundAnchor(
-                piece=p1,
-                anchor=Anchor(
-                    contact_face=base_face,
-                    edge_shared_face=base_edge,
-                    offset=FromMax(value=_edge_length(p1, base_face, base_edge) * 0.4),
-                ),
-            ),
-            target=BoundAnchor(
-                piece=p2,
-                anchor=Anchor(
-                    contact_face=target_face,
-                    edge_shared_face=target_edge,
-                    offset=FromMin(
-                        value=_edge_length(p2, target_face, target_edge) * 0.2
-                    ),
-                ),
-            ),
-            type=connection_type,
-        )
-
-        # Create model and assembly
-        from nichiyou_daiku.core.model import Model
-
-        model = Model.of(
-            pieces=[p1, p2],
-            connections=[conn],
-            label=f"test_{description}_{connection_type.__class__.__name__}",
-        )
-        assembly = Assembly.of(model)
-
-        # Verify joints were created based on connection type
-        # DOWEL creates 2 joint pairs (4 joints), VANILLA creates 1 joint pair (2 joints)
-        if isinstance(connection_type, DowelConnection):
-            expected_joints = 4
-            expected_pairs = 2
-        else:  # VANILLA
-            expected_joints = 2
-            expected_pairs = 1
-
-        assert len(assembly.joints) == expected_joints, (
-            f"Expected {expected_joints} joints for {description} with {connection_type.__class__.__name__}"
-        )
-        assert len(assembly.joint_conns) == expected_pairs, (
-            f"Expected {expected_pairs} joint pairs for {description} with {connection_type.__class__.__name__}"
-        )
-
-        # Verify joint IDs
-        assert "p1_j0" in assembly.joints
-        assert "p2_j0" in assembly.joints
-        if isinstance(connection_type, DowelConnection):
-            assert "p1_j1" in assembly.joints
-            assert "p2_j1" in assembly.joints
-
-
-class TestScrewConnectionHoles:
-    """Test ScrewConnection hole generation.
-
-    ScrewConnection generates holes differently from other connection types:
-    - Target side: through-hole (depth=None) - screw passes through
-    - Base side: depth = screw.length - target_thickness - screw threads into
-    """
-
-    def test_screw_target_through_hole(self):
-        """Target側は貫通穴（depth=None）"""
-        from nichiyou_daiku.core.model import Model
-
-        # Create pieces
-        p1 = Piece.of(PieceType.PT_2x4, 1000.0, "base")
-        p2 = Piece.of(PieceType.PT_2x4, 800.0, "target")
-
-        # Create screw connection
-        # target contact_face="back" → target_depth=height=38mm (for 2x4)
-        # base contact_face="front" → base_depth=height=38mm
-        # screw length=50mm > 38mm, so it reaches base
-        conn = Connection.of_screw(
-            base=BoundAnchor(
-                piece=p1,
-                anchor=Anchor(
-                    contact_face="front",
-                    edge_shared_face="top",
-                    offset=FromMax(value=10),
-                ),
-            ),
-            target=BoundAnchor(
-                piece=p2,
-                anchor=Anchor(
-                    contact_face="back",
-                    edge_shared_face="top",
-                    offset=FromMin(value=50),
-                ),
-            ),
-            spec=ScrewSpec(diameter=4.0, length=50.0),
-        )
-
-        model = Model.of(pieces=[p1, p2], connections=[conn])
-        assembly = Assembly.of(model)
-
-        # Target側の穴を確認
-        assert "target" in assembly.pilot_holes
-        target_holes = assembly.pilot_holes["target"]
-        assert len(target_holes) >= 1
-
-        # Target側は貫通穴（depth=None）
-        _, target_hole = target_holes[0]
-        assert target_hole.depth is None
-
-    def test_screw_base_depth(self):
-        """Base側はscrew.length - target_thicknessの深さ"""
-        from nichiyou_daiku.core.model import Model
-
-        # Create pieces
-        p1 = Piece.of(PieceType.PT_2x4, 1000.0, "base")
-        p2 = Piece.of(PieceType.PT_2x4, 800.0, "target")
-
-        # Create screw connection
-        # target contact_face="back" → target_thickness=height=38mm (for 2x4)
-        # base contact_face="front" → base_depth=height=38mm
-        # screw length=50mm > 38mm, so it reaches base
-        conn = Connection.of_screw(
-            base=BoundAnchor(
-                piece=p1,
-                anchor=Anchor(
-                    contact_face="front",
-                    edge_shared_face="top",
-                    offset=FromMax(value=10),
-                ),
-            ),
-            target=BoundAnchor(
-                piece=p2,
-                anchor=Anchor(
-                    contact_face="back",
-                    edge_shared_face="top",
-                    offset=FromMin(value=50),
-                ),
-            ),
-            spec=ScrewSpec(diameter=4.0, length=50.0),
-        )
-
-        model = Model.of(pieces=[p1, p2], connections=[conn])
-        assembly = Assembly.of(model)
-
-        # Base側の穴を確認
-        assert "base" in assembly.pilot_holes
-        base_holes = assembly.pilot_holes["base"]
-        assert len(base_holes) >= 1
-
-        # Base側の深さ = screw.length - target_thickness
-        # target contact_face="back" → target_thickness = height = 38mm
-        # base_depth = 50.0 - 38.0 = 12.0mm
-        _, base_hole = base_holes[0]
-        assert base_hole.depth == 50.0 - 38.0  # 12.0mm
-
-    def test_screw_hole_diameter(self):
-        """HoleのdiameterはScrewConnection.diameter"""
-        from nichiyou_daiku.core.model import Model
-
-        # Create pieces
-        p1 = Piece.of(PieceType.PT_2x4, 1000.0, "base")
-        p2 = Piece.of(PieceType.PT_2x4, 800.0, "target")
-
-        # Create screw connection with specific diameter
-        # target contact_face="back" → target_depth=height=38mm
-        screw_diameter = 5.0
-        conn = Connection.of_screw(
-            base=BoundAnchor(
-                piece=p1,
-                anchor=Anchor(
-                    contact_face="front",
-                    edge_shared_face="top",
-                    offset=FromMax(value=10),
-                ),
-            ),
-            target=BoundAnchor(
-                piece=p2,
-                anchor=Anchor(
-                    contact_face="back",
-                    edge_shared_face="top",
-                    offset=FromMin(value=50),
-                ),
-            ),
-            spec=ScrewSpec(diameter=screw_diameter, length=50.0),
-        )
-
-        model = Model.of(pieces=[p1, p2], connections=[conn])
-        assembly = Assembly.of(model)
-
-        # 両側の穴のdiameterを確認
-        assert "base" in assembly.pilot_holes
-        assert "target" in assembly.pilot_holes
-
-        _, base_hole = assembly.pilot_holes["base"][0]
-        _, target_hole = assembly.pilot_holes["target"][0]
-
-        assert base_hole.diameter == screw_diameter
-        assert target_hole.diameter == screw_diameter
-
-    def test_screw_creates_two_joint_pairs(self):
-        """ScrewConnectionはDowelと同様に2つのジョイントペアを生成"""
-        from nichiyou_daiku.core.model import Model
-
-        # Create pieces
-        p1 = Piece.of(PieceType.PT_2x4, 1000.0, "base")
-        p2 = Piece.of(PieceType.PT_2x4, 800.0, "target")
-
-        # target contact_face="back" → target_depth=height=38mm
-        conn = Connection.of_screw(
-            base=BoundAnchor(
-                piece=p1,
-                anchor=Anchor(
-                    contact_face="front",
-                    edge_shared_face="top",
-                    offset=FromMax(value=10),
-                ),
-            ),
-            target=BoundAnchor(
-                piece=p2,
-                anchor=Anchor(
-                    contact_face="back",
-                    edge_shared_face="top",
-                    offset=FromMin(value=50),
-                ),
-            ),
-            spec=ScrewSpec(diameter=4.0, length=50.0),
-        )
-
-        model = Model.of(pieces=[p1, p2], connections=[conn])
-        assembly = Assembly.of(model)
-
-        # ScrewConnection creates 2 joint pairs (4 joints) like DowelConnection
-        assert len(assembly.joints) == 4
-        assert len(assembly.joint_conns) == 2
-        assert "base_j0" in assembly.joints
-        assert "base_j1" in assembly.joints
-        assert "target_j0" in assembly.joints
-        assert "target_j1" in assembly.joints
-
-
-def _two_piece_assembly(
-    base_anchor: Anchor, target_anchor: Anchor, conn_type
-) -> Assembly:
-    from nichiyou_daiku.core.model import Model
-
-    base = Piece.of(PieceType.PT_2x4, 500.0, "base")
-    target = Piece.of(PieceType.PT_2x4, 300.0, "target")
-    conn = Connection(
-        base=BoundAnchor(piece=base, anchor=base_anchor),
-        target=BoundAnchor(piece=target, anchor=target_anchor),
-        type=conn_type,
-    )
-    return Assembly.of(Model.of(pieces=[base, target], connections=[conn]))
-
-
-class TestDowelJointSides:
-    def test_left_right_dowel_joints_sit_on_their_own_contact_faces(self):
-        assembly = _two_piece_assembly(
-            Anchor(
-                contact_face="right",
-                edge_shared_face="front",
-                offset=FromMin(value=100),
-            ),
-            Anchor(
-                contact_face="left", edge_shared_face="front", offset=FromMin(value=100)
-            ),
-            DowelConnection(radius=4.0, depth=30.0),
-        )
-        for base_id, target_id in assembly.joint_conns:
-            assert assembly.joints[base_id].position.face == "right"
-            assert assembly.joints[target_id].position.face == "left"
-
-
-class TestPilotHoleSpecs:
-    def test_vanilla_connection_drills_no_holes(self):
-        assembly = _two_piece_assembly(
-            Anchor(
-                contact_face="front", edge_shared_face="top", offset=FromMin(value=0)
-            ),
-            Anchor(
-                contact_face="down", edge_shared_face="front", offset=FromMin(value=0)
-            ),
-            VanillaConnection(),
-        )
+        for length in [500.0, 1000.0, 2000.0]:
+            box = Box(shape=get_shape(Piece.of(PieceType.PT_2x4, length)))
+            assert (box.shape.width, box.shape.height, box.shape.length) == (
+                89.0,
+                38.0,
+                length,
+            )
+
+
+class TestFastenersAndHoles:
+    def test_vanilla_connection_has_no_fasteners_or_holes(self):
+        assembly = _assembly(T_JOINT.format(kind="V"))
+        assert assembly.fasteners == ()
+        assert assembly.fastener_issues == ()
         assert assembly.pilot_holes == {}
 
-    def test_dowel_holes_match_dowel_size(self):
-        assembly = _two_piece_assembly(
-            Anchor(
-                contact_face="front", edge_shared_face="top", offset=FromMax(value=35)
-            ),
-            Anchor(
-                contact_face="back", edge_shared_face="down", offset=FromMin(value=20)
-            ),
-            DowelConnection(radius=4.0, depth=30.0),
+    def test_dowels_drill_matching_holes_in_both_pieces(self):
+        assembly = _assembly(T_JOINT.format(kind="D(4, 30)"))
+        assert len(assembly.fasteners) == 2
+        for piece_id, face in (("leg", "front"), ("apron", "down")):
+            holes = assembly.pilot_holes[piece_id]
+            assert [hole for _, hole in holes] == [Hole(diameter=8.0, depth=15.0)] * 2
+            assert {position.face for position, _ in holes} == {face}
+
+    def test_screws_pass_through_the_target_into_the_base(self):
+        assembly = _assembly(
+            "(base:2x4 =500)\n(target:1x4 =300)\nbase -[FL<100 BL<0 S(Slim:3.3x25)]- target\n"
         )
-        holes = [hole for holes in assembly.pilot_holes.values() for _, hole in holes]
-        assert len(holes) == 4
-        assert all(hole.diameter == 8.0 for hole in holes)
-        # A 30mm dowel sits 15mm deep in each piece
-        assert all(hole.depth == 15.0 for hole in holes)
+        assert [hole for _, hole in assembly.pilot_holes["target"]] == [
+            Hole(diameter=3.3)
+        ] * 2
+        assert [hole for _, hole in assembly.pilot_holes["base"]] == [
+            Hole(diameter=3.3, depth=6.0)
+        ] * 2
 
-    def test_pilot_holes_record_the_face_they_are_drilled_into(self):
-        assembly = _two_piece_assembly(
-            Anchor(
-                contact_face="front", edge_shared_face="top", offset=FromMax(value=35)
-            ),
-            Anchor(
-                contact_face="back", edge_shared_face="down", offset=FromMin(value=20)
-            ),
-            DowelConnection(radius=4.0, depth=30.0),
+    def test_fastener_that_does_not_fit_is_reported_not_drilled(self):
+        assembly = _assembly(
+            "(a:2x4 =500)\n(b:1x4 =300)\na -[FL<100 DF<0 D(5, 30)]- b\n"
         )
-        assert {sp.face for sp, _ in assembly.pilot_holes["base"]} == {"front"}
-        assert {sp.face for sp, _ in assembly.pilot_holes["target"]} == {"back"}
+        assert assembly.fasteners == ()
+        assert assembly.pilot_holes == {}
+        (issue,) = assembly.fastener_issues
+        assert (issue.base_id, issue.target_id, issue.kind) == ("a", "b", "dowel")
+        assert "too narrow" in issue.message
 
-
-class TestJointsOutsidePieces:
-    def test_well_placed_dowels_are_not_reported(self):
-        from nichiyou_daiku.core.assembly import find_joints_outside_pieces
-
-        assembly = _two_piece_assembly(
-            Anchor(
-                contact_face="front", edge_shared_face="top", offset=FromMax(value=35)
-            ),
-            Anchor(
-                contact_face="back", edge_shared_face="down", offset=FromMin(value=20)
-            ),
-            DowelConnection(radius=4.0, depth=30.0),
+    def test_former_not_implemented_face_combination_now_lays_out(self):
+        # front/back to front/back with left edges used to raise NotImplementedError
+        assembly = _assembly(
+            "(a:2x4 =500)\n(b:2x4 =500)\na -[FL<100 BL<100 D(4, 30)]- b\n"
         )
-        assert find_joints_outside_pieces(assembly) == []
-
-    def test_dowel_laid_out_beyond_the_piece_is_reported(self):
-        from nichiyou_daiku.core.assembly import find_joints_outside_pieces
-
-        # The dowel layout spreads the pair across the base's 38mm thickness
-        # by more than 38mm, so one dowel lands beside the piece.
-        assembly = _two_piece_assembly(
-            Anchor(
-                contact_face="left", edge_shared_face="top", offset=FromMin(value=19)
-            ),
-            Anchor(
-                contact_face="down",
-                edge_shared_face="front",
-                offset=FromMin(value=44.5),
-            ),
-            DowelConnection(radius=4.0, depth=30.0),
-        )
-        outside = find_joints_outside_pieces(assembly)
-        assert outside
-        assert all(joint_id.startswith("base_j") for joint_id in outside)
+        assert len(assembly.fasteners) == 2
+        assert assembly.fastener_issues == ()
 
 
 class TestAssemblyPlacement:
     def test_assembly_carries_the_solved_placement(self):
-        from nichiyou_daiku.core.model import Model
-        from nichiyou_daiku.core.placement import solve_placement
-
         a = Piece.of(PieceType.PT_2x4, 500.0, "a")
         b = Piece.of(PieceType.PT_2x4, 300.0, "b")
         model = Model.of(

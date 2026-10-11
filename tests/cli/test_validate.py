@@ -100,8 +100,8 @@ def test_validate_reports_model_is_valid(runner, tmp_path, valid_dsl):
     assert "✓ Model is valid" in result.output
 
 
-def test_validate_reports_assembly_errors(runner, tmp_path):
-    # The dowel layout does not support this face/edge combination yet
+def test_validate_accepts_dowels_on_formerly_unsupported_faces(runner, tmp_path):
+    # front/back to front/back with left edges used to fail with NotImplementedError
     result = _validate(
         runner,
         tmp_path,
@@ -111,23 +111,25 @@ def test_validate_reports_assembly_errors(runner, tmp_path):
         a -[FL<100 BL<100 D(4, 30)]- b
         """,
     )
-    assert result.exit_code == 1
-    assert "✗ Assembly error" in result.output
+    assert result.exit_code == 0
+    assert "✓ Model is valid" in result.output
 
 
-def test_validate_reports_dowels_outside_the_piece(runner, tmp_path):
+def test_validate_reports_fasteners_that_do_not_fit(runner, tmp_path):
     result = _validate(
         runner,
         tmp_path,
         """
-        (base:2x4 =500)
-        (target:2x4 =300)
-        base -[LT<19 DF<44.5 D(4, 30)]- target
+        (a:2x4 =500)
+        (b:1x4 =300)
+        a -[FL<100 DF<0 D(5, 30)]- b
         """,
     )
     assert result.exit_code == 1
-    assert "outside" in result.output
-    assert "base" in result.output
+    assert (
+        "Connection a -> b: contact area 19.0 x 89.0mm is too narrow for a 10.0mm dowel"
+        in result.output
+    )
 
 
 def test_validate_reports_overlapping_pieces(runner, tmp_path):
@@ -186,11 +188,20 @@ def test_validate_rejects_unconnected_pieces(runner, tmp_path):
     assert "overlap" not in result.output
 
 
-def test_validate_debug_prints_traceback_for_assembly_errors(runner, tmp_path):
+def test_validate_debug_prints_traceback_for_assembly_errors(
+    runner, tmp_path, monkeypatch
+):
+    import nichiyou_daiku.cli.commands.validate as validate_module
+
+    def broken(model):
+        raise RuntimeError("boom")
+
+    monkeypatch.setattr(validate_module.Assembly, "of", broken)
     dsl_file = tmp_path / "design.nd"
-    dsl_file.write_text("(a:2x4 =500)\n(b:2x4 =500)\na -[FL<100 BL<100 D(4, 30)]- b\n")
+    dsl_file.write_text("(a:2x4 =500)\n(b:2x4 =300)\na -[FL<100 DF<0]- b\n")
     result = runner.invoke(cli, ["-d", "validate", str(dsl_file)])
     assert result.exit_code == 1
+    assert "✗ Assembly error" in result.output
     assert "Traceback" in result.output
 
 

@@ -13,7 +13,6 @@ import click
 if TYPE_CHECKING:
     from nichiyou_daiku.core.assembly import Assembly
     from nichiyou_daiku.core.model import Model
-    from nichiyou_daiku.core.placement import Placement
 
 
 def read_dsl_file(file_path: str) -> str:
@@ -294,8 +293,10 @@ def format_mm(value: float) -> str:
     return f"{value:.2g}"
 
 
-def describe_placement_issues(placement: Placement) -> list[str]:
-    """Human-readable lines for placement conflicts and unconnected pieces."""
+def describe_assembly_issues(assembly: Assembly) -> list[str]:
+    """Human-readable lines for placement conflicts, unconnected pieces and
+    fasteners that do not fit."""
+    placement = assembly.placement
     issues = []
     for conflict in placement.conflicts:
         loop = " -> ".join(conflict.loop)
@@ -315,12 +316,16 @@ def describe_placement_issues(placement: Placement) -> list[str]:
             "Some pieces are not connected to each other, so their relative "
             f"position is undefined (groups: {listed})"
         )
+    issues += [
+        f"Connection {issue.base_id} -> {issue.target_id}: {issue.message}"
+        for issue in assembly.fastener_issues
+    ]
     return issues
 
 
-def warn_placement_issues(assembly: Assembly, echo: CliEcho) -> None:
-    """Warn on stderr about placement issues; the command carries on."""
-    for issue in describe_placement_issues(assembly.placement):
+def warn_assembly_issues(assembly: Assembly, echo: CliEcho) -> None:
+    """Warn on stderr about placement and fastener issues; the command carries on."""
+    for issue in describe_assembly_issues(assembly):
         echo.info(click.style(f"Warning: {issue}", fg="yellow"))
 
 
@@ -345,7 +350,7 @@ def create_assembly_from_model(model: Model, echo: CliEcho) -> Assembly:
     except Exception as e:
         echo.exception(f"Error creating assembly: {e}")
         sys.exit(1)
-    warn_placement_issues(assembly, echo)
+    warn_assembly_issues(assembly, echo)
     return assembly
 
 

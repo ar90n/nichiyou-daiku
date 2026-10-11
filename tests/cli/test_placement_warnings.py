@@ -62,3 +62,13 @@ def test_report_shows_overall_size(runner, tmp_path):
         "- **Overall Size (X × Y × Z)**: 89 × 338 × 500 mm "
         "(Z is the length direction of 'a')" in result.output
     )
+
+
+def test_report_warns_about_fasteners_that_do_not_fit(runner, tmp_path):
+    source = "(a:2x4 =500)\n(b:1x4 =300)\na -[FL<100 DF<0 D(5, 30)]- b\n"
+    result = runner.invoke(cli, ["report", str(_write(tmp_path, source))])
+    assert result.exit_code == 0
+    assert (
+        "Warning: Connection a -> b: contact area 19.0 x 89.0mm is too narrow"
+        in result.output
+    )
