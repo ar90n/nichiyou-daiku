@@ -606,3 +606,36 @@ class TestJointsOutsidePieces:
         outside = find_joints_outside_pieces(assembly)
         assert outside
         assert all(joint_id.startswith("base_j") for joint_id in outside)
+
+
+class TestAssemblyPlacement:
+    def test_assembly_carries_the_solved_placement(self):
+        from nichiyou_daiku.core.model import Model
+        from nichiyou_daiku.core.placement import solve_placement
+
+        a = Piece.of(PieceType.PT_2x4, 500.0, "a")
+        b = Piece.of(PieceType.PT_2x4, 300.0, "b")
+        model = Model.of(
+            pieces=[a, b],
+            connections=[
+                Connection(
+                    base=BoundAnchor(
+                        piece=a,
+                        anchor=Anchor(
+                            contact_face="front",
+                            edge_shared_face="left",
+                            offset=FromMin(value=100),
+                        ),
+                    ),
+                    target=BoundAnchor(
+                        piece=b,
+                        anchor=Anchor(
+                            contact_face="down",
+                            edge_shared_face="front",
+                            offset=FromMin(value=0),
+                        ),
+                    ),
+                )
+            ],
+        )
+        assert Assembly.of(model).placement == solve_placement(model)

@@ -20,6 +20,7 @@ from ..model import Model
 from ..piece import get_shape
 from .models import Hole, Joint, JointPair
 from .joints import create_vanilla_joint_pairs, create_dowel_joint_pairs
+from ..placement import Placement, solve_placement
 
 
 def _create_joint_id_generator(piece_ids: list[str]) -> Callable[[str], str]:
@@ -80,6 +81,7 @@ class Assembly(BaseModel, frozen=True):
         joint_conns: List of joint ID tuples connecting joints
         pilot_holes: Dictionary mapping piece IDs to lists of (SurfacePoint, Hole)
             tuples; the SurfacePoint names the face the hole is drilled into
+        placement: World placement of every piece, solved from the connections
         label: Optional label for the assembly
 
     Examples:
@@ -125,6 +127,7 @@ class Assembly(BaseModel, frozen=True):
     joints: dict[str, Joint]
     joint_conns: list[tuple[str, str]]
     pilot_holes: dict[str, list[tuple[SurfacePoint, Hole]]]
+    placement: Placement
     label: str | None
 
     @classmethod
@@ -200,6 +203,7 @@ class Assembly(BaseModel, frozen=True):
             joints=joints,
             joint_conns=joint_conns,
             pilot_holes=pilot_holes,
+            placement=solve_placement(model),
         )
 
 
