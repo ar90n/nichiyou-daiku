@@ -4,22 +4,21 @@ This module converts ResourceSummary data into human-readable formats
 following the functional core, imperative shell pattern.
 """
 
+from collections.abc import Mapping
 from typing import Dict, List, Optional
 from datetime import datetime
 
 from nichiyou_daiku.core.piece import PieceType
-from .cutting import DEFAULT_STANDARD_LENGTHS, _optimize_cuts, _oversize_pieces
-from .resources import ResourceSummary, PieceResource, format_mm
+from .cutting import LumberPlan, plan_cuts
+from .resources import ResourceSummary, format_mm
 
 
-def _oversize_warning(
-    pieces: List[PieceResource], available_lengths: List[float]
-) -> List[str]:
-    longest = max(available_lengths)
+def _oversize_warning(plan: LumberPlan) -> List[str]:
+    longest = max(plan.available_lengths)
     return [
         f"- ⚠ {p.id} ({format_mm(p.length)}mm) is longer than the longest available "
         f"board ({longest:.0f}mm) and cannot be cut from stock"
-        for p in _oversize_pieces(pieces, available_lengths)
+        for p in plan.oversize
     ]
 
 
@@ -128,106 +127,62 @@ def _generate_shopping_list(summary: ResourceSummary) -> str:
     return "\n".join(lines)
 
 
-def _generate_purchase_recommendations(
-    summary: ResourceSummary,
-    standard_lengths: Dict[PieceType, List[float]],
-) -> str:
-    """Generate purchase recommendations with cut optimization.
+def _generate_purchase_recommendations(plans: Mapping[PieceType, LumberPlan]) -> str:
+    """Generate purchase recommendations from the cut plan.
 
     Args:
-        summary: Resource summary data
-        standard_lengths: Available standard lengths per piece type
+        plans: Cut plan per lumber type, in report order
 
     Returns:
         Markdown formatted purchase recommendations
     """
     lines = ["## Purchase Recommendations", ""]
 
-    for piece_type in sorted(summary.pieces_by_type.keys(), key=lambda x: x.value):
-        pieces = [p for p in summary.pieces if p.type == piece_type]
-        available_lengths = standard_lengths.get(
-            piece_type, [2440.0]
-        )  # Default fallback
-
-        cut_plans = _optimize_cuts(pieces, available_lengths)
-
-        # Calculate board requirements
-        board_counts: Dict[float, int] = {}
-        total_waste = 0.0
-        total_purchased_length = 0.0
-
-        for plan in cut_plans:
-            board_counts[plan.board_length] = board_counts.get(plan.board_length, 0) + 1
-            total_waste += plan.waste
-            total_purchased_length += plan.board_length
-
-        waste_percentage = (
-            (total_waste / total_purchased_length) * 100
-            if total_purchased_length > 0
-            else 0
-        )
-
-        # Format available lengths
+    for piece_type, plan in plans.items():
         lengths_str = ", ".join(
-            f"{length:.0f}mm" for length in sorted(available_lengths)
+            f"{length:.0f}mm" for length in sorted(plan.available_lengths)
         )
-
         lines.extend(
             [
                 f"### {piece_type.value} Lumber (Available: {lengths_str})",
                 "Optimal purchase:",
             ]
         )
-
-        for board_length in sorted(board_counts.keys()):
-            count = board_counts[board_length]
+        for board_length, count in sorted(plan.board_counts.items()):
             lines.append(f"- {count} × {board_length:.0f}mm boards")
-
         lines.append(
-            f"Total waste: {format_mm(total_waste)}mm ({waste_percentage:.1f}%)"
+            f"Total waste: {format_mm(plan.total_waste)}mm "
+            f"({plan.waste_percentage:.1f}%)"
         )
-        lines.extend(_oversize_warning(pieces, available_lengths))
+        lines.extend(_oversize_warning(plan))
         lines.append("")
 
     return "\n".join(lines)
 
 
-def _generate_cut_list(
-    summary: ResourceSummary,
-    standard_lengths: Dict[PieceType, List[float]],
-) -> str:
-    """Generate optimized cut list with ASCII diagrams.
+def _generate_cut_list(plans: Mapping[PieceType, LumberPlan]) -> str:
+    """Generate the cut list from the cut plan.
 
     Args:
-        summary: Resource summary data
-        standard_lengths: Available standard lengths per piece type
+        plans: Cut plan per lumber type, in report order
 
     Returns:
         Markdown formatted cut list
     """
     lines = ["## Optimized Cut List", ""]
 
-    for piece_type in sorted(summary.pieces_by_type.keys(), key=lambda x: x.value):
-        pieces = [p for p in summary.pieces if p.type == piece_type]
-        available_lengths = standard_lengths.get(piece_type, [2440.0])
-
-        cut_plans = _optimize_cuts(pieces, available_lengths)
-
+    for piece_type, plan in plans.items():
         lines.extend([f"### {piece_type.value} Boards", ""])
-        warnings = _oversize_warning(pieces, available_lengths)
+        warnings = _oversize_warning(plan)
         if warnings:
             lines.extend([*warnings, ""])
 
-        for i, plan in enumerate(cut_plans, 1):
-            lines.append(f"**Board {i}** ({plan.board_length:.0f}mm):")
-
-            # Create simple cut list
-            for piece_id, length in plan.cuts:
+        for i, board in enumerate(plan.boards, 1):
+            lines.append(f"**Board {i}** ({board.board_length:.0f}mm):")
+            for piece_id, length in board.cuts:
                 lines.append(f"- Cut {format_mm(length)}mm → {piece_id}")
-
-            if plan.waste > 0:
-                lines.append(f"- Waste: {format_mm(plan.waste)}mm")
-
+            if board.waste > 0:
+                lines.append(f"- Waste: {format_mm(board.waste)}mm")
             lines.append("")
 
     return "\n".join(lines)
@@ -473,8 +428,7 @@ def generate_markdown_report(
         >>> "PT_2x4" not in report  # Should show "2x4", not enum name
         True
     """
-    if standard_lengths is None:
-        standard_lengths = DEFAULT_STANDARD_LENGTHS
+    plans = plan_cuts(resource_summary, standard_lengths)
 
     # Generate all sections
     sections = []
@@ -493,12 +447,10 @@ def generate_markdown_report(
         sections.append(_generate_pilot_holes_section(resource_summary))
 
     sections.append(_generate_shopping_list(resource_summary))
-    sections.append(
-        _generate_purchase_recommendations(resource_summary, standard_lengths)
-    )
+    sections.append(_generate_purchase_recommendations(plans))
 
     if include_cut_diagram:
-        sections.append(_generate_cut_list(resource_summary, standard_lengths))
+        sections.append(_generate_cut_list(plans))
 
     # Add footer
     sections.append("---\n*Report generated by nichiyou-daiku*")

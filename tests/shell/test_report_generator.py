@@ -2,7 +2,10 @@
 
 from unittest.mock import patch
 
+import pytest
+
 from nichiyou_daiku.core.piece import PieceType
+from nichiyou_daiku.shell.cutting import plan_cuts
 from nichiyou_daiku.shell.resources import ResourceSummary, PieceResource, AnchorInfo
 from nichiyou_daiku.shell.report_generator import (
     _generate_overview_section,
@@ -32,8 +35,8 @@ class TestOversizePieces:
         )
         lengths = {PieceType.PT_2x4: [2440.0, 3050.0, 3660.0]}
         for section in (
-            _generate_purchase_recommendations(summary, lengths),
-            _generate_cut_list(summary, lengths),
+            _generate_purchase_recommendations(plan_cuts(summary, lengths)),
+            _generate_cut_list(plan_cuts(summary, lengths)),
         ):
             assert "long" in section
             assert "longer than" in section
@@ -161,7 +164,9 @@ class TestGeneratePurchaseRecommendations:
 
         standard_lengths = {PieceType.PT_2x4: [2440.0, 3050.0]}
 
-        recommendations = _generate_purchase_recommendations(summary, standard_lengths)
+        recommendations = _generate_purchase_recommendations(
+            plan_cuts(summary, standard_lengths)
+        )
 
         assert "## Purchase Recommendations" in recommendations
         assert "2x4 Lumber (Available: 2440mm, 3050mm)" in recommendations
@@ -203,7 +208,7 @@ class TestGenerateCutList:
 
         standard_lengths = {PieceType.PT_2x4: [2440.0]}
 
-        cut_list = _generate_cut_list(summary, standard_lengths)
+        cut_list = _generate_cut_list(plan_cuts(summary, standard_lengths))
 
         assert "## Optimized Cut List" in cut_list
         assert "2x4 Boards" in cut_list
@@ -595,7 +600,7 @@ class TestLengthPrecision:
         )
         lengths = {PieceType.PT_2x4: [2440.0]}
         assert "| 812.5 |" in _generate_bill_of_materials(summary)
-        assert "Cut 812.5mm → apron" in _generate_cut_list(summary, lengths)
+        assert "Cut 812.5mm → apron" in _generate_cut_list(plan_cuts(summary, lengths))
 
 
 class TestPilotHoleLegend:
@@ -684,3 +689,32 @@ class TestWarningsSection:
 
     def test_no_warnings_section_without_issues(self):
         assert "## Warnings" not in generate_markdown_report(self._summary([]))
+
+
+class TestCutPlanIsComputedOnce:
+    @pytest.mark.parametrize("include_cut_diagram", [True, False])
+    def test_report_plans_the_cuts_once(self, include_cut_diagram):
+        summary = ResourceSummary(
+            pieces=[_piece("a", 1000.0)],
+            total_pieces=1,
+            pieces_by_type={PieceType.PT_2x4: 1},
+            total_length_by_type={PieceType.PT_2x4: 1000.0},
+            total_volume=0.0,
+        )
+        with patch(
+            "nichiyou_daiku.shell.report_generator.plan_cuts", wraps=plan_cuts
+        ) as spy:
+            generate_markdown_report(summary, include_cut_diagram=include_cut_diagram)
+        assert spy.call_count == 1
+
+    def test_report_of_no_pieces_still_has_its_sections(self):
+        summary = ResourceSummary(
+            pieces=[],
+            total_pieces=0,
+            pieces_by_type={},
+            total_length_by_type={},
+            total_volume=0.0,
+        )
+        report = generate_markdown_report(summary)
+        assert "## Purchase Recommendations" in report
+        assert "## Optimized Cut List" in report
