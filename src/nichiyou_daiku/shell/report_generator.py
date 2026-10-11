@@ -4,145 +4,12 @@ This module converts ResourceSummary data into human-readable formats
 following the functional core, imperative shell pattern.
 """
 
-from dataclasses import dataclass
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 from datetime import datetime
 
 from nichiyou_daiku.core.piece import PieceType
+from .cutting import DEFAULT_STANDARD_LENGTHS, _optimize_cuts, _oversize_pieces
 from .resources import ResourceSummary, PieceResource, format_mm
-
-
-@dataclass
-class CutPlan:
-    """Plan for cutting pieces from a standard board.
-
-    Attributes:
-        board_length: Length of the standard board in mm
-        cuts: List of (piece_id, length) tuples to cut from this board
-        waste: Remaining unused length in mm
-    """
-
-    board_length: float
-    cuts: List[Tuple[str, float]]
-    waste: float
-
-
-def _get_default_standard_lengths() -> Dict[PieceType, List[float]]:
-    """Get default standard lengths for each piece type.
-
-    Returns:
-        Dict mapping piece types to available standard lengths in mm
-
-    Examples:
-        >>> lengths = _get_default_standard_lengths()
-        >>> PieceType.PT_2x4 in lengths
-        True
-        >>> len(lengths[PieceType.PT_2x4]) >= 3
-        True
-        >>> all(length > 2000 for length in lengths[PieceType.PT_2x4])
-        True
-    """
-    return {
-        PieceType.PT_2x4: [2440.0, 3050.0, 3660.0],  # 8ft, 10ft, 12ft
-        PieceType.PT_1x4: [1830.0, 2440.0, 3050.0],  # 6ft, 8ft, 10ft
-    }
-
-
-DEFAULT_KERF_MM = 3.0
-"""Material removed by each saw cut."""
-
-
-def _oversize_pieces(
-    pieces: List[PieceResource], available_lengths: List[float]
-) -> List[PieceResource]:
-    """Pieces longer than every available board (cannot be cut from stock)."""
-    longest = max(available_lengths)
-    return [p for p in pieces if p.length > longest]
-
-
-def _optimize_cuts(
-    pieces: List[PieceResource],
-    available_lengths: List[float],
-    kerf: float = DEFAULT_KERF_MM,
-) -> List[CutPlan]:
-    """Optimize piece cutting to minimize waste.
-
-    Uses a simple first-fit decreasing algorithm to minimize waste. Every cut
-    removes ``kerf`` mm, except that a piece ending exactly at the board end
-    needs no final cut. Pieces longer than every board are left out; see
-    ``_oversize_pieces``.
-
-    Args:
-        pieces: List of pieces to cut (all same lumber type)
-        available_lengths: Available standard board lengths in mm
-        kerf: Material removed by each saw cut in mm
-
-    Returns:
-        List of cut plans showing how to cut pieces from standard boards
-
-    Examples:
-        >>> from nichiyou_daiku.core.piece import PieceType
-        >>> pieces = [
-        ...     PieceResource(id="p1", type=PieceType.PT_2x4, length=1000.0,
-        ...                  width=89.0, height=38.0, volume=0),
-        ...     PieceResource(id="p2", type=PieceType.PT_2x4, length=800.0,
-        ...                  width=89.0, height=38.0, volume=0)
-        ... ]
-        >>> plans = _optimize_cuts(pieces, [2440.0], kerf=3.0)
-        >>> len(plans)
-        1
-        >>> plans[0].board_length
-        2440.0
-        >>> len(plans[0].cuts)
-        2
-        >>> plans[0].waste
-        634.0
-    """
-    oversize = {p.id for p in _oversize_pieces(pieces, available_lengths)}
-    # Sort pieces by length (descending) for better optimization
-    remaining_pieces = sorted(
-        (p for p in pieces if p.id not in oversize),
-        key=lambda p: p.length,
-        reverse=True,
-    )
-
-    # Sort available lengths (ascending) to prefer smaller boards when possible
-    sorted_lengths = sorted(available_lengths)
-
-    cut_plans = []
-    while remaining_pieces:
-        # Find the best board length for remaining pieces
-        best_plan = None
-        best_remaining = remaining_pieces
-
-        for board_length in sorted_lengths:
-            cuts = []
-            used_length = 0.0
-            temp_remaining = remaining_pieces.copy()
-
-            # Try to fit as many pieces as possible
-            for piece in remaining_pieces:
-                needed = piece.length + (kerf if cuts else 0.0)
-                if used_length + needed <= board_length:
-                    cuts.append((piece.id, piece.length))
-                    used_length += needed
-                    temp_remaining.remove(piece)
-
-            if cuts:  # If we can fit at least one piece
-                # Separating the offcut takes one more cut
-                waste = max(0.0, board_length - used_length - kerf)
-                if best_plan is None or waste < best_plan.waste:
-                    best_plan = CutPlan(
-                        board_length=board_length, cuts=cuts, waste=waste
-                    )
-                    best_remaining = temp_remaining
-
-        # Every remaining piece fits the longest board, so a plan always exists
-        assert best_plan is not None
-        cut_plans.append(best_plan)
-        remaining_pieces = best_remaining
-
-    return cut_plans
 
 
 def _oversize_warning(
@@ -607,7 +474,7 @@ def generate_markdown_report(
         True
     """
     if standard_lengths is None:
-        standard_lengths = _get_default_standard_lengths()
+        standard_lengths = DEFAULT_STANDARD_LENGTHS
 
     # Generate all sections
     sections = []

@@ -5,9 +5,6 @@ from unittest.mock import patch
 from nichiyou_daiku.core.piece import PieceType
 from nichiyou_daiku.shell.resources import ResourceSummary, PieceResource, AnchorInfo
 from nichiyou_daiku.shell.report_generator import (
-    CutPlan,
-    _get_default_standard_lengths,
-    _optimize_cuts,
     _generate_overview_section,
     _generate_bill_of_materials,
     _generate_shopping_list,
@@ -18,167 +15,13 @@ from nichiyou_daiku.shell.report_generator import (
 )
 
 
-class TestCutPlan:
-    """Test CutPlan dataclass."""
-
-    def test_should_create_cut_plan(self):
-        """Should create a CutPlan with all attributes."""
-        plan = CutPlan(
-            board_length=2440.0,
-            cuts=[("piece1", 1000.0), ("piece2", 800.0)],
-            waste=640.0,
-        )
-
-        assert plan.board_length == 2440.0
-        assert len(plan.cuts) == 2
-        assert plan.cuts[0] == ("piece1", 1000.0)
-        assert plan.waste == 640.0
-
-
-class TestGetDefaultStandardLengths:
-    """Test default standard lengths function."""
-
-    def test_should_return_standard_lengths(self):
-        """Should return dict with standard lengths for each piece type."""
-        lengths = _get_default_standard_lengths()
-
-        assert isinstance(lengths, dict)
-        assert PieceType.PT_2x4 in lengths
-        assert PieceType.PT_1x4 in lengths
-
-        # Check that 2x4 has reasonable lengths
-        assert len(lengths[PieceType.PT_2x4]) >= 3
-        assert all(length > 2000 for length in lengths[PieceType.PT_2x4])
-
-        # Check that 1x4 has different lengths
-        assert len(lengths[PieceType.PT_1x4]) >= 3
-        assert lengths[PieceType.PT_2x4] != lengths[PieceType.PT_1x4]
-
-
-class TestOptimizeCuts:
-    """Test cut optimization function."""
-
-    def test_should_optimize_simple_cuts(self):
-        """Should optimize cuts for simple case."""
-        pieces = [
-            PieceResource(
-                id="p1",
-                type=PieceType.PT_2x4,
-                length=1000.0,
-                width=89.0,
-                height=38.0,
-                volume=0,
-            ),
-            PieceResource(
-                id="p2",
-                type=PieceType.PT_2x4,
-                length=800.0,
-                width=89.0,
-                height=38.0,
-                volume=0,
-            ),
-        ]
-
-        plans = _optimize_cuts(pieces, [2440.0], kerf=0.0)
-
-        assert len(plans) == 1
-        assert plans[0].board_length == 2440.0
-        assert len(plans[0].cuts) == 2
-        assert plans[0].waste == 640.0
-
-        # Check cuts include both pieces
-        cut_ids = [cut[0] for cut in plans[0].cuts]
-        assert "p1" in cut_ids
-        assert "p2" in cut_ids
-
-    def test_should_use_multiple_boards_when_needed(self):
-        """Should use multiple boards when pieces don't fit on one."""
-        pieces = [
-            PieceResource(
-                id="p1",
-                type=PieceType.PT_2x4,
-                length=2000.0,
-                width=89.0,
-                height=38.0,
-                volume=0,
-            ),
-            PieceResource(
-                id="p2",
-                type=PieceType.PT_2x4,
-                length=2000.0,
-                width=89.0,
-                height=38.0,
-                volume=0,
-            ),
-        ]
-
-        plans = _optimize_cuts(pieces, [2440.0], kerf=0.0)
-
-        assert len(plans) == 2
-        assert all(plan.board_length == 2440.0 for plan in plans)
-        assert all(len(plan.cuts) == 1 for plan in plans)
-
-    def test_should_choose_optimal_board_length(self):
-        """Should choose the most efficient board length."""
-        pieces = [
-            PieceResource(
-                id="p1",
-                type=PieceType.PT_2x4,
-                length=1500.0,
-                width=89.0,
-                height=38.0,
-                volume=0,
-            )
-        ]
-
-        # Should prefer the 1830mm board over 2440mm to minimize waste
-        plans = _optimize_cuts(pieces, [1830.0, 2440.0], kerf=0.0)
-
-        assert len(plans) == 1
-        assert plans[0].board_length == 1830.0
-        assert plans[0].waste == 330.0
-
-    def test_should_handle_empty_pieces_list(self):
-        """Should handle empty pieces list gracefully."""
-        plans = _optimize_cuts([], [2440.0])
-        assert plans == []
-
-
 def _piece(id_: str, length: float) -> PieceResource:
     return PieceResource(
         id=id_, type=PieceType.PT_2x4, length=length, width=89.0, height=38.0, volume=0
     )
 
 
-class TestCutPlanKerf:
-    def test_saw_kerf_is_allowed_between_cuts(self):
-        # 3 x 813 = 2439mm fits 2440 only if the saw removes nothing
-        pieces = [_piece("a", 813.0), _piece("b", 813.0), _piece("c", 813.0)]
-        plans = _optimize_cuts(pieces, [2440.0], kerf=3.0)
-        assert len(plans) == 2
-
-    def test_offcut_excludes_kerf(self):
-        plans = _optimize_cuts(
-            [_piece("a", 1000.0), _piece("b", 800.0)], [2440.0], kerf=3.0
-        )
-        assert plans[0].waste == 634.0
-
-    def test_exact_fit_needs_no_final_cut(self):
-        plans = _optimize_cuts(
-            [_piece("a", 1218.5), _piece("b", 1218.5)], [2440.0], kerf=3.0
-        )
-        assert len(plans) == 1
-        assert plans[0].waste == 0.0
-
-
 class TestOversizePieces:
-    def test_piece_longer_than_every_board_is_not_planned(self):
-        pieces = [_piece("long", 4000.0), _piece("short", 500.0)]
-        plans = _optimize_cuts(pieces, [2440.0, 3050.0, 3660.0], kerf=0.0)
-        planned = [piece_id for plan in plans for piece_id, _ in plan.cuts]
-        assert planned == ["short"]
-        assert all(plan.waste >= 0 for plan in plans)
-
     def test_report_warns_about_piece_longer_than_every_board(self):
         summary = ResourceSummary(
             pieces=[_piece("long", 4000.0)],
