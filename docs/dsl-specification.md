@@ -295,7 +295,7 @@ Available presets:
 
 - Half the dowel length must be shorter than each piece's depth along its contact normal, so the hole does not come out on the far face: front/back contact → thickness (38 or 19), left/right → 89, top/down → piece length.
 - Holes: φ diameter x length/2 in each piece.
-- Dowels and screws: the contact area's short side must be at least 2 × the fastener diameter (pieces touching only along an edge have no contact area); otherwise `validate` reports it and no holes are made.
+- Dowels and screws: the contact area's short side must be at least 2 × the fastener diameter (pieces touching only along an edge have no contact area); otherwise `validate` reports it and no holes are made. Holes of two connections that run into each other inside a piece are reported too.
 
 #### Examples
 

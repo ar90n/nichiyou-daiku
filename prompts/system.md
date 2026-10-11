@@ -167,9 +167,9 @@ Available presets: `D(:6x25)`, `D(:6x30)`, `D(:8x25)`, `D(:8x30)`, `D(:8x40)`, `
 
 Dowel rules:
 - The length is the **total** dowel length; half of it goes into each piece. In the numeric form `D(4, 30)` the first number is the radius and the second the total length (same as `D(:8x30)`).
-- Half the length must fit in each piece along its contact normal: front/back contact → thickness (38 or 19), left/right → 89, top/down → piece length. Example: `D(:12x40)` needs 20mm, so it does not fit a 1x4 contacted on its front/back face (19mm).
+- Half the length must be shorter than each piece's depth along its contact normal, or the hole comes out on the far face: front/back contact → thickness (38 or 19), left/right → 89, top/down → piece length. Example: `D(:12x40)` needs 20mm, so it does not fit a 1x4 contacted on its front/back face (19mm).
 - Holes: φ diameter x length/2 in each piece.
-- Dowels and screws: the contact area's short side must be at least 2 × the fastener diameter (pieces touching only along an edge have no contact area); otherwise `validate` reports it and no holes are made.
+- Dowels and screws: the contact area's short side must be at least 2 × the fastener diameter (pieces touching only along an edge have no contact area); otherwise `validate` reports it and no holes are made. `validate` also reports holes of two connections that run into each other inside a piece.
 
 ### Screw Presets
 

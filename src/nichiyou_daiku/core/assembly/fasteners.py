@@ -6,7 +6,9 @@ the contact rectangle's short side and at 1/4 and 3/4 of its long side (one
 in the middle when there is no room for two).
 """
 
-from typing import assert_never
+from collections.abc import Mapping, Sequence
+from itertools import combinations
+from typing import NamedTuple, assert_never
 
 import numpy as np
 
@@ -18,7 +20,7 @@ from ..connection import (
     _get_dimension_for_face,
 )
 from ..geometry import Box, Face, Point3D, SurfacePoint
-from ..piece import get_shape
+from ..piece import Piece, get_shape
 from ..placement import _axis_index, _normal, relative_pose
 from .models import Fastener, FastenerKind, Hole, LayoutIssue
 
@@ -116,3 +118,89 @@ def layout_fasteners(
             )
         )
     return tuple(fasteners), None
+
+
+class _Bore(NamedTuple):
+    """A drilled hole in piece coordinates: a cylinder along one axis."""
+
+    axis: int
+    low: float
+    high: float
+    center: np.ndarray
+    radius: float
+
+
+def _bore(box: Box, position: SurfacePoint, hole: Hole) -> _Bore:
+    entry = Point3D.of(box, position)
+    center = np.array([entry.x, entry.y, entry.z])
+    normal = _normal(position.face)
+    axis = _axis_index(normal)
+    size = (box.shape.width, box.shape.height, box.shape.length)[axis]
+    end = center[axis] - normal[axis] * (size if hole.depth is None else hole.depth)
+    low, high = sorted((float(center[axis]), float(end)))
+    return _Bore(axis, low, high, center, hole.diameter / 2)
+
+
+def _gap(value: float, low: float, high: float) -> float:
+    return max(low - value, 0.0, value - high)
+
+
+def _bores_meet(a: _Bore, b: _Bore) -> bool:
+    if a.axis == b.axis:
+        across = np.delete(a.center - b.center, a.axis)
+        return (
+            min(a.high, b.high) - max(a.low, b.low) > CONTACT_TOLERANCE_MM
+            and float(np.hypot(*across)) < a.radius + b.radius - CONTACT_TOLERANCE_MM
+        )
+    # Perpendicular bores come closest where each is nearest the other's axis.
+    gap_a = _gap(float(b.center[a.axis]), a.low, a.high)
+    gap_b = _gap(float(a.center[b.axis]), b.low, b.high)
+    if (
+        gap_a >= b.radius - CONTACT_TOLERANCE_MM
+        or gap_b >= a.radius - CONTACT_TOLERANCE_MM
+    ):
+        return False
+    third = 3 - a.axis - b.axis
+    reach = np.sqrt(a.radius**2 - gap_b**2) + np.sqrt(b.radius**2 - gap_a**2)
+    return bool(abs(a.center[third] - b.center[third]) < reach - CONTACT_TOLERANCE_MM)
+
+
+def find_hole_collisions(
+    fasteners: Sequence[Fastener], pieces: Mapping[str, Piece]
+) -> list[LayoutIssue]:
+    """Holes of two connections that run into each other inside a piece.
+
+    Reported once on the later of the two connections, in the order of
+    ``fasteners``; the fasteners themselves are kept. Holes of one connection
+    never meet, since the layout spaces them at least two diameters apart.
+    """
+    bores: dict[str, list[tuple[Fastener, _Bore]]] = {}
+    for fastener in fasteners:
+        for piece_id, position, hole in (
+            (fastener.base_id, fastener.base_position, fastener.base_hole),
+            (fastener.target_id, fastener.target_position, fastener.target_hole),
+        ):
+            box = Box(shape=get_shape(pieces[piece_id]))
+            bores.setdefault(piece_id, []).append(
+                (fastener, _bore(box, position, hole))
+            )
+
+    issues: dict[tuple[str, str, str, str], LayoutIssue] = {}
+    for piece_id, drilled in bores.items():
+        for (earlier, a), (later, b) in combinations(drilled, 2):
+            if not _bores_meet(a, b):
+                continue
+            issues.setdefault(
+                (later.base_id, later.target_id, earlier.base_id, earlier.target_id),
+                LayoutIssue(
+                    base_id=later.base_id,
+                    target_id=later.target_id,
+                    kind=later.kind,
+                    message=(
+                        f"{later.kind} hole in '{piece_id}' runs into a "
+                        f"{earlier.kind} hole of connection "
+                        f"{earlier.base_id} -> {earlier.target_id}"
+                    ),
+                ),
+            )
+    return list(issues.values())

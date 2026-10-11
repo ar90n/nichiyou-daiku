@@ -42,7 +42,7 @@ def validate(ctx: click.Context, file: str) -> None:
 
     Checks the syntax, builds the assembly and solves the placement, then
     reports contradicting connections, unconnected pieces, overlapping
-    pieces and fasteners that do not fit their joint.
+    pieces, fasteners that do not fit their joint and holes that collide.
 
     FILE: Path to .nd file or '-' for stdin
     """

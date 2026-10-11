@@ -366,7 +366,7 @@ class Assembly(BaseModel, frozen=True):
     model: Model                              # ソースモデル
     boxes: dict[str, Box]                     # ピースID -> 3Dバウンディングボックス
     fasteners: tuple[Fastener, ...]           # 各接触面に並べたダボ・ビス
-    fastener_issues: tuple[LayoutIssue, ...]  # 留め具が入らない接続
+    fastener_issues: tuple[LayoutIssue, ...]  # 留め具が入らない接続、穴がぶつかる接続
     pilot_holes: dict[str, list[tuple[SurfacePoint, Hole]]]  # ピースID -> 穴（SurfacePointは穴をあける面を示す）
     placement: Placement                      # 各部材の世界座標での配置
     label: str | None                         # オプションのラベル
@@ -389,7 +389,7 @@ class Assembly(BaseModel, frozen=True):
 
 **下穴:** ダボ接続では各ピースにダボ径・深さ 長さ/2 の穴、ビス接続ではターゲットに貫通穴、ベースに深さ (長さ - ターゲットの厚み) の穴が追加されます。バニラ接続では穴はありません。
 
-**留め具:** ダボとビスは、2 つの接触面が重なる長方形の中に並べる。短辺方向は中央、長辺方向は 1/4 と 3/4 の位置（長辺が直径の 4 倍未満なら中央に 1 本）。重なりの短辺が直径の 2 倍未満、または部材が辺でしか接していない場合は留め具を作らず `LayoutIssue` になる。`validate` はこれを報告し、ほかのコマンドは警告して続行する。配置で矛盾した接続にも留め具は作らない（穴が合わないため）。
+**留め具:** ダボとビスは、2 つの接触面が重なる長方形の中に並べる。短辺方向は中央、長辺方向は 1/4 と 3/4 の位置（長辺が直径の 4 倍未満なら中央に 1 本）。重なりの短辺が直径の 2 倍未満、または部材が辺でしか接していない場合は留め具を作らず `LayoutIssue` になる。`validate` はこれを報告し、ほかのコマンドは警告して続行する。配置で矛盾した接続にも留め具は作らない（穴が合わないため）。2 つの接続の穴が部材の中でぶつかる場合は、後の接続に `LayoutIssue` を出し、両方の留め具は残す。
 
 ```python
 class Fastener(BaseModel, frozen=True):

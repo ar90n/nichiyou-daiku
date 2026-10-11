@@ -366,7 +366,7 @@ class Assembly(BaseModel, frozen=True):
     model: Model                              # Source model
     boxes: dict[str, Box]                     # Piece ID -> 3D bounding box
     fasteners: tuple[Fastener, ...]           # Dowels and screws, laid out in each contact area
-    fastener_issues: tuple[LayoutIssue, ...]  # Connections whose fasteners do not fit
+    fastener_issues: tuple[LayoutIssue, ...]  # Connections whose fasteners do not fit or whose holes collide
     pilot_holes: dict[str, list[tuple[SurfacePoint, Hole]]]  # Piece ID -> holes (SurfacePoint names the drilled face)
     placement: Placement                      # World placement of every piece
     label: str | None                         # Optional label
@@ -389,7 +389,7 @@ class Assembly(BaseModel, frozen=True):
 
 **Pilot holes:** a dowel connection adds a hole of the dowel diameter, length/2 deep, to each piece; a screw connection adds a through-hole to the target and a hole (length - target thickness) deep to the base; vanilla connections add none.
 
-**Fasteners:** dowels and screws are laid out inside the rectangle where the two contact faces overlap: across the middle of its short side, and at 1/4 and 3/4 of its long side (one in the middle when the long side is shorter than 4 × diameter). A contact area narrower than 2 × diameter, or pieces that only touch along an edge, give a `LayoutIssue` instead of fasteners; `validate` reports it and other commands warn and carry on. Connections that contradict the placement get no fasteners either: their holes would never meet.
+**Fasteners:** dowels and screws are laid out inside the rectangle where the two contact faces overlap: across the middle of its short side, and at 1/4 and 3/4 of its long side (one in the middle when the long side is shorter than 4 × diameter). A contact area narrower than 2 × diameter, or pieces that only touch along an edge, give a `LayoutIssue` instead of fasteners; `validate` reports it and other commands warn and carry on. Connections that contradict the placement get no fasteners either: their holes would never meet. When holes of two connections run into each other inside a piece, the later connection gets a `LayoutIssue` and both keep their fasteners.
 
 ```python
 class Fastener(BaseModel, frozen=True):

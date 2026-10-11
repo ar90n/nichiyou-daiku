@@ -233,7 +233,7 @@ class Assembly(BaseModel, frozen=True):
     model: Model
     boxes: dict[str, Box]      # Piece 3D positions
     fasteners: tuple[Fastener, ...]           # Dowels and screws, laid out in each contact area
-    fastener_issues: tuple[LayoutIssue, ...]  # Connections whose fasteners do not fit
+    fastener_issues: tuple[LayoutIssue, ...]  # Connections whose fasteners do not fit or whose holes collide
     pilot_holes: dict[str, list[tuple[SurfacePoint, Hole]]]  # piece ID -> holes; SurfacePoint names the drilled face
     placement: Placement      # World placement of every piece
     label: str | None

@@ -10,7 +10,7 @@ from ..geometry import Box, SurfacePoint
 from ..model import Model
 from ..piece import get_shape
 from ..placement import Placement, solve_placement
-from .fasteners import layout_fasteners
+from .fasteners import find_hole_collisions, layout_fasteners
 from .models import Fastener, Hole, LayoutIssue
 
 
@@ -22,7 +22,8 @@ class Assembly(BaseModel, frozen=True):
         boxes: Dictionary mapping piece IDs to their 3D boxes
         fasteners: Dowels and screws laid out in each connection's contact area
             (none for connections that contradict the placement)
-        fastener_issues: Connections whose fasteners could not be laid out
+        fastener_issues: Connections whose fasteners could not be laid out, or
+            whose holes run into another connection's holes inside a piece
         pilot_holes: Dictionary mapping piece IDs to lists of (SurfacePoint, Hole)
             tuples; the SurfacePoint names the face the hole is drilled into
         placement: World placement of every piece, solved from the connections
@@ -75,6 +76,7 @@ class Assembly(BaseModel, frozen=True):
             fasteners.extend(laid_out)
             if issue is not None:
                 issues.append(issue)
+        issues += find_hole_collisions(fasteners, model.pieces)
 
         pilot_holes: dict[str, list[tuple[SurfacePoint, Hole]]] = {}
         for fastener in fasteners:

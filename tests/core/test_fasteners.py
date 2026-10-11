@@ -6,7 +6,8 @@ from hypothesis import given, settings
 from hypothesis import strategies as st
 
 from nichiyou_daiku.core.anchor import Anchor, BoundAnchor
-from nichiyou_daiku.core.assembly.fasteners import layout_fasteners
+from nichiyou_daiku.core.assembly import Assembly
+from nichiyou_daiku.core.assembly.fasteners import _Bore, _bores_meet, layout_fasteners
 from nichiyou_daiku.core.assembly.models import Hole
 from nichiyou_daiku.core.connection import (
     Connection,
@@ -250,3 +251,82 @@ def test_fasteners_sit_inside_the_shared_contact_area(connection):
         _follows_layout_rule(points, low, sizes, long_axis, short_axis, diameter, slack)
         for long_axis, short_axis in assignments
     )
+
+
+POST_AND_FRONT_RAIL = (
+    "(post:2x4 =600)\n(front:2x4 =300)\n(other:2x4 =300)\n"
+    "post -[FL<300 DF<0 D(4, {front})]- front\n"
+)
+
+
+def _fastener_issues(source: str) -> list[tuple[str, str, str]]:
+    assembly = Assembly.of(parse_dsl(source))
+    return [(i.base_id, i.target_id, i.message) for i in assembly.fastener_issues]
+
+
+class TestHoleCollisions:
+    def test_holes_meeting_from_opposite_faces_are_reported_on_the_later_connection(
+        self,
+    ):
+        # 20mm from the front and 20mm from the back of a 38mm post overlap
+        source = POST_AND_FRONT_RAIL.format(front=40) + (
+            "post -[BL<300 DB<0 D(4, 40)]- other\n"
+        )
+        assert _fastener_issues(source) == [
+            (
+                "post",
+                "other",
+                "dowel hole in 'post' runs into a dowel hole of connection "
+                "post -> front",
+            )
+        ]
+
+    def test_holes_that_stop_short_of_each_other_are_fine(self):
+        source = POST_AND_FRONT_RAIL.format(front=30) + (
+            "post -[BL<300 DB<0 D(4, 30)]- other\n"
+        )
+        assert _fastener_issues(source) == []
+
+    def test_holes_crossing_from_adjacent_faces_are_reported(self):
+        source = POST_AND_FRONT_RAIL.format(front=60) + (
+            "post -[LF<211 DF<0 D(4, 60)]- other\n"
+        )
+        assert [issue[:2] for issue in _fastener_issues(source)] == [("post", "other")]
+
+    def test_holes_that_only_touch_are_fine(self):
+        # The side hole stops at x=15; the front hole's wall is at x=19-4=15
+        source = POST_AND_FRONT_RAIL.format(front=60) + (
+            "post -[LF<211 DF<0 D(4, 30)]- other\n"
+        )
+        assert _fastener_issues(source) == []
+
+    def test_colliding_fasteners_are_still_drilled(self):
+        source = POST_AND_FRONT_RAIL.format(front=40) + (
+            "post -[BL<300 DB<0 D(4, 40)]- other\n"
+        )
+        assert len(Assembly.of(parse_dsl(source)).fasteners) == 4
+
+
+def _bore_along_z(x: float, y: float, low: float, high: float) -> _Bore:
+    return _Bore(axis=2, low=low, high=high, center=np.array([x, y, low]), radius=4.0)
+
+
+def _bore_along_x(y: float, z: float, low: float = -50.0) -> _Bore:
+    return _Bore(axis=0, low=low, high=50, center=np.array([low, y, z]), radius=4.0)
+
+
+@pytest.mark.parametrize(
+    ("bore", "meets"),
+    [
+        # Passes 3mm beyond the end of the z bore: the walls still overlap
+        (_bore_along_x(y=0, z=13), True),
+        (_bore_along_x(y=0, z=14.5), False),
+        # 3mm beyond the end of both bores: reach is 2 * sqrt(4^2 - 3^2) = 5.29
+        (_bore_along_x(y=5.0, z=13, low=3), True),
+        (_bore_along_x(y=5.5, z=13, low=3), False),
+    ],
+)
+def test_perpendicular_bores_meet_only_where_their_walls_overlap(bore, meets):
+    z_bore = _bore_along_z(x=0, y=0, low=0, high=10)
+    assert _bores_meet(z_bore, bore) is meets
+    assert _bores_meet(bore, z_bore) is meets
