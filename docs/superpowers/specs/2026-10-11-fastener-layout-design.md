@@ -1,7 +1,7 @@
 # 留め具配置の作り直し（Fastener Layout）設計
 
 - 日付: 2026-10-11
-- ステータス: 合意済み（実装計画待ち）
+- ステータス: 実装済み（ブランチ refactor/joint-layout）
 - 対象: リファクタリング・サブプロジェクト M2-3（接合の作り直し）
 - 前提: M2-1「部材配置のコア移行」（`docs/superpowers/specs/2026-10-11-core-placement-design.md`）の上に作る
 
