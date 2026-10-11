@@ -368,6 +368,7 @@ class Assembly(BaseModel, frozen=True):
     joints: dict[str, Joint]                  # ジョイントID -> Joint
     joint_conns: list[tuple[str, str]]        # 接続されたジョイントIDペア
     pilot_holes: dict[str, list[tuple[SurfacePoint, Hole]]]  # ピースID -> 穴（SurfacePointは穴をあける面を示す）
+    placement: Placement                      # 各部材の世界座標での配置
     label: str | None                         # オプションのラベル
 ```
 
@@ -389,6 +390,55 @@ class Assembly(BaseModel, frozen=True):
 ```
 
 **下穴:** ダボ接続では各ピースにダボ径・深さ 長さ/2 の穴、ビス接続ではターゲットに貫通穴、ベースに深さ (長さ - ターゲットの厚み) の穴が追加されます。バニラ接続では穴はありません。
+
+### Placement（部材配置）
+
+全接続を同時に満たすように解いた、各部材の世界座標での位置（`Assembly.placement`）。回転は90°刻みの厳密な値で、位置は世界座標の軸ごとに解くため、矛盾のない拘束はすべて誤差なく満たされる。先に宣言した接続と矛盾する拘束は、平均化せず `conflicts` に報告される。
+
+```python
+from nichiyou_daiku.core.placement import (
+    Conflict, Overlap, Placement, Pose,
+    find_overlaps, overall_bounds, solve_placement,
+)
+
+class Pose(BaseModel, frozen=True):
+    rotation: tuple[tuple[int, int, int], ...]  # 符号付き置換行列（行列式 +1）
+    translation: tuple[float, float, float]     # mm。部材座標の点 p -> rotation @ p + translation
+    # apply(point) -> Point3D、bounds(piece) -> 世界座標の外形（low, high）
+
+class Conflict(BaseModel, frozen=True):
+    base_id: str
+    target_id: str
+    kind: Literal["rotation", "contact", "flush", "edge"]  # 回転 / 密着 / 面一 / 辺上の一致
+    axis: Literal["x", "y", "z"] | None         # rotation のときは None
+    mismatch_mm: float | None                   # rotation のときは None
+    loop: tuple[str, ...]                       # その拘束が閉じるループ（base から target までの部材）
+
+class Placement(BaseModel, frozen=True):
+    poses: dict[str, Pose]
+    groups: tuple[tuple[str, ...], ...]         # つながっている部材群。2つ目以降は +X 方向に並べる
+    conflicts: tuple[Conflict, ...]
+    free_axes: dict[str, frozenset[str]]        # 現在の接続の種類では常に空
+```
+
+| 関数 | 説明 |
+|--------|-------------|
+| `solve_placement(model)` | 配置を解く（`Assembly.of(model).placement` と同じ値） |
+| `find_overlaps(model, placement)` | 外形の箱が重なる部材の組（穴・面取りは無視） |
+| `overall_bounds(model, placement)` | 全部材を含む最小の世界座標の箱 |
+
+**例:**
+
+```python
+from nichiyou_daiku.core.assembly import Assembly
+from nichiyou_daiku.core.placement import find_overlaps
+from nichiyou_daiku.dsl import parse_dsl
+
+model = parse_dsl("(a:2x4 =500)\n(b:2x4 =300)\na -[FL<100 DF<0]- b\n")
+assembly = Assembly.of(model)
+print(assembly.placement.poses["b"].bounds(model.pieces["b"]))
+print(assembly.placement.conflicts, find_overlaps(model, assembly.placement))
+```
 
 ## ジオメトリモジュール
 

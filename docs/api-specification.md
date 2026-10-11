@@ -368,6 +368,7 @@ class Assembly(BaseModel, frozen=True):
     joints: dict[str, Joint]                  # Joint ID -> Joint
     joint_conns: list[tuple[str, str]]        # Connected joint ID pairs
     pilot_holes: dict[str, list[tuple[SurfacePoint, Hole]]]  # Piece ID -> holes (SurfacePoint names the drilled face)
+    placement: Placement                      # World placement of every piece
     label: str | None                         # Optional label
 ```
 
@@ -389,6 +390,55 @@ class Assembly(BaseModel, frozen=True):
 ```
 
 **Pilot holes:** a dowel connection adds a hole of the dowel diameter, length/2 deep, to each piece; a screw connection adds a through-hole to the target and a hole (length - target thickness) deep to the base; vanilla connections add none.
+
+### Placement
+
+World position of every piece, solved from all connections at once (`Assembly.placement`). Rotations are exact multiples of 90°, and positions are solved per world axis, so every consistent constraint holds exactly. A constraint that contradicts the ones declared before it is reported in `conflicts` instead of being averaged in.
+
+```python
+from nichiyou_daiku.core.placement import (
+    Conflict, Overlap, Placement, Pose,
+    find_overlaps, overall_bounds, solve_placement,
+)
+
+class Pose(BaseModel, frozen=True):
+    rotation: tuple[tuple[int, int, int], ...]  # signed permutation matrix, det +1
+    translation: tuple[float, float, float]     # mm; local point p -> rotation @ p + translation
+    # apply(point) -> Point3D, bounds(piece) -> (low, high) world box
+
+class Conflict(BaseModel, frozen=True):
+    base_id: str
+    target_id: str
+    kind: Literal["rotation", "contact", "flush", "edge"]
+    axis: Literal["x", "y", "z"] | None         # None for rotation
+    mismatch_mm: float | None                   # None for rotation
+    loop: tuple[str, ...]                       # pieces from base to target the constraint would close
+
+class Placement(BaseModel, frozen=True):
+    poses: dict[str, Pose]
+    groups: tuple[tuple[str, ...], ...]         # connected pieces; later groups are laid out along +X
+    conflicts: tuple[Conflict, ...]
+    free_axes: dict[str, frozenset[str]]        # empty with the current connection types
+```
+
+| Function | Description |
+|--------|-------------|
+| `solve_placement(model)` | Solve the placement (the same value as `Assembly.of(model).placement`) |
+| `find_overlaps(model, placement)` | Pairs of pieces whose boxes share volume (holes and fillets ignored) |
+| `overall_bounds(model, placement)` | Smallest world box containing every piece |
+
+**Example:**
+
+```python
+from nichiyou_daiku.core.assembly import Assembly
+from nichiyou_daiku.core.placement import find_overlaps
+from nichiyou_daiku.dsl import parse_dsl
+
+model = parse_dsl("(a:2x4 =500)\n(b:2x4 =300)\na -[FL<100 DF<0]- b\n")
+assembly = Assembly.of(model)
+print(assembly.placement.poses["b"].bounds(model.pieces["b"]))
+print(assembly.placement.conflicts, find_overlaps(model, assembly.placement))
+```
 
 ## Geometry Module
 

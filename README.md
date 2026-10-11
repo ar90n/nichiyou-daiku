@@ -424,10 +424,11 @@ See [docs/dsl-specification.md](docs/dsl-specification.md) for the full specific
 #### DSL CLI Tools
 
 ```bash
-# Validate the model
+# Validate the model: syntax, contradicting connections, unconnected or
+# overlapping pieces, and dowels outside their piece (no build123d needed)
 nichiyou-daiku validate furniture.nd
 
-# Generate markdown report
+# Generate markdown report (the overview includes the overall size X × Y × Z)
 nichiyou-daiku report furniture.nd -o report.md
 
 # View 3D model (requires build123d)
@@ -440,6 +441,8 @@ nichiyou-daiku export furniture.nd -o model.step --fillet-radius 10
 # Technical drawing PDF (requires build123d)
 nichiyou-daiku drawing furniture.nd -o furniture.pdf
 ```
+
+Commands other than `validate` print a warning and carry on when connections contradict each other or some pieces are not connected.
 
 See the `examples/nd_files/` directory for complete DSL examples.
 
