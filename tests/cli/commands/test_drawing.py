@@ -109,3 +109,14 @@ def test_drawing_failure_is_reported(runner, tmp_path, beam_file, monkeypatch):
     )
     assert result.exit_code == 1
     assert "Error creating drawing: no projection" in result.output
+
+
+def test_page_size_choices_match_the_drawing_module():
+    pytest.importorskip("build123d")
+    from nichiyou_daiku.cli.commands.drawing import drawing
+    from nichiyou_daiku.shell.drawing import PAGE_SIZES
+
+    # The CLI cannot import shell.drawing when it loads, so it lists the
+    # page sizes itself
+    option = next(param for param in drawing.params if param.name == "page_size")
+    assert tuple(option.type.choices) == PAGE_SIZES  # type: ignore[attr-defined]

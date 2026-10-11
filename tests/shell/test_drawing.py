@@ -12,11 +12,7 @@ from build123d import Compound  # noqa: E402
 from nichiyou_daiku.core.assembly import Assembly  # noqa: E402
 from nichiyou_daiku.dsl import parse_dsl  # noqa: E402
 from nichiyou_daiku.shell.build123d_export import assembly_to_build123d  # noqa: E402
-from nichiyou_daiku.shell.drawing import (  # noqa: E402
-    VIEW_FILL,
-    _layout_views,
-    technical_drawing,
-)
+from nichiyou_daiku.shell.drawing import _layout_views, technical_drawing  # noqa: E402
 
 CORNER = "(a:2x4 =400)\n(b:2x4 =400)\na -[TF<0 BD<0]- b\n"
 A3_WIDTH, A3_HEIGHT = 420.0, 297.0
@@ -61,7 +57,20 @@ def test_largest_view_fills_the_set_share_of_a_grid_cell(part):
     views = _layout_views(part, A3_WIDTH, A3_HEIGHT)
     cell = min((A3_WIDTH - 40) / 2 - 10, (A3_HEIGHT - 80) / 2 - 10)
     largest = max(max(box.size.X, box.size.Y) for box in map(_bounds, views))
-    assert largest == pytest.approx(cell * VIEW_FILL)
+    assert largest == pytest.approx(cell * 0.7)
+
+
+def test_each_view_sits_in_its_own_grid_cell(part):
+    # Top and isometric in the upper row, front and right side below;
+    # top and front on the left. Views come in the order they are written.
+    cells = {"top": (-1, 1), "front": (-1, -1), "isometric": (1, 1), "side": (1, -1)}
+    quarter_width = (A3_WIDTH - 40) / 4
+    quarter_height = (A3_HEIGHT - 80) / 4
+    views = _layout_views(part, A3_WIDTH, A3_HEIGHT)
+    for view, (column, row) in zip(views, cells.values(), strict=True):
+        center = _bounds(view).center()
+        assert center.X == pytest.approx(column * quarter_width)
+        assert center.Y == pytest.approx(row * quarter_height + 10)
 
 
 def test_drawing_has_visible_and_hidden_lines(part, tmp_path):

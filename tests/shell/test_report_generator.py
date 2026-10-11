@@ -1,8 +1,8 @@
 """Tests for report generation module."""
 
+import re
+from collections import Counter
 from unittest.mock import patch
-
-import pytest
 
 from nichiyou_daiku.core.piece import PieceType
 from nichiyou_daiku.shell.cutting import plan_cuts
@@ -691,21 +691,29 @@ class TestWarningsSection:
         assert "## Warnings" not in generate_markdown_report(self._summary([]))
 
 
-class TestCutPlanIsComputedOnce:
-    @pytest.mark.parametrize("include_cut_diagram", [True, False])
-    def test_report_plans_the_cuts_once(self, include_cut_diagram):
+class TestCutPlanSections:
+    def test_purchase_and_cut_list_describe_the_same_boards(self):
+        # Both pieces would share one 3660mm board, which is not on offer here
+        lengths = [1820.0, 1820.0]
         summary = ResourceSummary(
-            pieces=[_piece("a", 1000.0)],
-            total_pieces=1,
-            pieces_by_type={PieceType.PT_2x4: 1},
-            total_length_by_type={PieceType.PT_2x4: 1000.0},
+            pieces=[_piece(f"p{i}", length) for i, length in enumerate(lengths)],
+            total_pieces=len(lengths),
+            pieces_by_type={PieceType.PT_2x4: len(lengths)},
+            total_length_by_type={PieceType.PT_2x4: sum(lengths)},
             total_volume=0.0,
         )
-        with patch(
-            "nichiyou_daiku.shell.report_generator.plan_cuts", wraps=plan_cuts
-        ) as spy:
-            generate_markdown_report(summary, include_cut_diagram=include_cut_diagram)
-        assert spy.call_count == 1
+        report = generate_markdown_report(
+            summary, standard_lengths={PieceType.PT_2x4: [2440.0, 3050.0]}
+        )
+        purchased: Counter[float] = Counter()
+        for count, length in re.findall(r"- (\d+) × (\d+)mm boards", report):
+            purchased[float(length)] += int(count)
+        cut = Counter(
+            float(length)
+            for length in re.findall(r"\*\*Board \d+\*\* \((\d+)mm\)", report)
+        )
+        assert sum(cut.values()) >= 2
+        assert purchased == cut
 
     def test_report_of_no_pieces_still_has_its_sections(self):
         summary = ResourceSummary(

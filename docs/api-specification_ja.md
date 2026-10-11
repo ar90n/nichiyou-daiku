@@ -720,7 +720,7 @@ def generate_markdown_report(
     """カット最適化付きMarkdownレポートを生成"""
 ```
 
-木取り計画では1カットごとに3mmののこ刃厚（切りしろ）を見込み、どの定尺材よりも長いピースがあれば警告します。設計の問題（`ResourceSummary.issues`：矛盾する接続、つながっていない部材、入らない留め具、ぶつかる穴）は、概要のすぐ後の Warnings 節に書きます。
+木取り計画では1カットごとに3mmののこ刃厚（切りしろ）を見込み、どの定尺材よりも長いピースがあれば警告します。設計の問題（`ResourceSummary.issues`：矛盾する接続、つながっていない部材、入らない留め具、ぶつかる穴）は、概要のすぐ後の Warnings 節に書きます。木取りの計画そのものは `nichiyou_daiku.shell.cutting.plan_cuts` が作り、材の種類ごとに `LumberPlan` を返します。`CutPlan`、`DEFAULT_STANDARD_LENGTHS`、`DEFAULT_KERF_MM` も同じモジュールにあります。
 
 **例:**
 
