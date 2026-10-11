@@ -177,13 +177,21 @@ def _generate_overview_section(summary: ResourceSummary, project_name: str) -> s
 
     lumber_types = ", ".join(sorted(pt.value for pt in summary.pieces_by_type.keys()))
 
+    size_line = ""
+    if summary.overall_size is not None:
+        x, y, z = summary.overall_size
+        size_line = (
+            f"- **Overall Size (X × Y × Z)**: {_mm(x)} × {_mm(y)} × {_mm(z)} mm "
+            f"(Z is the length direction of '{summary.size_reference}')\n"
+        )
+
     return f"""# {project_name} Report
 
 *Generated on {datetime.now().strftime("%Y-%m-%d %H:%M")}*
 
 ## Project Overview
 
-- **Total Pieces**: {summary.total_pieces}
+{size_line}- **Total Pieces**: {summary.total_pieces}
 - **Lumber Types**: {len(summary.pieces_by_type)} ({lumber_types})
 - **Total Volume**: {summary.total_volume:,.0f} mm³
 - **Estimated Weight**: ~{estimated_weight_kg:.1f} kg (assuming pine density)

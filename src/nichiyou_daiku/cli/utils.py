@@ -311,6 +311,12 @@ def describe_placement_issues(placement: Placement) -> list[str]:
     return issues
 
 
+def warn_placement_issues(assembly: Assembly, echo: CliEcho) -> None:
+    """Warn on stderr about placement issues; the command carries on."""
+    for issue in describe_placement_issues(assembly.placement):
+        echo.info(click.style(f"Warning: {issue}", fg="yellow"))
+
+
 def create_assembly_from_model(model: Model, echo: CliEcho) -> Assembly:
     """Create Assembly from Model with error handling.
 
@@ -328,10 +334,12 @@ def create_assembly_from_model(model: Model, echo: CliEcho) -> Assembly:
 
     try:
         echo.verbose("Creating assembly...")
-        return Assembly.of(model)
+        assembly = Assembly.of(model)
     except Exception as e:
         echo.exception(f"Error creating assembly: {e}")
         sys.exit(1)
+    warn_placement_issues(assembly, echo)
+    return assembly
 
 
 def ensure_build123d_available(echo: CliEcho) -> None:

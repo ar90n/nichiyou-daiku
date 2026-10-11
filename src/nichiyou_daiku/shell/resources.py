@@ -11,6 +11,7 @@ from pydantic import BaseModel
 from nichiyou_daiku.core.assembly import Assembly, Hole
 from nichiyou_daiku.core.geometry import Point3D, Box, SurfacePoint
 from nichiyou_daiku.core.piece import PieceType, get_shape
+from nichiyou_daiku.core.placement import overall_bounds
 
 
 class AnchorInfo(BaseModel):
@@ -132,6 +133,8 @@ class ResourceSummary(BaseModel):
         pieces_by_type: Count of pieces grouped by lumber type
         total_length_by_type: Total length needed for each lumber type
         total_volume: Total volume of all lumber in cubic millimeters
+        overall_size: World X × Y × Z extent in mm when all pieces are connected
+        size_reference: Piece whose length runs along Z (the placement's first piece)
 
     Examples:
         >>> from nichiyou_daiku.core.piece import PieceType
@@ -163,6 +166,8 @@ class ResourceSummary(BaseModel):
     pieces_by_type: Dict[PieceType, int]
     total_length_by_type: Dict[PieceType, float]
     total_volume: float
+    overall_size: tuple[float, float, float] | None = None
+    size_reference: str | None = None
 
     def pretty_print(self) -> str:
         """Generate a human-readable summary of resources.
@@ -367,10 +372,23 @@ def extract_resources(assembly: Assembly) -> ResourceSummary:
         )
         total_volume += volume
 
+    overall_size = None
+    size_reference = None
+    if len(assembly.placement.groups) == 1:
+        low, high = overall_bounds(assembly.model, assembly.placement)
+        overall_size = (
+            round(high.x - low.x, 6),
+            round(high.y - low.y, 6),
+            round(high.z - low.z, 6),
+        )
+        size_reference = assembly.placement.groups[0][0]
+
     return ResourceSummary(
         pieces=pieces_list,
         total_pieces=len(pieces_list),
         pieces_by_type=pieces_by_type,
         total_length_by_type=total_length_by_type,
         total_volume=total_volume,
+        overall_size=overall_size,
+        size_reference=size_reference,
     )

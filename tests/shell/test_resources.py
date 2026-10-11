@@ -430,3 +430,27 @@ class TestAnchorInfo:
         assert data["edge_shared_face"] == "front"
         assert data["offset_type"] == "FromMin"
         assert data["offset_value"] == 50.0
+
+
+class TestOverallSize:
+    def test_single_group_reports_its_size(self):
+        from nichiyou_daiku.core.assembly import Assembly
+        from nichiyou_daiku.dsl import parse_dsl
+        from nichiyou_daiku.shell.resources import extract_resources
+
+        summary = extract_resources(
+            Assembly.of(parse_dsl("(a:2x4 =500)\n(b:2x4 =300)\na -[FL<100 DF<0]- b\n"))
+        )
+        assert summary.overall_size == (89.0, 338.0, 500.0)
+        assert summary.size_reference == "a"
+
+    def test_unconnected_groups_report_no_size(self):
+        from nichiyou_daiku.core.assembly import Assembly
+        from nichiyou_daiku.dsl import parse_dsl
+        from nichiyou_daiku.shell.resources import extract_resources
+
+        summary = extract_resources(
+            Assembly.of(parse_dsl("(a:2x4 =500)\n(b:2x4 =300)\n"))
+        )
+        assert summary.overall_size is None
+        assert summary.size_reference is None

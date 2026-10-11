@@ -783,3 +783,28 @@ class TestPilotHoleLegend:
         section = _generate_pilot_holes_section(summary)
         assert "from the down end" in section
         assert "from the left side" in section
+
+
+class TestOverviewSize:
+    def test_overview_shows_overall_size_when_known(self):
+        summary = ResourceSummary(
+            pieces=[_piece("a", 500.0)],
+            total_pieces=1,
+            pieces_by_type={PieceType.PT_2x4: 1},
+            total_length_by_type={PieceType.PT_2x4: 500.0},
+            total_volume=0.0,
+            overall_size=(89.0, 38.0, 500.5),
+            size_reference="a",
+        )
+        overview = _generate_overview_section(summary, "P")
+        assert "- **Overall Size (X × Y × Z)**: 89 × 38 × 500.5 mm" in overview
+
+    def test_overview_omits_size_when_unknown(self):
+        summary = ResourceSummary(
+            pieces=[_piece("a", 500.0)],
+            total_pieces=1,
+            pieces_by_type={PieceType.PT_2x4: 1},
+            total_length_by_type={PieceType.PT_2x4: 500.0},
+            total_volume=0.0,
+        )
+        assert "Overall Size" not in _generate_overview_section(summary, "P")
