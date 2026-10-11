@@ -4,7 +4,7 @@ This module defines the types used to specify how two pieces of lumber
 connect to each other, including positions and orientations.
 """
 
-from typing import TypeAlias
+from typing import TypeAlias, assert_never
 
 from pydantic import BaseModel, model_validator
 
@@ -95,6 +95,10 @@ class Connection(BaseModel, frozen=True):
                 _validate_dowel(self.base, self.target, radius * 2, depth)
             case ScrewConnection(diameter=diameter, length=length):
                 _validate_screw(self.base, self.target, diameter, length)
+            case VanillaConnection():
+                pass
+            case _:
+                assert_never(self.type)
         return self
 
     @classmethod

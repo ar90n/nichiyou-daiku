@@ -85,17 +85,11 @@ class Conflict(BaseModel, frozen=True):
 
 
 class Placement(BaseModel, frozen=True):
-    """Solved placement of every piece in a model.
-
-    ``free_axes`` lists, per piece, the world axes along which nothing ties
-    it to its group's first piece. Current connections constrain all three
-    axes, so it is empty.
-    """
+    """Solved placement of every piece in a model."""
 
     poses: dict[str, Pose]
     groups: tuple[tuple[str, ...], ...]
     conflicts: tuple[Conflict, ...] = ()
-    free_axes: dict[str, frozenset[Axis]] = {}
 
 
 class Overlap(BaseModel, frozen=True):
@@ -303,19 +297,11 @@ def solve_placement(model: Model) -> Placement:
 
     # Step 3: positions relative to each group's first declared piece
     poses: dict[str, Pose] = {}
-    free_axes: dict[str, frozenset[Axis]] = {}
     for group in groups:
         root = group[0]
         root_position = np.array([offsets[axis].find(root)[1] for axis in AXES])
         for member in group:
             position = np.array([offsets[axis].find(member)[1] for axis in AXES])
-            free: frozenset[Axis] = frozenset(
-                axis
-                for axis in AXES
-                if offsets[axis].find(member)[0] != offsets[axis].find(root)[0]
-            )
-            if free:
-                free_axes[member] = free
             matrix = rotation[member]
             poses[member] = Pose(
                 rotation=(
@@ -351,7 +337,6 @@ def solve_placement(model: Model) -> Placement:
         poses=poses,
         groups=tuple(tuple(group) for group in groups),
         conflicts=tuple(conflicts),
-        free_axes=free_axes,
     )
 
 

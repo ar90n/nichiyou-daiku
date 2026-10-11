@@ -48,9 +48,12 @@ def _get_default_standard_lengths() -> Dict[PieceType, List[float]]:
     }
 
 
-def _mm(value: float) -> str:
-    """Format a length to 0.1mm, dropping a trailing ".0"."""
-    return f"{value:.1f}".removesuffix(".0")
+def format_mm(value: float) -> str:
+    """Format a length or volume: 0.1mm steps without a trailing ".0", and
+    two significant digits below 0.1 so small values do not print as 0."""
+    if abs(value) >= 0.1:
+        return f"{value:.1f}".removesuffix(".0")
+    return f"{value:.2g}"
 
 
 DEFAULT_KERF_MM = 3.0
@@ -155,7 +158,7 @@ def _oversize_warning(
 ) -> List[str]:
     longest = max(available_lengths)
     return [
-        f"- ⚠ {p.id} ({_mm(p.length)}mm) is longer than the longest available "
+        f"- ⚠ {p.id} ({format_mm(p.length)}mm) is longer than the longest available "
         f"board ({longest:.0f}mm) and cannot be cut from stock"
         for p in _oversize_pieces(pieces, available_lengths)
     ]
@@ -181,7 +184,7 @@ def _generate_overview_section(summary: ResourceSummary, project_name: str) -> s
     if summary.overall_size is not None:
         x, y, z = summary.overall_size
         size_line = (
-            f"- **Overall Size (X × Y × Z)**: {_mm(x)} × {_mm(y)} × {_mm(z)} mm "
+            f"- **Overall Size (X × Y × Z)**: {format_mm(x)} × {format_mm(y)} × {format_mm(z)} mm "
             f"(Z is the length direction of '{summary.size_reference}')\n"
         )
 
@@ -220,7 +223,7 @@ def _generate_bill_of_materials(summary: ResourceSummary) -> str:
 
     for piece in sorted_pieces:
         lines.append(
-            f"| {piece.id} | {piece.type.value} | {_mm(piece.length)} | "
+            f"| {piece.id} | {piece.type.value} | {format_mm(piece.length)} | "
             f"{piece.width:.0f} | {piece.height:.0f} | {piece.volume:,.0f} |"
         )
 
@@ -255,14 +258,12 @@ def _generate_shopping_list(summary: ResourceSummary) -> str:
 def _generate_purchase_recommendations(
     summary: ResourceSummary,
     standard_lengths: Dict[PieceType, List[float]],
-    kerf: float = DEFAULT_KERF_MM,
 ) -> str:
     """Generate purchase recommendations with cut optimization.
 
     Args:
         summary: Resource summary data
         standard_lengths: Available standard lengths per piece type
-        kerf: Material removed by each saw cut in mm
 
     Returns:
         Markdown formatted purchase recommendations
@@ -275,7 +276,7 @@ def _generate_purchase_recommendations(
             piece_type, [2440.0]
         )  # Default fallback
 
-        cut_plans = _optimize_cuts(pieces, available_lengths, kerf)
+        cut_plans = _optimize_cuts(pieces, available_lengths)
 
         # Calculate board requirements
         board_counts: Dict[float, int] = {}
@@ -309,7 +310,9 @@ def _generate_purchase_recommendations(
             count = board_counts[board_length]
             lines.append(f"- {count} × {board_length:.0f}mm boards")
 
-        lines.append(f"Total waste: {_mm(total_waste)}mm ({waste_percentage:.1f}%)")
+        lines.append(
+            f"Total waste: {format_mm(total_waste)}mm ({waste_percentage:.1f}%)"
+        )
         lines.extend(_oversize_warning(pieces, available_lengths))
         lines.append("")
 
@@ -319,14 +322,12 @@ def _generate_purchase_recommendations(
 def _generate_cut_list(
     summary: ResourceSummary,
     standard_lengths: Dict[PieceType, List[float]],
-    kerf: float = DEFAULT_KERF_MM,
 ) -> str:
     """Generate optimized cut list with ASCII diagrams.
 
     Args:
         summary: Resource summary data
         standard_lengths: Available standard lengths per piece type
-        kerf: Material removed by each saw cut in mm
 
     Returns:
         Markdown formatted cut list
@@ -337,7 +338,7 @@ def _generate_cut_list(
         pieces = [p for p in summary.pieces if p.type == piece_type]
         available_lengths = standard_lengths.get(piece_type, [2440.0])
 
-        cut_plans = _optimize_cuts(pieces, available_lengths, kerf)
+        cut_plans = _optimize_cuts(pieces, available_lengths)
 
         lines.extend([f"### {piece_type.value} Boards", ""])
         warnings = _oversize_warning(pieces, available_lengths)
@@ -349,10 +350,10 @@ def _generate_cut_list(
 
             # Create simple cut list
             for piece_id, length in plan.cuts:
-                lines.append(f"- Cut {_mm(length)}mm → {piece_id}")
+                lines.append(f"- Cut {format_mm(length)}mm → {piece_id}")
 
             if plan.waste > 0:
-                lines.append(f"- Waste: {_mm(plan.waste)}mm")
+                lines.append(f"- Waste: {format_mm(plan.waste)}mm")
 
             lines.append("")
 
@@ -386,7 +387,7 @@ def _generate_anchor_details(summary: ResourceSummary) -> str:
     for piece in pieces_with_anchors:
         # Piece header with type and length
         lines.extend(
-            [f"### {piece.id} ({piece.type.value}, {_mm(piece.length)}mm)", ""]
+            [f"### {piece.id} ({piece.type.value}, {format_mm(piece.length)}mm)", ""]
         )
 
         # Table header
@@ -505,7 +506,7 @@ def _generate_pilot_holes_section(summary: ResourceSummary) -> str:
     for piece in pieces_with_holes:
         # Piece header
         lines.extend(
-            [f"### {piece.id} ({piece.type.value}, {_mm(piece.length)}mm)", ""]
+            [f"### {piece.id} ({piece.type.value}, {format_mm(piece.length)}mm)", ""]
         )
 
         # Table header
@@ -563,7 +564,6 @@ def generate_markdown_report(
     include_cut_diagram: bool = True,
     include_anchor_details: bool = True,
     include_pilot_holes: bool = True,
-    kerf: float = DEFAULT_KERF_MM,
 ) -> str:
     """Generate a complete markdown report from ResourceSummary.
 
@@ -575,7 +575,6 @@ def generate_markdown_report(
         include_cut_diagram: Whether to include cut list section
         include_anchor_details: Whether to include anchor details section
         include_pilot_holes: Whether to include pilot holes section
-        kerf: Material removed by each saw cut in mm, used for cut planning
 
     Returns:
         Complete markdown report as string
@@ -620,11 +619,11 @@ def generate_markdown_report(
 
     sections.append(_generate_shopping_list(resource_summary))
     sections.append(
-        _generate_purchase_recommendations(resource_summary, standard_lengths, kerf)
+        _generate_purchase_recommendations(resource_summary, standard_lengths)
     )
 
     if include_cut_diagram:
-        sections.append(_generate_cut_list(resource_summary, standard_lengths, kerf))
+        sections.append(_generate_cut_list(resource_summary, standard_lengths))
 
     # Add footer
     sections.append("---\n*Report generated by nichiyou-daiku*")

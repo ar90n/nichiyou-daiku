@@ -435,7 +435,6 @@ class Placement(BaseModel, frozen=True):
     poses: dict[str, Pose]
     groups: tuple[tuple[str, ...], ...]         # connected pieces; later groups are laid out along +X
     conflicts: tuple[Conflict, ...]
-    free_axes: dict[str, frozenset[str]]        # empty with the current connection types
 ```
 
 | Function | Description |

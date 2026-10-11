@@ -24,7 +24,7 @@ def _write(tmp_path, source: str):
 def test_report_warns_and_continues(runner, tmp_path):
     result = runner.invoke(cli, ["report", str(_write(tmp_path, CONTRADICTING))])
     assert result.exit_code == 0
-    assert "Warning: Connection b -> c: contact (z) is off by 389.0mm" in result.output
+    assert "Warning: Connection b -> c: contact (z) is off by 389mm" in result.output
     assert "## Bill of Materials" in result.output
 
 

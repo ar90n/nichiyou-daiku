@@ -2,7 +2,6 @@
 
 import click
 
-from nichiyou_daiku.cli.utils import setup_logging
 from nichiyou_daiku.cli.commands.validate import validate
 from nichiyou_daiku.cli.commands.report import report
 from nichiyou_daiku.cli.commands.view import view
@@ -11,8 +10,10 @@ from nichiyou_daiku.cli.commands.drawing import drawing
 
 
 @click.group()
-@click.option("--debug", "-d", is_flag=True, help="Enable debug logging")
-@click.option("--verbose", "-v", is_flag=True, help="Enable verbose logging")
+@click.option(
+    "--debug", "-d", is_flag=True, help="Show tracebacks for unexpected errors"
+)
+@click.option("--verbose", "-v", is_flag=True, help="Show progress messages")
 @click.option("--quiet", "-q", is_flag=True, help="Minimize output")
 @click.pass_context
 def cli(ctx: click.Context, debug: bool, verbose: bool, quiet: bool) -> None:
@@ -22,9 +23,6 @@ def cli(ctx: click.Context, debug: bool, verbose: bool, quiet: bool) -> None:
     """
     # Ensure that ctx.obj exists and is a dict
     ctx.ensure_object(dict)
-
-    # Setup logging
-    setup_logging(debug, verbose, quiet)
 
     # Store options in context for subcommands
     ctx.obj["debug"] = debug

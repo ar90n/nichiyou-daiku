@@ -7,9 +7,9 @@ import click
 from nichiyou_daiku.cli.utils import (
     CliEcho,
     describe_assembly_issues,
-    format_mm,
     read_dsl_file,
 )
+from nichiyou_daiku.shell.report_generator import format_mm
 from nichiyou_daiku.core.assembly import Assembly
 from nichiyou_daiku.core.placement import find_overlaps
 from nichiyou_daiku.dsl import (
@@ -71,16 +71,13 @@ def validate(ctx: click.Context, file: str) -> None:
         sys.exit(1)
 
     echo.echo(click.style("✓ DSL syntax is valid", fg="green"))
-    echo.echo("\nModel summary:", verbose_only=True)
-    echo.echo(f"  Pieces: {len(model.pieces)}", verbose_only=True)
-    echo.echo(f"  Connections: {len(model.connections)}", verbose_only=True)
+    echo.verbose("\nModel summary:")
+    echo.verbose(f"  Pieces: {len(model.pieces)}")
+    echo.verbose(f"  Connections: {len(model.connections)}")
     if model.pieces:
-        echo.echo("\nPieces:", verbose_only=True)
+        echo.verbose("\nPieces:")
         for piece_id, piece in model.pieces.items():
-            echo.echo(
-                f"  - {piece_id}: {piece.type.value} @ {piece.length}mm",
-                verbose_only=True,
-            )
+            echo.verbose(f"  - {piece_id}: {piece.type.value} @ {piece.length}mm")
 
     try:
         assembly = Assembly.of(model)

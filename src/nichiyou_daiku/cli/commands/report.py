@@ -13,7 +13,6 @@ from nichiyou_daiku.cli.utils import (
     validate_output_path,
 )
 from nichiyou_daiku.shell import extract_resources, generate_markdown_report
-from nichiyou_daiku.shell.report_generator import DEFAULT_KERF_MM
 
 
 @click.command()
@@ -40,13 +39,6 @@ from nichiyou_daiku.shell.report_generator import DEFAULT_KERF_MM
     default=True,
     help="Include pilot holes drilling guide in report",
 )
-@click.option(
-    "--kerf",
-    type=click.FloatRange(min=0),
-    default=DEFAULT_KERF_MM,
-    show_default=True,
-    help="Material removed by each saw cut (mm), used for the cut plan",
-)
 @click.pass_context
 def report(
     ctx: click.Context,
@@ -56,7 +48,6 @@ def report(
     include_cut_diagram: bool,
     include_anchor_details: bool,
     include_pilot_holes: bool,
-    kerf: float,
 ) -> None:
     """Generate a markdown report from DSL file.
 
@@ -90,7 +81,6 @@ def report(
             include_cut_diagram=include_cut_diagram,
             include_anchor_details=include_anchor_details,
             include_pilot_holes=include_pilot_holes,
-            kerf=kerf,
         )
 
     except Exception as e:

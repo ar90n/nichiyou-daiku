@@ -167,7 +167,7 @@ def test_validate_reports_contradicting_connections(runner, tmp_path):
     )
     assert result.exit_code == 1
     assert (
-        "Connection b -> c: contact (z) is off by 389.0mm (loop: b -> a -> c)"
+        "Connection b -> c: contact (z) is off by 389mm (loop: b -> a -> c)"
         in result.output
     )
 
@@ -225,7 +225,7 @@ def test_validate_does_not_need_build123d(tmp_path):
         [sys.executable, "-c", script], capture_output=True, text=True
     )
     assert result.returncode == 1
-    assert "Pieces 'b' and 'c' overlap (1014600.0mm³)" in result.stdout + result.stderr
+    assert "Pieces 'b' and 'c' overlap (1014600mm³)" in result.stdout + result.stderr
 
 
 def test_validate_reports_orientation_conflicts(runner, tmp_path):
@@ -265,9 +265,9 @@ def test_validate_shows_small_mismatches_without_rounding_them_to_zero(
 
 
 def test_format_mm_keeps_small_values_visible():
-    from nichiyou_daiku.cli.utils import format_mm
+    from nichiyou_daiku.shell.report_generator import format_mm
 
-    assert format_mm(389.0) == "389.0"
-    assert format_mm(-89.0) == "-89.0"
+    assert format_mm(389.0) == "389"
+    assert format_mm(-89.25) == "-89.2"
     assert format_mm(0.01) == "0.01"
     assert format_mm(0.00042) == "0.00042"

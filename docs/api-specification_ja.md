@@ -435,7 +435,6 @@ class Placement(BaseModel, frozen=True):
     poses: dict[str, Pose]
     groups: tuple[tuple[str, ...], ...]         # つながっている部材群。2つ目以降は +X 方向に並べる
     conflicts: tuple[Conflict, ...]
-    free_axes: dict[str, frozenset[str]]        # 現在の接続の種類では常に空
 ```
 
 | 関数 | 説明 |

@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
-import logging
 import sys
 import traceback
 from pathlib import Path
 from typing import TYPE_CHECKING, Optional
 
 import click
+
+from nichiyou_daiku.shell.report_generator import format_mm
 
 if TYPE_CHECKING:
     from nichiyou_daiku.core.assembly import Assembly
@@ -41,50 +42,6 @@ def read_dsl_file(file_path: str) -> str:
         return path.read_text(encoding="utf-8")
     except Exception as e:
         raise click.ClickException(f"Error reading file: {e}")
-
-
-class _StderrEchoHandler(logging.Handler):
-    """Log handler that resolves stderr at emit time via click.echo.
-
-    A plain StreamHandler would bind the stderr object present at setup,
-    which goes stale when stderr is swapped (e.g. click's CliRunner).
-    """
-
-    def emit(self, record: logging.LogRecord) -> None:
-        try:
-            click.echo(self.format(record), err=True)
-        except Exception:
-            self.handleError(record)
-
-
-def setup_logging(debug: bool, verbose: bool, quiet: bool) -> None:
-    """Configure the nichiyou_daiku logger based on CLI flags.
-
-    Only the package logger is configured; the root logger is left alone so
-    third-party libraries (e.g. build123d) do not flood the output under -v/-d.
-
-    Args:
-        debug: Enable debug logging
-        verbose: Enable verbose logging
-        quiet: Minimize output
-    """
-    if quiet:
-        level = logging.ERROR
-    elif debug:
-        level = logging.DEBUG
-    elif verbose:
-        level = logging.INFO
-    else:
-        level = logging.WARNING
-
-    logger = logging.getLogger("nichiyou_daiku")
-    logger.setLevel(level)
-    for handler in list(logger.handlers):
-        if isinstance(handler, _StderrEchoHandler):
-            logger.removeHandler(handler)
-    handler = _StderrEchoHandler()
-    handler.setFormatter(logging.Formatter("%(levelname)s: %(message)s"))
-    logger.addHandler(handler)
 
 
 def validate_output_path(output_path: Optional[str]) -> Optional[Path]:
@@ -147,32 +104,6 @@ def ensure_not_overwriting_input(input_file: str, output_path: Path) -> None:
         )
 
 
-def _echo_with_flags(
-    message: str,
-    *,
-    err: bool = False,
-    verbose_only: bool = False,
-    quiet: bool = False,
-    verbose: bool = False,
-    **kwargs,
-) -> None:
-    """Smart echo that respects quiet/verbose flags.
-
-    Args:
-        message: Message to display
-        err: Whether this is an error message (shown even in quiet mode)
-        verbose_only: Only show this message in verbose mode
-        quiet: Current quiet flag state
-        verbose: Current verbose flag state
-        **kwargs: Additional arguments passed to click.echo
-    """
-    if quiet and not err:  # Always show errors even in quiet mode
-        return
-    if verbose_only and not verbose:
-        return
-    click.echo(message, err=err, **kwargs)
-
-
 class CliEcho:
     """Context-aware echo wrapper for CLI commands."""
 
@@ -186,25 +117,10 @@ class CliEcho:
         self._verbose = ctx.obj.get("verbose", False)
         self._debug = ctx.obj.get("debug", False)
 
-    def echo(
-        self, message: str, *, err: bool = False, verbose_only: bool = False, **kwargs
-    ) -> None:
-        """Echo with automatic quiet/verbose handling.
-
-        Args:
-            message: Message to display
-            err: Whether this is an error message
-            verbose_only: Only show in verbose mode
-            **kwargs: Additional arguments for click.echo
-        """
-        _echo_with_flags(
-            message,
-            err=err,
-            verbose_only=verbose_only,
-            quiet=self._quiet,
-            verbose=self._verbose,
-            **kwargs,
-        )
+    def echo(self, message: str) -> None:
+        """Echo command output to stdout (suppressed by --quiet)."""
+        if not self._quiet:
+            click.echo(message)
 
     def error(self, message: str, **kwargs) -> None:
         """Echo error message (shown even in quiet mode).
@@ -284,13 +200,6 @@ def parse_dsl_to_model(dsl_content: str, echo: CliEcho) -> Model:
     except Exception as e:
         echo.exception(f"Unexpected error parsing DSL: {e}")
         sys.exit(1)
-
-
-def format_mm(value: float) -> str:
-    """Format a length or volume so that small values do not print as 0.0."""
-    if abs(value) >= 0.1:
-        return f"{value:.1f}"
-    return f"{value:.2g}"
 
 
 def describe_assembly_issues(assembly: Assembly) -> list[str]:

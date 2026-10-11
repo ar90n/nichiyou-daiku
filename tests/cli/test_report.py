@@ -162,15 +162,3 @@ def test_report_quiet_suppresses_status(runner, tmp_path, simple_dsl):
 
     assert result.exit_code == 0
     assert result.output == ""
-
-
-def test_report_kerf_option_changes_cut_allowance(runner, tmp_path):
-    dsl_file = tmp_path / "pair.nd"
-    dsl_file.write_text("(a:2x4 =1000)\n(b:2x4 =800)\na -[FL<100 DF<0]- b\n")
-
-    default = runner.invoke(cli, ["report", str(dsl_file)])
-    no_kerf = runner.invoke(cli, ["report", "--kerf", "0", str(dsl_file)])
-
-    assert default.exit_code == 0 and no_kerf.exit_code == 0
-    assert "Total waste: 634mm" in default.output  # two 3mm saw cuts
-    assert "Total waste: 640mm" in no_kerf.output

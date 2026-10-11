@@ -1,6 +1,4 @@
-"""Tests for --debug tracebacks and CLI logging configuration."""
-
-import logging
+"""Tests for --debug tracebacks."""
 
 import pytest
 
@@ -77,56 +75,3 @@ def test_no_traceback_without_debug(runner, monkeypatch, beam_file, patch, comma
     assert result.exit_code == 1
     assert "boom" in result.stderr
     assert "Traceback" not in result.output
-
-
-def simulate_fresh_process_logging(monkeypatch):
-    """Reset logging to a fresh-process state: no root handlers, default levels.
-
-    Called inside the test body because pytest attaches its capture handlers
-    to the root logger at the start of the call phase, which would make
-    logging.basicConfig a no-op and hide root-level configuration.
-    """
-    root = logging.getLogger()
-    package_logger = logging.getLogger("nichiyou_daiku")
-    monkeypatch.setattr(root, "handlers", [])
-    monkeypatch.setattr(root, "level", logging.WARNING)
-    monkeypatch.setattr(package_logger, "handlers", [])
-    monkeypatch.setattr(package_logger, "level", logging.NOTSET)
-
-
-def test_verbose_does_not_enable_third_party_info_logs(runner, monkeypatch, beam_file):
-    simulate_fresh_process_logging(monkeypatch)
-
-    result = runner.invoke(cli, ["-v", "report", str(beam_file)])
-
-    assert result.exit_code == 0
-    assert logging.getLogger().handlers == []
-    assert logging.getLogger("build123d").getEffectiveLevel() > logging.INFO
-    assert logging.getLogger("nichiyou_daiku").getEffectiveLevel() == logging.INFO
-
-
-def test_debug_enables_package_debug_logs_only(runner, monkeypatch, beam_file):
-    simulate_fresh_process_logging(monkeypatch)
-
-    result = runner.invoke(cli, ["-d", "report", str(beam_file)])
-
-    assert result.exit_code == 0
-    assert logging.getLogger("build123d").getEffectiveLevel() > logging.DEBUG
-    assert logging.getLogger("nichiyou_daiku").getEffectiveLevel() == logging.DEBUG
-
-
-def test_package_logs_reach_stderr(runner, monkeypatch, beam_file):
-    real_extract = report_module.extract_resources
-
-    def logging_extract(assembly):
-        logging.getLogger("nichiyou_daiku.shell").info("hello from the library")
-        return real_extract(assembly)
-
-    monkeypatch.setattr(report_module, "extract_resources", logging_extract)
-    simulate_fresh_process_logging(monkeypatch)
-
-    result = runner.invoke(cli, ["-v", "report", str(beam_file)])
-
-    assert result.exit_code == 0
-    assert "hello from the library" in result.stderr
-    assert "hello from the library" not in result.stdout
