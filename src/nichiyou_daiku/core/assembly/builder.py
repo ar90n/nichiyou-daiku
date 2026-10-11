@@ -21,6 +21,7 @@ class Assembly(BaseModel, frozen=True):
         model: The source model with piece and connection definitions
         boxes: Dictionary mapping piece IDs to their 3D boxes
         fasteners: Dowels and screws laid out in each connection's contact area
+            (none for connections that contradict the placement)
         fastener_issues: Connections whose fasteners could not be laid out
         pilot_holes: Dictionary mapping piece IDs to lists of (SurfacePoint, Hole)
             tuples; the SurfacePoint names the face the hole is drilled into
@@ -60,9 +61,16 @@ class Assembly(BaseModel, frozen=True):
             piece.id: Box(shape=get_shape(piece)) for piece in model.pieces.values()
         }
 
+        placement = solve_placement(model)
+        # A connection that contradicts the placement does not hold in the
+        # assembled piece, so drilling for it would make holes that never meet.
+        rejected = {(c.base_id, c.target_id) for c in placement.conflicts}
+
         fasteners: list[Fastener] = []
         issues: list[LayoutIssue] = []
-        for connection in model.connections.values():
+        for (base_id, target_id), connection in model.connections.items():
+            if (base_id, target_id) in rejected:
+                continue
             laid_out, issue = layout_fasteners(connection)
             fasteners.extend(laid_out)
             if issue is not None:
@@ -84,5 +92,5 @@ class Assembly(BaseModel, frozen=True):
             fasteners=tuple(fasteners),
             fastener_issues=tuple(issues),
             pilot_holes=pilot_holes,
-            placement=solve_placement(model),
+            placement=placement,
         )

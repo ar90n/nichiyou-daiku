@@ -100,3 +100,17 @@ class TestAssemblyPlacement:
             ],
         )
         assert Assembly.of(model).placement == solve_placement(model)
+
+
+class TestFastenersOfRejectedConnections:
+    def test_connection_rejected_by_placement_gets_no_fasteners(self):
+        # b -> c contradicts the placement fixed by a -> b and a -> c
+        assembly = _assembly(
+            "(a:2x4 =500)\n(b:2x4 =300)\n(c:2x4 =300)\n"
+            "a -[FL<100 DF<0]- b\na -[FL>100 DF<0]- c\nb -[RF<0 LF<0 D(4, 30)]- c\n"
+        )
+        assert [(c.base_id, c.target_id) for c in assembly.placement.conflicts] == [
+            ("b", "c")
+        ]
+        assert assembly.fasteners == ()
+        assert assembly.pilot_holes == {}
