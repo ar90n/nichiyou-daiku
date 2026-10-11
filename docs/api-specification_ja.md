@@ -357,7 +357,7 @@ True
 
 ### Assembly（組み立て）
 
-ジョイント位置と向きを含む3D組み立て情報。
+部材の配置、留め具（ダボ・ビス）、下穴を含む3D組み立て情報。
 
 ```python
 from nichiyou_daiku.core.assembly import Assembly

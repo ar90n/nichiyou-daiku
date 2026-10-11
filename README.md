@@ -505,9 +505,10 @@ nichiyou-daiku/
 │       │   ├── model.py    # Assembly graph model
 │       │   ├── connection.py # Connection specifications
 │       │   ├── dowel.py, screw.py # Fastener presets
-│       │   ├── assembly/   # 3D assembly generation
-│       │   │   ├── models.py, projection.py
-│       │   │   ├── joints.py
+│       │   ├── placement.py # Piece placement solver
+│       │   ├── assembly/   # Assembly: placement, fasteners, pilot holes
+│       │   │   ├── models.py # Hole, Fastener, LayoutIssue
+│       │   │   ├── fasteners.py # Dowel/screw layout in the contact area
 │       │   │   └── builder.py
 │       │   └── geometry/   # Geometric primitives
 │       │       ├── box.py, face.py, edge.py, corner.py

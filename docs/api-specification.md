@@ -357,7 +357,7 @@ True
 
 ### Assembly
 
-3D assembly with joint positions and orientations.
+3D assembly: piece placement, fasteners (dowels and screws) and pilot holes.
 
 ```python
 from nichiyou_daiku.core.assembly import Assembly
