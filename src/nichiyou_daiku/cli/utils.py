@@ -287,6 +287,13 @@ def parse_dsl_to_model(dsl_content: str, echo: CliEcho) -> Model:
         sys.exit(1)
 
 
+def format_mm(value: float) -> str:
+    """Format a length or volume so that small values do not print as 0.0."""
+    if abs(value) >= 0.1:
+        return f"{value:.1f}"
+    return f"{value:.2g}"
+
+
 def describe_placement_issues(placement: Placement) -> list[str]:
     """Human-readable lines for placement conflicts and unconnected pieces."""
     issues = []
@@ -300,7 +307,7 @@ def describe_placement_issues(placement: Placement) -> list[str]:
         else:
             issues.append(
                 f"{where}: {conflict.kind} ({conflict.axis}) is off by "
-                f"{abs(conflict.mismatch_mm or 0.0):.1f}mm (loop: {loop})"
+                f"{format_mm(abs(conflict.mismatch_mm or 0.0))}mm (loop: {loop})"
             )
     if len(placement.groups) > 1:
         listed = "; ".join(", ".join(group) for group in placement.groups)

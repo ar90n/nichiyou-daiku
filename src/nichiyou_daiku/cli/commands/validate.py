@@ -4,7 +4,12 @@ import sys
 
 import click
 
-from nichiyou_daiku.cli.utils import CliEcho, describe_placement_issues, read_dsl_file
+from nichiyou_daiku.cli.utils import (
+    CliEcho,
+    describe_placement_issues,
+    format_mm,
+    read_dsl_file,
+)
 from nichiyou_daiku.core.assembly import Assembly, find_joints_outside_pieces
 from nichiyou_daiku.core.placement import find_overlaps
 from nichiyou_daiku.dsl import (
@@ -90,7 +95,8 @@ def validate(ctx: click.Context, file: str) -> None:
     ]
     problems += describe_placement_issues(assembly.placement)
     problems += [
-        f"Pieces '{overlap.lhs}' and '{overlap.rhs}' overlap ({overlap.volume:.1f}mm³)"
+        f"Pieces '{overlap.lhs}' and '{overlap.rhs}' overlap "
+        f"({format_mm(overlap.volume)}mm³)"
         for overlap in find_overlaps(model, assembly.placement)
     ]
 

@@ -26,6 +26,9 @@ Matrix3 = tuple[tuple[int, int, int], tuple[int, int, int], tuple[int, int, int]
 AXES: tuple[Axis, Axis, Axis] = ("x", "y", "z")
 TOLERANCE_MM = 1e-6
 GROUP_GAP_MM = 100.0
+# Positions are rounded to 1e-6mm while extents use exact lengths, so pieces
+# that only touch can share a sliver up to 2 * 5e-7mm deep.
+OVERLAP_DEPTH_MM = 1e-5
 IDENTITY: Matrix3 = ((1, 0, 0), (0, 1, 0), (0, 0, 1))
 
 
@@ -348,10 +351,9 @@ def find_overlaps(model: Model, placement: Placement) -> tuple[Overlap, ...]:
                 min(lhs_high.y, rhs_high.y) - max(lhs_low.y, rhs_low.y),
                 min(lhs_high.z, rhs_high.z) - max(lhs_low.z, rhs_low.z),
             )
-            if all(size > 0 for size in sizes):
+            if all(size > OVERLAP_DEPTH_MM for size in sizes):
                 volume = sizes[0] * sizes[1] * sizes[2]
-                if volume > TOLERANCE_MM:
-                    overlaps.append(Overlap(lhs=lhs, rhs=rhs, volume=volume))
+                overlaps.append(Overlap(lhs=lhs, rhs=rhs, volume=volume))
     return tuple(overlaps)
 
 

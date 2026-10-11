@@ -231,3 +231,28 @@ def test_validate_reports_orientation_conflicts(runner, tmp_path):
         "Connection b -> c: orientation contradicts the other connections (loop: b -> a -> c)"
         in result.output
     )
+
+
+def test_validate_shows_small_mismatches_without_rounding_them_to_zero(
+    runner, tmp_path
+):
+    from pathlib import Path
+
+    table = (
+        Path(__file__).parents[2] / "examples" / "nd_files" / "simple_table_compact.nd"
+    ).read_text()
+    source = table.replace(
+        "leg_4 -[FL<100 TF<0]- apron_right", "leg_4 -[FL<100.01 TF<0]- apron_right"
+    )
+    result = _validate(runner, tmp_path, source)
+    assert result.exit_code == 1
+    assert "edge (z) is off by 0.01mm" in result.output
+
+
+def test_format_mm_keeps_small_values_visible():
+    from nichiyou_daiku.cli.utils import format_mm
+
+    assert format_mm(389.0) == "389.0"
+    assert format_mm(-89.0) == "-89.0"
+    assert format_mm(0.01) == "0.01"
+    assert format_mm(0.00042) == "0.00042"

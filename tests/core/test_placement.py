@@ -321,3 +321,10 @@ class TestOverallBounds:
         model = Model.of(pieces=[], connections=[])
         low, high = overall_bounds(model, solve_placement(model))
         assert low == high == Point3D(x=0.0, y=0.0, z=0.0)
+
+
+class TestOverlapRounding:
+    def test_touching_pieces_with_long_decimal_lengths_do_not_overlap(self):
+        # positions are rounded to 1e-6mm but extents use the exact length
+        model = parse_dsl("(a:2x4 =333.3333333)\n(b:2x4 =300)\na -[TF<0 DF<0]- b\n")
+        assert find_overlaps(model, solve_placement(model)) == ()
