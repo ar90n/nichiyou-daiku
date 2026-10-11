@@ -13,6 +13,7 @@ import click
 if TYPE_CHECKING:
     from nichiyou_daiku.core.assembly import Assembly
     from nichiyou_daiku.core.model import Model
+    from nichiyou_daiku.core.placement import Placement
 
 
 def read_dsl_file(file_path: str) -> str:
@@ -284,6 +285,30 @@ def parse_dsl_to_model(dsl_content: str, echo: CliEcho) -> Model:
     except Exception as e:
         echo.exception(f"Unexpected error parsing DSL: {e}")
         sys.exit(1)
+
+
+def describe_placement_issues(placement: Placement) -> list[str]:
+    """Human-readable lines for placement conflicts and unconnected pieces."""
+    issues = []
+    for conflict in placement.conflicts:
+        loop = " -> ".join(conflict.loop)
+        where = f"Connection {conflict.base_id} -> {conflict.target_id}"
+        if conflict.kind == "rotation":
+            issues.append(
+                f"{where}: orientation contradicts the other connections (loop: {loop})"
+            )
+        else:
+            issues.append(
+                f"{where}: {conflict.kind} ({conflict.axis}) is off by "
+                f"{abs(conflict.mismatch_mm or 0.0):.1f}mm (loop: {loop})"
+            )
+    if len(placement.groups) > 1:
+        listed = "; ".join(", ".join(group) for group in placement.groups)
+        issues.append(
+            "Some pieces are not connected to each other, so their relative "
+            f"position is undefined (groups: {listed})"
+        )
+    return issues
 
 
 def create_assembly_from_model(model: Model, echo: CliEcho) -> Assembly:

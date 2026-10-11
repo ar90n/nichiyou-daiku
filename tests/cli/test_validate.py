@@ -3,7 +3,6 @@
 import pytest
 
 from nichiyou_daiku.cli.dsl_cli import cli
-from nichiyou_daiku.shell.build123d_export import HAS_BUILD123D
 
 
 def test_validate_valid_file(runner, tmp_path, valid_dsl):
@@ -97,11 +96,6 @@ def _validate(runner, tmp_path, dsl, *args):
     return runner.invoke(cli, ["validate", *args, str(dsl_file)])
 
 
-needs_build123d = pytest.mark.skipif(
-    not HAS_BUILD123D, reason="geometry checks need build123d"
-)
-
-
 def test_validate_reports_model_is_valid(runner, tmp_path, valid_dsl):
     result = _validate(runner, tmp_path, valid_dsl)
     assert result.exit_code == 0
@@ -138,7 +132,6 @@ def test_validate_reports_dowels_outside_the_piece(runner, tmp_path):
     assert "base" in result.output
 
 
-@needs_build123d
 def test_validate_reports_overlapping_pieces(runner, tmp_path):
     result = _validate(
         runner,
@@ -156,7 +149,6 @@ def test_validate_reports_overlapping_pieces(runner, tmp_path):
     assert "b" in result.output and "c" in result.output
 
 
-@needs_build123d
 def test_validate_reports_contradicting_connections(runner, tmp_path):
     result = _validate(
         runner,
@@ -171,10 +163,12 @@ def test_validate_reports_contradicting_connections(runner, tmp_path):
         """,
     )
     assert result.exit_code == 1
-    assert "apart" in result.output
+    assert (
+        "Connection b -> c: contact (z) is off by 389.0mm (loop: b -> a -> c)"
+        in result.output
+    )
 
 
-@needs_build123d
 def test_validate_rejects_unconnected_pieces(runner, tmp_path):
     result = _validate(
         runner,
@@ -202,8 +196,10 @@ def test_validate_debug_prints_traceback_for_assembly_errors(runner, tmp_path):
     assert "Traceback" in result.output
 
 
-@needs_build123d
-def test_validate_geometry_checks_can_be_skipped(runner, tmp_path):
+def test_validate_does_not_need_build123d(runner, tmp_path, monkeypatch):
+    import nichiyou_daiku.shell.build123d_export as export_module
+
+    monkeypatch.setattr(export_module, "HAS_BUILD123D", False)
     result = _validate(
         runner,
         tmp_path,
@@ -214,7 +210,26 @@ def test_validate_geometry_checks_can_be_skipped(runner, tmp_path):
         a -[FL<100 DF<0]- b
         a -[FL<100 DF<0]- c
         """,
-        "--no-geometry",
     )
-    assert result.exit_code == 0
-    assert "overlap" not in result.output
+    assert result.exit_code == 1
+    assert "Pieces 'b' and 'c' overlap (1014600.0mm³)" in result.output
+
+
+def test_validate_reports_orientation_conflicts(runner, tmp_path):
+    result = _validate(
+        runner,
+        tmp_path,
+        """
+        (a:2x4 =500)
+        (b:2x4 =300)
+        (c:2x4 =300)
+        a -[RF<0 LF<0]- b
+        a -[FL<100 DF<0]- c
+        b -[RF<0 LF<0]- c
+        """,
+    )
+    assert result.exit_code == 1
+    assert (
+        "Connection b -> c: orientation contradicts the other connections (loop: b -> a -> c)"
+        in result.output
+    )
