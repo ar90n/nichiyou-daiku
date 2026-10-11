@@ -425,7 +425,7 @@ See [docs/dsl-specification.md](docs/dsl-specification.md) for the full specific
 
 ```bash
 # Validate the model: syntax, contradicting connections, unconnected or
-# overlapping pieces, and dowels outside their piece (no build123d needed)
+# overlapping pieces, and fasteners that do not fit (no build123d needed)
 nichiyou-daiku validate furniture.nd
 
 # Generate markdown report (the overview includes the overall size X × Y × Z)

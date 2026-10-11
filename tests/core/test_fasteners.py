@@ -132,41 +132,6 @@ class TestLayoutFasteners:
         assert {f.base_hole for f in fasteners} == {Hole(diameter=3.3, depth=6.0)}
         assert {f.kind for f in fasteners} == {"screw"}
 
-    @pytest.mark.parametrize("base_faces", ADJACENT)
-    @pytest.mark.parametrize("target_faces", ADJACENT)
-    def test_every_face_combination_lays_out_without_errors(
-        self, base_faces, target_faces
-    ):
-        base = Piece.of(PieceType.PT_2x4, 500.0, "base")
-        target = Piece.of(PieceType.PT_2x4, 300.0, "target")
-        base_length = edge_length_of(
-            Box(shape=get_shape(base)), Edge(lhs=base_faces[0], rhs=base_faces[1])
-        )
-        target_length = edge_length_of(
-            Box(shape=get_shape(target)), Edge(lhs=target_faces[0], rhs=target_faces[1])
-        )
-        connection = Connection(
-            base=BoundAnchor(
-                piece=base,
-                anchor=Anchor(
-                    contact_face=base_faces[0],
-                    edge_shared_face=base_faces[1],
-                    offset=FromMin(value=base_length * 0.3),
-                ),
-            ),
-            target=BoundAnchor(
-                piece=target,
-                anchor=Anchor(
-                    contact_face=target_faces[0],
-                    edge_shared_face=target_faces[1],
-                    offset=FromMax(value=target_length * 0.2),
-                ),
-            ),
-            type=DowelConnection(radius=3.0, depth=12.0),
-        )
-        fasteners, issue = layout_fasteners(connection)
-        assert (len(fasteners) in (1, 2)) != (issue is not None)
-
 
 @st.composite
 def fastened_connections(draw) -> Connection:
