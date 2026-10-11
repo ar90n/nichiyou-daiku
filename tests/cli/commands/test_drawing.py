@@ -95,3 +95,17 @@ def test_drawing_status_message_goes_to_stderr(runner, tmp_path, beam_file):
     assert result.exit_code == 0
     assert result.stdout == ""
     assert "Successfully created technical drawing" in result.stderr
+
+
+def test_drawing_failure_is_reported(runner, tmp_path, beam_file, monkeypatch):
+    import nichiyou_daiku.shell.drawing as drawing_module
+
+    def broken(*args, **kwargs):
+        raise RuntimeError("no projection")
+
+    monkeypatch.setattr(drawing_module, "technical_drawing", broken)
+    result = runner.invoke(
+        cli, ["drawing", str(beam_file), "-o", str(tmp_path / "out.svg")]
+    )
+    assert result.exit_code == 1
+    assert "Error creating drawing: no projection" in result.output

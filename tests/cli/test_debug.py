@@ -3,7 +3,6 @@
 import pytest
 
 import nichiyou_daiku.dsl
-from nichiyou_daiku.cli.commands import drawing as drawing_module
 from nichiyou_daiku.cli.commands import report as report_module
 from nichiyou_daiku.cli.dsl_cli import cli
 from nichiyou_daiku.core.assembly import Assembly
@@ -33,8 +32,10 @@ def _patch_export_stl(monkeypatch):
     monkeypatch.setattr(build123d, "export_stl", _boom)
 
 
-def _patch_projection(monkeypatch):
-    monkeypatch.setattr(drawing_module, "project_to_2d", _boom)
+def _patch_drawing(monkeypatch):
+    import nichiyou_daiku.shell.drawing
+
+    monkeypatch.setattr(nichiyou_daiku.shell.drawing, "technical_drawing", _boom)
 
 
 UNEXPECTED_FAILURES = [
@@ -42,7 +43,7 @@ UNEXPECTED_FAILURES = [
     pytest.param(_patch_assembly, ["report"], id="assembly"),
     pytest.param(_patch_extract_resources, ["report"], id="report-resources"),
     pytest.param(_patch_export_stl, ["export", "-f", "stl"], id="export-write"),
-    pytest.param(_patch_projection, ["drawing"], id="drawing-projection"),
+    pytest.param(_patch_drawing, ["drawing"], id="drawing-layout"),
 ]
 
 

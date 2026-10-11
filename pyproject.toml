@@ -59,13 +59,11 @@ ci = [
 [tool.coverage.run]
 omit = [
     "src/nichiyou_daiku/cli/commands/view.py",
-    "src/nichiyou_daiku/cli/commands/drawing.py",
 ]
 
 [tool.pyright]
 exclude = [
     "src/nichiyou_daiku/cli/commands/view.py",
-    "src/nichiyou_daiku/cli/commands/drawing.py",
     "tests/utils/projection_utils.py",
 ]
 
