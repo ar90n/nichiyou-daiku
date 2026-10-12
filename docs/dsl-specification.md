@@ -72,7 +72,7 @@ apron -[RF<GAP BT<0]- top               // compact offset: a number, a variable 
 
 Write `?` instead of a number when the connections should decide it.
 
-```nd
+```text
 (apron_front:2x4 =?)                            // as long as the legs are apart
 apron_back -[RB? BD? D(:8x30)]- table_top_2     // also dowel the board to the back apron
 ```
