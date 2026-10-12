@@ -41,11 +41,24 @@ See [`examples/nd_files/`](examples/nd_files/) for complete designs, such as a t
 - 🪵 Standard lumber: 1x4, 1x6, 1x8, 2x2, 2x4, 2x6
 - 🐍 Typed Python API
 
+## Use with Claude Code
+
+Add this repository as a plugin marketplace and install the plugin:
+
+```text
+/plugin marketplace add ar90n/nichiyou-daiku
+/plugin install nichiyou-daiku@nichiyou-daiku
+```
+
+Then ask for furniture, e.g. "Design a 500 x 400 x 600 side table from 2x4". The `nichiyou-daiku:design` skill writes the `.nd` file, checks it with the CLI until it is sound and reports the size and the lumber to buy. The plugin runs an installed CLI if there is one, otherwise its own copy through [uv](https://docs.astral.sh/uv/).
+
 ## Installation
 
+nichiyou-daiku is not on PyPI. Install the CLI from GitHub with uv:
+
 ```bash
-pip install nichiyou-daiku          # core and CLI
-pip install "nichiyou-daiku[viz]"   # plus 3D export and drawings (build123d)
+uv tool install "git+https://github.com/ar90n/nichiyou-daiku"                       # core and CLI
+uv tool install "nichiyou-daiku[viz] @ git+https://github.com/ar90n/nichiyou-daiku"  # plus 3D export and drawings (build123d)
 ```
 
 > **Note** build123d currently has limited support for ARM64/aarch64. The core works everywhere.
