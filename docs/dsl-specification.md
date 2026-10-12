@@ -420,6 +420,18 @@ piece1 -[anchor anchor S(Type:DIAMETERxLENGTH)]- piece2
 - Screw length must be shorter than the base's depth along its contact normal (front/back → thickness, left/right → width, top/down → piece length) plus the target's thickness, so the tip stays inside the base.
 - Holes: a through-hole in the target and a hole (length - target thickness) deep in the base.
 
+#### Choosing a Length
+
+When the base is also contacted on a wide (front/back) face:
+
+| Target → Base | Allowed length | Recommended screw |
+|---------------|----------------|-------------------|
+| 2x4 → 2x4 (38mm + 38mm) | 39-75mm | `Slim:3.8x65`, `Coarse:3.8x57` |
+| 1x4 → 2x4 (19mm + 38mm) | 20-56mm | `Slim:3.3x45`, `Coarse:3.8x40` |
+| 1x4 → 1x4 (19mm + 19mm) | 20-37mm | `Slim:3.3x30`, `Coarse:3.8x30` |
+
+A base contacted on its narrow face (as deep as its width) or its end (as deep as its length) allows longer screws.
+
 #### Examples
 
 ```nd
