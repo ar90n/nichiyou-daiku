@@ -1,8 +1,10 @@
-.PHONY: help test lint format ci-local ci-setup clean
+.PHONY: help check test lint format ci-local ci-setup clean
 
 help:  ## Show this help message
 	@echo "Available commands:"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
+
+check: lint test  ## Lint and test; run before every commit (~30s)
 
 test:  ## Run tests with coverage (including doctests)
 	uv run pytest src/ tests/ --doctest-modules --cov=nichiyou_daiku --cov-report=term-missing --cov-fail-under=90 -v
@@ -18,7 +20,7 @@ format:  ## Format code with black
 ci-setup:  ## Install CI dependencies for local CI runs
 	uv sync --group ci --group dev --all-extras
 
-ci-local:  ## Run CI pipeline locally (Python 3.13 only)
+ci-local:  ## Run the full CI pipeline in Dagger; run before merging to main or pushing
 	uv run python ci/dagger_pipeline.py
 
 clean:  ## Clean build artifacts

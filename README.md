@@ -250,6 +250,9 @@ uv run pyright src/
 
 # Run all checks
 make lint
+
+# Lint and test together; run before every commit (~30s)
+make check
 ```
 
 ### Quality Assurance
@@ -263,6 +266,8 @@ This project uses Dagger for CI/CD pipelines. The Quality Assurance pipeline inc
 - 📦 **Building**: Python package distribution
 
 #### Running QA Locally
+
+Run the full pipeline before merging into `main` or pushing (it takes a few minutes; `make check` is enough for each commit):
 
 ```bash
 make ci-local
