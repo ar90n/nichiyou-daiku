@@ -35,11 +35,12 @@ system = "\n\n".join(
 )
 response = anthropic.Anthropic().messages.create(
     model="claude-sonnet-5",
-    max_tokens=8192,
+    max_tokens=16000,  # leaves room for thinking, which Sonnet 5 does by default
     system=system,
     messages=[{"role": "user", "content": Path("my-spec.md").read_text()}],
 )
-print(response.content[0].text)
+# The first content block may be thinking; take the text
+print(next(block.text for block in response.content if block.type == "text"))
 ```
 
 ## Workflow

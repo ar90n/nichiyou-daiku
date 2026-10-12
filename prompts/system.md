@@ -199,7 +199,7 @@ Before output:
 - [ ] Face pairs are adjacent: no same (`FF`) or opposite (`TD`, `LR`, `FB`) faces; `B` is back, the bottom end is `D` (down)
 - [ ] Every offset fits its edge (the width W across the width, the thickness T across the thickness, piece length along the length): `TL<50` and `TF<100` are errors
 - [ ] Offset direction: `<` from the down end / left side / back side, `>` from the top end / right side / front side
-- [ ] Screw targets use `front`/`back` contact faces; target thickness < screw length <= base depth + target thickness
+- [ ] Screw targets use `front`/`back` contact faces; target thickness < screw length < base depth + target thickness
 - [ ] Dowel half-length fits both pieces along their contact normals
 - [ ] Fastener presets exist
 - [ ] Lengths match the formulas above (e.g. front/back aprons W - 2x89, side aprons D - 2x38)

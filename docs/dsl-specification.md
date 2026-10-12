@@ -519,26 +519,34 @@ right_side -[FL<300 TL<0 D(:8x30)]- shelf
 
 ## CLI Tools
 
-### Validation
+Every command reads a `.nd` file, or standard input when the file is `-`. Global options go before the command: `-d`/`--debug` (tracebacks for unexpected errors), `-v`/`--verbose` (progress messages) and `-q`/`--quiet`.
 
-Checks the model described by the file.
+### Validation
 
 ```bash
 nichiyou-daiku validate furniture.nd
 ```
 
+Checks the syntax, solves unknowns and the placement, and reports contradicting connections, pieces not connected to the rest, overlapping pieces, fasteners that do not fit their contact area, and holes of two connections that run into each other. It exits with 1 if there is any problem and does not need build123d.
+
+The other commands print the same problems (all but overlaps) as warnings and carry on; `report` also lists them in a Warnings section of the report.
+
 ### Report Generation
 
 ```bash
 nichiyou-daiku report furniture.nd -o report.md
-nichiyou-daiku report furniture.nd --project-name "My Table"
+nichiyou-daiku report furniture.nd --project-name "My Table" --no-cut-diagram
 ```
+
+Writes Markdown (to standard output without `-o`): an overview with the overall size, the bill of materials, anchor details, pilot holes, a shopping list, purchase recommendations and a cut list that allows a 3mm saw kerf. `--no-anchor-details`, `--no-pilot-holes` and `--no-cut-diagram` leave sections out.
 
 ### 3D View (requires build123d)
 
 ```bash
 nichiyou-daiku view furniture.nd
 ```
+
+Shows the model in OCP CAD Viewer (VS Code) or, failing that, jupyter-cadquery. `--fillet-radius` rounds the edges (default 5mm, 0 for sharp edges).
 
 ### Export (requires build123d)
 
@@ -553,11 +561,16 @@ nichiyou-daiku export furniture.nd -f step -o model.step
 nichiyou-daiku export furniture.nd -f stl --fillet-radius 10
 ```
 
+The format comes from `-f` or the output file's extension.
+
 ### Technical Drawing (requires build123d)
 
 ```bash
 nichiyou-daiku drawing furniture.nd -o furniture.pdf
+nichiyou-daiku drawing furniture.nd -o furniture.svg --page-size A4 --title "Side Table"
 ```
+
+Draws the top, front, right-side and isometric views on one page (A4 to A1, default A3); an output ending in `.svg` is written as SVG instead of PDF. `--drawing-number` and `--designed-by` fill in the title block.
 
 ## Grammar (EBNF)
 

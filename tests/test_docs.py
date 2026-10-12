@@ -10,7 +10,7 @@ import pytest
 from nichiyou_daiku.core.assembly import Assembly
 from nichiyou_daiku.core.dowel import Dowel
 from nichiyou_daiku.core.piece import PieceType, get_shape
-from nichiyou_daiku.core.placement import find_overlaps
+from nichiyou_daiku.core.placement import find_overlaps, overall_bounds
 from nichiyou_daiku.core.screw import CoarseThreadScrew, SlimScrew
 from nichiyou_daiku.dsl import parse_dsl
 
@@ -28,20 +28,46 @@ ND_FILES = sorted(
         *(ROOT / "prompts" / "examples" / "nd-output").glob("*.nd"),
     ]
 )
-FENCE = re.compile(r"^```(\w[\w-]*)?\n(.*?)^```", re.S | re.M)
-LINK = re.compile(r"\[[^\]]*\]\(([^)\s]+)\)")
+OPENING = re.compile(r"^(\s*)(`{3,}|~{3,})\s*([\w-]*)")
+# Inline links, with an optional <...> target and "title", and reference
+# definitions such as [spec]: docs/dsl-specification.md
+LINK = re.compile(r"\]\(\s*<?([^)\s>]+)>?(?:\s+\"[^\"]*\")?\s*\)")
+REFERENCE = re.compile(r"^\s*\[[^\]]+\]:\s*<?(\S+?)>?(?:\s+\"[^\"]*\")?\s*$", re.M)
+# Paths written in code spans or prose, e.g. `prompts/system.md`
+PATH = re.compile(r"(?<![\w/.-])((?:docs|prompts|examples|src|tests)/[\w./-]*[\w/])")
 DSL_SPEC = (ROOT / "docs" / "dsl-specification.md").read_text()
 
 
-def _blocks(language: str) -> list[tuple[str, str]]:
-    found = []
-    for path in MARKDOWN:
-        text = path.read_text()
-        for match in FENCE.finditer(text):
-            if match.group(1) == language:
-                line = text[: match.start()].count("\n") + 1
-                found.append((f"{path.relative_to(ROOT)}:{line}", match.group(2)))
-    return found
+def _fences(text: str) -> list[tuple[int, str, str]]:
+    """(line, language, body) of each fenced block, indented or not."""
+    lines = text.splitlines(keepends=True)
+    blocks = []
+    i = 0
+    while i < len(lines):
+        opening = OPENING.match(lines[i])
+        if opening is None:
+            i += 1
+            continue
+        indent, fence, language = opening.groups()
+        closing = re.compile(rf"^\s*{re.escape(fence[0])}{{{len(fence)},}}\s*$")
+        body = []
+        j = i + 1
+        while j < len(lines) and not closing.match(lines[j]):
+            line = lines[j]
+            body.append(line[len(indent) :] if line.startswith(indent) else line)
+            j += 1
+        blocks.append((i + 1, language, "".join(body)))
+        i = j + 1
+    return blocks
+
+
+def _blocks(*languages: str) -> list[tuple[str, str]]:
+    return [
+        (f"{path.relative_to(ROOT)}:{line}", body)
+        for path in MARKDOWN
+        for line, language, body in _fences(path.read_text())
+        if language in languages
+    ]
 
 
 def _problems(source: str) -> list[str]:
@@ -58,6 +84,13 @@ def _problems(source: str) -> list[str]:
 
 
 ND_BLOCKS = _blocks("nd")
+
+
+def test_every_nd_fence_is_collected():
+    # A parser slip would silently drop examples from the test above
+    opening = re.compile(r"^\s*(`{3,}|~{3,})\s*nd\b", re.M)
+    written = sum(len(opening.findall(path.read_text())) for path in MARKDOWN)
+    assert len(ND_BLOCKS) == written > 0
 
 
 @pytest.mark.parametrize(
@@ -79,14 +112,19 @@ def test_python_output_example_builds_a_sound_table():
     assembly = namespace["main"]()
     assert assembly.placement.conflicts == ()
     assert find_overlaps(assembly.model, assembly.placement) == ()
+    assert assembly.fastener_issues == ()
+    assert len(assembly.placement.groups) == 1
+    low, high = overall_bounds(assembly.model, assembly.placement)
+    size = sorted(round(v, 6) for v in (high.x - low.x, high.y - low.y, high.z - low.z))
+    assert size == [400.0, 500.0, 600.0]  # the 500 x 400 x 600 side table
 
 
 def test_api_spec_examples_run():
     text = (ROOT / "docs" / "api-specification.md").read_text()
     blocks = [
-        (text[: m.start()].count("\n") + 2, m.group(2))
-        for m in FENCE.finditer(text)
-        if m.group(1) == "python"
+        (line + 1, body)
+        for line, language, body in _fences(text)
+        if language in ("python", "py")
     ]
     # Signature blocks show the imports the doctest blocks rely on
     namespace: dict = {}
@@ -107,7 +145,9 @@ def test_api_spec_examples_run():
         runner.run(test, clear_globs=False)
         # DocTest copies its globals; carry definitions on to later blocks
         namespace.update(test.globs)
-    assert runner.summarize(verbose=False).failed == 0
+    results = runner.summarize(verbose=False)
+    assert results.failed == 0
+    assert results.attempted > 0
 
 
 def test_lumber_table_matches_the_code():
@@ -137,11 +177,23 @@ def test_preset_tables_match_the_code():
 
 @pytest.mark.parametrize("path", MARKDOWN, ids=lambda p: str(p.relative_to(ROOT)))
 def test_relative_links_point_at_existing_files(path):
+    text = path.read_text()
     missing = []
-    for target in LINK.findall(path.read_text()):
+    for target in [*LINK.findall(text), *REFERENCE.findall(text)]:
         if re.match(r"^(https?:|mailto:|#)", target):
             continue
         file_part = target.split("#", 1)[0]
         if not (path.parent / file_part).exists():
             missing.append(target)
+    assert missing == []
+
+
+@pytest.mark.parametrize("path", MARKDOWN, ids=lambda p: str(p.relative_to(ROOT)))
+def test_mentioned_repo_paths_exist(path):
+    # Prompts name files in code spans rather than links
+    missing = [
+        mention
+        for mention in PATH.findall(path.read_text())
+        if not (ROOT / mention).exists() and not (path.parent / mention).exists()
+    ]
     assert missing == []
