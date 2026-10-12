@@ -181,3 +181,135 @@ def test_unknowns_example_is_valid():
     assert assembly.placement.conflicts == ()
     assert assembly.fastener_issues == ()
     assert sum(f.base_id == "apron_back" for f in assembly.fasteners) == 12
+
+
+WRITTEN = parse_dsl(TABLE)
+WRITTEN_PLACEMENT = solve_placement(WRITTEN)
+UNKNOWNS_EXAMPLE = (
+    Path(__file__).parents[2] / "examples" / "nd_files" / "simple_table_unknowns.nd"
+).read_text()
+
+
+def _blank_length(piece_id: str) -> Model:
+    pieces = {
+        pid: Piece.of(p.type, None, pid) if pid == piece_id else p
+        for pid, p in WRITTEN.pieces.items()
+    }
+    return _rebuild(pieces, {})
+
+
+def _make_sliding(key: tuple[str, str]) -> Model:
+    return _rebuild(dict(WRITTEN.pieces), {key})
+
+
+def _rebuild(pieces, sliding) -> Model:
+    def anchor(old: Anchor, slide: bool) -> Anchor:
+        if not slide:
+            return old
+        return Anchor.of(old.contact_face, old.edge_shared_face, None)
+
+    connections = [
+        Connection(
+            base=BoundAnchor(
+                piece=pieces[c.base.piece.id],
+                anchor=anchor(c.base.anchor, key in sliding),
+            ),
+            target=BoundAnchor(
+                piece=pieces[c.target.piece.id],
+                anchor=anchor(c.target.anchor, key in sliding),
+            ),
+            type=c.type,
+        )
+        for key, c in WRITTEN.connections.items()
+    ]
+    return Model.of(pieces=list(pieces.values()), connections=connections)
+
+
+class TestEveryUnknownInALoopModel:
+    """Leave one value of the written table unknown at a time: it either
+    resolves back to exactly the written table or is reported as open."""
+
+    @pytest.mark.parametrize("piece_id", list(WRITTEN.pieces))
+    def test_unknown_length(self, piece_id):
+        try:
+            resolved = resolve_model(_blank_length(piece_id))
+        except ResolutionError as error:
+            assert error.piece_id is not None
+            return
+        assert resolved.pieces[piece_id].length == WRITTEN.pieces[piece_id].length
+        assert solve_placement(resolved) == WRITTEN_PLACEMENT
+
+    @pytest.mark.parametrize("key", list(WRITTEN.connections))
+    def test_sliding_connection(self, key):
+        try:
+            resolved = resolve_model(_make_sliding(key))
+        except ResolutionError:
+            return
+        assert solve_placement(resolved) == WRITTEN_PLACEMENT
+
+    @pytest.mark.parametrize(
+        "piece_id",
+        ["leg_1", "leg_2", "leg_3", "leg_4"]
+        + ["apron_front", "apron_back", "apron_left", "apron_right"],
+    )
+    def test_legs_and_aprons_are_fixed_by_the_rest(self, piece_id):
+        resolved = resolve_model(_blank_length(piece_id))
+        assert resolved.pieces[piece_id].length == WRITTEN.pieces[piece_id].length
+
+
+class TestReviewFollowUps:
+    def test_conflicting_sliding_connection_reports_only_the_real_conflict(self):
+        # Lower the back apron by 1mm: the boards no longer rest on it
+        source = UNKNOWNS_EXAMPLE.replace(
+            "leg_3 -[LB>0 DB>0]- apron_back", "leg_3 -[LB>1 DB>0]- apron_back"
+        ).replace("leg_4 -[RF>0 TF>0]- apron_back", "leg_4 -[RF>1 TF>0]- apron_back")
+        conflicts = Assembly.of(parse_dsl(source)).placement.conflicts
+        assert len(conflicts) == 6
+        assert {c.kind for c in conflicts} == {"contact"}
+        assert {c.mismatch_mm for c in conflicts} == {-1.0}
+
+    def test_check_failing_on_the_solved_length_points_at_the_connection(self):
+        # u resolves to 200mm, too short for an anchor 250mm from its top
+        source = BETWEEN.format(S=500) + "(x:2x4 =100)\nu -[FR>250 BR<0]- x\n"
+        with pytest.raises(DSLValidationError, match="exceeds") as exc:
+            parse_dsl(source)
+        assert exc.value.line == 10
+
+    def test_check_failing_on_the_solved_model_is_a_resolution_error(self):
+        source = BETWEEN.format(S=500) + "(x:2x4 =100)\nu -[FR>250 BR<0]- x\n"
+        model = parse_dsl(source.replace("(u:2x4 =?)", "(u:2x4 =1000)"))
+        pieces = {
+            pid: Piece.of(p.type, None, pid) if pid == "u" else p
+            for pid, p in model.pieces.items()
+        }
+        unresolved = Model.of(
+            pieces=list(pieces.values()),
+            connections=[
+                Connection(
+                    base=BoundAnchor(
+                        piece=pieces[c.base.piece.id], anchor=c.base.anchor
+                    ),
+                    target=BoundAnchor(
+                        piece=pieces[c.target.piece.id], anchor=c.target.anchor
+                    ),
+                    type=c.type,
+                )
+                for c in model.connections.values()
+            ],
+        )
+        with pytest.raises(ResolutionError, match="exceeds") as exc:
+            resolve_model(unresolved)
+        assert exc.value.connection == ("u", "x")
+
+    def test_each_group_is_resolved_on_its_own(self):
+        model = parse_dsl(BETWEEN.format(S=500) + "(lonely:2x4 =100)\n")
+        assert model.pieces["u"].length == 200.0
+        assert len(solve_placement(model).groups) == 2
+
+    def test_sliding_error_names_the_connections(self):
+        with pytest.raises(DSLValidationError, match="a -> b"):
+            parse_dsl("(a:2x4 =500)\n(b:2x4 =300)\na -[FL? DF?]- b")
+
+    def test_unknown_in_json_notation_gets_a_hint(self):
+        with pytest.raises(Exception, match="compact notation"):
+            parse_dsl('(a:2x4 {"length": ?})')

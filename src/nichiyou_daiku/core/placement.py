@@ -115,7 +115,8 @@ class Overlap(BaseModel, frozen=True):
     volume: float
 
 
-def _normal(face: Face) -> np.ndarray:
+def face_normal(face: Face) -> np.ndarray:
+    """Outward unit normal of a face in piece coordinates."""
     v = Vector3D.normal_of(face)
     return np.array([v.x, v.y, v.z])
 
@@ -130,10 +131,10 @@ def relative_rotation(base: BoundAnchor, target: BoundAnchor) -> np.ndarray:
     The contact faces face each other and the edge-shared faces face the
     same way (flush).
     """
-    n_base = _normal(base.anchor.contact_face)
-    e_base = _normal(base.anchor.edge_shared_face)
-    n_target = _normal(target.anchor.contact_face)
-    e_target = _normal(target.anchor.edge_shared_face)
+    n_base = face_normal(base.anchor.contact_face)
+    e_base = face_normal(base.anchor.edge_shared_face)
+    n_target = face_normal(target.anchor.contact_face)
+    e_target = face_normal(target.anchor.edge_shared_face)
     rotation = _frame(-n_base, e_base) @ _frame(n_target, e_target).T
     return np.rint(rotation).astype(int)
 
@@ -161,7 +162,8 @@ def _anchor_point(bound: BoundAnchor) -> np.ndarray:
     return np.array([point.x, point.y, point.z])
 
 
-def _axis_index(direction: np.ndarray) -> int:
+def axis_index(direction: np.ndarray) -> int:
+    """Index (0, 1, 2) of the axis a 90-degree direction runs along."""
     return int(np.argmax(np.abs(direction)))
 
 
@@ -218,7 +220,8 @@ class _AxisOffsets:
         return None
 
 
-def _round(value: float) -> float:
+def round_mm(value: float) -> float:
+    """Round to 1e-6mm, turning -0.0 into 0.0."""
     return round(float(value), 6) + 0.0
 
 
@@ -253,15 +256,18 @@ def _local_anchor(bound: BoundAnchor) -> tuple[np.ndarray, End]:
     return np.array([point.x, point.y, point.z]), end
 
 
-def _edge_axis(rotation: np.ndarray, bound: BoundAnchor) -> int:
+def edge_axis(rotation: np.ndarray, bound: BoundAnchor) -> int:
     """World axis the anchor's edge runs along."""
     direction = np.cross(
-        _normal(bound.anchor.contact_face), _normal(bound.anchor.edge_shared_face)
+        face_normal(bound.anchor.contact_face),
+        face_normal(bound.anchor.edge_shared_face),
     )
-    return _axis_index(rotation @ direction)
+    return axis_index(rotation @ direction)
 
 
-class _Solution(NamedTuple):
+class PositionSolution(NamedTuple):
+    """Orientations and per-axis positions solved from a model's connections."""
+
     rotation: dict[str, np.ndarray]
     groups: list[list[str]]
     offsets: dict[Axis, _AxisOffsets]
@@ -269,7 +275,7 @@ class _Solution(NamedTuple):
     conflicts: list[Conflict]
 
 
-def _solve(model: Model) -> _Solution:
+def solve_positions(model: Model) -> PositionSolution:
     """Solve orientations, then positions along each world axis.
 
     Connections are taken in declaration order; a constraint that contradicts
@@ -331,7 +337,7 @@ def _solve(model: Model) -> _Solution:
     length_axis: dict[str, tuple[int, int]] = {}
     for pid, piece in model.pieces.items():
         column = rotation[pid][:, 2]
-        index = _axis_index(column)
+        index = axis_index(column)
         length_axis[pid] = (index, int(column[index]))
         if piece.length is not None:
             offsets[AXES[index]].require(
@@ -347,16 +353,16 @@ def _solve(model: Model) -> _Solution:
         difference = base_rot @ base_point - target_rot @ target_point
         # Pieces joined by unknown offsets may slide along the shared edge
         sliding = (
-            _edge_axis(base_rot, connection.base)
+            edge_axis(base_rot, connection.base)
             if connection.base.anchor.offset is None
             else None
         )
         kinds: dict[int, ConstraintKind] = {
-            _axis_index(
-                base_rot @ _normal(connection.base.anchor.contact_face)
+            axis_index(
+                base_rot @ face_normal(connection.base.anchor.contact_face)
             ): "contact",
-            _axis_index(
-                base_rot @ _normal(connection.base.anchor.edge_shared_face)
+            axis_index(
+                base_rot @ face_normal(connection.base.anchor.edge_shared_face)
             ): "flush",
         }
         for index, axis in enumerate(AXES):
@@ -383,12 +389,12 @@ def _solve(model: Model) -> _Solution:
                         target_id=target_id,
                         kind=kinds.get(index, "edge"),
                         axis=axis,
-                        mismatch_mm=_round(mismatch),
+                        mismatch_mm=round_mm(mismatch),
                         loop=_path(axis_graph[axis], base_id, target_id),
                     )
                 )
 
-    return _Solution(rotation, groups, offsets, length_axis, conflicts)
+    return PositionSolution(rotation, groups, offsets, length_axis, conflicts)
 
 
 def solve_placement(model: Model) -> Placement:
@@ -403,7 +409,7 @@ def solve_placement(model: Model) -> Placement:
             "The model has unknown lengths or offsets; resolve it first with "
             "resolve_model (Assembly.of does this)"
         )
-    rotation, groups, offsets, _, conflicts = _solve(model)
+    rotation, groups, offsets, _, conflicts = solve_positions(model)
 
     # Step 3: positions relative to each group's first declared piece
     poses: dict[str, Pose] = {}
@@ -424,9 +430,9 @@ def solve_placement(model: Model) -> Placement:
                     (int(matrix[2, 0]), int(matrix[2, 1]), int(matrix[2, 2])),
                 ),
                 translation=(
-                    _round(position[0] - root_position[0]),
-                    _round(position[1] - root_position[1]),
-                    _round(position[2] - root_position[2]),
+                    round_mm(position[0] - root_position[0]),
+                    round_mm(position[1] - root_position[1]),
+                    round_mm(position[2] - root_position[2]),
                 ),
             )
 
@@ -441,7 +447,7 @@ def solve_placement(model: Model) -> Placement:
                 x, y, z = poses[member].translation
                 poses[member] = Pose(
                     rotation=poses[member].rotation,
-                    translation=(_round(x + shift), y, z),
+                    translation=(round_mm(x + shift), y, z),
                 )
         right_edge = (
             high_x + shift if right_edge is None else max(right_edge, high_x + shift)

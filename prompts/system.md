@@ -136,7 +136,7 @@ apron -[RF<(GAP + 89 + GAP) BT<0]- top_3
 
 ### Unknown Lengths and Sliding Connections
 
-- `(apron:2x4 =?)`: the length follows from the connections at both ends. Use it for a piece that spans a gap fixed by other pieces; at most one unknown piece per loop of connections.
+- `(apron:2x4 =?)`: the length follows from the connections at both ends. Use it for a piece that spans a gap fixed by other pieces. Two unknown pieces in series along the same direction cannot both be solved; unknowns in different directions can.
 - `a -[RB? BD?]- b`: a sliding connection (`?` on both anchors). The pieces touch and are flush but may slide along the shared edge, so another connection must fix the position. Use it to fasten a piece to a second support (e.g. top boards to the back apron) without computing the offset.
 
 ### Connection Definition

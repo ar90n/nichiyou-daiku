@@ -49,7 +49,7 @@ class DSLTransformer(Transformer):
         self.variables: dict[str, float] = {}
         # Where pieces and connections are written, for errors found once the
         # whole model is known
-        self.positions: dict[str | tuple[str, str], tuple[int, int]] = {}
+        self.positions: dict[str | tuple[str, str], tuple[int | None, int | None]] = {}
 
     # =========================================================================
     # Entry points
@@ -408,6 +408,6 @@ def _reject_unknown_properties(
             )
 
 
-def _position(meta: Meta) -> tuple[int, int]:
+def _position(meta: Meta) -> tuple[int | None, int | None]:
     # An empty meta (no source position) has no line or column attributes
-    return getattr(meta, "line", None), getattr(meta, "column", None)  # type: ignore[return-value]
+    return getattr(meta, "line", None), getattr(meta, "column", None)

@@ -8,13 +8,22 @@ reports work as usual.
 """
 
 import numpy as np
+from pydantic import ValidationError
 
 from .anchor import Anchor, BoundAnchor, as_edge_point, as_point_3d
 from .connection import Connection
 from .geometry import Box, FromMin, edge_length_of
 from .model import Model
 from .piece import Piece, get_shape
-from .placement import AXES, TOLERANCE_MM, _edge_axis, _round, _solve, _Solution
+from .placement import (
+    AXES,
+    TOLERANCE_MM,
+    PositionSolution,
+    edge_axis,
+    face_normal,
+    round_mm,
+    solve_positions,
+)
 
 
 class ResolutionError(ValueError):
@@ -42,44 +51,60 @@ def resolve_model(model: Model) -> Model:
 
     Raises:
         ResolutionError: If a length or position is not fixed, a length would
-            not be positive, or two sliding pieces do not meet along their edge
+            not be positive, two sliding pieces do not meet along their edge,
+            or a check fails on the solved values (e.g. an offset longer than
+            the solved length)
     """
     if not model.has_unknowns:
         return model
-    solution = _solve(model)
+    solution = solve_positions(model)
     pieces = {
         piece_id: piece
         if piece.length is not None
         else Piece(id=piece_id, type=piece.type, length=_solved_length(piece, solution))
         for piece_id, piece in model.pieces.items()
     }
-    _check_positions_fixed(solution)
+    _check_positions_fixed(model, solution)
 
-    rejected = {(c.base_id, c.target_id) for c in solution.conflicts}
+    conflicted = {(c.base_id, c.target_id): c.kind for c in solution.conflicts}
     connections = []
-    for (base_id, target_id), connection in model.connections.items():
+    for key, connection in model.connections.items():
         base, target = connection.base.anchor, connection.target.anchor
         if base.offset is None:
-            if (base_id, target_id) in rejected:
-                # Placement reports the conflict again; any valid offset will do
+            if conflicted.get(key) == "rotation":
+                # The connection does not hold at all; any valid offset will do
                 offsets = (FromMin(value=0), FromMin(value=0))
             else:
-                offsets = _sliding_offsets(connection, pieces, solution)
+                # A conflicting sliding connection still takes the position the
+                # rest of the model gives it, so only its real conflict remains
+                offsets = _sliding_offsets(
+                    connection, pieces, solution, must_meet=key not in conflicted
+                )
             base = Anchor.of(base.contact_face, base.edge_shared_face, offsets[0])
             target = Anchor.of(target.contact_face, target.edge_shared_face, offsets[1])
-        connections.append(
-            Connection(
-                base=BoundAnchor(piece=pieces[base_id], anchor=base),
-                target=BoundAnchor(piece=pieces[target_id], anchor=target),
-                type=connection.type,
+        try:
+            connections.append(
+                Connection(
+                    base=BoundAnchor(piece=pieces[key[0]], anchor=base),
+                    target=BoundAnchor(piece=pieces[key[1]], anchor=target),
+                    type=connection.type,
+                )
             )
-        )
+        except ValidationError as error:
+            raise ResolutionError(_messages(error), connection=key) from error
     return Model.of(
         pieces=list(pieces.values()), connections=connections, label=model.label
     )
 
 
-def _solved_length(piece: Piece, solution: _Solution) -> float:
+def _messages(error: ValidationError) -> str:
+    return "; ".join(
+        str(detail.get("ctx", {}).get("error", detail["msg"]))
+        for detail in error.errors()
+    )
+
+
+def _solved_length(piece: Piece, solution: PositionSolution) -> float:
     index, sign = solution.length_axis[piece.id]
     offsets = solution.offsets[AXES[index]]
     down_root, down = offsets.find((piece.id, "down"))
@@ -89,7 +114,7 @@ def _solved_length(piece: Piece, solution: _Solution) -> float:
             f"The length of '{piece.id}' is not fixed by its connections",
             piece_id=piece.id,
         )
-    length = _round(sign * (top - down))
+    length = round_mm(sign * (top - down))
     if length <= TOLERANCE_MM:
         raise ResolutionError(
             f"The connections make '{piece.id}' {length:g}mm long; "
@@ -99,7 +124,7 @@ def _solved_length(piece: Piece, solution: _Solution) -> float:
     return length
 
 
-def _check_positions_fixed(solution: _Solution) -> None:
+def _check_positions_fixed(model: Model, solution: PositionSolution) -> None:
     """Every piece must sit at a fixed place relative to its group."""
     for group in solution.groups:
         root = group[0]
@@ -107,15 +132,32 @@ def _check_positions_fixed(solution: _Solution) -> None:
             for axis in AXES:
                 offsets = solution.offsets[axis]
                 if offsets.find((member, "down"))[0] != offsets.find((root, "down"))[0]:
+                    sliding = [
+                        f"{base_id} -> {target_id}"
+                        for (
+                            base_id,
+                            target_id,
+                        ), connection in model.connections.items()
+                        if member in (base_id, target_id)
+                        and connection.base.anchor.offset is None
+                    ]
+                    held_by = (
+                        f"its connections with unknown offsets ({', '.join(sliding)})"
+                        if sliding
+                        else "connections with unknown offsets (?)"
+                    )
                     raise ResolutionError(
-                        f"'{member}' can slide along {axis}: connections with "
-                        "unknown offsets (?) leave its position open",
+                        f"'{member}' can slide along {axis} (axes of '{root}'): "
+                        f"{held_by} leave its position open",
                         piece_id=member,
                     )
 
 
 def _sliding_offsets(
-    connection: Connection, pieces: dict[str, Piece], solution: _Solution
+    connection: Connection,
+    pieces: dict[str, Piece],
+    solution: PositionSolution,
+    must_meet: bool,
 ) -> tuple[FromMin, FromMin]:
     """Offsets that put both anchors where the two edges overlap.
 
@@ -123,7 +165,7 @@ def _sliding_offsets(
     taken, so the base offset is as small as it can be.
     """
     base_id, target_id = connection.base.piece.id, connection.target.piece.id
-    axis = _edge_axis(solution.rotation[base_id], connection.base)
+    axis = edge_axis(solution.rotation[base_id], connection.base)
     spans = [
         _edge_span(pieces[piece_id], anchor, solution, axis)
         for piece_id, anchor in (
@@ -137,7 +179,7 @@ def _sliding_offsets(
     high = min(
         max(start, start + direction * length) for start, direction, length in spans
     )
-    if high < low - TOLERANCE_MM:
+    if must_meet and high < low - TOLERANCE_MM:
         raise ResolutionError(
             f"'{base_id}' and '{target_id}' slide along a shared edge (?) but "
             "their edges do not meet",
@@ -145,34 +187,28 @@ def _sliding_offsets(
         )
     point = low if spans[0][1] > 0 else high
     base_offset, target_offset = (
-        min(max(_round((point - start) * direction), 0.0), length)
+        min(max(round_mm((point - start) * direction), 0.0), length)
         for start, direction, length in spans
     )
     return FromMin(value=base_offset), FromMin(value=target_offset)
 
 
 def _edge_span(
-    piece: Piece, anchor: Anchor, solution: _Solution, axis: int
+    piece: Piece, anchor: Anchor, solution: PositionSolution, axis: int
 ) -> tuple[float, int, float]:
     """World coordinate along ``axis`` of the edge's FromMin start, the
     direction offsets grow in (+1 or -1) and the edge length."""
     rotation = solution.rotation[piece.id]
+    start_anchor = Anchor.of(
+        anchor.contact_face, anchor.edge_shared_face, FromMin(value=0)
+    )
+    point = as_point_3d(BoundAnchor(piece=piece, anchor=start_anchor))
     position = solution.offsets[AXES[axis]].find((piece.id, "down"))[1]
-
-    def world(value: float) -> float:
-        bound = BoundAnchor(
-            piece=piece,
-            anchor=Anchor.of(
-                anchor.contact_face, anchor.edge_shared_face, FromMin(value=value)
-            ),
-        )
-        point = as_point_3d(bound)
-        return position + float(
-            (rotation @ np.array([point.x, point.y, point.z]))[axis]
-        )
-
-    start = world(0.0)
-    direction = 1 if world(1.0) > start else -1
-    sample = Anchor.of(anchor.contact_face, anchor.edge_shared_face, FromMin(value=0))
-    edge = as_edge_point(sample).edge
+    start = position + float((rotation @ np.array([point.x, point.y, point.z]))[axis])
+    # FromMin offsets grow along the edge's local axis, from its negative end
+    local_axis = np.abs(
+        np.cross(face_normal(anchor.contact_face), face_normal(anchor.edge_shared_face))
+    )
+    direction = int((rotation @ local_axis)[axis])
+    edge = as_edge_point(start_anchor).edge
     return start, direction, edge_length_of(Box(shape=get_shape(piece)), edge)

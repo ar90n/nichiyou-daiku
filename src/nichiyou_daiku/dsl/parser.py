@@ -126,6 +126,13 @@ def _describe_syntax_error(error: UnexpectedInput, parser: Lark) -> str:
     )
     label = "Expected" if len(descriptions) == 1 else "Expected one of"
     message = f"{found}. {label}: {', '.join(descriptions)}" if descriptions else found
+    unexpected = getattr(error, "char", None) or getattr(
+        getattr(error, "token", None), "value", None
+    )
+    if unexpected == "?" and "UNKNOWN" not in expected:
+        message += (
+            ". '?' (unknown) works in compact notation only, e.g. (x:2x4 =?) or RB? BD?"
+        )
     if (
         isinstance(error, UnexpectedToken)
         and error.token.value in _ARITHMETIC

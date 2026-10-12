@@ -21,7 +21,7 @@ from ..connection import (
 )
 from ..geometry import Box, Face, Point3D, SurfacePoint
 from ..piece import Piece, get_shape
-from ..placement import _axis_index, _normal, relative_pose
+from ..placement import axis_index, face_normal, relative_pose
 from .models import Fastener, FastenerKind, Hole, LayoutIssue
 
 CONTACT_TOLERANCE_MM = 1e-6
@@ -71,8 +71,8 @@ def layout_fasteners(
     low = np.maximum(np.zeros(3), [target_low.x, target_low.y, target_low.z])
     high = np.minimum(base_high, [target_high.x, target_high.y, target_high.z])
 
-    normal = _normal(base.anchor.contact_face)
-    plane_axis = _axis_index(normal)
+    normal = face_normal(base.anchor.contact_face)
+    plane_axis = axis_index(normal)
     plane = base_high[plane_axis] if normal[plane_axis] > 0 else 0.0
     first, second = (axis for axis in range(3) if axis != plane_axis)
     sizes = {first: high[first] - low[first], second: high[second] - low[second]}
@@ -133,8 +133,8 @@ class _Bore(NamedTuple):
 def _bore(box: Box, position: SurfacePoint, hole: Hole) -> _Bore:
     entry = Point3D.of(box, position)
     center = np.array([entry.x, entry.y, entry.z])
-    normal = _normal(position.face)
-    axis = _axis_index(normal)
+    normal = face_normal(position.face)
+    axis = axis_index(normal)
     size = (box.shape.width, box.shape.height, box.shape.length)[axis]
     end = center[axis] - normal[axis] * (size if hole.depth is None else hole.depth)
     low, high = sorted((float(center[axis]), float(end)))

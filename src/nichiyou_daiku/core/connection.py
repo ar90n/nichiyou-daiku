@@ -92,8 +92,9 @@ class Connection(BaseModel, frozen=True):
             )
         if (self.base.anchor.offset is None) != (self.target.anchor.offset is None):
             raise ValueError(
-                "An unknown offset (?) lets the pieces slide along the shared "
-                "edge, so use it on both anchors of a connection or on neither"
+                "An unknown offset (None; ? in the DSL) lets the pieces slide "
+                "along the shared edge, so use it on both anchors of a "
+                "connection or on neither"
             )
         match self.type:
             case DowelConnection(radius=radius, depth=depth):
