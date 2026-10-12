@@ -1,0 +1,12 @@
+{
+  "name": "nichiyou-daiku",
+  "owner": { "name": "Masahiro Wada" },
+  "description": "The nichiyou-daiku plugin for Claude Code",
+  "plugins": [
+    {
+      "name": "nichiyou-daiku",
+      "source": "./",
+      "description": "Design DIY furniture from standard 1x/2x lumber with the nichiyou-daiku DSL and CLI"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "name": "nichiyou-daiku",
+  "description": "Design DIY furniture from standard 1x/2x lumber with the nichiyou-daiku DSL and CLI",
+  "author": { "name": "Masahiro Wada" },
+  "homepage": "https://github.com/ar90n/nichiyou-daiku",
+  "repository": "https://github.com/ar90n/nichiyou-daiku",
+  "license": "Apache-2.0",
+  "keywords": ["woodworking", "diy", "furniture", "cad"]
+}
