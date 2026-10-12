@@ -13,44 +13,7 @@ from nichiyou_daiku.core.assembly import Assembly, Hole
 from nichiyou_daiku.core.geometry import Point3D, Box, SurfacePoint
 from nichiyou_daiku.core.piece import PieceType, get_shape
 from nichiyou_daiku.core.placement import overall_bounds
-
-
-def format_mm(value: float) -> str:
-    """Format a length or volume: 0.1mm steps without a trailing ".0", and
-    two significant digits below 0.1 so small values do not print as 0."""
-    if abs(value) >= 0.1:
-        return f"{value:.1f}".removesuffix(".0")
-    return f"{value:.2g}"
-
-
-def describe_assembly_issues(assembly: Assembly) -> list[str]:
-    """Human-readable lines for placement conflicts, unconnected pieces,
-    fasteners that do not fit and holes that collide."""
-    placement = assembly.placement
-    issues = []
-    for conflict in placement.conflicts:
-        loop = " -> ".join(conflict.loop)
-        where = f"Connection {conflict.base_id} -> {conflict.target_id}"
-        if conflict.kind == "rotation":
-            issues.append(
-                f"{where}: orientation contradicts the other connections (loop: {loop})"
-            )
-        else:
-            issues.append(
-                f"{where}: {conflict.kind} ({conflict.axis}) is off by "
-                f"{format_mm(abs(conflict.mismatch_mm or 0.0))}mm (loop: {loop})"
-            )
-    if len(placement.groups) > 1:
-        listed = "; ".join(", ".join(group) for group in placement.groups)
-        issues.append(
-            "Some pieces are not connected to each other, so their relative "
-            f"position is undefined (groups: {listed})"
-        )
-    issues += [
-        f"Connection {issue.base_id} -> {issue.target_id}: {issue.message}"
-        for issue in assembly.fastener_issues
-    ]
-    return issues
+from nichiyou_daiku.shell.diagnostics import describe_assembly_issues
 
 
 class AnchorInfo(BaseModel):

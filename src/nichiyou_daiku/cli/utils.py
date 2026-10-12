@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Optional
 
 import click
 
-from nichiyou_daiku.shell.resources import describe_assembly_issues
+from nichiyou_daiku.shell.diagnostics import describe_assembly_issues
 
 if TYPE_CHECKING:
     from nichiyou_daiku.core.assembly import Assembly

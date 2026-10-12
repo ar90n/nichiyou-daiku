@@ -265,7 +265,7 @@ def test_validate_shows_small_mismatches_without_rounding_them_to_zero(
 
 
 def test_format_mm_keeps_small_values_visible():
-    from nichiyou_daiku.shell.resources import format_mm
+    from nichiyou_daiku.shell.diagnostics import format_mm
 
     assert format_mm(389.0) == "389"
     assert format_mm(-89.25) == "-89.2"

@@ -10,7 +10,8 @@ from datetime import datetime
 
 from nichiyou_daiku.core.piece import PieceType
 from .cutting import LumberPlan, plan_cuts
-from .resources import ResourceSummary, format_mm
+from .diagnostics import format_mm
+from .resources import ResourceSummary
 
 
 def _oversize_warning(plan: LumberPlan) -> List[str]:
