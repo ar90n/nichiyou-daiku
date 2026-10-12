@@ -1,0 +1,58 @@
+#!/bin/sh
+# The nichiyou-daiku CLI for the Claude Code plugin: run an installed CLI if
+# there is one, otherwise this plugin's own source through uv (the package is
+# not on PyPI)
+set -eu
+
+# Follow symlinks so a link to this script still finds the plugin root
+real_path() {
+  target=$1
+  while [ -L "$target" ]; do
+    link=$(readlink -- "$target")
+    case $link in
+      /*) target=$link ;;
+      *) target=$(dirname -- "$target")/$link ;;
+    esac
+  done
+  printf '%s/%s\n' "$(CDPATH='' cd -P -- "$(dirname -- "$target")" && pwd -P)" "$(basename -- "$target")"
+}
+
+self=$(real_path "$0")
+root=$(dirname -- "$(dirname -- "$self")")
+
+# Another copy of this script (a second plugin version on PATH) hands over
+# with the flag set, so the copies never exec each other in a loop
+if [ -z "${NICHIYOU_DAIKU_WRAPPED:-}" ]; then
+  export NICHIYOU_DAIKU_WRAPPED=1
+  set -f
+  saved_ifs=$IFS
+  IFS=:
+  for dir in $PATH; do
+    # An empty entry means the current directory; never run a file from there
+    [ -n "$dir" ] || continue
+    candidate=$dir/nichiyou-daiku
+    if [ -f "$candidate" ] && [ -x "$candidate" ] && [ "$(real_path "$candidate")" != "$self" ]; then
+      IFS=$saved_ifs
+      exec "$candidate" "$@"
+    fi
+  done
+  IFS=$saved_ifs
+  set +f
+fi
+
+if ! command -v uv >/dev/null 2>&1; then
+  printf '%s\n' \
+    "nichiyou-daiku: found neither an installed nichiyou-daiku nor uv to run the plugin's copy." \
+    "Install uv (https://docs.astral.sh/uv/getting-started/installation/) and run the command again," \
+    "or install the CLI itself: uv tool install \"git+https://github.com/ar90n/nichiyou-daiku\"" >&2
+  exit 127
+fi
+
+# 3D export and drawings need build123d, which the viz extra brings
+package=$root
+for arg in "$@"; do
+  case $arg in
+    export | drawing | view) package="nichiyou-daiku[viz] @ $root" ;;
+  esac
+done
+exec uv tool run --from "$package" nichiyou-daiku "$@"
