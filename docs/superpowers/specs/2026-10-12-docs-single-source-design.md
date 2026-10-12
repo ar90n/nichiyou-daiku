@@ -1,7 +1,8 @@
 # ドキュメントの正本化（Docs Single Source）設計
 
 - 日付: 2026-10-12
-- ステータス: 設計済み（未実装）
+- ステータス: 実装済み（ブランチ docs/single-source）
+- プロンプトの比較: 仕様の例 2 つ × 2 回を sonnet で生成。旧（system.md + presets.md + dsl-complete.md）4/4、新（system.md + DSL 仕様）4/4 が validate を通り全体寸法も仕様どおり。変数で寸法を書いたのは旧 3/4、新 4/4。
 - 対象: M3-2（開発体験: ドキュメントの重複を減らす）
 
 ## 背景
