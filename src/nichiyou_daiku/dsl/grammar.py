@@ -7,12 +7,18 @@ PIECE_TYPE_NAMES = sorted(piece_type.value for piece_type in PieceType)
 GRAMMAR = r"""
 start: statement+
 
-statement: piece_def | connection_def
+statement: piece_def | connection_def | var_def
+
+// Variables and arithmetic: a variable must be defined before it is used
+var_def: CNAME "=" sum
+?sum: product | sum "+" product -> add | sum "-" product -> sub
+?product: atom | product "*" atom -> mul | product "/" atom -> div
+?atom: NUMBER -> number | CNAME -> var | "-" atom -> neg | "(" sum ")"
 
 piece_def: "(" CNAME? ":" PIECE_TYPE (piece_props | compact_length) ")"
 PIECE_TYPE: __PIECE_TYPES__
 piece_props: "{" prop_list? "}"
-compact_length: "=" NUMBER
+compact_length: "=" sum
 prop_list: prop ("," prop)*
 prop: ESCAPED_STRING ":" value
 
@@ -24,16 +30,19 @@ anchor_props: "{" anchor_prop_list? "}"
 anchor_prop_list: anchor_prop ("," anchor_prop)*
 anchor_prop: ESCAPED_STRING ":" (ESCAPED_STRING | offset_value)
 
-offset_value: FROM_MIN "(" NUMBER ")" | FROM_MAX "(" NUMBER ")"
+offset_value: FROM_MIN "(" sum ")" | FROM_MAX "(" sum ")"
 
 FROM_MIN: "FromMin"
 FROM_MAX: "FromMax"
 
-value: ESCAPED_STRING | NUMBER | offset_value
+value: ESCAPED_STRING | sum | offset_value
 
 // Compact notation support
 compact_anchor_props: COMPACT_FACE COMPACT_FACE compact_offset
-compact_offset: COMPACT_FROM_MIN NUMBER | COMPACT_FROM_MAX NUMBER
+// A compact offset is a number, a variable or a bracketed expression. Its own
+// rule keeps the next face letter (TF<0 BD<0) from being read as a name.
+compact_offset: COMPACT_FROM_MIN offset_atom | COMPACT_FROM_MAX offset_atom
+?offset_atom: NUMBER -> number | CNAME -> var | "(" sum ")"
 
 COMPACT_FACE: /[TDLRFB]/
 COMPACT_FROM_MIN: "<"
@@ -43,21 +52,21 @@ COMPACT_FROM_MAX: ">"
 connection_type_props: "{" connection_type_content "}"
 connection_type_content: type_vanilla | type_dowel | type_screw
 type_vanilla: "\"type\"" ":" "\"vanilla\""
-type_dowel: "\"type\"" ":" "\"dowel\"" "," "\"radius\"" ":" NUMBER "," "\"depth\"" ":" NUMBER
-type_screw: "\"type\"" ":" "\"screw\"" "," "\"diameter\"" ":" NUMBER "," "\"length\"" ":" NUMBER
+type_dowel: "\"type\"" ":" "\"dowel\"" "," "\"radius\"" ":" sum "," "\"depth\"" ":" sum
+type_screw: "\"type\"" ":" "\"screw\"" "," "\"diameter\"" ":" sum "," "\"length\"" ":" sum
 
 // ConnectionType (Compact)
 compact_connection_type: COMPACT_VANILLA | dowel_compact | screw_compact
 COMPACT_VANILLA: "V"
 dowel_compact: DOWEL_START (dowel_preset | dowel_numeric) ")"
 DOWEL_START: "D("
-dowel_numeric: NUMBER "," NUMBER
+dowel_numeric: sum "," sum
 dowel_preset: ":" NUMBER "x" NUMBER
 screw_compact: SCREW_START (screw_preset | screw_numeric) ")"
 SCREW_START: "S("
-screw_numeric: NUMBER "," NUMBER
+screw_numeric: sum "," sum
 screw_preset: SCREW_TYPE ":" NUMBER "x" NUMBER
-SCREW_TYPE: "Slim" | "Coarse"
+SCREW_TYPE.2: "Slim" | "Coarse"
 
 // Comment support
 COMMENT: "//" /[^\n]*/

@@ -236,7 +236,10 @@ class TestSyntaxErrorMessages:
         with pytest.raises(DSLSyntaxError) as exc_info:
             parse_dsl("(a:2x4 =100")
 
-        assert str(exc_info.value).endswith("Unexpected end of input. Expected: ')'")
+        message = str(exc_info.value)
+        assert "Unexpected end of input" in message
+        # The length may still continue as an expression
+        assert message.endswith("Expected one of: ')', '+', '-'")
 
     @pytest.mark.parametrize("dsl", ["", "   \n\n", "// a\n  // b\n"])
     def test_empty_or_comment_only_input(self, dsl):

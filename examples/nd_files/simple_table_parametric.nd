@@ -1,0 +1,58 @@
+// Simple table written with variables
+// The same table as simple_table_compact.nd, derived from its overall size:
+// 800 (W) x 600 (D), legs 720 tall, eight 2x4 top boards
+
+W = 800        // overall width
+D = 600        // overall depth
+LEG = 720      // leg length
+RAIL = 100     // height of the side aprons above the floor
+WIDE = 89      // 2x4 width
+THICK = 38     // 2x4 thickness
+
+// Top boards spread evenly across the width
+BOARDS = 8
+GAP = (W - BOARDS * WIDE) / (BOARDS - 1)
+PITCH = WIDE + GAP
+
+(leg_1:2x4 =LEG)  // Front left leg
+(leg_2:2x4 =LEG)  // Front right leg
+(leg_3:2x4 =LEG)  // Back left leg
+(leg_4:2x4 =LEG)  // Back right leg
+
+// Front/back aprons run between the legs' 89mm sides,
+// side aprons between their 38mm sides
+(apron_front:2x4 =W - 2 * WIDE)
+(apron_back:2x4 =W - 2 * WIDE)
+(apron_left:2x4 =D - 2 * THICK)
+(apron_right:2x4 =D - 2 * THICK)
+
+(table_top_1:2x4 =D)
+(table_top_2:2x4 =D)
+(table_top_3:2x4 =D)
+(table_top_4:2x4 =D)
+(table_top_5:2x4 =D)
+(table_top_6:2x4 =D)
+(table_top_7:2x4 =D)
+(table_top_8:2x4 =D)
+
+// Front and back aprons, flush with the top of the legs
+leg_1 -[LB>0 DB>0]- apron_front
+leg_2 -[RF>0 TF>0]- apron_front
+leg_3 -[LB>0 DB>0]- apron_back
+leg_4 -[RF>0 TF>0]- apron_back
+
+// Side aprons, RAIL above the floor
+leg_1 -[BR<RAIL DB<0]- apron_left
+leg_3 -[FR<RAIL TB<0]- apron_left
+leg_2 -[BL<RAIL DF<0]- apron_right
+leg_4 -[FL<RAIL TF<0]- apron_right
+
+// End boards sit on the front legs, the others on the front apron
+table_top_1 -[BD<0 TF<0]- leg_1
+apron_front -[RF<GAP BT<0]- table_top_2
+apron_front -[RF<(GAP + PITCH) BT<0]- table_top_3
+apron_front -[RF<(GAP + 2 * PITCH) BT<0]- table_top_4
+apron_front -[RF<(GAP + 3 * PITCH) BT<0]- table_top_5
+apron_front -[RF<(GAP + 4 * PITCH) BT<0]- table_top_6
+apron_front -[RF<(GAP + 5 * PITCH) BT<0]- table_top_7
+table_top_8 -[BD<0 TF<0]- leg_2

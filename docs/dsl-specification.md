@@ -6,6 +6,7 @@ The nichiyou-daiku DSL (`.nd` files) is a domain-specific language for concisely
 
 - [Basic Structure](#basic-structure)
 - [Comments](#comments)
+- [Variables and Expressions](#variables-and-expressions)
 - [Piece Definition](#piece-definition)
 - [Connection Definition](#connection-definition)
 - [Connection Types](#connection-types)
@@ -18,8 +19,9 @@ The nichiyou-daiku DSL (`.nd` files) is a domain-specific language for concisely
 An `.nd` file consists of the following elements:
 
 1. **Comments** - Lines starting with `//`
-2. **Piece Definitions** - Lumber piece declarations
-3. **Connection Definitions** - Connections between pieces (a piece must be defined before a connection refers to it)
+2. **Variable Definitions** - Named numbers for lengths and offsets (defined before use)
+3. **Piece Definitions** - Lumber piece declarations
+4. **Connection Definitions** - Connections between pieces (a piece must be defined before a connection refers to it)
 
 ```text
 // Comment
@@ -39,6 +41,30 @@ Single-line comments start with `//`. End-of-line comments are also supported.
 // Project: Dining Table
 // Created: 2025-07-30
 ```
+
+## Variables and Expressions
+
+Name a number with `NAME = expression` and use it wherever a number is expected: lengths, offsets and numeric dowel or screw sizes. A variable must be defined above the line that uses it and cannot be redefined.
+
+```nd
+W = 800                        // overall width
+GAP = (W - 8 * 89) / 7         // may use earlier variables
+
+(leg:2x4 =720)
+(apron:2x4 =W - 2 * 89)        // a length takes any expression
+(top:2x4 {"length": 600})
+
+leg -[LB>0 DB>0 D(4, 2 * 15)]- apron   // so do numeric dowel and screw sizes
+apron -[RF<GAP BT<0]- top               // compact offset: a number, a variable or (expression)
+```
+
+- An expression is built from numbers, variables, `+ - * /`, parentheses and a leading `-`.
+- A compact offset takes a number, a variable or a bracketed expression: write `FL<(W / 2)`, not `FL<W / 2`, because the next face letter follows the offset.
+- Presets such as `D(:8x30)` and `S(Slim:3.3x25)` are names, not expressions. Inside `S(...)`, `Slim` and `Coarse` are screw types, not variables.
+- Variables and piece IDs are separate: variables appear only in expressions, piece IDs only at the ends of a connection.
+- An undefined variable (including one defined further down) or a redefinition is a semantic error, and dividing by zero is a validation error. A value that makes no sense, such as a length of 0, is caught by the usual validation.
+
+`examples/nd_files/simple_table_parametric.nd` writes the simple table from its overall size.
 
 ## Piece Definition
 
@@ -445,7 +471,7 @@ table_top_1 -[BD<0 TF<0]- leg_1
 table_top_2 -[BD<0 TF<0]- leg_2
 ```
 
-See [`examples/nd_files/simple_table_compact.nd`](../examples/nd_files/simple_table_compact.nd) for a larger example with a full table top (there the side aprons sit 100mm above the floor, `BR<100`).
+See [`examples/nd_files/simple_table_compact.nd`](../examples/nd_files/simple_table_compact.nd) for a larger example with a full table top (there the side aprons sit 100mm above the floor, `BR<100`), and [`simple_table_parametric.nd`](../examples/nd_files/simple_table_parametric.nd) for the same table derived from its overall size with variables.
 
 ### Shelf with Dowel Joints
 
@@ -506,14 +532,20 @@ nichiyou-daiku drawing furniture.nd -o furniture.pdf
 
 ```ebnf
 start           = statement+
-statement       = piece_def | connection_def
+statement       = piece_def | connection_def | var_def
+
+var_def         = CNAME "=" expr
+expr            = term (("+" | "-") term)*
+term            = factor (("*" | "/") factor)*
+factor          = NUMBER | CNAME | "-" factor | "(" expr ")"
 
 piece_def       = "(" CNAME? ":" PIECE_TYPE (piece_props | compact_length) ")"
 PIECE_TYPE      = "1x4" | "1x6" | "1x8" | "2x2" | "2x4" | "2x6"
 piece_props     = "{" prop_list? "}"
-compact_length  = "=" NUMBER
+compact_length  = "=" expr
 prop_list       = prop ("," prop)*
 prop            = ESCAPED_STRING ":" value
+value           = ESCAPED_STRING | expr | offset_value
 
 connection_def  = piece_ref "-[" connection_body "]-" piece_ref
 connection_body = anchor_props anchor_props connection_type_props?
@@ -523,23 +555,23 @@ piece_ref       = CNAME
 anchor_props         = "{" anchor_prop_list? "}"
 anchor_prop_list     = anchor_prop ("," anchor_prop)*
 anchor_prop          = ESCAPED_STRING ":" (ESCAPED_STRING | offset_value)
-offset_value         = "FromMin" "(" NUMBER ")" | "FromMax" "(" NUMBER ")"
+offset_value         = "FromMin" "(" expr ")" | "FromMax" "(" expr ")"
 
 connection_type_props = "{" ( '"type": "vanilla"'
-                            | '"type": "dowel", "radius": ' NUMBER ', "depth": ' NUMBER
-                            | '"type": "screw", "diameter": ' NUMBER ', "length": ' NUMBER ) "}"
+                            | '"type": "dowel", "radius": ' expr ', "depth": ' expr
+                            | '"type": "screw", "diameter": ' expr ', "length": ' expr ) "}"
 
 compact_anchor       = COMPACT_FACE COMPACT_FACE compact_offset
-compact_offset       = "<" NUMBER | ">" NUMBER
+compact_offset       = ("<" | ">") (NUMBER | CNAME | "(" expr ")")
 COMPACT_FACE         = "T" | "D" | "L" | "R" | "F" | "B"
 
 compact_connection_type = "V" | dowel_compact | screw_compact
 dowel_compact           = "D(" (dowel_preset | dowel_numeric) ")"
 dowel_preset            = ":" NUMBER "x" NUMBER
-dowel_numeric           = NUMBER "," NUMBER
+dowel_numeric           = expr "," expr
 screw_compact           = "S(" (screw_preset | screw_numeric) ")"
 screw_preset            = SCREW_TYPE ":" NUMBER "x" NUMBER
-screw_numeric           = NUMBER "," NUMBER
+screw_numeric           = expr "," expr
 SCREW_TYPE              = "Slim" | "Coarse"
 
 COMMENT         = "//" [^\n]*     (ignored)

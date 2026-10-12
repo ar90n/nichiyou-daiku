@@ -117,6 +117,23 @@ leg -[FL<100 DF<0]- apron
 
 Pieces must be defined before a connection refers to them.
 
+### Variables and Expressions
+
+Prefer variables over hand-computed numbers: name the overall size once and derive lengths and offsets from it.
+
+```text
+W = 800
+GAP = (W - 8 * 89) / 7
+(apron:2x4 =W - 2 * 89)
+apron -[RF<GAP BT<0]- top_2
+apron -[RF<(GAP + 89 + GAP) BT<0]- top_3
+```
+
+- `NAME = expression` defines a variable; define it above its first use; no redefinition.
+- Expressions: numbers, variables, `+ - * /`, parentheses, leading `-`. Usable for lengths, JSON offsets and numeric `D(...)` / `S(...)` sizes.
+- A compact offset must be a number, a variable or a bracketed expression: `FL<(W / 2)`, never `FL<W / 2`.
+- Presets (`D(:8x30)`, `S(Slim:3.3x25)`) stay literal; `Slim` / `Coarse` cannot be variable names inside `S(...)`.
+
 ### Connection Definition
 
 ```text

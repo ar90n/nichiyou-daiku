@@ -44,6 +44,7 @@ class DSLTransformer(Transformer):
         super().__init__()
         self.pieces: dict[str, Piece] = {}
         self.connections: dict[tuple[str, str], Connection] = {}
+        self.variables: dict[str, float] = {}
 
     # =========================================================================
     # Entry points
@@ -59,6 +60,49 @@ class DSLTransformer(Transformer):
     def statement(self, items: list[Any]) -> Any:
         """Pass through statement results."""
         return items[0]
+
+    # =========================================================================
+    # Variables and arithmetic
+    # =========================================================================
+
+    def var_def(self, items: list[Any]) -> None:
+        """Define a variable; statements are transformed in source order."""
+        name, value = str(items[0]), items[1]
+        if name in self.variables:
+            raise DSLSemanticError(f"Variable '{name}' is already defined")
+        self.variables[name] = value
+
+    def var(self, items: list[Token]) -> float:
+        name = str(items[0])
+        if name not in self.variables:
+            raise DSLSemanticError(
+                f"Undefined variable '{name}' (define it before it is used)"
+            )
+        return self.variables[name]
+
+    def number(self, items: list[Token]) -> float:
+        return float(items[0])
+
+    def neg(self, items: list[float]) -> float:
+        return -items[0]
+
+    def add(self, items: list[float]) -> float:
+        return items[0] + items[1]
+
+    def sub(self, items: list[float]) -> float:
+        return items[0] - items[1]
+
+    def mul(self, items: list[float]) -> float:
+        return items[0] * items[1]
+
+    def div(self, items: list[float]) -> float:
+        if items[1] == 0:
+            raise DSLValidationError("Division by zero")
+        return items[0] / items[1]
+
+    # =========================================================================
+    # Pieces and connections
+    # =========================================================================
 
     def piece_def(self, items: list[Any]) -> None:
         """Transform a piece definition."""
@@ -112,10 +156,9 @@ class DSLTransformer(Transformer):
         value = items[1]
         return {key: value}
 
-    def compact_length(self, items: list[Any]) -> float:
-        """Transform compact length notation (=NUMBER)."""
-        # items[0] should be the NUMBER token
-        return float(items[0])
+    def compact_length(self, items: list[float]) -> float:
+        """Transform compact length notation (=expression)."""
+        return items[0]
 
     def connection_def(self, items: list[Any]) -> None:
         """Transform a connection definition."""
@@ -170,21 +213,18 @@ class DSLTransformer(Transformer):
 
         return {key: value}
 
-    def offset_value(self, items: list[Token]) -> Offset:
-        """Transform an offset value: FromMin(NUMBER) or FromMax(NUMBER)."""
-        kind, number = items
+    def offset_value(self, items: list[Any]) -> Offset:
+        """Transform an offset value: FromMin(expression) or FromMax(expression)."""
+        kind, value = items
         if kind.type == "FROM_MIN":
-            return FromMin(value=float(number))
-        return FromMax(value=float(number))
+            return FromMin(value=value)
+        return FromMax(value=value)
 
     def value(self, items: list[Any]) -> Any:
         """Transform a value (string, number, or offset)."""
         item = items[0]
-        if isinstance(item, Token):
-            if item.type == "ESCAPED_STRING":
-                return self._unescape_string(item)
-            elif item.type == "NUMBER":
-                return float(item)
+        if isinstance(item, Token) and item.type == "ESCAPED_STRING":
+            return self._unescape_string(item)
         return item
 
     def _create_anchor(self, props: dict[str, Any]) -> Anchor:
@@ -236,12 +276,12 @@ class DSLTransformer(Transformer):
         """Parse a compact face token (one of T, D, L, R, F, B)."""
         return cast(Face, self.FACE_MAPPING[str(token)])
 
-    def compact_offset(self, items: list[Token]) -> Offset:
-        """Transform compact offset notation (<NUMBER or >NUMBER)."""
-        kind, number = items
+    def compact_offset(self, items: list[Any]) -> Offset:
+        """Transform compact offset notation (<value or >value)."""
+        kind, value = items
         if kind.type == "COMPACT_FROM_MIN":
-            return FromMin(value=float(number))
-        return FromMax(value=float(number))
+            return FromMin(value=value)
+        return FromMax(value=value)
 
     # ConnectionType transformers (JSON format)
     def connection_body(self, items: list[Any]) -> list[Any]:
@@ -260,16 +300,16 @@ class DSLTransformer(Transformer):
         """Transform vanilla connection type."""
         return VanillaConnection()
 
-    def type_dowel(self, items: list[Any]) -> DowelConnection:
+    def type_dowel(self, items: list[float]) -> DowelConnection:
         """Transform a dowel connection type: JSON or compact D(radius, depth)."""
-        radius, depth = _numbers(items)
+        radius, depth = items
         return DowelConnection(radius=radius, depth=depth)
 
     dowel_numeric = type_dowel
 
-    def type_screw(self, items: list[Any]) -> ScrewConnection:
+    def type_screw(self, items: list[float]) -> ScrewConnection:
         """Transform a screw connection type: JSON or compact S(diameter, length)."""
-        diameter, length = _numbers(items)
+        diameter, length = items
         return ScrewConnection(diameter=diameter, length=length)
 
     screw_numeric = type_screw

@@ -173,7 +173,7 @@ Total waste: 960mm (8.7%)
 ## Features
 
 ### DSL & CLI Tools
-- 📝 Simple, readable DSL for furniture design
+- 📝 Simple, readable DSL for furniture design, with variables and arithmetic for parametric sizes
 - 🛠️ Command-line tools for validation, reporting, and 3D export
 - 📊 Automatic bill of materials generation
 - 📐 Cut optimization to minimize waste

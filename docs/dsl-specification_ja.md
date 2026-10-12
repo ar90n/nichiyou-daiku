@@ -6,6 +6,7 @@ nichiyou-daiku DSL (`.nd`ファイル) は、木工家具の設計を簡潔に�
 
 - [基本構造](#基本構造)
 - [コメント](#コメント)
+- [変数と式](#変数と式)
 - [ピース定義](#ピース定義)
 - [接続定義](#接続定義)
 - [接続タイプ](#接続タイプ)
@@ -18,8 +19,9 @@ nichiyou-daiku DSL (`.nd`ファイル) は、木工家具の設計を簡潔に�
 `.nd`ファイルは以下の要素で構成されます：
 
 1. **コメント** - `//` で始まる行
-2. **ピース定義** - 木材の定義
-3. **接続定義** - ピース間の接続（参照するピースは接続より前に定義しておく必要があります）
+2. **変数定義** - 長さやオフセットに使う数値の名前（使う前に定義）
+3. **ピース定義** - 木材の定義
+4. **接続定義** - ピース間の接続（参照するピースは接続より前に定義しておく必要があります）
 
 ```text
 // コメント
@@ -39,6 +41,30 @@ piece1 -[anchor1 anchor2]- piece2
 // プロジェクト: ダイニングテーブル
 // 作成日: 2025-07-30
 ```
+
+## 変数と式
+
+`名前 = 式` で数値に名前を付け、数値を書ける場所（長さ、オフセット、ダボ・ビスの数値指定）で使えます。変数は使う行より上で定義する必要があり、再定義はできません。
+
+```nd
+W = 800                        // 全体の幅
+GAP = (W - 8 * 89) / 7         // 前で定義した変数を使える
+
+(leg:2x4 =720)
+(apron:2x4 =W - 2 * 89)        // 長さには任意の式を書ける
+(top:2x4 {"length": 600})
+
+leg -[LB>0 DB>0 D(4, 2 * 15)]- apron   // ダボ・ビスの数値指定も同じ
+apron -[RF<GAP BT<0]- top               // 簡略表記のオフセット: 数値・変数・(式)
+```
+
+- 式には数値、変数、`+ - * /`、括弧、先頭の `-` を使えます。
+- 簡略表記のオフセットには、数値・変数・括弧でくくった式を書きます。`FL<W / 2` ではなく `FL<(W / 2)` と書いてください（オフセットのすぐ後に次の面の文字が続くため）。
+- `D(:8x30)` や `S(Slim:3.3x25)` などのプリセットは名前であり、式ではありません。`S(...)` の中の `Slim` と `Coarse` はビスの種類で、変数名としては使えません。
+- 変数とピースIDは別物です。変数は式の中、ピースIDは接続の両端にだけ現れます。
+- 未定義の変数（後で定義されるものを含む）と再定義は意味エラー、0での割り算は検証エラーになります。長さ0のようにおかしな値は、通常の検証が報告します。
+
+`examples/nd_files/simple_table_parametric.nd` は、シンプルテーブルを全体寸法から書いた例です。
 
 ## ピース定義
 
@@ -445,7 +471,7 @@ table_top_1 -[BD<0 TF<0]- leg_1
 table_top_2 -[BD<0 TF<0]- leg_2
 ```
 
-天板をすべて張った大きな例は [`examples/nd_files/simple_table_compact.nd`](../examples/nd_files/simple_table_compact.nd) を参照してください（そちらではサイド幕板が床から100mmの位置にあります。`BR<100`）。
+天板をすべて張った大きな例は [`examples/nd_files/simple_table_compact.nd`](../examples/nd_files/simple_table_compact.nd) を参照してください（そちらではサイド幕板が床から100mmの位置にあります。`BR<100`）。同じテーブルを変数で全体寸法から書いた例は [`simple_table_parametric.nd`](../examples/nd_files/simple_table_parametric.nd) です。
 
 ### ダボ接続を使用した棚
 
@@ -506,14 +532,20 @@ nichiyou-daiku drawing furniture.nd -o furniture.pdf
 
 ```ebnf
 start           = statement+
-statement       = piece_def | connection_def
+statement       = piece_def | connection_def | var_def
+
+var_def         = CNAME "=" expr
+expr            = term (("+" | "-") term)*
+term            = factor (("*" | "/") factor)*
+factor          = NUMBER | CNAME | "-" factor | "(" expr ")"
 
 piece_def       = "(" CNAME? ":" PIECE_TYPE (piece_props | compact_length) ")"
 PIECE_TYPE      = "1x4" | "1x6" | "1x8" | "2x2" | "2x4" | "2x6"
 piece_props     = "{" prop_list? "}"
-compact_length  = "=" NUMBER
+compact_length  = "=" expr
 prop_list       = prop ("," prop)*
 prop            = ESCAPED_STRING ":" value
+value           = ESCAPED_STRING | expr | offset_value
 
 connection_def  = piece_ref "-[" connection_body "]-" piece_ref
 connection_body = anchor_props anchor_props connection_type_props?
@@ -523,23 +555,23 @@ piece_ref       = CNAME
 anchor_props         = "{" anchor_prop_list? "}"
 anchor_prop_list     = anchor_prop ("," anchor_prop)*
 anchor_prop          = ESCAPED_STRING ":" (ESCAPED_STRING | offset_value)
-offset_value         = "FromMin" "(" NUMBER ")" | "FromMax" "(" NUMBER ")"
+offset_value         = "FromMin" "(" expr ")" | "FromMax" "(" expr ")"
 
 connection_type_props = "{" ( '"type": "vanilla"'
-                            | '"type": "dowel", "radius": ' NUMBER ', "depth": ' NUMBER
-                            | '"type": "screw", "diameter": ' NUMBER ', "length": ' NUMBER ) "}"
+                            | '"type": "dowel", "radius": ' expr ', "depth": ' expr
+                            | '"type": "screw", "diameter": ' expr ', "length": ' expr ) "}"
 
 compact_anchor       = COMPACT_FACE COMPACT_FACE compact_offset
-compact_offset       = "<" NUMBER | ">" NUMBER
+compact_offset       = ("<" | ">") (NUMBER | CNAME | "(" expr ")")
 COMPACT_FACE         = "T" | "D" | "L" | "R" | "F" | "B"
 
 compact_connection_type = "V" | dowel_compact | screw_compact
 dowel_compact           = "D(" (dowel_preset | dowel_numeric) ")"
 dowel_preset            = ":" NUMBER "x" NUMBER
-dowel_numeric           = NUMBER "," NUMBER
+dowel_numeric           = expr "," expr
 screw_compact           = "S(" (screw_preset | screw_numeric) ")"
 screw_preset            = SCREW_TYPE ":" NUMBER "x" NUMBER
-screw_numeric           = NUMBER "," NUMBER
+screw_numeric           = expr "," expr
 SCREW_TYPE              = "Slim" | "Coarse"
 
 COMMENT         = "//" [^\n]*     (無視される)

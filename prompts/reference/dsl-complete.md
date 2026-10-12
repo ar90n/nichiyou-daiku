@@ -53,14 +53,20 @@ post -[BT<0 FT<0 S(Coarse:3.8x57)]- cleat
 
 ```ebnf
 start           = statement+
-statement       = piece_def | connection_def
+statement       = piece_def | connection_def | var_def
+
+var_def         = CNAME "=" expr
+expr            = term (("+" | "-") term)*
+term            = factor (("*" | "/") factor)*
+factor          = NUMBER | CNAME | "-" factor | "(" expr ")"
 
 piece_def       = "(" CNAME? ":" PIECE_TYPE (piece_props | compact_length) ")"
 PIECE_TYPE      = "1x4" | "1x6" | "1x8" | "2x2" | "2x4" | "2x6"
 piece_props     = "{" prop_list? "}"
-compact_length  = "=" NUMBER
+compact_length  = "=" expr
 prop_list       = prop ("," prop)*
 prop            = ESCAPED_STRING ":" value
+value           = ESCAPED_STRING | expr | offset_value
 
 connection_def  = piece_ref "-[" connection_body "]-" piece_ref
 connection_body = anchor_props anchor_props connection_type_props?
@@ -70,23 +76,23 @@ piece_ref       = CNAME
 anchor_props    = "{" anchor_prop_list? "}"
 anchor_prop_list= anchor_prop ("," anchor_prop)*
 anchor_prop     = ESCAPED_STRING ":" (ESCAPED_STRING | offset_value)
-offset_value    = "FromMin" "(" NUMBER ")" | "FromMax" "(" NUMBER ")"
+offset_value    = "FromMin" "(" expr ")" | "FromMax" "(" expr ")"
 
 connection_type_props = "{" ( '"type": "vanilla"'
-                            | '"type": "dowel", "radius": ' NUMBER ', "depth": ' NUMBER
-                            | '"type": "screw", "diameter": ' NUMBER ', "length": ' NUMBER ) "}"
+                            | '"type": "dowel", "radius": ' expr ', "depth": ' expr
+                            | '"type": "screw", "diameter": ' expr ', "length": ' expr ) "}"
 
 compact_anchor  = COMPACT_FACE COMPACT_FACE compact_offset
-compact_offset  = "<" NUMBER | ">" NUMBER
+compact_offset  = ("<" | ">") (NUMBER | CNAME | "(" expr ")")
 COMPACT_FACE    = "T" | "D" | "L" | "R" | "F" | "B"
 
 compact_connection_type = "V" | dowel_compact | screw_compact
 dowel_compact   = "D(" (dowel_preset | dowel_numeric) ")"
 dowel_preset    = ":" NUMBER "x" NUMBER
-dowel_numeric   = NUMBER "," NUMBER
+dowel_numeric   = expr "," expr
 screw_compact   = "S(" (screw_preset | screw_numeric) ")"
 screw_preset    = SCREW_TYPE ":" NUMBER "x" NUMBER
-screw_numeric   = NUMBER "," NUMBER
+screw_numeric   = expr "," expr
 SCREW_TYPE      = "Slim" | "Coarse"
 
 COMMENT         = "//" [^\n]*     (ignored, like whitespace)

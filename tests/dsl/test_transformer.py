@@ -96,13 +96,10 @@ class TestTransformerValueHandling:
         """Test number value transformation."""
         transformer = DSLTransformer()
 
-        token = Token("NUMBER", "123.45")
-        result = transformer.value([token])
-        assert result == 123.45
-
-        token = Token("NUMBER", "-42")
-        result = transformer.value([token])
-        assert result == -42.0
+        # Numbers reach value() already evaluated by the expression rules
+        assert transformer.number([Token("NUMBER", "123.45")]) == 123.45
+        assert transformer.value([transformer.number([Token("NUMBER", "42")])]) == 42.0
+        assert transformer.neg([42.0]) == -42.0
 
     def test_transform_offset_as_value(self):
         """Test offset as value transformation."""
@@ -222,13 +219,9 @@ class TestCompactPieceTransformer:
 
         transformer = DSLTransformer()
 
-        # Test compact_length method
-        result = transformer.compact_length([Token("NUMBER", "1500")])
-        assert result == 1500.0
-
-        # Test with decimal
-        result = transformer.compact_length([Token("NUMBER", "1500.75")])
-        assert result == 1500.75
+        # compact_length receives the evaluated expression
+        number = transformer.number([Token("NUMBER", "1500.75")])
+        assert transformer.compact_length([number]) == 1500.75
 
     def test_piece_def_with_compact_length(self):
         """Test piece definition transformation with compact length."""
