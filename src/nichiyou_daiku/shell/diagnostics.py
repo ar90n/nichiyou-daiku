@@ -140,6 +140,7 @@ class ValidationReport(BaseModel, frozen=True):
     valid: bool
     error: ValidationFailure | None = None
     overall_size: Vector | None = None
+    size_reference: str | None = None
     pieces: tuple[PiecePosition, ...] = ()
     problems: tuple[Problem, ...] = ()
 
@@ -297,16 +298,21 @@ def _positions(assembly: Assembly, origin: np.ndarray) -> tuple[PiecePosition, .
 
 
 def validation_report(assembly: Assembly) -> ValidationReport:
-    """Positions and problems of an assembled model. ``overall_size`` is only
-    set when every piece is connected, as in the report."""
+    """Positions and problems of an assembled model. ``overall_size`` and
+    ``size_reference`` (the first declared piece, whose width, thickness and
+    length run along x, y and z) are only set when every piece is connected,
+    as in the report."""
     problems = tuple(collect_problems(assembly))
     overall_size = None
+    size_reference = None
     if len(assembly.placement.groups) == 1:
         low, high = overall_bounds(assembly.model, assembly.placement)
         overall_size = _vector((high.x - low.x, high.y - low.y, high.z - low.z))
+        size_reference = assembly.placement.groups[0][0]
     return ValidationReport(
         valid=not problems,
         overall_size=overall_size,
+        size_reference=size_reference,
         pieces=_positions(assembly, _origin(assembly)),
         problems=problems,
     )

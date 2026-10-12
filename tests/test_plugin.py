@@ -304,3 +304,9 @@ def test_skill_tells_how_to_reinstall_the_cli():
     readme = (ROOT / "README.md").read_text()
     assert commands
     assert [c for c in commands if c.replace("--force ", "") not in readme] == []
+
+
+def test_skill_covers_an_installed_cli_without_json():
+    # A CLI installed before validate --json rejects the option
+    skill = (ROOT / "skills" / "design" / "SKILL.md").read_text()
+    assert "No such option: --json" in skill

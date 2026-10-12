@@ -66,11 +66,21 @@ class TestPositions:
         assert b.faces.front == a.faces.top
         assert _flip(b.faces.top) == a.faces.front
 
+    def test_the_first_declared_piece_sets_the_axes(self):
+        # Declared first, b is the unturned one although a is the base
+        report = _report("(b:2x4 =400)\n(a:2x4 =400)\na -[TF<0 BD<0]- b\n")
+        assert report.size_reference == "b"
+        assert report.pieces[0].faces.model_dump() == {
+            "top": "+z",
+            "right": "+x",
+            "front": "+y",
+        }
+
     def test_unconnected_groups_have_no_overall_size(self):
         report = _report(
             "(a:2x4 =500)\n(b:2x4 =300)\n(floating:2x4 =300)\na -[FL<100 DF<0]- b\n"
         )
-        assert report.overall_size is None
+        assert (report.overall_size, report.size_reference) == (None, None)
         assert {p.id: p.group for p in report.pieces} == {
             "a": 0,
             "b": 0,

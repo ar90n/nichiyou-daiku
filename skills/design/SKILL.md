@@ -38,7 +38,7 @@ Read the JSON instead of guessing where pieces went (the DSL specification descr
 
 ## 5. Compare with the request
 
-Check `overall_size` in the same JSON against the request (it is null while some pieces are not connected). If it is off, find the piece that sets it in `pieces`, fix its length or offset and go back to step 4. Once the model is valid and the right size, run `nichiyou-daiku report <name>.nd --no-cut-diagram --no-anchor-details --no-pilot-holes` for the bill of materials and the shopping list.
+Check `overall_size` in the same JSON against the request (it is null while some pieces are not connected). Its x, y and z run along the width, thickness and length of `size_reference`, the first piece you declared; declare a leg first and z is the height. If it is off, find the piece that sets it in `pieces`, fix its length or offset and go back to step 4. Once the model is valid and the right size, run `nichiyou-daiku report <name>.nd --no-cut-diagram --no-anchor-details --no-pilot-holes` for the bill of materials and the shopping list.
 
 ## 6. Output files on request
 
@@ -58,4 +58,5 @@ Tell the user the file path, the overall size, the lumber to buy (from the shopp
 An installed CLI can be behind this plugin. Ask the user to reinstall it when:
 
 - `drawing` or `export` says build123d is missing (it lacks the viz extra): `uv tool install --force "nichiyou-daiku[viz] @ git+https://github.com/ar90n/nichiyou-daiku"`
+- `validate` says `No such option: --json` (it predates the JSON output): `uv tool install --force "git+https://github.com/ar90n/nichiyou-daiku"`, or the `[viz]` form above
 - `validate` rejects syntax that the DSL specification documents (it is older than the plugin): `uv tool install --force "git+https://github.com/ar90n/nichiyou-daiku"`, or the `[viz]` form above
