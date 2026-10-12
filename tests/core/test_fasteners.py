@@ -306,6 +306,24 @@ class TestHoleCollisions:
         )
         assert len(Assembly.of(parse_dsl(source)).fasteners) == 4
 
+    def test_a_collision_names_the_piece_the_other_connection_and_both_holes(self):
+        source = POST_AND_FRONT_RAIL.format(front=40) + (
+            "post -[BL<300 DB<0 D(4, 40)]- other\n"
+        )
+        [issue] = Assembly.of(parse_dsl(source)).fastener_issues
+        assert issue.piece_id == "post"
+        assert issue.other == ("post", "front")
+        assert issue.holes is not None
+        (later, later_hole), (earlier, earlier_hole) = issue.holes
+        # This connection drills the post's back, the earlier one its front
+        assert (later.face, earlier.face) == ("back", "front")
+        assert later_hole == earlier_hole == Hole(diameter=8.0, depth=20.0)
+
+    def test_a_fastener_without_room_has_no_holes(self):
+        source = "(a:2x4 =500)\n(b:1x4 =300)\na -[FL<100 DF<0 D(5, 30)]- b\n"
+        [issue] = Assembly.of(parse_dsl(source)).fastener_issues
+        assert (issue.piece_id, issue.other, issue.holes) == (None, None, None)
+
 
 def _bore_along_z(x: float, y: float, low: float, high: float) -> _Bore:
     return _Bore(axis=2, low=low, high=high, center=np.array([x, y, low]), radius=4.0)

@@ -174,7 +174,7 @@ def find_hole_collisions(
     ``fasteners``; the fasteners themselves are kept. Holes of one connection
     never meet, since the layout spaces them at least two diameters apart.
     """
-    bores: dict[str, list[tuple[Fastener, _Bore]]] = {}
+    bores: dict[str, list[tuple[Fastener, SurfacePoint, Hole, _Bore]]] = {}
     for fastener in fasteners:
         for piece_id, position, hole in (
             (fastener.base_id, fastener.base_position, fastener.base_hole),
@@ -182,12 +182,17 @@ def find_hole_collisions(
         ):
             box = Box(shape=get_shape(pieces[piece_id]))
             bores.setdefault(piece_id, []).append(
-                (fastener, _bore(box, position, hole))
+                (fastener, position, hole, _bore(box, position, hole))
             )
 
     issues: dict[tuple[str, str, str, str], LayoutIssue] = {}
     for piece_id, drilled in bores.items():
-        for (earlier, a), (later, b) in combinations(drilled, 2):
+        for (earlier, earlier_at, earlier_hole, a), (
+            later,
+            later_at,
+            later_hole,
+            b,
+        ) in combinations(drilled, 2):
             if not _bores_meet(a, b):
                 continue
             issues.setdefault(
@@ -201,6 +206,9 @@ def find_hole_collisions(
                         f"{earlier.kind} hole of connection "
                         f"{earlier.base_id} -> {earlier.target_id}"
                     ),
+                    piece_id=piece_id,
+                    other=(earlier.base_id, earlier.target_id),
+                    holes=((later_at, later_hole), (earlier_at, earlier_hole)),
                 ),
             )
     return list(issues.values())

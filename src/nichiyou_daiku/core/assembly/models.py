@@ -54,9 +54,18 @@ class Fastener(BaseModel, frozen=True):
 
 
 class LayoutIssue(BaseModel, frozen=True):
-    """A connection whose fasteners could not be laid out."""
+    """A connection whose fasteners could not be laid out, or whose holes run
+    into the holes of an earlier connection.
+
+    For a collision, ``piece_id`` is the piece both holes are in, ``other`` the
+    earlier connection and ``holes`` the two holes, this connection's first,
+    each as where it enters the piece (piece coordinates) and how it is drilled.
+    """
 
     base_id: str
     target_id: str
     kind: FastenerKind
     message: str
+    piece_id: str | None = None
+    other: tuple[str, str] | None = None
+    holes: tuple[tuple[SurfacePoint, Hole], tuple[SurfacePoint, Hole]] | None = None
