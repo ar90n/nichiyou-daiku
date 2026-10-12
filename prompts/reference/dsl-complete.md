@@ -4,7 +4,7 @@ Supplement to `system.md`, which already covers the face model, offsets, placeme
 
 ## File Structure
 
-An `.nd` file contains comments, piece definitions and connection definitions (pieces must be defined before they are referenced).
+An `.nd` file contains comments, variable definitions, piece definitions and connection definitions (variables and pieces must be defined before they are used).
 
 ```nd
 // Single-line comment
@@ -108,6 +108,9 @@ NUMBER          = /[0-9]+(\.[0-9]+)?/
 | DSLSemanticError | "Unknown piece reference: foo" | Reference to an undefined piece |
 | DSLSemanticError | "Duplicate piece ID: leg_1" | Same ID used twice |
 | DSLSemanticError | "Duplicate connection between 'a' and 'b' ..." | Second connection for the same base/target pair |
+| DSLSemanticError | "Undefined variable 'W' ..." | Variable used before (or without) its definition |
+| DSLSemanticError | "Variable 'W' is already defined" | Second definition of a variable |
+| DSLValidationError | "Division by zero" | An expression divides by 0 |
 | DSLValidationError | "contact_face 'front' and edge_shared_face 'back' must be adjacent faces" | Same or opposite faces in an anchor |
 | DSLValidationError | "Offset 50.0mm exceeds piece dimension 38.0mm ..." | Offset longer than the anchor's edge |
 | DSLValidationError | "Unknown dowel preset: 9x99" | Non-existent preset |

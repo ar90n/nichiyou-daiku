@@ -132,7 +132,7 @@ apron -[RF<(GAP + 89 + GAP) BT<0]- top_3
 - `NAME = expression` defines a variable; define it above its first use; no redefinition.
 - Expressions: numbers, variables, `+ - * /`, parentheses, leading `-`. Usable for lengths, JSON offsets and numeric `D(...)` / `S(...)` sizes.
 - A compact offset must be a number, a variable or a bracketed expression: `FL<(W / 2)`, never `FL<W / 2`.
-- Presets (`D(:8x30)`, `S(Slim:3.3x25)`) stay literal; `Slim` / `Coarse` cannot be variable names inside `S(...)`.
+- Presets (`D(:8x30)`, `S(Slim:3.3x25)`) stay literal. Use descriptive names (`DEPTH`, not `D`): single face letters and `V` work but are hard to read, and `Slim` / `Coarse` cannot be the first number of `S(...)`.
 
 ### Connection Definition
 

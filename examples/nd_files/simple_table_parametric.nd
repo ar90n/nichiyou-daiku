@@ -1,9 +1,9 @@
 // Simple table written with variables
 // The same table as simple_table_compact.nd, derived from its overall size:
-// 800 (W) x 600 (D), legs 720 tall, eight 2x4 top boards
+// 800 wide x 600 deep, legs 720 tall, eight 2x4 top boards
 
 W = 800        // overall width
-D = 600        // overall depth
+DEPTH = 600    // overall depth
 LEG = 720      // leg length
 RAIL = 100     // height of the side aprons above the floor
 WIDE = 89      // 2x4 width
@@ -23,17 +23,17 @@ PITCH = WIDE + GAP
 // side aprons between their 38mm sides
 (apron_front:2x4 =W - 2 * WIDE)
 (apron_back:2x4 =W - 2 * WIDE)
-(apron_left:2x4 =D - 2 * THICK)
-(apron_right:2x4 =D - 2 * THICK)
+(apron_left:2x4 =DEPTH - 2 * THICK)
+(apron_right:2x4 =DEPTH - 2 * THICK)
 
-(table_top_1:2x4 =D)
-(table_top_2:2x4 =D)
-(table_top_3:2x4 =D)
-(table_top_4:2x4 =D)
-(table_top_5:2x4 =D)
-(table_top_6:2x4 =D)
-(table_top_7:2x4 =D)
-(table_top_8:2x4 =D)
+(table_top_1:2x4 =DEPTH)
+(table_top_2:2x4 =DEPTH)
+(table_top_3:2x4 =DEPTH)
+(table_top_4:2x4 =DEPTH)
+(table_top_5:2x4 =DEPTH)
+(table_top_6:2x4 =DEPTH)
+(table_top_7:2x4 =DEPTH)
+(table_top_8:2x4 =DEPTH)
 
 // Front and back aprons, flush with the top of the legs
 leg_1 -[LB>0 DB>0]- apron_front

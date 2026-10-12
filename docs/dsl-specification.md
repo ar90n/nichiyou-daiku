@@ -44,7 +44,7 @@ Single-line comments start with `//`. End-of-line comments are also supported.
 
 ## Variables and Expressions
 
-Name a number with `NAME = expression` and use it wherever a number is expected: lengths, offsets and numeric dowel or screw sizes. A variable must be defined above the line that uses it and cannot be redefined.
+Name a number with `NAME = expression` and use it wherever a number is expected: lengths, offsets and numeric dowel or screw sizes. Names follow the piece ID rule (letters, digits and underscores, not starting with a digit). A variable must be defined above the line that uses it and cannot be redefined.
 
 ```nd
 W = 800                        // overall width
@@ -60,7 +60,8 @@ apron -[RF<GAP BT<0]- top               // compact offset: a number, a variable 
 
 - An expression is built from numbers, variables, `+ - * /`, parentheses and a leading `-`.
 - A compact offset takes a number, a variable or a bracketed expression: write `FL<(W / 2)`, not `FL<W / 2`, because the next face letter follows the offset.
-- Presets such as `D(:8x30)` and `S(Slim:3.3x25)` are names, not expressions. Inside `S(...)`, `Slim` and `Coarse` are screw types, not variables.
+- Avoid single face letters (`T`, `D`, `L`, `R`, `F`, `B`) and `V` as names even though they work: `DEPTH` reads better than `D` next to `DF<0`.
+- Presets such as `D(:8x30)` and `S(Slim:3.3x25)` are names, not expressions. `Slim` and `Coarse` cannot be the first number of `S(...)`, where they read as screw types; names that only start with them, such as `SlimD`, are fine.
 - Variables and piece IDs are separate: variables appear only in expressions, piece IDs only at the ends of a connection.
 - An undefined variable (including one defined further down) or a redefinition is a semantic error, and dividing by zero is a validation error. A value that makes no sense, such as a length of 0, is caught by the usual validation.
 
@@ -595,11 +596,14 @@ DSLSyntaxError: Syntax error at line 1, column 4: Unexpected token '3'. Expected
 DSLSemanticError: Unknown piece reference: unknown_piece
 DSLSemanticError: Duplicate piece ID: leg_1
 DSLSemanticError: Duplicate connection between 'a' and 'b': only one connection per piece pair is supported
+DSLSemanticError: Undefined variable 'W' (define it before it is used)
+DSLSemanticError: Variable 'W' is already defined
 ```
 
 ### Validation Errors
 
 ```text
+DSLValidationError: Division by zero
 DSLValidationError: contact_face 'front' and edge_shared_face 'back' must be adjacent faces
 DSLValidationError: Offset 50.0mm exceeds piece dimension 38.0mm (piece 'a', edge top/left)
 DSLValidationError: Unknown dowel preset: 9x99

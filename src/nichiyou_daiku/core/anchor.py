@@ -22,6 +22,10 @@ from nichiyou_daiku.core.geometry import (
 from nichiyou_daiku.core.piece import Piece, get_shape
 
 
+OFFSET_TOLERANCE_MM = 1e-6
+"""Slack for offsets computed in floating point, e.g. (400 / 11) * 11."""
+
+
 def _get_pos_dir_edge(contact_face: Face, edge_shared_face: Face) -> Edge:
     if is_positive(cross_face(contact_face, edge_shared_face)):
         return Edge(lhs=contact_face, rhs=edge_shared_face)
@@ -121,7 +125,7 @@ class BoundAnchor(BaseModel, frozen=True):
         edge = _get_pos_dir_edge(self.anchor.contact_face, self.anchor.edge_shared_face)
         max_length = edge_length_of(box, edge)
         offset_value = self.anchor.offset.value
-        if offset_value > max_length:
+        if offset_value > max_length + OFFSET_TOLERANCE_MM:
             raise ValueError(
                 f"Offset {offset_value}mm exceeds piece dimension {max_length}mm "
                 f"(piece '{self.piece.id}', edge {self.anchor.contact_face}/"

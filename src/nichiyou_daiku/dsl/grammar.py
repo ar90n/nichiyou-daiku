@@ -66,7 +66,8 @@ screw_compact: SCREW_START (screw_preset | screw_numeric) ")"
 SCREW_START: "S("
 screw_numeric: sum "," sum
 screw_preset: SCREW_TYPE ":" NUMBER "x" NUMBER
-SCREW_TYPE.2: "Slim" | "Coarse"
+// A screw type only when no name character follows, so SlimD is a variable
+SCREW_TYPE.2: /(Slim|Coarse)(?![A-Za-z0-9_])/
 
 // Comment support
 COMMENT: "//" /[^\n]*/

@@ -154,3 +154,75 @@ class TestParametricExample:
         assert assembly.placement.conflicts == ()
         assert len(assembly.placement.groups) == 1
         assert find_overlaps(model, assembly.placement) == ()
+
+
+class TestReviewFollowUps:
+    @pytest.mark.parametrize(
+        ("source", "expected"),
+        [
+            ("(a:2x4 =600;)", "Expected one of: ')', '*', '+', '-', '/'"),
+            ("(a:2x4 =600 600)", "Expected one of: ')', '*', '+', '-', '/'"),
+            # At the end of input the parser has already reduced past '*' and
+            # '/'; what it lists is still all valid
+            ("(a:2x4 =100", "Expected one of: ')', '+', '-'"),
+            (
+                f"{PIECES}a -[FL<0 DF<0 D(4 30)]- b",
+                "Expected one of: '*', '+', ',', '-', '/'",
+            ),
+        ],
+    )
+    def test_syntax_errors_list_only_what_may_follow(self, source, expected):
+        with pytest.raises(DSLSyntaxError) as exc:
+            parse_dsl(source)
+        assert str(exc.value).endswith(expected)
+
+    def test_unbracketed_compact_offset_expression_gets_a_hint(self):
+        with pytest.raises(DSLSyntaxError) as exc:
+            parse_dsl(f"X = 300\n{PIECES}a -[FL<X+1 DF<0]- b")
+        assert "FL<(X + 1)" in str(exc.value)
+
+    def test_rounding_noise_does_not_push_an_offset_past_the_edge(self):
+        # (400 / 11) * 11 is 400.00000000000006 in floating point
+        source = (
+            "L = 400\nN = 11\nSTEP = L / N\n"
+            "(rail:2x4 =L)\n(post:2x4 =500)\n"
+            "rail -[FL<(N * STEP) DF<0]- post"
+        )
+        connection = _connection(source)
+        assert connection.base.anchor.offset.value == pytest.approx(400.0)
+
+    def test_offset_clearly_past_the_edge_is_still_rejected(self):
+        with pytest.raises(DSLValidationError, match="exceeds"):
+            parse_dsl(
+                "L = 400\n(rail:2x4 =L)\n(post:2x4 =500)\nrail -[FL<(L + 0.001) DF<0]- post"
+            )
+
+    def test_names_starting_with_a_screw_type_work_in_screw_sizes(self):
+        connection = _connection(f"SlimD = 3.5\n{PIECES}a -[FL<0 BL<0 S(SlimD, 50)]- b")
+        assert connection.type == ScrewConnection(diameter=3.5, length=50.0)
+
+    def test_screw_type_names_are_reserved_as_the_first_screw_size(self):
+        with pytest.raises(DSLSyntaxError):
+            parse_dsl(f"Slim = 3.5\n{PIECES}a -[FL<0 BL<0 S(Slim, 50)]- b")
+
+    def test_face_letters_and_v_work_as_variable_names(self):
+        connection = _connection(f"D = 4\nV = 30\n{PIECES}a -[FL<V DF<0 D(D, V)]- b")
+        assert connection.base.anchor.offset == FromMin(value=30.0)
+        assert connection.type == DowelConnection(radius=4.0, depth=30.0)
+
+    def test_comment_may_follow_a_division(self):
+        assert _length("W = 600 / 2 // half the width\n(a:2x4 =W)") == 300.0
+
+    @pytest.mark.parametrize(
+        ("source", "location"),
+        [
+            (f"{PIECES}a -[FL<X DF<0]- b", (3, 8)),
+            (f"{PIECES}a -[FL<0 DF<0 D(R, 30)]- b", (3, 17)),
+            ('(a:2x4 {"length": X})', (1, 19)),
+            ("Z = 0\n(a:2x4 =10 / Z)", (2, 9)),
+        ],
+    )
+    def test_errors_inside_expressions_point_at_them(self, source, location):
+        with pytest.raises((DSLSemanticError, DSLValidationError)) as exc:
+            parse_dsl(source)
+        assert (exc.value.line, exc.value.column) == location

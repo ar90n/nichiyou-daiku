@@ -99,6 +99,9 @@ class DSLParser:
             raise _as_located_error(e) from e.orig_exc
 
 
+_ARITHMETIC = {"+", "-", "*", "/"}
+
+
 def _describe_syntax_error(error: UnexpectedInput, parser: Lark) -> str:
     """Describe a parse error using readable names for the expected input."""
     if isinstance(error, UnexpectedCharacters):
@@ -110,13 +113,28 @@ def _describe_syntax_error(error: UnexpectedInput, parser: Lark) -> str:
     else:
         found = "Unexpected end of input"
         expected = getattr(error, "expected", None) or set()
+    # LALR merges lookaheads across every place an expression may appear, so
+    # ask the parser what it accepts at this exact point instead.
+    state = getattr(error, "interactive_parser", None)
+    if state is not None:
+        expected = state.accepts()
 
     terminals = {terminal.name: terminal for terminal in parser.terminals}
     descriptions = sorted(
         {_describe_terminal(name, terminals.get(name)) for name in expected}
     )
     label = "Expected" if len(descriptions) == 1 else "Expected one of"
-    return f"{found}. {label}: {', '.join(descriptions)}" if descriptions else found
+    message = f"{found}. {label}: {', '.join(descriptions)}" if descriptions else found
+    if (
+        isinstance(error, UnexpectedToken)
+        and error.token.value in _ARITHMETIC
+        and "COMPACT_FACE" in expected
+    ):
+        message += (
+            ". A compact offset that is an expression needs parentheses, "
+            "e.g. FL<(X + 1)"
+        )
+    return message
 
 
 def _describe_terminal(name: str, terminal: TerminalDef | None) -> str:

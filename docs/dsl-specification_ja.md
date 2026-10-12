@@ -44,7 +44,7 @@ piece1 -[anchor1 anchor2]- piece2
 
 ## 変数と式
 
-`名前 = 式` で数値に名前を付け、数値を書ける場所（長さ、オフセット、ダボ・ビスの数値指定）で使えます。変数は使う行より上で定義する必要があり、再定義はできません。
+`名前 = 式` で数値に名前を付け、数値を書ける場所（長さ、オフセット、ダボ・ビスの数値指定）で使えます。名前の規則はピースIDと同じです（英字・数字・アンダースコア。数字で始めない）。変数は使う行より上で定義する必要があり、再定義はできません。
 
 ```nd
 W = 800                        // 全体の幅
@@ -60,7 +60,8 @@ apron -[RF<GAP BT<0]- top               // 簡略表記のオフセット: 数�
 
 - 式には数値、変数、`+ - * /`、括弧、先頭の `-` を使えます。
 - 簡略表記のオフセットには、数値・変数・括弧でくくった式を書きます。`FL<W / 2` ではなく `FL<(W / 2)` と書いてください（オフセットのすぐ後に次の面の文字が続くため）。
-- `D(:8x30)` や `S(Slim:3.3x25)` などのプリセットは名前であり、式ではありません。`S(...)` の中の `Slim` と `Coarse` はビスの種類で、変数名としては使えません。
+- 面の文字（`T`、`D`、`L`、`R`、`F`、`B`）や `V` 1文字の名前も使えますが、`DF<0` の隣では読みにくいので `DEPTH` のような名前を勧めます。
+- `D(:8x30)` や `S(Slim:3.3x25)` などのプリセットは名前であり、式ではありません。`S(...)` の最初の数値に `Slim` と `Coarse` は使えません（ビスの種類として読まれます）。`SlimD` のように、それで始まるだけの名前は使えます。
 - 変数とピースIDは別物です。変数は式の中、ピースIDは接続の両端にだけ現れます。
 - 未定義の変数（後で定義されるものを含む）と再定義は意味エラー、0での割り算は検証エラーになります。長さ0のようにおかしな値は、通常の検証が報告します。
 
@@ -595,11 +596,14 @@ DSLSyntaxError: Syntax error at line 1, column 4: Unexpected token '3'. Expected
 DSLSemanticError: Unknown piece reference: unknown_piece
 DSLSemanticError: Duplicate piece ID: leg_1
 DSLSemanticError: Duplicate connection between 'a' and 'b': only one connection per piece pair is supported
+DSLSemanticError: Undefined variable 'W' (define it before it is used)
+DSLSemanticError: Variable 'W' is already defined
 ```
 
 ### 検証エラー
 
 ```text
+DSLValidationError: Division by zero
 DSLValidationError: contact_face 'front' and edge_shared_face 'back' must be adjacent faces
 DSLValidationError: Offset 50.0mm exceeds piece dimension 38.0mm (piece 'a', edge top/left)
 DSLValidationError: Unknown dowel preset: 9x99
