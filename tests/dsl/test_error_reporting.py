@@ -195,7 +195,7 @@ class TestSyntaxErrorMessages:
             PIECES + "a - b",
             PIECES + "a -[TF<0 BD<0 Q]- b",
             PIECES + "a -[TF<0 BD<0 D(8, )]- b",
-            "(a:2x6 =100)",
+            "(a:4x4 =100)",
             "(a:2x4 =100",
             "",
             "// only a comment\n",

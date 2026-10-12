@@ -17,14 +17,18 @@ Based on user specification, generate one of:
 | Type | Width | Thickness | Common Use |
 |------|-------|-----------|------------|
 | 2x4  | 89mm  | 38mm      | Structural (legs, aprons) |
+| 2x2  | 38mm  | 38mm      | Light frames, slim legs (square) |
+| 2x6  | 140mm | 38mm      | Wide aprons, bench seats |
 | 1x4  | 89mm  | 19mm      | Surfaces (tops, shelves) |
+| 1x6  | 140mm | 19mm      | Wider surfaces, side panels |
+| 1x8  | 184mm | 19mm      | Wide shelves, box sides |
 
 ### Piece Frame and Faces (Critical)
 
 Every piece is a box described in its **own local frame**:
 
-- **X** = width (89mm for both 2x4 and 1x4)
-- **Y** = thickness (38mm for 2x4, 19mm for 1x4)
+- **X** = width W (the wide side, from the table above; 89mm for 2x4 and 1x4)
+- **Y** = thickness T (38mm for 2x lumber, 19mm for 1x lumber)
 - **Z** = length
 
 ```
@@ -32,24 +36,24 @@ Cross-section, looking at the top end (top = +Z points at you):
 
                  front (+Y)
             ┌──────────────────┐
-  left (-X) │                  │ right (+X)     thickness: 38 (2x4) / 19 (1x4)
+  left (-X) │                  │ right (+X)     thickness T
             └──────────────────┘
                  back (-Y)
-            ←─────── 89 ───────→
+            ←─────── W ────────→
 
-top (+Z) / down (-Z): the two END faces (89 x thickness); the length runs along Z
-front / back: WIDE faces (89 x length)
-left / right: NARROW faces (thickness x length)
+top (+Z) / down (-Z): the two END faces (W x T); the length runs along Z
+front / back: WIDE faces (W x length)
+left / right: NARROW faces (T x length)
 ```
 
-| Face  | Normal | Kind | Size on a 2x4 |
+| Face  | Normal | Kind | Size (2x4: W = 89, T = 38) |
 |-------|--------|------|---------------|
-| top   | +Z | end face at the max end of the length | 89 x 38 |
-| down  | -Z | end face at the min end of the length | 89 x 38 |
-| front | +Y | wide face | 89 x length |
-| back  | -Y | wide face | 89 x length |
-| right | +X | narrow face | 38 x length |
-| left  | -X | narrow face | 38 x length |
+| top   | +Z | end face at the max end of the length | W x T |
+| down  | -Z | end face at the min end of the length | W x T |
+| front | +Y | wide face | W x length |
+| back  | -Y | wide face | W x length |
+| right | +X | narrow face | T x length |
+| left  | -X | narrow face | T x length |
 
 Face names are local to each piece. `top`/`down` are always the two **ends** of a piece: for a horizontal apron they are its left and right ends, not its upper and lower surfaces.
 
@@ -64,11 +68,11 @@ contact_face and edge_shared_face must be **adjacent** (not the same face, not o
 
 The edge runs along the axis perpendicular to both faces, so the face pair decides what the offset measures:
 
-| Face pair (either order) | Edge runs along | Edge length (2x4 / 1x4) | `<v` measured from | `>v` measured from |
+| Face pair (either order) | Edge runs along | Edge length | `<v` measured from | `>v` measured from |
 |--------------------------|-----------------|-------------------------|--------------------|--------------------|
-| top/down + front/back | width (X) | 89 / 89 | left side | right side |
-| top/down + left/right | thickness (Y) | 38 / 19 | back side | front side |
-| front/back + left/right | length (Z) | L / L | down end | top end |
+| top/down + front/back | width (X) | W | left side | right side |
+| top/down + left/right | thickness (Y) | T | back side | front side |
+| front/back + left/right | length (Z) | L | down end | top end |
 
 The offset must not exceed the edge length. For example `TL<50` on a 2x4 is an error: the top/left edge is only 38mm long.
 
@@ -108,7 +112,7 @@ leg -[FL<100 DF<0]- apron
 ```
 
 - `piece_id`: Unique identifier (letters, digits, underscores; must not start with a digit)
-- `PIECE_TYPE`: `2x4` or `1x4`
+- `PIECE_TYPE`: `1x4`, `1x6`, `1x8`, `2x2`, `2x4` or `2x6`
 - `length`: Length in millimeters (must be > 0)
 
 Pieces must be defined before a connection refers to them.
@@ -167,7 +171,7 @@ Available presets: `D(:6x25)`, `D(:6x30)`, `D(:8x25)`, `D(:8x30)`, `D(:8x40)`, `
 
 Dowel rules:
 - The length is the **total** dowel length; half of it goes into each piece. In the numeric form `D(4, 30)` the first number is the radius and the second the total length (same as `D(:8x30)`).
-- Half the length must be shorter than each piece's depth along its contact normal, or the hole comes out on the far face: front/back contact → thickness (38 or 19), left/right → 89, top/down → piece length. Example: `D(:12x40)` needs 20mm, so it does not fit a 1x4 contacted on its front/back face (19mm).
+- Half the length must be shorter than each piece's depth along its contact normal, or the hole comes out on the far face: front/back contact → thickness, left/right → width, top/down → piece length. Example: `D(:12x40)` needs 20mm, so it does not fit a 1x4 contacted on its front/back face (19mm).
 - Holes: φ diameter x length/2 in each piece.
 - Dowels and screws: the contact area's short side must be at least 2 × the fastener diameter (pieces touching only along an edge have no contact area); otherwise `validate` reports it and no holes are made. `validate` also reports holes of two connections that run into each other inside a piece.
 
@@ -188,8 +192,8 @@ Dowel rules:
 
 The screw is driven **through the target into the base**:
 - The **target's contact_face must be `front` or `back`** (its wide face).
-- Screw length must be **greater than the target's thickness** (38 for 2x4, 19 for 1x4).
-- Screw length must be **less than** the base's depth along its contact normal + the target's thickness (base depth: front/back → thickness, left/right → 89, top/down → piece length).
+- Screw length must be **greater than the target's thickness** (38 for 2x lumber, 19 for 1x lumber).
+- Screw length must be **less than** the base's depth along its contact normal + the target's thickness (base depth: front/back → thickness, left/right → width, top/down → piece length).
 - Holes: a through-hole in the target, and (length - target thickness) deep into the base.
 
 ---
@@ -275,7 +279,7 @@ leg_fr -[TF<0 BD<0 S(Slim:3.3x45)]- top_8
 - The two legs of one apron use DIFFERENT anchors (`LB` + `DB` on one end, `RF` + `TF` on the other), because they touch the apron's two different ends.
 - `>0` on the leg puts the point at the leg's top; `DB>0` / `TF>0` / `TB>0` / `DF>0` on the apron make its 89mm height hang below that point, flush with the leg tops.
 
-Top boards over width W:
+Top boards over width W (1x4 boards on 2x4 legs, both 89mm wide):
 - Number of boards: n = the largest n with n x 89 <= W
 - Gap: g = (W - n x 89) / (n - 1)
 - Offset of inner board k (k = 2 .. n-1): o_k = (k - 1) x (89 + g) - 89, measured from the apron_front end at leg_fl
@@ -330,7 +334,7 @@ Account for the lumber dimensions at every joint. For the verified table pattern
 
 | Part | Formula | Example (W=800, D=500, H=720, 1x4 top) |
 |------|---------|----------------------------------------|
-| Legs | H - top thickness (19 for 1x4, 38 for 2x4) | 720 - 19 = 701 |
+| Legs | H - top thickness (19 for 1x boards, 38 for 2x boards) | 720 - 19 = 701 |
 | Front/back aprons | W - 2 x 89 | 800 - 178 = 622 |
 | Side aprons | D - 2 x 38 | 500 - 76 = 424 |
 | Top boards | D | 500 |
@@ -373,7 +377,7 @@ Before output:
 - [ ] All piece IDs are unique and defined before use
 - [ ] At most one connection per base/target pair
 - [ ] Face pairs are adjacent: no same (`FF`) or opposite (`TD`, `LR`, `FB`) faces; `B` is back, the bottom end is `D` (down)
-- [ ] Every offset fits its edge (89 across the width, 38/19 across the thickness, piece length along the length): `TL<50` and `TF<100` are errors
+- [ ] Every offset fits its edge (the width W across the width, the thickness T across the thickness, piece length along the length): `TL<50` and `TF<100` are errors
 - [ ] Offset direction: `<` from the down end / left side / back side, `>` from the top end / right side / front side
 - [ ] Screw targets use `front`/`back` contact faces; target thickness < screw length <= base depth + target thickness
 - [ ] Dowel half-length fits both pieces along their contact normals

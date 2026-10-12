@@ -56,7 +56,7 @@ start           = statement+
 statement       = piece_def | connection_def
 
 piece_def       = "(" CNAME? ":" PIECE_TYPE (piece_props | compact_length) ")"
-PIECE_TYPE      = "1x4" | "2x4"
+PIECE_TYPE      = "1x4" | "1x6" | "1x8" | "2x2" | "2x4" | "2x6"
 piece_props     = "{" prop_list? "}"
 compact_length  = "=" NUMBER
 prop_list       = prop ("," prop)*
@@ -98,7 +98,7 @@ NUMBER          = /[0-9]+(\.[0-9]+)?/
 
 | Error Type | Example | Cause |
 |------------|---------|-------|
-| DSLSyntaxError | "Syntax error at line 1, column 4: Unexpected token '3'. Expected: piece type (1x4, 2x4)" | Invalid syntax, e.g. unknown lumber type `3x4` |
+| DSLSyntaxError | "Syntax error at line 1, column 4: Unexpected token '3'. Expected: piece type (1x4, 1x6, 1x8, 2x2, 2x4, 2x6)" | Invalid syntax, e.g. unknown lumber type `3x4` |
 | DSLSemanticError | "Unknown piece reference: foo" | Reference to an undefined piece |
 | DSLSemanticError | "Duplicate piece ID: leg_1" | Same ID used twice |
 | DSLSemanticError | "Duplicate connection between 'a' and 'b' ..." | Second connection for the same base/target pair |

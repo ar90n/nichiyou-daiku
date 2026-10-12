@@ -26,8 +26,12 @@ class PieceType(Enum):
         '2x4'
     """
 
-    PT_2x4 = "2x4"
     PT_1x4 = "1x4"
+    PT_1x6 = "1x6"
+    PT_1x8 = "1x8"
+    PT_2x2 = "2x2"
+    PT_2x4 = "2x4"
+    PT_2x6 = "2x6"
 
     @classmethod
     def of(cls, value: str) -> "PieceType":
@@ -49,18 +53,14 @@ class PieceType(Enum):
             True
             >>> import pytest
             >>> with pytest.raises(ValueError) as exc:
-            ...     PieceType.of("2x6")
-            >>> "Unsupported piece type: 2x6" in str(exc.value)
+            ...     PieceType.of("4x4")
+            >>> "Unsupported piece type: 4x4" in str(exc.value)
             True
         """
-        ret = {
-            "1x4": cls.PT_1x4,
-            "2x4": cls.PT_2x4,
-        }.get(value)
-        if ret is not None:
-            return ret
-
-        raise ValueError(f"Unsupported piece type: {value}")
+        try:
+            return cls(value)
+        except ValueError:
+            raise ValueError(f"Unsupported piece type: {value}") from None
 
 
 class Piece(BaseModel, frozen=True):
@@ -157,6 +157,17 @@ def get_shape(value: PieceType | Piece):
             return _get_shape_of_piece(value)
 
 
+# Actual SPF sizes in mm: width is the wide side (X), height the thickness (Y)
+_CROSS_SECTIONS: dict[PieceType, Shape2D] = {
+    PieceType.PT_1x4: Shape2D(width=89.0, height=19.0),
+    PieceType.PT_1x6: Shape2D(width=140.0, height=19.0),
+    PieceType.PT_1x8: Shape2D(width=184.0, height=19.0),
+    PieceType.PT_2x2: Shape2D(width=38.0, height=38.0),
+    PieceType.PT_2x4: Shape2D(width=89.0, height=38.0),
+    PieceType.PT_2x6: Shape2D(width=140.0, height=38.0),
+}
+
+
 def _get_shape_of_piece_type(piece_type: PieceType) -> Shape2D:
     """Get the 2D cross-section shape of a piece type.
 
@@ -175,16 +186,7 @@ def _get_shape_of_piece_type(piece_type: PieceType) -> Shape2D:
         >>> shape.height  # Actual 2x4 height
         38.0
     """
-    match piece_type:
-        case PieceType.PT_2x4:
-            return Shape2D(width=89.0, height=38.0)  # 2x4 actual dimensions in mm
-        case PieceType.PT_1x4:
-            return Shape2D(width=89.0, height=19.0)  #
-
-    raise RuntimeError(
-        f"Unsupported piece type: {piece_type}. "
-        "Please implement the cross-section dimensions."
-    )
+    return _CROSS_SECTIONS[piece_type]
 
 
 def _get_shape_of_piece(piece: Piece) -> Shape3D:

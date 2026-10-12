@@ -181,7 +181,7 @@ Total waste: 960mm (8.7%)
 - 🎯 Export to STL/STEP for 3D printing or CNC
 
 ### Core Library
-- 🪵 Support for standard lumber sizes (2x4 and 1x4)
+- 🪵 Support for standard lumber sizes (1x4, 1x6, 1x8, 2x2, 2x4, 2x6)
 - 🔗 Flexible connection system with precise offset control
 - 🔩 Dowel and screw joint support with preset sizes
 - 📐 3D visualization with build123d (optional)
@@ -389,12 +389,12 @@ shelf_high -[TL<0 FL>38 S(Coarse:3.8x57)]- right_side  // Coarse thread screw pr
 
 #### How Connections Work
 
-Each piece is a box in its own frame: X = width (89mm), Y = thickness (38mm for 2x4, 19mm for 1x4), Z = length.
+Each piece is a box in its own frame: X = width (89mm for 1x4/2x4, 140mm for 1x6/2x6, 184mm for 1x8, 38mm for 2x2), Y = thickness (38mm for 2x lumber, 19mm for 1x lumber), Z = length.
 
 | Face | Letter | Kind |
 |------|--------|------|
-| top / down | `T` / `D` | the two end faces (89 x thickness) |
-| front / back | `F` / `B` | the two wide faces (89 x length) |
+| top / down | `T` / `D` | the two end faces (width x thickness) |
+| front / back | `F` / `B` | the two wide faces (width x length) |
 | right / left | `R` / `L` | the two narrow faces (thickness x length) |
 
 An anchor such as `FL<100` names a contact face (`F`), an adjacent edge-shared face (`L`) and an offset along the edge where the two faces meet. `<v` is measured from the down end / left side / back side, `>v` from the top end / right side / front side. A connection `base -[A B]- target` places the target so that:

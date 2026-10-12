@@ -10,7 +10,7 @@
 - Height:
 
 ## Material
-- Primary: [2x4 / 1x4]
+- Primary: [1x4 / 1x6 / 1x8 / 2x2 / 2x4 / 2x6]
 
 ## Structure
 
@@ -23,7 +23,7 @@
 
 ### Top Surface
 - Enabled: [yes / no]
-- Material: [2x4 / 1x4]
+- Material: [1x4 / 1x6 / 1x8 / 2x2 / 2x4 / 2x6]
 - Direction: [width / depth]
 
 ### Shelves

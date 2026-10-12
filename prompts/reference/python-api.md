@@ -55,8 +55,12 @@ from nichiyou_daiku.dsl import parse_dsl, DSLError, DSLSyntaxError, DSLSemanticE
 from nichiyou_daiku.core.piece import PieceType
 
 class PieceType(Enum):
-    PT_2x4 = "2x4"  # 89mm (width) x 38mm (thickness) cross-section
     PT_1x4 = "1x4"  # 89mm (width) x 19mm (thickness) cross-section
+    PT_1x6 = "1x6"  # 140mm (width) x 19mm (thickness) cross-section
+    PT_1x8 = "1x8"  # 184mm (width) x 19mm (thickness) cross-section
+    PT_2x2 = "2x2"  # 38mm (width) x 38mm (thickness) cross-section
+    PT_2x4 = "2x4"  # 89mm (width) x 38mm (thickness) cross-section
+    PT_2x6 = "2x6"  # 140mm (width) x 38mm (thickness) cross-section
 
 # Create from string
 PieceType.of("2x4")  # Returns PieceType.PT_2x4
@@ -122,16 +126,16 @@ anchor = Anchor(
 
 | Face | Normal | Kind |
 |------|--------|------|
-| top / down | +Z / -Z | end faces (89 x thickness) |
-| front / back | +Y / -Y | wide faces (89 x length) |
+| top / down | +Z / -Z | end faces (width x thickness) |
+| front / back | +Y / -Y | wide faces (width x length) |
 | right / left | +X / -X | narrow faces (thickness x length) |
 
 `contact_face` and `edge_shared_face` must be adjacent (not the same, not opposite); `Anchor` raises `ValueError` otherwise. The anchor point lies on the edge where the two faces meet:
 
 | Face pair | Edge runs along | `FromMin(v)` measured from | `FromMax(v)` measured from |
 |-----------|-----------------|----------------------------|----------------------------|
-| top/down + front/back | width (0-89) | left side | right side |
-| top/down + left/right | thickness (0-38 / 0-19) | back side | front side |
+| top/down + front/back | width (0-W) | left side | right side |
+| top/down + left/right | thickness (0-T) | back side | front side |
 | front/back + left/right | length (0-L) | down end | top end |
 
 **Offset types:**

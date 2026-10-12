@@ -51,9 +51,17 @@ class TestCutPlan:
 
 class TestDefaultStandardLengths:
     def test_every_lumber_type_has_common_stock_lengths(self):
-        assert set(DEFAULT_STANDARD_LENGTHS) == {PieceType.PT_2x4, PieceType.PT_1x4}
-        assert DEFAULT_STANDARD_LENGTHS[PieceType.PT_2x4] == [2440.0, 3050.0, 3660.0]
-        assert DEFAULT_STANDARD_LENGTHS[PieceType.PT_1x4] == [1830.0, 2440.0, 3050.0]
+        one_by = [1830.0, 2440.0, 3050.0]  # 6, 8 and 10ft
+        two_by = [2440.0, 3050.0, 3660.0]  # 8, 10 and 12ft
+        expected = {
+            "1x4": one_by,
+            "1x6": one_by,
+            "1x8": one_by,
+            "2x2": two_by,
+            "2x4": two_by,
+            "2x6": two_by,
+        }
+        assert {t.value: v for t, v in DEFAULT_STANDARD_LENGTHS.items()} == expected
 
 
 class TestOptimizeCuts:

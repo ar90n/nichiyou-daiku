@@ -1,12 +1,16 @@
 """Lark grammar definition for the nichiyou-daiku DSL."""
 
+from nichiyou_daiku.core.piece import PieceType
+
+PIECE_TYPE_NAMES = sorted(piece_type.value for piece_type in PieceType)
+
 GRAMMAR = r"""
 start: statement+
 
 statement: piece_def | connection_def
 
 piece_def: "(" CNAME? ":" PIECE_TYPE (piece_props | compact_length) ")"
-PIECE_TYPE: "1x4" | "2x4"
+PIECE_TYPE: __PIECE_TYPES__
 piece_props: "{" prop_list? "}"
 compact_length: "=" NUMBER
 prop_list: prop ("," prop)*
@@ -64,4 +68,4 @@ COMMENT: "//" /[^\n]*/
 %import common.WS
 %ignore WS
 %ignore COMMENT
-"""
+""".replace("__PIECE_TYPES__", " | ".join(f'"{name}"' for name in PIECE_TYPE_NAMES))

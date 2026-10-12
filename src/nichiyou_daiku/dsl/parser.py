@@ -23,7 +23,7 @@ from nichiyou_daiku.dsl.exceptions import (
     DSLSemanticError,
     DSLValidationError,
 )
-from nichiyou_daiku.dsl.grammar import GRAMMAR
+from nichiyou_daiku.dsl.grammar import GRAMMAR, PIECE_TYPE_NAMES
 from nichiyou_daiku.dsl.transformer import DSLTransformer
 
 
@@ -34,7 +34,7 @@ _TERMINAL_DESCRIPTIONS = {
     "CNAME": "identifier",
     "NUMBER": "number",
     "ESCAPED_STRING": "string",
-    "PIECE_TYPE": "piece type (1x4, 2x4)",
+    "PIECE_TYPE": f"piece type ({', '.join(PIECE_TYPE_NAMES)})",
     "COMPACT_FACE": "face letter (T, D, L, R, F, B)",
     "SCREW_TYPE": "screw type (Slim, Coarse)",
 }

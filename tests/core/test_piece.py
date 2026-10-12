@@ -90,3 +90,28 @@ class TestPieceLength:
 
         with pytest.raises(ValidationError):
             Piece(id="inf", type=PieceType.PT_2x4, length=float("inf"))
+
+
+# Actual SPF sizes in mm: (width, thickness)
+CROSS_SECTIONS = {
+    "1x4": (89.0, 19.0),
+    "1x6": (140.0, 19.0),
+    "1x8": (184.0, 19.0),
+    "2x2": (38.0, 38.0),
+    "2x4": (89.0, 38.0),
+    "2x6": (140.0, 38.0),
+}
+
+
+class TestLumberTypes:
+    @pytest.mark.parametrize(("name", "size"), CROSS_SECTIONS.items())
+    def test_cross_section_is_width_by_thickness(self, name, size):
+        shape = get_shape(PieceType.of(name))
+        assert (shape.width, shape.height) == size
+
+    def test_every_type_has_a_cross_section(self):
+        assert {piece_type.value for piece_type in PieceType} == set(CROSS_SECTIONS)
+
+    def test_unsupported_type_is_rejected(self):
+        with pytest.raises(ValueError, match="Unsupported piece type: 4x4"):
+            PieceType.of("4x4")

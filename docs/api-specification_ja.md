@@ -58,8 +58,12 @@ nichiyou_daiku/
 from nichiyou_daiku.core.piece import PieceType
 
 class PieceType(Enum):
-    PT_2x4 = "2x4"  # 89mm（幅）× 38mm（厚み）断面
     PT_1x4 = "1x4"  # 89mm（幅）× 19mm（厚み）断面
+    PT_1x6 = "1x6"  # 140mm（幅）× 19mm（厚み）断面
+    PT_1x8 = "1x8"  # 184mm（幅）× 19mm（厚み）断面
+    PT_2x2 = "2x2"  # 38mm（幅）× 38mm（厚み）断面
+    PT_2x4 = "2x4"  # 89mm（幅）× 38mm（厚み）断面
+    PT_2x6 = "2x6"  # 140mm（幅）× 38mm（厚み）断面
 ```
 
 **メソッド:**
@@ -170,11 +174,11 @@ class Anchor(BaseModel, frozen=True):
 
 エッジは2つの面の両方に垂直な軸に沿って伸びます：
 
-| 面の組み合わせ（順不同） | エッジの方向 | エッジの長さ (2x4 / 1x4) | `FromMin(v)` の基準 | `FromMax(v)` の基準 |
-|--------------------------|--------------|--------------------------|---------------------|---------------------|
-| top/down + front/back | 幅方向 (X) | 89 / 89 | left側 | right側 |
-| top/down + left/right | 厚み方向 (Y) | 38 / 19 | back側 | front側 |
-| front/back + left/right | 長さ方向 (Z) | L / L | down端 | top端 |
+| 面の組み合わせ（順不同） | エッジの方向 | エッジの長さ | `FromMin(v)` の基準 | `FromMax(v)` の基準 |
+|--------------------------|--------------|--------------|---------------------|---------------------|
+| top/down + front/back | 幅方向 (X) | W | left側 | right側 |
+| top/down + left/right | 厚み方向 (Y) | T | back側 | front側 |
+| front/back + left/right | 長さ方向 (Z) | L | down端 | top端 |
 
 オフセットがエッジの長さを超えると `BoundAnchor` は `ValueError` を送出します。
 
@@ -294,7 +298,7 @@ class Connection(BaseModel, frozen=True):
 | `Connection.of_dowel(base, target, spec)` | ダボ接続を作成 |
 | `Connection.of_screw(base, target, spec)` | ビス接続を作成 |
 
-**検証**（`ValueError` を送出）: ピースを自分自身に接続することはできません。ダボ: ダボの長さの半分が、各ピースの接触面の法線方向の寸法（front/back → 厚み、left/right → 89、top/down → ピースの長さ）より短い必要があります（穴が裏まで抜けないように）。ビス: ターゲットの接触面は `front` または `back` で、ターゲットの厚み < 長さ < ベースの接触面の法線方向の寸法 + ターゲットの厚み である必要があります。
+**検証**（`ValueError` を送出）: ピースを自分自身に接続することはできません。ダボ: ダボの長さの半分が、各ピースの接触面の法線方向の寸法（front/back → 厚み、left/right → 幅、top/down → ピースの長さ）より短い必要があります（穴が裏まで抜けないように）。ビス: ターゲットの接触面は `front` または `back` で、ターゲットの厚み < 長さ < ベースの接触面の法線方向の寸法 + ターゲットの厚み である必要があります。
 
 **例:**
 
@@ -495,14 +499,14 @@ Face = Literal["top", "down", "left", "right", "front", "back"]
 
 面の名前はピースのローカル座標系（X = 幅、Y = 厚み、Z = 長さ）に基づきます：
 
-| 面 | 法線 | 種類 | 2x4でのサイズ |
+| 面 | 法線 | 種類 | サイズ（W = 幅、T = 厚み。2x4なら 89 × 38） |
 |----|------|------|---------------|
-| top | +Z | 長さ方向の最大側の木口面 | 89 × 38 |
-| down | -Z | 長さ方向の最小側の木口面 | 89 × 38 |
-| front | +Y | 広い面 | 89 × 長さ |
-| back | -Y | 広い面 | 89 × 長さ |
-| right | +X | 細い面 | 38 × 長さ |
-| left | -X | 細い面 | 38 × 長さ |
+| top | +Z | 長さ方向の最大側の木口面 | W × T |
+| down | -Z | 長さ方向の最小側の木口面 | W × T |
+| front | +Y | 広い面 | W × 長さ |
+| back | -Y | 広い面 | W × 長さ |
+| right | +X | 細い面 | T × 長さ |
+| left | -X | 細い面 | T × 長さ |
 
 **面の図**（断面図。top端 = +Z を手前に向けて見た場合）:
 
@@ -512,7 +516,7 @@ Face = Literal["top", "down", "left", "right", "front", "back"]
   left (-X) │                  │ right (+X)
             └──────────────────┘
                  back (-Y)
-            ←─────── 89 ───────→
+            ←─────── W ────────→
 ```
 
 **ユーティリティ関数:**

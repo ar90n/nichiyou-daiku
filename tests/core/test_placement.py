@@ -113,7 +113,7 @@ def tree_models(draw) -> Model:
     count = draw(st.integers(min_value=2, max_value=6))
     pieces = [
         Piece.of(
-            draw(st.sampled_from([PieceType.PT_2x4, PieceType.PT_1x4])),
+            draw(st.sampled_from(list(PieceType))),
             draw(st.floats(min_value=50, max_value=1500, allow_nan=False)),
             f"p{i}",
         )

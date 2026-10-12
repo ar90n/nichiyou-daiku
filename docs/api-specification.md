@@ -58,8 +58,12 @@ Enumeration of supported lumber types.
 from nichiyou_daiku.core.piece import PieceType
 
 class PieceType(Enum):
-    PT_2x4 = "2x4"  # 89mm (width) × 38mm (thickness) cross-section
     PT_1x4 = "1x4"  # 89mm (width) × 19mm (thickness) cross-section
+    PT_1x6 = "1x6"  # 140mm (width) × 19mm (thickness) cross-section
+    PT_1x8 = "1x8"  # 184mm (width) × 19mm (thickness) cross-section
+    PT_2x2 = "2x2"  # 38mm (width) × 38mm (thickness) cross-section
+    PT_2x4 = "2x4"  # 89mm (width) × 38mm (thickness) cross-section
+    PT_2x6 = "2x6"  # 140mm (width) × 38mm (thickness) cross-section
 ```
 
 **Methods:**
@@ -170,11 +174,11 @@ Two pieces always connect by sharing an edge. The anchor defines:
 
 The edge runs along the axis perpendicular to both faces:
 
-| Face pair (either order) | Edge runs along | Edge length (2x4 / 1x4) | `FromMin(v)` measured from | `FromMax(v)` measured from |
-|--------------------------|-----------------|-------------------------|----------------------------|----------------------------|
-| top/down + front/back | width (X) | 89 / 89 | left side | right side |
-| top/down + left/right | thickness (Y) | 38 / 19 | back side | front side |
-| front/back + left/right | length (Z) | L / L | down end | top end |
+| Face pair (either order) | Edge runs along | Edge length | `FromMin(v)` measured from | `FromMax(v)` measured from |
+|--------------------------|-----------------|-------------|----------------------------|----------------------------|
+| top/down + front/back | width (X) | W | left side | right side |
+| top/down + left/right | thickness (Y) | T | back side | front side |
+| front/back + left/right | length (Z) | L | down end | top end |
 
 `BoundAnchor` raises `ValueError` if the offset exceeds the edge length.
 
@@ -294,7 +298,7 @@ class Connection(BaseModel, frozen=True):
 | `Connection.of_dowel(base, target, spec)` | Create dowel connection |
 | `Connection.of_screw(base, target, spec)` | Create screw connection |
 
-**Validation** (raises `ValueError`): a piece cannot connect to itself. Dowel: half the dowel length must be shorter than each piece's depth along its contact normal (front/back → thickness, left/right → 89, top/down → piece length), so the hole stays blind. Screw: the target's contact face must be `front` or `back`, and target thickness < length < base depth along its contact normal + target thickness.
+**Validation** (raises `ValueError`): a piece cannot connect to itself. Dowel: half the dowel length must be shorter than each piece's depth along its contact normal (front/back → thickness, left/right → width, top/down → piece length), so the hole stays blind. Screw: the target's contact face must be `front` or `back`, and target thickness < length < base depth along its contact normal + target thickness.
 
 **Example:**
 
@@ -495,14 +499,14 @@ Face = Literal["top", "down", "left", "right", "front", "back"]
 
 Faces are named in the piece's local frame (X = width, Y = thickness, Z = length):
 
-| Face | Normal | Kind | Size on a 2x4 |
-|------|--------|------|---------------|
-| top | +Z | end face at the max end of the length | 89 × 38 |
-| down | -Z | end face at the min end of the length | 89 × 38 |
-| front | +Y | wide face | 89 × length |
-| back | -Y | wide face | 89 × length |
-| right | +X | narrow face | 38 × length |
-| left | -X | narrow face | 38 × length |
+| Face | Normal | Kind | Size (W = width, T = thickness; 2x4: 89 × 38) |
+|------|--------|------|-----------------------------------------------|
+| top | +Z | end face at the max end of the length | W × T |
+| down | -Z | end face at the min end of the length | W × T |
+| front | +Y | wide face | W × length |
+| back | -Y | wide face | W × length |
+| right | +X | narrow face | T × length |
+| left | -X | narrow face | T × length |
 
 **Face Diagram** (cross-section, looking at the top end; top = +Z points at you):
 
@@ -512,7 +516,7 @@ Faces are named in the piece's local frame (X = width, Y = thickness, Z = length
   left (-X) │                  │ right (+X)
             └──────────────────┘
                  back (-Y)
-            ←─────── 89 ───────→
+            ←─────── W ────────→
 ```
 
 **Utility Functions:**

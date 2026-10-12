@@ -56,7 +56,7 @@ Defines a lumber piece.
 | Parameter | Description | Required |
 |-----------|-------------|----------|
 | `piece_id` | Unique identifier for the piece (letters, digits, underscores; must not start with a digit) | Yes (if omitted, a UUID is generated and the piece cannot be referenced) |
-| `piece_type` | Type of lumber (`1x4`, `2x4`) | Yes |
+| `piece_type` | Type of lumber (`1x4`, `1x6`, `1x8`, `2x2`, `2x4`, `2x6`) | Yes |
 | `length` | Length in millimeters, greater than 0 | Yes |
 
 ### Lumber Types
@@ -64,7 +64,11 @@ Defines a lumber piece.
 | Type | Width (mm) | Thickness (mm) | Description |
 |------|------------|----------------|-------------|
 | `1x4` | 89 | 19 | One-by-four lumber |
+| `1x6` | 140 | 19 | One-by-six lumber |
+| `1x8` | 184 | 19 | One-by-eight lumber |
+| `2x2` | 38 | 38 | Two-by-two lumber (square: all four long faces are the same size) |
 | `2x4` | 89 | 38 | Two-by-four lumber |
+| `2x6` | 140 | 38 | Two-by-six lumber |
 
 ### Examples
 
@@ -85,8 +89,8 @@ Defines a connection between two pieces.
 
 Every piece is a box with its own local frame:
 
-- **X** = width (89mm)
-- **Y** = thickness (38mm for 2x4, 19mm for 1x4)
+- **X** = width W (the wide side, from the Lumber Types table; 89mm for 2x4)
+- **Y** = thickness T (38mm for 2x lumber, 19mm for 1x lumber)
 - **Z** = length
 
 ```
@@ -94,24 +98,24 @@ Cross-section, looking at the top end (top = +Z points at you):
 
                  front (+Y)
             ┌──────────────────┐
-  left (-X) │                  │ right (+X)     thickness: 38 (2x4) / 19 (1x4)
+  left (-X) │                  │ right (+X)     thickness T
             └──────────────────┘
                  back (-Y)
-            ←─────── 89 ───────→
+            ←─────── W ────────→
 
-top (+Z) / down (-Z): the two END faces (89 x thickness); the length runs along Z
-front / back: WIDE faces (89 x length)
-left / right: NARROW faces (thickness x length)
+top (+Z) / down (-Z): the two END faces (W x T); the length runs along Z
+front / back: WIDE faces (W x length)
+left / right: NARROW faces (T x length)
 ```
 
-| Face | Normal | Kind | Size on a 2x4 |
-|------|--------|------|---------------|
-| `top` | +Z | end face at the max end of the length | 89 x 38 |
-| `down` | -Z | end face at the min end of the length | 89 x 38 |
-| `front` | +Y | wide face | 89 x length |
-| `back` | -Y | wide face | 89 x length |
-| `right` | +X | narrow face | 38 x length |
-| `left` | -X | narrow face | 38 x length |
+| Face | Normal | Kind | Size (on a 2x4: W = 89, T = 38) |
+|------|--------|------|---------------------------------|
+| `top` | +Z | end face at the max end of the length | W x T |
+| `down` | -Z | end face at the min end of the length | W x T |
+| `front` | +Y | wide face | W x length |
+| `back` | -Y | wide face | W x length |
+| `right` | +X | narrow face | T x length |
+| `left` | -X | narrow face | T x length |
 
 Face names are local to each piece: `top`/`down` are always the two ends of a piece, even when the piece lies horizontally.
 
@@ -140,11 +144,11 @@ Each connection has two **anchors**, one per piece:
 
 The edge runs along the axis perpendicular to both faces, which decides what the offset measures:
 
-| Face pair (either order) | Edge runs along | Edge length (2x4 / 1x4) | FromMin (`<v`) measured from | FromMax (`>v`) measured from |
-|--------------------------|-----------------|-------------------------|------------------------------|------------------------------|
-| top/down + front/back | width (X) | 89 / 89 | left side | right side |
-| top/down + left/right | thickness (Y) | 38 / 19 | back side | front side |
-| front/back + left/right | length (Z) | L / L | down end | top end |
+| Face pair (either order) | Edge runs along | Edge length | FromMin (`<v`) measured from | FromMax (`>v`) measured from |
+|--------------------------|-----------------|-------------|------------------------------|------------------------------|
+| top/down + front/back | width (X) | W | left side | right side |
+| top/down + left/right | thickness (Y) | T | back side | front side |
+| front/back + left/right | length (Z) | L | down end | top end |
 
 The offset must not exceed the edge length; for example `TL<50` on a 2x4 is an error because the top/left edge is only 38mm long.
 
@@ -293,7 +297,7 @@ Available presets:
 
 #### Rules
 
-- Half the dowel length must be shorter than each piece's depth along its contact normal, so the hole does not come out on the far face: front/back contact → thickness (38 or 19), left/right → 89, top/down → piece length.
+- Half the dowel length must be shorter than each piece's depth along its contact normal, so the hole does not come out on the far face: front/back contact → thickness, left/right → width, top/down → piece length.
 - Holes: φ diameter x length/2 in each piece.
 - Dowels and screws: the contact area's short side must be at least 2 × the fastener diameter (pieces touching only along an edge have no contact area); otherwise `validate` reports it and no holes are made. Holes of two connections that run into each other inside a piece are reported too.
 
@@ -367,8 +371,8 @@ piece1 -[anchor anchor S(Type:DIAMETERxLENGTH)]- piece2
 #### Rules
 
 - The target's contact_face must be `front` or `back` (the screw goes through the target's wide face).
-- Screw length must be greater than the target's thickness (38 for 2x4, 19 for 1x4).
-- Screw length must be shorter than the base's depth along its contact normal (front/back → thickness, left/right → 89, top/down → piece length) plus the target's thickness, so the tip stays inside the base.
+- Screw length must be greater than the target's thickness (38 for 2x lumber, 19 for 1x lumber).
+- Screw length must be shorter than the base's depth along its contact normal (front/back → thickness, left/right → width, top/down → piece length) plus the target's thickness, so the tip stays inside the base.
 - Holes: a through-hole in the target and a hole (length - target thickness) deep in the base.
 
 #### Examples
@@ -505,7 +509,7 @@ start           = statement+
 statement       = piece_def | connection_def
 
 piece_def       = "(" CNAME? ":" PIECE_TYPE (piece_props | compact_length) ")"
-PIECE_TYPE      = "1x4" | "2x4"
+PIECE_TYPE      = "1x4" | "1x6" | "1x8" | "2x2" | "2x4" | "2x6"
 piece_props     = "{" prop_list? "}"
 compact_length  = "=" NUMBER
 prop_list       = prop ("," prop)*
@@ -550,7 +554,7 @@ Errors report the line and column of the offending statement.
 ### Syntax Errors
 
 ```text
-DSLSyntaxError: Syntax error at line 1, column 4: Unexpected token '3'. Expected: piece type (1x4, 2x4)
+DSLSyntaxError: Syntax error at line 1, column 4: Unexpected token '3'. Expected: piece type (1x4, 1x6, 1x8, 2x2, 2x4, 2x6)
 ```
 
 ### Semantic Errors

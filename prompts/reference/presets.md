@@ -85,8 +85,8 @@ spec = as_spec(screw)  # ScrewSpec(diameter=3.8, length=57.0)
 
 The screw is driven through the **target** (contacted on its front/back face) into the **base**. The library enforces:
 
-- length > target thickness (38 for 2x4, 19 for 1x4)
-- length <= target thickness + base depth along its contact normal (front/back → thickness, left/right → 89, top/down → piece length)
+- length > target thickness (38 for 2x lumber, 19 for 1x lumber)
+- length < target thickness + base depth along its contact normal (front/back → thickness, left/right → width, top/down → piece length)
 
 Recommended sizes when the base is also contacted on a wide (front/back) face:
 
@@ -96,11 +96,11 @@ Recommended sizes when the base is also contacted on a wide (front/back) face:
 | 1x4 → 2x4 (19mm + 38mm) | 20-57mm | Slim 3.3x45, Coarse 3.8x40 |
 | 1x4 → 1x4 (19mm + 19mm) | 20-38mm | Slim 3.3x30, Coarse 3.8x30 |
 
-When the base is contacted on its narrow face (89mm deep) or its end (piece length deep), longer screws are allowed.
+When the base is contacted on its narrow face (as deep as its width) or its end (piece length deep), longer screws are allowed.
 
 ## Dowel Fit
 
-A dowel of length L goes L/2 into each piece. L/2 must be less than each piece's depth along its contact normal, or the hole comes out on the far face (front/back → thickness, left/right → 89, top/down → piece length). For example, every preset fits a 2x4 contacted on its front/back face (38mm), but `12x40` (20mm per piece) does not fit a 1x4 contacted on its front/back face (19mm).
+A dowel of length L goes L/2 into each piece. L/2 must be less than each piece's depth along its contact normal, or the hole comes out on the far face (front/back → thickness, left/right → width, top/down → piece length). For example, every preset fits a 2x4 contacted on its front/back face (38mm), but `12x40` (20mm per piece) does not fit a 1x4 contacted on its front/back face (19mm).
 
 ## Custom Specifications
 

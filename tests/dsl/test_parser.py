@@ -92,10 +92,16 @@ class TestSyntaxErrors:
 
     def test_invalid_piece_type(self):
         """Test error on invalid piece type."""
-        dsl = '(beam1:2x6 {"length": 1000})'
+        dsl = '(beam1:4x4 {"length": 1000})'
         with pytest.raises(DSLSyntaxError) as exc_info:
             parse_dsl(dsl)
         assert "Unexpected token" in str(exc_info.value)
+        assert "piece type (1x4, 1x6, 1x8, 2x2, 2x4, 2x6)" in str(exc_info.value)
+
+    @pytest.mark.parametrize("name", ["1x4", "1x6", "1x8", "2x2", "2x4", "2x6"])
+    def test_every_lumber_type_parses(self, name):
+        model = parse_dsl(f"(beam1:{name} =1000)")
+        assert model.pieces["beam1"].type.value == name
 
     def test_missing_length_property(self):
         """Test error when length property is missing."""

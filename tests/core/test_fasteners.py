@@ -31,7 +31,7 @@ from nichiyou_daiku.dsl import parse_dsl
 
 FACES = ["top", "down", "left", "right", "front", "back"]
 ADJACENT = [(c, e) for c in FACES for e in FACES if is_adjacent(c, e)]
-TYPES = [PieceType.PT_2x4, PieceType.PT_1x4]
+TYPES = list(PieceType)
 
 
 def _layout(source: str):
