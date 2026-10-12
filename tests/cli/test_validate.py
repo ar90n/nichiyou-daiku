@@ -1,7 +1,10 @@
 """Tests for the validate command."""
 
+import json
 import subprocess
 import sys
+
+import pytest
 
 from nichiyou_daiku.cli.dsl_cli import cli
 
@@ -271,3 +274,96 @@ def test_format_mm_keeps_small_values_visible():
     assert format_mm(-89.25) == "-89.2"
     assert format_mm(0.01) == "0.01"
     assert format_mm(0.00042) == "0.00042"
+
+
+def _validate_json(runner, tmp_path, dsl, *global_options):
+    dsl_file = tmp_path / "design.nd"
+    dsl_file.write_text(dsl)
+    result = runner.invoke(cli, [*global_options, "validate", "--json", str(dsl_file)])
+    return result, json.loads(result.stdout)
+
+
+def test_validate_json_reports_a_valid_model(runner, tmp_path, valid_dsl):
+    result, data = _validate_json(runner, tmp_path, valid_dsl)
+    assert result.exit_code == 0
+    assert (data["valid"], data["error"], data["problems"]) == (True, None, [])
+    assert [piece["id"] for piece in data["pieces"]] == ["piece1", "piece2"]
+    assert len(data["overall_size"]) == 3
+
+
+def test_validate_json_reports_problems(runner, tmp_path):
+    result, data = _validate_json(
+        runner,
+        tmp_path,
+        "(a:2x4 =500)\n(b:2x4 =300)\n(c:2x4 =300)\n"
+        "a -[FL<100 DF<0]- b\na -[FL<100 DF<0]- c\n",
+    )
+    assert result.exit_code == 1
+    assert data["valid"] is False
+    assert [p["kind"] for p in data["problems"]] == ["overlap"]
+    assert data["problems"][0]["pieces"] == ["b", "c"]
+
+
+def test_validate_json_reports_syntax_errors_with_their_position(
+    runner, tmp_path, invalid_syntax_dsl
+):
+    result, data = _validate_json(runner, tmp_path, invalid_syntax_dsl)
+    assert result.exit_code == 1
+    assert data["error"]["kind"] == "syntax"
+    assert data["error"]["line"] == 2
+    assert isinstance(data["error"]["column"], int)
+    assert (data["overall_size"], data["pieces"], data["problems"]) == (None, [], [])
+
+
+def test_validate_json_reports_an_empty_file(runner, tmp_path):
+    result, data = _validate_json(runner, tmp_path, "// nothing yet\n")
+    assert result.exit_code == 1
+    assert data["error"]["kind"] == "syntax"
+    assert (data["error"]["line"], data["error"]["column"]) == (None, None)
+
+
+def test_validate_json_reports_semantic_errors(runner, tmp_path, invalid_semantic_dsl):
+    result, data = _validate_json(runner, tmp_path, invalid_semantic_dsl)
+    assert result.exit_code == 1
+    assert data["error"]["kind"] == "semantic"
+
+
+def test_validate_json_reports_a_missing_file(runner):
+    result = runner.invoke(cli, ["validate", "--json", "missing.nd"])
+    assert result.exit_code == 1
+    assert json.loads(result.stdout)["error"]["kind"] == "file"
+
+
+def test_validate_json_reports_assembly_errors(runner, tmp_path, monkeypatch):
+    import nichiyou_daiku.cli.commands.validate as validate_module
+
+    def broken(model):
+        raise RuntimeError("boom")
+
+    monkeypatch.setattr(validate_module.Assembly, "of", broken)
+    result, data = _validate_json(
+        runner, tmp_path, "(a:2x4 =500)\n(b:2x4 =300)\na -[FL<100 DF<0]- b\n"
+    )
+    assert result.exit_code == 1
+    assert data["error"] == {
+        "kind": "assembly",
+        "message": "boom",
+        "line": None,
+        "column": None,
+    }
+
+
+def test_validate_json_reads_stdin(runner, valid_dsl):
+    result = runner.invoke(cli, ["validate", "--json", "-"], input=valid_dsl)
+    assert result.exit_code == 0
+    assert json.loads(result.stdout)["valid"] is True
+
+
+@pytest.mark.parametrize("option", ["-v", "-q", "-d"])
+def test_validate_json_stays_pure_with_global_options(
+    runner, tmp_path, valid_dsl, option
+):
+    # json.loads in the helper fails on anything but one JSON object
+    result, data = _validate_json(runner, tmp_path, valid_dsl, option)
+    assert result.exit_code == 0
+    assert data["valid"] is True
