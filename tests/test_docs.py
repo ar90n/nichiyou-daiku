@@ -1,12 +1,15 @@
 """Keep the docs honest: examples, tables and links must match the code."""
 
 import doctest
+import json
 import re
 import runpy
 from pathlib import Path
 
 import pytest
+from click.testing import CliRunner
 
+from nichiyou_daiku.cli.dsl_cli import cli
 from nichiyou_daiku.core.assembly import Assembly
 from nichiyou_daiku.core.dowel import Dowel
 from nichiyou_daiku.core.piece import PieceType, get_shape
@@ -215,3 +218,15 @@ def test_missing_mentions_are_found():
 def test_mentioned_repo_paths_exist(path):
     # Prompts and skills name files in code spans rather than links
     assert _missing_mentions(path.read_text(), path.parent) == []
+
+
+def test_validate_json_example_matches_the_cli():
+    command = "validate --json examples/nd_files/corner_angle_compact.nd"
+    blocks = _fences(DSL_SPEC)
+    index = next(i for i, (_, _, body) in enumerate(blocks) if command in body)
+    _, language, documented = blocks[index + 1]
+    assert language == "json"
+    result = CliRunner().invoke(
+        cli, ["validate", "--json", str(ROOT / command.split()[-1])]
+    )
+    assert json.loads(documented) == json.loads(result.stdout)

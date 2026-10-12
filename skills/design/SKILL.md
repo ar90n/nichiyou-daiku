@@ -23,11 +23,22 @@ Create `<name>.nd`. Name the overall sizes as variables and derive lengths and o
 
 ## 4. Check and fix
 
-Run `nichiyou-daiku validate <name>.nd`. Fix every error and warning it reports and run it again, until the model is valid. The messages name the piece or connection and say how to fix it. If the same problem survives three attempts, stop and explain it to the user with what you tried.
+Run `nichiyou-daiku validate --json <name>.nd`. Fix the `error` or every entry in `problems`, and run it again until `valid` is true. If the same problem survives three attempts, stop and explain it to the user with what you tried.
+
+Read the JSON instead of guessing where pieces went (the DSL specification describes every field under "Validation"):
+
+- `pieces[].min` and `max`: each piece's box in mm, with the origin at the smallest corner of the whole model. A piece that sticks out is the one whose box passes the others.
+- `pieces[].faces`: the world direction of the piece's `top`, `right` and `front` faces (`down`, `left` and `back` point the other way), so you can tell which face to name in a connection.
+- `problems[].kind`:
+  - `conflict`: the `connection` contradicts earlier ones; `loop` shows the pieces it runs through and `mismatch_mm` how far off it is.
+  - `unconnected`: the `groups` that no connection joins.
+  - `overlap`: the two `pieces` share volume.
+  - `fastener`: no room for the fastener in the contact area.
+  - `hole_collision`: `holes` shows where both holes enter the `piece` and which way they run. Move one connection's offset by more than the hole diameter, or use a shorter fastener.
 
 ## 5. Compare with the request
 
-Run `nichiyou-daiku report <name>.nd`. Check the overall size against the request, and read the bill of materials and the shopping list. If the size is off, fix the lengths or offsets and go back to step 4.
+Check `overall_size` in the same JSON against the request (it is null while some pieces are not connected). If it is off, find the piece that sets it in `pieces`, fix its length or offset and go back to step 4. Once the model is valid and the right size, run `nichiyou-daiku report <name>.nd --no-cut-diagram --no-anchor-details --no-pilot-holes` for the bill of materials and the shopping list.
 
 ## 6. Output files on request
 

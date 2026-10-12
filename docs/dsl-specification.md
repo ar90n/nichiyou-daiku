@@ -531,6 +531,83 @@ Checks the syntax, solves unknowns and the placement, and reports contradicting 
 
 The other commands print the same problems (all but overlaps) as warnings and carry on; `report` also lists them in a Warnings section of the report.
 
+With `--json`, `validate` prints one JSON object on standard output instead, for tools and agents, and exits the same way:
+
+```bash
+nichiyou-daiku validate --json examples/nd_files/corner_angle_compact.nd
+```
+
+```json
+{
+  "valid": true,
+  "error": null,
+  "overall_size": [
+    89.0,
+    400.0,
+    438.0
+  ],
+  "pieces": [
+    {
+      "id": "corner_piece_a",
+      "type": "2x4",
+      "length": 400.0,
+      "group": 0,
+      "min": [
+        0.0,
+        362.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        400.0,
+        400.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "corner_piece_b",
+      "type": "2x4",
+      "length": 400.0,
+      "group": 0,
+      "min": [
+        0.0,
+        0.0,
+        400.0
+      ],
+      "max": [
+        89.0,
+        400.0,
+        438.0
+      ],
+      "faces": {
+        "top": "-y",
+        "right": "+x",
+        "front": "+z"
+      }
+    }
+  ],
+  "problems": []
+}
+```
+
+- `valid`: there is no error and no problem.
+- `error`: why validation stopped before it could check the model, with `kind` (`file`, `syntax`, `semantic`, `validation`, `assembly` or `unexpected`), `message`, and the `line` and `column` when known. Then `overall_size` is null and `pieces` and `problems` are empty.
+- `overall_size`: the x, y and z extent of the model in mm, as in the report; null when some pieces are not connected.
+- `pieces`: each piece's lumber `type`, solved `length`, placement `group`, and its box (`min`, `max`) in world coordinates, with the origin at the smallest corner of the whole model. `faces` gives the world direction (`+x` … `-z`) that its `top`, `right` and `front` faces point to; `down`, `left` and `back` point the other way.
+- `problems`: the problems of the text output in the same order, each with a `kind`, the text `message` and the parts involved:
+
+| `kind` | Fields |
+|--------|--------|
+| `conflict` | `connection` (base, target), `constraint` (`rotation`, `contact`, `flush` or `edge`), `axis`, `mismatch_mm` (null for `rotation`), `loop` (the pieces the contradiction runs through) |
+| `unconnected` | `groups` (the piece IDs of each group) |
+| `fastener` | `connection`, `fastener` (`dowel` or `screw`) |
+| `hole_collision` | `connection`, `other_connection` (the earlier one), `piece`, `fastener`, `holes`: this connection's hole and the other's, each with `entry` (the world point where it enters the piece), `direction` (the world direction it runs), `depth` and `diameter` |
+| `overlap` | `pieces`, `volume_mm3` |
+
 ### Report Generation
 
 ```bash
