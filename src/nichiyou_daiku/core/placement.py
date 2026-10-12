@@ -8,20 +8,35 @@ than averaged out.
 """
 
 from collections import deque
-from typing import Literal
+from collections.abc import Hashable
+from typing import Literal, NamedTuple
 
 import numpy as np
 from pydantic import BaseModel
 
-from .anchor import BoundAnchor, as_point_3d
+from .anchor import BoundAnchor, as_edge_point, as_point_3d
 from .connection import Connection
-from .geometry import Face, Point3D, Vector3D
+from .geometry import (
+    Box,
+    Face,
+    FromMax,
+    FromMin,
+    Point3D,
+    Shape3D,
+    SurfacePoint,
+    Vector3D,
+)
 from .model import Model
 from .piece import Piece, get_shape
 
 Axis = Literal["x", "y", "z"]
 ConstraintKind = Literal["rotation", "contact", "flush", "edge"]
 Matrix3 = tuple[tuple[int, int, int], tuple[int, int, int], tuple[int, int, int]]
+End = Literal["down", "top"]
+# A point solved along one world axis: the down or top end of a piece. Along
+# the axis a piece's length runs on, its two ends are separate points, tied
+# by the length when it is known.
+Node = tuple[str, End]
 
 AXES: tuple[Axis, Axis, Axis] = ("x", "y", "z")
 TOLERANCE_MM = 1e-6
@@ -171,11 +186,11 @@ def _path(adjacency: dict[str, list[str]], start: str, goal: str) -> tuple[str, 
 class _AxisOffsets:
     """Weighted union-find along one axis: offset[x] is t[x] - t[parent[x]]."""
 
-    def __init__(self, ids: list[str]) -> None:
-        self.parent = {i: i for i in ids}
-        self.offset = {i: 0.0 for i in ids}
+    def __init__(self, nodes: list[Hashable]) -> None:
+        self.parent: dict[Hashable, Hashable] = {node: node for node in nodes}
+        self.offset: dict[Hashable, float] = {node: 0.0 for node in nodes}
 
-    def find(self, node: str) -> tuple[str, float]:
+    def find(self, node: Hashable) -> tuple[Hashable, float]:
         """Root of ``node`` and t[node] - t[root]."""
         path = []
         while self.parent[node] != node:
@@ -189,7 +204,9 @@ class _AxisOffsets:
             self.parent[item] = root
         return root, (self.offset[path[0]] if path else 0.0)
 
-    def require(self, base: str, target: str, difference: float) -> float | None:
+    def require(
+        self, base: Hashable, target: Hashable, difference: float
+    ) -> float | None:
         """Require t[target] - t[base] == difference; return the mismatch if not."""
         base_root, base_offset = self.find(base)
         target_root, target_offset = self.find(target)
@@ -205,11 +222,59 @@ def _round(value: float) -> float:
     return round(float(value), 6) + 0.0
 
 
-def solve_placement(model: Model) -> Placement:
-    """Place every piece so that all consistent connection constraints hold.
+def _local_anchor(bound: BoundAnchor) -> tuple[np.ndarray, End]:
+    """Anchor point in piece coordinates, with z measured from the piece end
+    it is tied to, so the point is known even when the length is not.
+
+    An unknown offset is taken as 0; the solver ignores the direction it
+    would set.
+    """
+    anchor = bound.anchor
+    faces = (anchor.contact_face, anchor.edge_shared_face)
+    along_length = "top" not in faces and "down" not in faces
+    end: End = (
+        "top"
+        if "top" in faces or (along_length and isinstance(anchor.offset, FromMax))
+        else "down"
+    )
+    if anchor.offset is None:
+        anchor = anchor.model_copy(update={"offset": FromMin(value=0)})
+    cross_section = get_shape(bound.piece.type)
+    # With a zero length the top end sits at z=0, so z is the distance from
+    # whichever end the point is tied to.
+    box = Box(
+        shape=Shape3D(
+            width=cross_section.width, height=cross_section.height, length=0.0
+        )
+    )
+    point = Point3D.of(
+        box, SurfacePoint.of(box, anchor.contact_face, as_edge_point(anchor))
+    )
+    return np.array([point.x, point.y, point.z]), end
+
+
+def _edge_axis(rotation: np.ndarray, bound: BoundAnchor) -> int:
+    """World axis the anchor's edge runs along."""
+    direction = np.cross(
+        _normal(bound.anchor.contact_face), _normal(bound.anchor.edge_shared_face)
+    )
+    return _axis_index(rotation @ direction)
+
+
+class _Solution(NamedTuple):
+    rotation: dict[str, np.ndarray]
+    groups: list[list[str]]
+    offsets: dict[Axis, _AxisOffsets]
+    length_axis: dict[str, tuple[int, int]]
+    conflicts: list[Conflict]
+
+
+def _solve(model: Model) -> _Solution:
+    """Solve orientations, then positions along each world axis.
 
     Connections are taken in declaration order; a constraint that contradicts
-    the ones accepted before it is reported in ``conflicts`` and ignored.
+    the ones accepted before it is recorded as a conflict and ignored.
+    Unknown lengths and offsets add no constraint.
     """
     piece_ids = list(model.pieces)
     rotation = {pid: np.eye(3, dtype=int) for pid in piece_ids}
@@ -259,15 +324,33 @@ def solve_placement(model: Model) -> Placement:
         for member in group:
             rotation[member] = to_root @ rotation[member]
 
-    # Step 2: positions, one world axis at a time
-    offsets = {axis: _AxisOffsets(piece_ids) for axis in AXES}
+    # Step 2: positions, one world axis at a time. Along the axis a piece's
+    # length runs on, its top end is the down end plus the length.
+    nodes: list[Hashable] = [(pid, end) for pid in piece_ids for end in ("down", "top")]
+    offsets: dict[Axis, _AxisOffsets] = {axis: _AxisOffsets(nodes) for axis in AXES}
+    length_axis: dict[str, tuple[int, int]] = {}
+    for pid, piece in model.pieces.items():
+        column = rotation[pid][:, 2]
+        index = _axis_index(column)
+        length_axis[pid] = (index, int(column[index]))
+        if piece.length is not None:
+            offsets[AXES[index]].require(
+                (pid, "down"), (pid, "top"), length_axis[pid][1] * piece.length
+            )
+
     axis_graph: dict[Axis, dict[str, list[str]]] = {axis: {} for axis in AXES}
     for connection in accepted:
         base_id, target_id = connection.base.piece.id, connection.target.piece.id
         base_rot, target_rot = rotation[base_id], rotation[target_id]
-        difference = base_rot @ _anchor_point(
-            connection.base
-        ) - target_rot @ _anchor_point(connection.target)
+        base_point, base_end = _local_anchor(connection.base)
+        target_point, target_end = _local_anchor(connection.target)
+        difference = base_rot @ base_point - target_rot @ target_point
+        # Pieces joined by unknown offsets may slide along the shared edge
+        sliding = (
+            _edge_axis(base_rot, connection.base)
+            if connection.base.anchor.offset is None
+            else None
+        )
         kinds: dict[int, ConstraintKind] = {
             _axis_index(
                 base_rot @ _normal(connection.base.anchor.contact_face)
@@ -277,8 +360,18 @@ def solve_placement(model: Model) -> Placement:
             ): "flush",
         }
         for index, axis in enumerate(AXES):
+            if index == sliding:
+                continue
+            base_node: Node = (
+                base_id,
+                base_end if index == length_axis[base_id][0] else "down",
+            )
+            target_node: Node = (
+                target_id,
+                target_end if index == length_axis[target_id][0] else "down",
+            )
             mismatch = offsets[axis].require(
-                base_id, target_id, float(difference[index])
+                base_node, target_node, float(difference[index])
             )
             if mismatch is None:
                 axis_graph[axis].setdefault(base_id, []).append(target_id)
@@ -295,13 +388,28 @@ def solve_placement(model: Model) -> Placement:
                     )
                 )
 
+    return _Solution(rotation, groups, offsets, length_axis, conflicts)
+
+
+def solve_placement(model: Model) -> Placement:
+    """Place every piece so that all consistent connection constraints hold.
+
+    Connections are taken in declaration order; a constraint that contradicts
+    the ones accepted before it is reported in ``conflicts`` and ignored.
+    """
+    rotation, groups, offsets, _, conflicts = _solve(model)
+
     # Step 3: positions relative to each group's first declared piece
     poses: dict[str, Pose] = {}
     for group in groups:
         root = group[0]
-        root_position = np.array([offsets[axis].find(root)[1] for axis in AXES])
+        root_position = np.array(
+            [offsets[axis].find((root, "down"))[1] for axis in AXES]
+        )
         for member in group:
-            position = np.array([offsets[axis].find(member)[1] for axis in AXES])
+            position = np.array(
+                [offsets[axis].find((member, "down"))[1] for axis in AXES]
+            )
             matrix = rotation[member]
             poses[member] = Pose(
                 rotation=(
