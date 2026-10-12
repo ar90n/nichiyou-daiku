@@ -2,6 +2,7 @@
 
 import pytest
 from lark import Token
+from lark.tree import Meta
 
 from nichiyou_daiku.core.geometry.offset import FromMax, FromMin
 from nichiyou_daiku.core.piece import PieceType
@@ -32,7 +33,8 @@ class TestTransformerPieceHandling:
 
         # Simulate piece definition with ID
         transformer.piece_def(
-            [Token("CNAME", "beam1"), Token("PIECE_TYPE", "2x4"), {"length": 1000.0}]
+            Meta(),
+            [Token("CNAME", "beam1"), Token("PIECE_TYPE", "2x4"), {"length": 1000.0}],
         )
 
         assert "beam1" in transformer.pieces
@@ -46,7 +48,7 @@ class TestTransformerPieceHandling:
         transformer = DSLTransformer()
 
         # Simulate piece definition without ID
-        transformer.piece_def([Token("PIECE_TYPE", "2x4"), {"length": 1000.0}])
+        transformer.piece_def(Meta(), [Token("PIECE_TYPE", "2x4"), {"length": 1000.0}])
 
         # Should have one piece with auto-generated ID
         assert len(transformer.pieces) == 1
@@ -236,7 +238,7 @@ class TestCompactPieceTransformer:
             1500.0,  # Direct length value from compact_length
         ]
 
-        transformer.piece_def(items)
+        transformer.piece_def(Meta(), items)
 
         assert "beam1" in transformer.pieces
         piece = transformer.pieces["beam1"]
@@ -251,12 +253,13 @@ class TestCompactPieceTransformer:
 
         # First piece with compact notation
         transformer.piece_def(
-            [Token("CNAME", "beam1"), Token("PIECE_TYPE", "2x4"), 1000.0]
+            Meta(), [Token("CNAME", "beam1"), Token("PIECE_TYPE", "2x4"), 1000.0]
         )
 
         # Second piece with JSON notation
         transformer.piece_def(
-            [Token("CNAME", "beam2"), Token("PIECE_TYPE", "2x4"), {"length": 2000}]
+            Meta(),
+            [Token("CNAME", "beam2"), Token("PIECE_TYPE", "2x4"), {"length": 2000}],
         )
 
         assert len(transformer.pieces) == 2

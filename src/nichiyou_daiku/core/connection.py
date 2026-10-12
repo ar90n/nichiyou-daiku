@@ -17,7 +17,7 @@ from nichiyou_daiku.core.geometry import (
     is_left_to_right_axis,
     is_back_to_front_axis,
 )
-from nichiyou_daiku.core.piece import get_shape
+from nichiyou_daiku.core.piece import shape_for_checks
 from nichiyou_daiku.core.screw import ScrewSpec
 from nichiyou_daiku.core.dowel import DowelSpec
 
@@ -89,6 +89,11 @@ class Connection(BaseModel, frozen=True):
         if self.base.piece.id == self.target.piece.id:
             raise ValueError(
                 f"Piece '{self.base.piece.id}' cannot be connected to itself"
+            )
+        if (self.base.anchor.offset is None) != (self.target.anchor.offset is None):
+            raise ValueError(
+                "An unknown offset (?) lets the pieces slide along the shared "
+                "edge, so use it on both anchors of a connection or on neither"
             )
         match self.type:
             case DowelConnection(radius=radius, depth=depth):
@@ -164,7 +169,7 @@ def _validate_dowel(
     per_piece_depth = length / 2
     for role, bound in (("base", base), ("target", target)):
         limit = _get_dimension_for_face(
-            get_shape(bound.piece), bound.anchor.contact_face
+            shape_for_checks(bound.piece), bound.anchor.contact_face
         )
         if per_piece_depth >= limit:
             raise ValueError(
@@ -185,10 +190,10 @@ def _validate_screw(
         )
 
     base_depth = _get_dimension_for_face(
-        get_shape(base.piece), base.anchor.contact_face
+        shape_for_checks(base.piece), base.anchor.contact_face
     )
     target_depth = _get_dimension_for_face(
-        get_shape(target.piece), target.anchor.contact_face
+        shape_for_checks(target.piece), target.anchor.contact_face
     )
     max_length = base_depth + target_depth
     if length >= max_length:
@@ -261,8 +266,8 @@ def _validate_fastener_diameter(
     Raises:
         ValueError: If diameter exceeds cross-section of either piece
     """
-    base_shape = get_shape(base.piece)
-    target_shape = get_shape(target.piece)
+    base_shape = shape_for_checks(base.piece)
+    target_shape = shape_for_checks(target.piece)
 
     base_min_cross = _get_min_cross_section(base_shape, base.anchor.contact_face)
     target_min_cross = _get_min_cross_section(target_shape, target.anchor.contact_face)

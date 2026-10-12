@@ -223,11 +223,11 @@ class TestSyntaxErrorMessages:
     def test_unexpected_character(self):
         """A character no terminal matches is quoted with the alternatives."""
         with pytest.raises(DSLSyntaxError) as exc_info:
-            parse_dsl(PIECES + "a -[TF<0 BD<0 ?]- b")
+            parse_dsl(PIECES + "a -[TF<0 BD<0 @]- b")
 
         message = str(exc_info.value)
         assert "line 3" in message
-        assert "Unexpected character '?'" in message
+        assert "Unexpected character '@'" in message
         assert "'D('" in message
         assert "']-'" in message
 

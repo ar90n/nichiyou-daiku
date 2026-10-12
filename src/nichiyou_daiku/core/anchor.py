@@ -19,7 +19,7 @@ from nichiyou_daiku.core.geometry import (
     is_positive,
     is_adjacent,
 )
-from nichiyou_daiku.core.piece import Piece, get_shape
+from nichiyou_daiku.core.piece import Piece, get_shape, shape_for_checks
 
 
 OFFSET_TOLERANCE_MM = 1e-6
@@ -39,7 +39,8 @@ class Anchor(BaseModel, frozen=True):
     An anchor defines where a connection occurs using:
     - contact_face: The face that makes contact with the other piece
     - edge_shared_face: The face that shares an edge with the contact face
-    - offset: The position along the edge
+    - offset: The position along the edge, or None when it is unknown: the
+      two pieces may then slide along the edge (see ``resolve_model``)
 
     Examples:
         >>> from nichiyou_daiku.core.geometry import FromMin
@@ -54,7 +55,7 @@ class Anchor(BaseModel, frozen=True):
 
     edge_shared_face: Face
     contact_face: Face
-    offset: Offset
+    offset: Offset | None
 
     @model_validator(mode="after")
     def _check_faces_adjacent(self) -> "Anchor":
@@ -66,13 +67,15 @@ class Anchor(BaseModel, frozen=True):
         return self
 
     @classmethod
-    def of(cls, contact_face: Face, edge_shared_face: Face, offset: Offset) -> "Anchor":
+    def of(
+        cls, contact_face: Face, edge_shared_face: Face, offset: Offset | None
+    ) -> "Anchor":
         """Create an Anchor instance.
 
         Args:
             contact_face: The face that makes contact with the other piece
             edge_shared_face: The face that shares an edge with the contact face
-            offset: The position along the edge
+            offset: The position along the edge, or None if unknown
 
         Returns:
             Anchor instance
@@ -96,6 +99,8 @@ def as_edge_point(anchor: Anchor) -> EdgePoint:
     Returns:
         EdgePoint representing the anchor's position on the edge
     """
+    if anchor.offset is None:
+        raise ValueError("The anchor's offset is unknown; resolve the model first")
     return EdgePoint(
         edge=_get_pos_dir_edge(
             contact_face=anchor.contact_face,
@@ -121,7 +126,9 @@ class BoundAnchor(BaseModel, frozen=True):
 
     @model_validator(mode="after")
     def _check_offset_within_edge(self) -> "BoundAnchor":
-        box = Box(shape=get_shape(self.piece))
+        if self.anchor.offset is None:
+            return self
+        box = Box(shape=shape_for_checks(self.piece))
         edge = _get_pos_dir_edge(self.anchor.contact_face, self.anchor.edge_shared_face)
         max_length = edge_length_of(box, edge)
         offset_value = self.anchor.offset.value

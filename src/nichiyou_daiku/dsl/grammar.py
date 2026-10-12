@@ -18,7 +18,9 @@ var_def: CNAME "=" sum
 piece_def: "(" CNAME? ":" PIECE_TYPE (piece_props | compact_length) ")"
 PIECE_TYPE: __PIECE_TYPES__
 piece_props: "{" prop_list? "}"
-compact_length: "=" sum
+// "?" leaves a length or offset for the connections to fix
+compact_length: "=" (sum | UNKNOWN)
+UNKNOWN: "?"
 prop_list: prop ("," prop)*
 prop: ESCAPED_STRING ":" value
 
@@ -41,7 +43,7 @@ value: ESCAPED_STRING | sum | offset_value
 compact_anchor_props: COMPACT_FACE COMPACT_FACE compact_offset
 // A compact offset is a number, a variable or a bracketed expression. Its own
 // rule keeps the next face letter (TF<0 BD<0) from being read as a name.
-compact_offset: COMPACT_FROM_MIN offset_atom | COMPACT_FROM_MAX offset_atom
+compact_offset: COMPACT_FROM_MIN offset_atom | COMPACT_FROM_MAX offset_atom | UNKNOWN
 ?offset_atom: NUMBER -> number | CNAME -> var | "(" sum ")"
 
 COMPACT_FACE: /[TDLRFB]/

@@ -93,7 +93,7 @@ from nichiyou_daiku.core.piece import Piece, PieceType
 class Piece(BaseModel, frozen=True):
     id: str              # 一意の識別子
     type: PieceType      # 木材タイプ
-    length: float        # 長さ（ミリメートル、0より大きい）
+    length: float | None  # 長さ（ミリメートル、0より大きい）。None は接続から決める（未知数を参照）
 ```
 
 **ファクトリメソッド:**
@@ -162,7 +162,7 @@ from nichiyou_daiku.core.geometry import FromMin, FromMax
 class Anchor(BaseModel, frozen=True):
     contact_face: Face        # 他のピースと接触する面
     edge_shared_face: Face    # エッジを共有する面
-    offset: Offset            # 共有エッジ上の位置
+    offset: Offset | None     # 共有エッジ上の位置。None は辺に沿って滑る
 ```
 
 **接続モデル:**
@@ -443,7 +443,7 @@ class Placement(BaseModel, frozen=True):
 
 | 関数 | 説明 |
 |--------|-------------|
-| `solve_placement(model)` | 配置を解く（`Assembly.of(model).placement` と同じ値） |
+| `solve_placement(model)` | 配置を解く（`Assembly.of(model).placement` と同じ値）。未知数のないモデルに限る |
 | `find_overlaps(model, placement)` | 外形の箱が重なる部材の組（穴・面取りは無視） |
 | `overall_bounds(model, placement)` | 全部材を含む最小の世界座標の箱 |
 
@@ -459,6 +459,26 @@ assembly = Assembly.of(model)
 print(assembly.placement.poses["b"].bounds(model.pieces["b"]))
 print(assembly.placement.conflicts, find_overlaps(model, assembly.placement))
 ```
+
+### 未知数
+
+部材の長さと接続のオフセットは、未知（`None`。DSL では `?`）にして、接続から決めさせることができます。オフセットが未知の接続は「滑る接続」です。2つの部材は接し、エッジを共有する面はそろいますが、共有する辺に沿って自由に動くので、位置は別の接続で決める必要があります。オフセットの未知は、接続の両方のアンカーに付けるか、どちらにも付けないかのどちらかです。
+
+```python
+from nichiyou_daiku.core.resolve import ResolutionError, resolve_model
+
+def resolve_model(model: Model) -> Model:
+    """未知の長さとオフセットを、接続から決めたモデル"""
+
+class ResolutionError(ValueError):
+    piece_id: str | None                    # 長さや位置が決まらない部材
+    connection: tuple[str, str] | None      # 辺が重ならない滑る接続
+```
+
+- `parse_dsl` と `Assembly.of` は自動で解きます。`model.has_unknowns` で未知数が残っているかを調べられます。
+- 長さや位置が決まらない、長さが0以下になる、滑る接続の2つの辺が重ならない、のいずれかで失敗します。
+- 滑る接続のオフセットは、2つの辺が重なり始める点（ベースのオフセットが最も小さい点）にします。
+- `get_shape(piece)` と `solve_placement(model)` は、解いた後のモデルにしか使えません。
 
 ## ジオメトリモジュール
 

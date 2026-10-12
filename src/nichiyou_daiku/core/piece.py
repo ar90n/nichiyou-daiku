@@ -4,6 +4,7 @@ This module defines the core types for representing lumber pieces in the
 nichiyou-daiku woodworking system.
 """
 
+import math
 from enum import Enum
 from typing import Annotated, Type, overload
 from uuid import uuid4
@@ -69,7 +70,8 @@ class Piece(BaseModel, frozen=True):
     Attributes:
         id: Unique identifier for the piece
         type: Type of lumber (e.g., 2x4)
-        length: Length in millimeters
+        length: Length in millimeters, or None for a length the connections
+            fix when the model is resolved (see ``resolve_model``)
 
     Examples:
         >>> piece = Piece(id="test-1", type=PieceType.PT_2x4, length=1000.0)
@@ -83,20 +85,20 @@ class Piece(BaseModel, frozen=True):
 
     id: str
     type: PieceType
-    length: PieceLength
+    length: PieceLength | None
 
     @classmethod
     def of(
         cls: Type["Piece"],
         piece_type: PieceType,
-        length: Millimeters,
+        length: Millimeters | None,
         id_: str | None = None,
     ) -> "Piece":
         """Create a Piece instance from type and length.
 
         Args:
             piece_type: Type of lumber
-            length: Length in millimeters
+            length: Length in millimeters, or None if the connections fix it
             id_: Optional ID, generates UUID if not provided
 
         Returns:
@@ -210,5 +212,21 @@ def _get_shape_of_piece(piece: Piece) -> Shape3D:
         >>> shape.length
         1500.0
     """
+    if piece.length is None:
+        raise ValueError(
+            f"Piece '{piece.id}' has an unknown length; resolve the model first "
+            "(resolve_model, or Assembly.of which does it)"
+        )
     shape_2d = get_shape(piece.type)
     return Shape3D(width=shape_2d.width, height=shape_2d.height, length=piece.length)
+
+
+def shape_for_checks(piece: Piece) -> Shape3D:
+    """The piece's shape for validation, with an unknown length unbounded.
+
+    Checks that need the length pass until the model is resolved; resolving
+    rebuilds the pieces and runs every check again with the solved length.
+    """
+    shape_2d = get_shape(piece.type)
+    length = math.inf if piece.length is None else piece.length
+    return Shape3D(width=shape_2d.width, height=shape_2d.height, length=length)

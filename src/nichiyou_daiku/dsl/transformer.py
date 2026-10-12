@@ -2,7 +2,8 @@
 
 from typing import Any, cast
 
-from lark import Token, Transformer
+from lark import Token, Transformer, v_args
+from lark.tree import Meta
 
 from nichiyou_daiku.core.anchor import Anchor, BoundAnchor
 from nichiyou_daiku.core.connection import (
@@ -16,6 +17,7 @@ from nichiyou_daiku.core.geometry.face import Face
 from nichiyou_daiku.core.geometry.offset import FromMax, FromMin, Offset
 from nichiyou_daiku.core.model import Model
 from nichiyou_daiku.core.piece import Piece, PieceType
+from nichiyou_daiku.core.resolve import ResolutionError, resolve_model
 from nichiyou_daiku.core.screw import as_spec as as_screw_spec
 from nichiyou_daiku.core.screw import find_preset as find_screw_preset
 from nichiyou_daiku.core.dowel import as_spec as as_dowel_spec
@@ -45,17 +47,28 @@ class DSLTransformer(Transformer):
         self.pieces: dict[str, Piece] = {}
         self.connections: dict[tuple[str, str], Connection] = {}
         self.variables: dict[str, float] = {}
+        # Where pieces and connections are written, for errors found once the
+        # whole model is known
+        self.positions: dict[str | tuple[str, str], tuple[int, int]] = {}
 
     # =========================================================================
     # Entry points
     # =========================================================================
 
     def start(self, items: list[Any]) -> Model:
-        """Transform the start rule into a Model."""
-        return Model.of(
+        """Transform the start rule into a Model with its unknowns resolved."""
+        model = Model.of(
             pieces=list(self.pieces.values()),
             connections=self.connections.values(),
         )
+        try:
+            return resolve_model(model)
+        except ResolutionError as error:
+            key = error.piece_id if error.piece_id is not None else error.connection
+            line, column = (
+                self.positions.get(key, (None, None)) if key else (None, None)
+            )
+            raise DSLValidationError(str(error), line, column) from error
 
     def statement(self, items: list[Any]) -> Any:
         """Pass through statement results."""
@@ -104,7 +117,8 @@ class DSLTransformer(Transformer):
     # Pieces and connections
     # =========================================================================
 
-    def piece_def(self, items: list[Any]) -> None:
+    @v_args(meta=True)
+    def piece_def(self, meta: Meta, items: list[Any]) -> None:
         """Transform a piece definition."""
         *id_token, type_token, length_or_props = items
         if isinstance(length_or_props, dict):
@@ -112,7 +126,9 @@ class DSLTransformer(Transformer):
         else:
             length = length_or_props
         piece_id = str(id_token[0]) if id_token else None
-        self._register_piece(Piece.of(PieceType.of(str(type_token)), length, piece_id))
+        piece = Piece.of(PieceType.of(str(type_token)), length, piece_id)
+        self._register_piece(piece)
+        self.positions[piece.id] = _position(meta)
 
     def _length_from_props(self, props: dict[str, Any]) -> float:
         """Extract the piece length from JSON properties."""
@@ -156,11 +172,12 @@ class DSLTransformer(Transformer):
         value = items[1]
         return {key: value}
 
-    def compact_length(self, items: list[float]) -> float:
-        """Transform compact length notation (=expression)."""
-        return items[0]
+    def compact_length(self, items: list[Any]) -> float | None:
+        """Transform compact length notation (=expression, or =? if unknown)."""
+        return None if isinstance(items[0], Token) else items[0]
 
-    def connection_def(self, items: list[Any]) -> None:
+    @v_args(meta=True)
+    def connection_def(self, meta: Meta, items: list[Any]) -> None:
         """Transform a connection definition."""
         base_ref, body, target_ref = items
         base_anchor, target_anchor, *connection_type = body
@@ -176,6 +193,7 @@ class DSLTransformer(Transformer):
                 "only one connection per piece pair is supported"
             )
 
+        self.positions[(base_id, target_id)] = _position(meta)
         self.connections[(base_id, target_id)] = Connection(
             base=BoundAnchor(piece=self.pieces[base_id], anchor=base_anchor),
             target=BoundAnchor(piece=self.pieces[target_id], anchor=target_anchor),
@@ -276,8 +294,10 @@ class DSLTransformer(Transformer):
         """Parse a compact face token (one of T, D, L, R, F, B)."""
         return cast(Face, self.FACE_MAPPING[str(token)])
 
-    def compact_offset(self, items: list[Any]) -> Offset:
-        """Transform compact offset notation (<value or >value)."""
+    def compact_offset(self, items: list[Any]) -> Offset | None:
+        """Transform compact offset notation (<value, >value, or ? if unknown)."""
+        if len(items) == 1:
+            return None
         kind, value = items
         if kind.type == "COMPACT_FROM_MIN":
             return FromMin(value=value)
@@ -386,3 +406,8 @@ def _reject_unknown_properties(
             raise DSLValidationError(
                 f"Unknown {kind} property '{key}' (allowed: {', '.join(allowed)})"
             )
+
+
+def _position(meta: Meta) -> tuple[int, int]:
+    # An empty meta (no source position) has no line or column attributes
+    return getattr(meta, "line", None), getattr(meta, "column", None)  # type: ignore[return-value]

@@ -174,6 +174,7 @@ Total waste: 960mm (8.7%)
 
 ### DSL & CLI Tools
 - 📝 Simple, readable DSL for furniture design, with variables and arithmetic for parametric sizes
+- 🧩 Unknown lengths (`=?`) and sliding connections (`?` offsets) solved from the other connections
 - 🛠️ Command-line tools for validation, reporting, and 3D export
 - 📊 Automatic bill of materials generation
 - 📐 Cut optimization to minimize waste

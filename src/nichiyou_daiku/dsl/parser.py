@@ -37,6 +37,7 @@ _TERMINAL_DESCRIPTIONS = {
     "PIECE_TYPE": f"piece type ({', '.join(PIECE_TYPE_NAMES)})",
     "COMPACT_FACE": "face letter (T, D, L, R, F, B)",
     "SCREW_TYPE": "screw type (Slim, Coarse)",
+    "UNKNOWN": "'?' (unknown)",
 }
 
 
@@ -156,7 +157,12 @@ def _as_located_error(error: VisitError) -> DSLError:
     orig = error.orig_exc
     match orig:
         case DSLError():
-            return type(orig)(orig.message, line, column)
+            # Errors found after the statements are read carry their own place
+            return type(orig)(
+                orig.message,
+                orig.line if orig.line is not None else line,
+                orig.column if orig.column is not None else column,
+            )
         case ValidationError():
             return DSLValidationError(_describe_validation_error(orig), line, column)
         case ValueError():

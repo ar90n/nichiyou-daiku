@@ -66,6 +66,14 @@ class Model(BaseModel, frozen=True):
     connections: dict[tuple[str, str], Connection]
     label: str | None = None
 
+    @property
+    def has_unknowns(self) -> bool:
+        """Whether some length or offset is left for the connections to fix."""
+        return any(piece.length is None for piece in self.pieces.values()) or any(
+            connection.base.anchor.offset is None
+            for connection in self.connections.values()
+        )
+
     @classmethod
     def of(
         cls,

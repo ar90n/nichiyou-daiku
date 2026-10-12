@@ -134,6 +134,11 @@ apron -[RF<(GAP + 89 + GAP) BT<0]- top_3
 - A compact offset must be a number, a variable or a bracketed expression: `FL<(W / 2)`, never `FL<W / 2`.
 - Presets (`D(:8x30)`, `S(Slim:3.3x25)`) stay literal. Use descriptive names (`DEPTH`, not `D`): single face letters and `V` work but are hard to read, and `Slim` / `Coarse` cannot be the first number of `S(...)`.
 
+### Unknown Lengths and Sliding Connections
+
+- `(apron:2x4 =?)`: the length follows from the connections at both ends. Use it for a piece that spans a gap fixed by other pieces; at most one unknown piece per loop of connections.
+- `a -[RB? BD?]- b`: a sliding connection (`?` on both anchors). The pieces touch and are flush but may slide along the shared edge, so another connection must fix the position. Use it to fasten a piece to a second support (e.g. top boards to the back apron) without computing the offset.
+
 ### Connection Definition
 
 ```text

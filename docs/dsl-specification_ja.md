@@ -7,6 +7,7 @@ nichiyou-daiku DSL (`.nd`ファイル) は、木工家具の設計を簡潔に�
 - [基本構造](#基本構造)
 - [コメント](#コメント)
 - [変数と式](#変数と式)
+- [未知数と滑る接続](#未知数と滑る接続)
 - [ピース定義](#ピース定義)
 - [接続定義](#接続定義)
 - [接続タイプ](#接続タイプ)
@@ -66,6 +67,23 @@ apron -[RF<GAP BT<0]- top               // 簡略表記のオフセット: 数�
 - 未定義の変数（後で定義されるものを含む）と再定義は意味エラー、0での割り算は検証エラーになります。長さ0のようにおかしな値は、通常の検証が報告します。
 
 `examples/nd_files/simple_table_parametric.nd` は、シンプルテーブルを全体寸法から書いた例です。
+
+## 未知数と滑る接続
+
+接続に決めさせたい値は、数値の代わりに `?` と書きます。
+
+```nd
+(apron_front:2x4 =?)                            // 脚の間隔と同じ長さになる
+apron_back -[RB? BD? D(:8x30)]- table_top_2     // 板を後ろの幕板にもダボで留める
+```
+
+- `=?` は部材の長さを未知にします。両端の接続から長さが決まります。
+- オフセットの `?` は「滑る接続」になります。2つの部材は接し、エッジを共有する面はそろいますが、共有する辺に沿っては自由に動きます。位置は別の接続で決める必要があります。オフセットを計算し直さずに、部材を2つ目の支えにも留めたいときに使います。`?` は両方のアンカーに書きます。
+- 未知数はファイルを読むときに解かれ、レポート・3Dモデル・図面には解いた値が出ます。滑る接続のオフセットは、2つの辺が重なり始める点になります。
+- 長さや位置が接続で決まらない（例: 2本の脚の間のどの経路にも長さが未知の部材がある）、長さが0以下になる、滑る2つの部材の辺が重ならない、のいずれかはエラーになり、その部材か接続の行を指します。
+- `?` は簡略表記でだけ使えます（JSON 記法では使えません）。
+
+`examples/nd_files/simple_table_unknowns.nd` は、前の幕板の長さを未知にし、天板を前後両方の幕板にダボで留めたシンプルテーブルの例です。
 
 ## ピース定義
 
@@ -543,7 +561,7 @@ factor          = NUMBER | CNAME | "-" factor | "(" expr ")"
 piece_def       = "(" CNAME? ":" PIECE_TYPE (piece_props | compact_length) ")"
 PIECE_TYPE      = "1x4" | "1x6" | "1x8" | "2x2" | "2x4" | "2x6"
 piece_props     = "{" prop_list? "}"
-compact_length  = "=" expr
+compact_length  = "=" (expr | "?")
 prop_list       = prop ("," prop)*
 prop            = ESCAPED_STRING ":" value
 value           = ESCAPED_STRING | expr | offset_value
@@ -563,7 +581,7 @@ connection_type_props = "{" ( '"type": "vanilla"'
                             | '"type": "screw", "diameter": ' expr ', "length": ' expr ) "}"
 
 compact_anchor       = COMPACT_FACE COMPACT_FACE compact_offset
-compact_offset       = ("<" | ">") (NUMBER | CNAME | "(" expr ")")
+compact_offset       = ("<" | ">") (NUMBER | CNAME | "(" expr ")") | "?"
 COMPACT_FACE         = "T" | "D" | "L" | "R" | "F" | "B"
 
 compact_connection_type = "V" | dowel_compact | screw_compact
@@ -604,6 +622,8 @@ DSLSemanticError: Variable 'W' is already defined
 
 ```text
 DSLValidationError: Division by zero
+DSLValidationError: The length of 'apron_front' is not fixed by its connections
+DSLValidationError: 'b' can slide along z: connections with unknown offsets (?) leave its position open
 DSLValidationError: contact_face 'front' and edge_shared_face 'back' must be adjacent faces
 DSLValidationError: Offset 50.0mm exceeds piece dimension 38.0mm (piece 'a', edge top/left)
 DSLValidationError: Unknown dowel preset: 9x99

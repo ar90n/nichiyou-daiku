@@ -8,6 +8,7 @@ from typing import Dict
 
 from pydantic import BaseModel
 
+from nichiyou_daiku.core.anchor import as_edge_point
 from nichiyou_daiku.core.assembly import Assembly, Hole
 from nichiyou_daiku.core.geometry import Point3D, Box, SurfacePoint
 from nichiyou_daiku.core.piece import PieceType, get_shape
@@ -347,13 +348,14 @@ def extract_resources(assembly: Assembly) -> ResourceSummary:
             piece_anchors[base_id] = []
 
         base_anchor = connection.base.anchor
-        offset_type = type(base_anchor.offset).__name__
+        base_offset = as_edge_point(base_anchor).offset
+        offset_type = type(base_offset).__name__
         piece_anchors[base_id].append(
             AnchorInfo(
                 contact_face=base_anchor.contact_face,
                 edge_shared_face=base_anchor.edge_shared_face,
                 offset_type=offset_type,
-                offset_value=base_anchor.offset.value,
+                offset_value=base_offset.value,
             )
         )
 
@@ -362,13 +364,14 @@ def extract_resources(assembly: Assembly) -> ResourceSummary:
             piece_anchors[target_id] = []
 
         target_anchor = connection.target.anchor
-        offset_type = type(target_anchor.offset).__name__
+        target_offset = as_edge_point(target_anchor).offset
+        offset_type = type(target_offset).__name__
         piece_anchors[target_id].append(
             AnchorInfo(
                 contact_face=target_anchor.contact_face,
                 edge_shared_face=target_anchor.edge_shared_face,
                 offset_type=offset_type,
-                offset_value=target_anchor.offset.value,
+                offset_value=target_offset.value,
             )
         )
 
@@ -397,7 +400,7 @@ def extract_resources(assembly: Assembly) -> ResourceSummary:
         resource = PieceResource(
             id=piece.id,
             type=piece.type,
-            length=piece.length,
+            length=shape.length,
             width=shape.width,
             height=shape.height,
             volume=volume,
@@ -409,7 +412,7 @@ def extract_resources(assembly: Assembly) -> ResourceSummary:
         # Update aggregates
         pieces_by_type[piece.type] = pieces_by_type.get(piece.type, 0) + 1
         total_length_by_type[piece.type] = (
-            total_length_by_type.get(piece.type, 0.0) + piece.length
+            total_length_by_type.get(piece.type, 0.0) + shape.length
         )
         total_volume += volume
 

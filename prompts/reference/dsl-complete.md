@@ -63,7 +63,7 @@ factor          = NUMBER | CNAME | "-" factor | "(" expr ")"
 piece_def       = "(" CNAME? ":" PIECE_TYPE (piece_props | compact_length) ")"
 PIECE_TYPE      = "1x4" | "1x6" | "1x8" | "2x2" | "2x4" | "2x6"
 piece_props     = "{" prop_list? "}"
-compact_length  = "=" expr
+compact_length  = "=" (expr | "?")
 prop_list       = prop ("," prop)*
 prop            = ESCAPED_STRING ":" value
 value           = ESCAPED_STRING | expr | offset_value
@@ -83,7 +83,7 @@ connection_type_props = "{" ( '"type": "vanilla"'
                             | '"type": "screw", "diameter": ' expr ', "length": ' expr ) "}"
 
 compact_anchor  = COMPACT_FACE COMPACT_FACE compact_offset
-compact_offset  = ("<" | ">") (NUMBER | CNAME | "(" expr ")")
+compact_offset  = ("<" | ">") (NUMBER | CNAME | "(" expr ")") | "?"
 COMPACT_FACE    = "T" | "D" | "L" | "R" | "F" | "B"
 
 compact_connection_type = "V" | dowel_compact | screw_compact
@@ -111,6 +111,9 @@ NUMBER          = /[0-9]+(\.[0-9]+)?/
 | DSLSemanticError | "Undefined variable 'W' ..." | Variable used before (or without) its definition |
 | DSLSemanticError | "Variable 'W' is already defined" | Second definition of a variable |
 | DSLValidationError | "Division by zero" | An expression divides by 0 |
+| DSLValidationError | "The length of 'x' is not fixed by its connections" | `=?` piece whose two ends are not both tied to the rest |
+| DSLValidationError | "'x' can slide along z ..." | A piece held only by `?` (sliding) connections along some axis |
+| DSLValidationError | "'a' and 'b' slide along a shared edge (?) but their edges do not meet" | Sliding pieces that do not overlap |
 | DSLValidationError | "contact_face 'front' and edge_shared_face 'back' must be adjacent faces" | Same or opposite faces in an anchor |
 | DSLValidationError | "Offset 50.0mm exceeds piece dimension 38.0mm ..." | Offset longer than the anchor's edge |
 | DSLValidationError | "Unknown dowel preset: 9x99" | Non-existent preset |

@@ -93,7 +93,7 @@ from nichiyou_daiku.core.piece import Piece, PieceType
 class Piece(BaseModel, frozen=True):
     id: str              # Unique identifier
     type: PieceType      # Lumber type
-    length: float        # Length in millimeters (must be > 0)
+    length: float | None  # Length in millimeters (> 0), or None: fixed by the connections (see Unknowns)
 ```
 
 **Factory Methods:**
@@ -162,7 +162,7 @@ from nichiyou_daiku.core.geometry import FromMin, FromMax
 class Anchor(BaseModel, frozen=True):
     contact_face: Face        # Face that touches the other piece
     edge_shared_face: Face    # Face whose edge is shared
-    offset: Offset            # Position along the shared edge
+    offset: Offset | None     # Position along the shared edge, or None: the pieces may slide along it
 ```
 
 **Connection Model:**
@@ -443,7 +443,7 @@ class Placement(BaseModel, frozen=True):
 
 | Function | Description |
 |--------|-------------|
-| `solve_placement(model)` | Solve the placement (the same value as `Assembly.of(model).placement`) |
+| `solve_placement(model)` | Solve the placement (the same value as `Assembly.of(model).placement`); the model must have no unknowns |
 | `find_overlaps(model, placement)` | Pairs of pieces whose boxes share volume (holes and fillets ignored) |
 | `overall_bounds(model, placement)` | Smallest world box containing every piece |
 
@@ -459,6 +459,26 @@ assembly = Assembly.of(model)
 print(assembly.placement.poses["b"].bounds(model.pieces["b"]))
 print(assembly.placement.conflicts, find_overlaps(model, assembly.placement))
 ```
+
+### Unknowns
+
+A piece's length and a connection's offsets may be left unknown (`None`; `?` in the DSL) for the connections to fix. An unknown offset makes a sliding connection: the pieces touch and their edge-shared faces are flush, but they may slide along the shared edge, so another connection must fix where they sit. Both anchors of a connection have unknown offsets, or neither.
+
+```python
+from nichiyou_daiku.core.resolve import ResolutionError, resolve_model
+
+def resolve_model(model: Model) -> Model:
+    """The model with every unknown length and offset fixed by the connections."""
+
+class ResolutionError(ValueError):
+    piece_id: str | None                    # the piece whose length or position is open
+    connection: tuple[str, str] | None      # the sliding connection whose edges do not meet
+```
+
+- `parse_dsl` and `Assembly.of` resolve automatically; `model.has_unknowns` tells whether a model still has unknowns.
+- Resolving fails when a length or position is not fixed, a length would be 0 or negative, or two sliding pieces do not overlap along their edge.
+- A sliding connection's offsets are set where the two edges start to overlap (the smallest base offset).
+- `get_shape(piece)` and `solve_placement(model)` need a resolved model.
 
 ## Geometry Module
 

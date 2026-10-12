@@ -396,7 +396,13 @@ def solve_placement(model: Model) -> Placement:
 
     Connections are taken in declaration order; a constraint that contradicts
     the ones accepted before it is reported in ``conflicts`` and ignored.
+    The model must not have unknowns; ``resolve_model`` fixes them first.
     """
+    if model.has_unknowns:
+        raise ValueError(
+            "The model has unknown lengths or offsets; resolve it first with "
+            "resolve_model (Assembly.of does this)"
+        )
     rotation, groups, offsets, _, conflicts = _solve(model)
 
     # Step 3: positions relative to each group's first declared piece

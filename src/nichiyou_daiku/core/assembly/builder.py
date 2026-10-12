@@ -10,6 +10,7 @@ from ..geometry import Box, SurfacePoint
 from ..model import Model
 from ..piece import get_shape
 from ..placement import Placement, solve_placement
+from ..resolve import resolve_model
 from .fasteners import find_hole_collisions, layout_fasteners
 from .models import Fastener, Hole, LayoutIssue
 
@@ -53,11 +54,13 @@ class Assembly(BaseModel, frozen=True):
         """Create an Assembly from a Model.
 
         Args:
-            model: Model containing pieces and connections
+            model: Model containing pieces and connections; unknown lengths
+                and offsets are resolved first (see ``resolve_model``)
 
         Returns:
             Assembly with placement, fasteners and pilot holes
         """
+        model = resolve_model(model)
         boxes = {
             piece.id: Box(shape=get_shape(piece)) for piece in model.pieces.values()
         }

@@ -7,6 +7,7 @@ The nichiyou-daiku DSL (`.nd` files) is a domain-specific language for concisely
 - [Basic Structure](#basic-structure)
 - [Comments](#comments)
 - [Variables and Expressions](#variables-and-expressions)
+- [Unknown Lengths and Sliding Connections](#unknown-lengths-and-sliding-connections)
 - [Piece Definition](#piece-definition)
 - [Connection Definition](#connection-definition)
 - [Connection Types](#connection-types)
@@ -66,6 +67,23 @@ apron -[RF<GAP BT<0]- top               // compact offset: a number, a variable 
 - An undefined variable (including one defined further down) or a redefinition is a semantic error, and dividing by zero is a validation error. A value that makes no sense, such as a length of 0, is caught by the usual validation.
 
 `examples/nd_files/simple_table_parametric.nd` writes the simple table from its overall size.
+
+## Unknown Lengths and Sliding Connections
+
+Write `?` instead of a number when the connections should decide it.
+
+```nd
+(apron_front:2x4 =?)                            // as long as the legs are apart
+apron_back -[RB? BD? D(:8x30)]- table_top_2     // also dowel the board to the back apron
+```
+
+- `=?` leaves a piece's length unknown; the connections at its two ends fix it.
+- `?` as an offset makes a sliding connection: the pieces touch and their edge-shared faces are flush, but they may slide along the shared edge. Another connection must fix where they sit. This fastens a piece to a second support without working out the offset again. Write `?` on both anchors.
+- Unknowns are solved when the file is read; reports, 3D models and drawings show the solved values. A sliding connection's offsets are set where the two edges start to overlap.
+- It is an error, pointing at the piece or connection, when a length or position is not fixed by the connections (for example when every path between two legs runs through a piece of unknown length), when a length comes out 0 or negative, or when two sliding pieces do not overlap along their edge.
+- `?` is available in compact notation only, not in JSON notation.
+
+`examples/nd_files/simple_table_unknowns.nd` is the simple table with an unknown front apron and the top boards doweled to both aprons.
 
 ## Piece Definition
 
@@ -543,7 +561,7 @@ factor          = NUMBER | CNAME | "-" factor | "(" expr ")"
 piece_def       = "(" CNAME? ":" PIECE_TYPE (piece_props | compact_length) ")"
 PIECE_TYPE      = "1x4" | "1x6" | "1x8" | "2x2" | "2x4" | "2x6"
 piece_props     = "{" prop_list? "}"
-compact_length  = "=" expr
+compact_length  = "=" (expr | "?")
 prop_list       = prop ("," prop)*
 prop            = ESCAPED_STRING ":" value
 value           = ESCAPED_STRING | expr | offset_value
@@ -563,7 +581,7 @@ connection_type_props = "{" ( '"type": "vanilla"'
                             | '"type": "screw", "diameter": ' expr ', "length": ' expr ) "}"
 
 compact_anchor       = COMPACT_FACE COMPACT_FACE compact_offset
-compact_offset       = ("<" | ">") (NUMBER | CNAME | "(" expr ")")
+compact_offset       = ("<" | ">") (NUMBER | CNAME | "(" expr ")") | "?"
 COMPACT_FACE         = "T" | "D" | "L" | "R" | "F" | "B"
 
 compact_connection_type = "V" | dowel_compact | screw_compact
@@ -604,6 +622,8 @@ DSLSemanticError: Variable 'W' is already defined
 
 ```text
 DSLValidationError: Division by zero
+DSLValidationError: The length of 'apron_front' is not fixed by its connections
+DSLValidationError: 'b' can slide along z: connections with unknown offsets (?) leave its position open
 DSLValidationError: contact_face 'front' and edge_shared_face 'back' must be adjacent faces
 DSLValidationError: Offset 50.0mm exceeds piece dimension 38.0mm (piece 'a', edge top/left)
 DSLValidationError: Unknown dowel preset: 9x99
