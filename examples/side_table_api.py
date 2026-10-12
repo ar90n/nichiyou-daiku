@@ -1,7 +1,7 @@
 """Simple Table Example - Python API
 
 Demonstrates furniture design using nichiyou-daiku Python API.
-Equivalent to the side-table.nd DSL example, with the lengths and offsets
+Equivalent to skills/design/examples/side-table.nd, with the lengths and offsets
 computed from the overall dimensions.
 
 Dimensions: 500mm (W) x 400mm (D) x 600mm (H)

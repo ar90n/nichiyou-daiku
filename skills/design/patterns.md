@@ -1,20 +1,6 @@
-# nichiyou-daiku Code Generation System Prompt
+# Design Patterns
 
-You are a woodworking CAD code generator for the nichiyou-daiku library. Your task is to convert furniture specifications into executable code (ND script or Python).
-
-## Output Format
-
-Based on user specification, generate one of:
-- **ND Script** (`.nd`): Simple and concise DSL - recommended for most cases
-- **Python Code** (`.py`): Full code using nichiyou-daiku API - for complex calculations. Write it with the API in `docs/api-specification.md` (provided when Python output is wanted); each DSL anchor `XY<v` becomes `Anchor(contact_face=X, edge_shared_face=Y, offset=FromMin(value=v))` (`>v` → `FromMax`).
-
----
-
-## DSL Specification
-
-The full DSL specification (`docs/dsl-specification.md`) comes with this prompt. Every rule in it applies: the piece frame and faces, edges and offsets, placement rules, variables, unknown lengths and sliding connections, connection types and presets. The patterns below assume it.
-
----
+Verified layouts, length formulas and rules for writing `.nd` files. The DSL specification defines every construct used here.
 
 ## Verified Patterns (Follow These Exactly)
 
@@ -193,7 +179,7 @@ Always include:
 
 ### 4. Validation Checklist (common mistakes)
 
-Before output:
+Before running `validate`:
 - [ ] All piece IDs are unique and defined before use
 - [ ] At most one connection per base/target pair
 - [ ] Face pairs are adjacent: no same (`FF`) or opposite (`TD`, `LR`, `FB`) faces; `B` is back, the bottom end is `D` (down)
@@ -203,13 +189,3 @@ Before output:
 - [ ] Dowel half-length fits both pieces along their contact normals
 - [ ] Fastener presets exist
 - [ ] Lengths match the formulas above (e.g. front/back aprons W - 2x89, side aprons D - 2x38)
-
-### 5. Visual Verification
-
-After generating code, verify with:
-```bash
-nichiyou-daiku validate design.nd
-nichiyou-daiku drawing design.nd -o design.pdf
-```
-
-`validate` checks the model. In the 3-view drawing check: top view (pieces aligned within the frame), front view (leg height, apron positions), side view (depth, no floating pieces), isometric view (overall structure makes sense).

@@ -2,6 +2,7 @@
 
 import json
 import os
+import re
 import shutil
 import stat
 import subprocess
@@ -222,3 +223,32 @@ def test_wrapper_without_cli_or_uv_says_how_to_install(tmp_path):
     assert (
         'uv tool install "git+https://github.com/ar90n/nichiyou-daiku"' in result.stderr
     )
+
+
+SKILLS = sorted((ROOT / "skills").glob("*/SKILL.md"))
+FRONTMATTER = re.compile(r"\A---\n(.*?)\n---\n", re.S)
+
+
+def test_the_design_skill_exists():
+    assert ROOT / "skills" / "design" / "SKILL.md" in SKILLS
+
+
+@pytest.mark.parametrize("path", SKILLS, ids=lambda p: p.parent.name)
+def test_skill_frontmatter_names_and_describes_the_skill(path):
+    header = FRONTMATTER.match(path.read_text())
+    assert header is not None
+    fields = dict(re.findall(r"^(\w+): (.+)$", header.group(1), re.M))
+    assert fields["name"] == path.parent.name
+    assert 0 < len(fields["description"]) <= 1024
+
+
+def test_plugin_root_appears_only_in_skill_bodies():
+    # Claude Code substitutes it in SKILL.md; a file read later keeps it literal
+    literal = [
+        str(path.relative_to(ROOT))
+        for path in (ROOT / "skills").rglob("*")
+        if path.is_file()
+        and path.name != "SKILL.md"
+        and "${CLAUDE_PLUGIN_ROOT}" in path.read_text()
+    ]
+    assert literal == []

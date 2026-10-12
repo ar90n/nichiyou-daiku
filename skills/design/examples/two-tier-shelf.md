@@ -2,7 +2,6 @@
 
 ## Basic Info
 - Name: Two-Tier Shelf
-- Output format: nd
 
 ## Dimensions (mm)
 - Width: 600

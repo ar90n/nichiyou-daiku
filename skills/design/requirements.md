@@ -1,8 +1,9 @@
-# Furniture Design Specification
+# Furniture Requirements
+
+What a design needs. Ask the user only for the items the request leaves open and that change the design; choose the rest and say what you chose. The specs in [examples/](examples/) are filled in.
 
 ## Basic Info
 - Name:
-- Output format: [nd / python]
 
 ## Dimensions (mm)
 - Width:

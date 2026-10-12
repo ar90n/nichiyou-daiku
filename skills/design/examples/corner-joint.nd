@@ -1,0 +1,9 @@
+// Minimal Corner Joint Example
+// Two 2x4 pieces connected at 90 degrees
+
+(piece_a:2x4 =400)
+(piece_b:2x4 =400)
+
+// piece_b lies across piece_a's top end (back face down), its down end
+// flush with piece_a's front face
+piece_a -[TF<0 BD<0]- piece_b

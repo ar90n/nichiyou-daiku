@@ -19,13 +19,13 @@ MARKDOWN = sorted(
     [
         *(p for p in (ROOT / "docs").glob("*.md")),
         ROOT / "README.md",
-        *(ROOT / "prompts").rglob("*.md"),
+        *(ROOT / "skills").rglob("*.md"),
     ]
 )
 ND_FILES = sorted(
     [
         *(ROOT / "examples" / "nd_files").glob("*.nd"),
-        *(ROOT / "prompts" / "examples" / "nd-output").glob("*.nd"),
+        *(ROOT / "skills").rglob("*.nd"),
     ]
 )
 OPENING = re.compile(r"^(\s*)(`{3,}|~{3,})\s*([\w-]*)")
@@ -33,8 +33,13 @@ OPENING = re.compile(r"^(\s*)(`{3,}|~{3,})\s*([\w-]*)")
 # definitions such as [spec]: docs/dsl-specification.md
 LINK = re.compile(r"\]\(\s*<?([^)\s>]+)>?(?:\s+\"[^\"]*\")?\s*\)")
 REFERENCE = re.compile(r"^\s*\[[^\]]+\]:\s*<?(\S+?)>?(?:\s+\"[^\"]*\")?\s*$", re.M)
-# Paths written in code spans or prose, e.g. `prompts/system.md`
-PATH = re.compile(r"(?<![\w/.-])((?:docs|prompts|examples|src|tests)/[\w./-]*[\w/])")
+# Paths written in code spans or prose, e.g. `skills/design/SKILL.md`. prompts/
+# stays listed so a mention of the removed prompts fails
+PATH = re.compile(
+    r"(?<![\w/.-])((?:docs|prompts|examples|skills|bin|src|tests)/[\w./-]*[\w/])"
+)
+# Skill bodies name plugin files from the plugin root, the repository root
+PLUGIN_PATH = re.compile(r"\$\{CLAUDE_PLUGIN_ROOT\}/([\w./-]*[\w/])")
 DSL_SPEC = (ROOT / "docs" / "dsl-specification.md").read_text()
 
 
@@ -106,9 +111,7 @@ def test_example_files_are_sound(path):
 
 
 def test_python_output_example_builds_a_sound_table():
-    namespace = runpy.run_path(
-        str(ROOT / "prompts" / "examples" / "python-output" / "simple-table.py")
-    )
+    namespace = runpy.run_path(str(ROOT / "examples" / "side_table_api.py"))
     assembly = namespace["main"]()
     assert assembly.placement.conflicts == ()
     assert find_overlaps(assembly.model, assembly.placement) == ()
@@ -188,12 +191,27 @@ def test_relative_links_point_at_existing_files(path):
     assert missing == []
 
 
+def _missing_mentions(text: str, directory: Path) -> list[str]:
+    return [
+        *(
+            mention
+            for mention in PATH.findall(text)
+            if not (ROOT / mention).exists() and not (directory / mention).exists()
+        ),
+        *(
+            mention
+            for mention in PLUGIN_PATH.findall(text)
+            if not (ROOT / mention).exists()
+        ),
+    ]
+
+
+def test_missing_mentions_are_found():
+    text = "Read `${CLAUDE_PLUGIN_ROOT}/docs/nope.md` and `prompts/system.md`."
+    assert _missing_mentions(text, ROOT) == ["prompts/system.md", "docs/nope.md"]
+
+
 @pytest.mark.parametrize("path", MARKDOWN, ids=lambda p: str(p.relative_to(ROOT)))
 def test_mentioned_repo_paths_exist(path):
-    # Prompts name files in code spans rather than links
-    missing = [
-        mention
-        for mention in PATH.findall(path.read_text())
-        if not (ROOT / mention).exists() and not (path.parent / mention).exists()
-    ]
-    assert missing == []
+    # Prompts and skills name files in code spans rather than links
+    assert _missing_mentions(path.read_text(), path.parent) == []

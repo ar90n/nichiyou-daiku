@@ -54,7 +54,7 @@ pip install "nichiyou-daiku[viz]"   # plus 3D export and drawings (build123d)
 
 - [DSL specification](docs/dsl-specification.md): pieces, faces and offsets, connections, variables, unknowns, fasteners, CLI, grammar, errors
 - [Python API](docs/api-specification.md): pieces, connections, models, assembly, placement, reports, 3D export
-- [LLM prompts](prompts/README.md): generate designs with an LLM
+- [Design skill](skills/design/SKILL.md): the Claude Code skill that designs furniture and checks it with the CLI
 
 ## Development
 

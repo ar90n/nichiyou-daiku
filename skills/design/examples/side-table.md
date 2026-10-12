@@ -2,7 +2,6 @@
 
 ## Basic Info
 - Name: Side Table
-- Output format: nd
 
 ## Dimensions (mm)
 - Width: 500
