@@ -48,11 +48,19 @@ if ! command -v uv >/dev/null 2>&1; then
   exit 127
 fi
 
-# 3D export and drawings need build123d, which the viz extra brings
-package=$root
+# 3D export and drawings need build123d (the viz extra). The other commands
+# get an environment without it, where they start several times faster
+group=core
 for arg in "$@"; do
   case $arg in
-    export | drawing | view) package="nichiyou-daiku[viz] @ $root" ;;
+    export | drawing | view) group=viz ;;
   esac
 done
-exec uv tool run --from "$package" nichiyou-daiku "$@"
+
+# uv.lock pins the dependencies as in CI. The environment lives in the cache:
+# the plugin directory is replaced on every update
+export UV_PROJECT_ENVIRONMENT="${XDG_CACHE_HOME:-$HOME/.cache}/nichiyou-daiku/$group"
+if [ "$group" = viz ]; then
+  exec uv run --project "$root" --frozen --no-dev --no-editable --extra viz nichiyou-daiku "$@"
+fi
+exec uv run --project "$root" --frozen --no-dev --no-editable nichiyou-daiku "$@"

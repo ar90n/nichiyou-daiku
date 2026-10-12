@@ -8,6 +8,7 @@ from typing import Optional
 import click
 
 from nichiyou_daiku.cli.utils import (
+    VIZ_INSTALL,
     CliEcho,
     convert_assembly_to_build123d,
     create_assembly_from_model,
@@ -97,7 +98,7 @@ def drawing(
     except ImportError as e:
         echo.error(
             f"Error importing dependencies: {e}\n"
-            "Please install with: uv add nichiyou-daiku[viz]"
+            f"Install the CLI with the viz extra: {VIZ_INSTALL}"
         )
         sys.exit(1)
 

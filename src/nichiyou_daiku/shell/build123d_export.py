@@ -190,7 +190,8 @@ def assembly_to_build123d(
     if not HAS_BUILD123D:
         raise ImportError(
             "build123d is required for 3D visualization. "
-            "Please install it with: pip install nichiyou-daiku[viz]"
+            "Please install the viz extra, e.g. "
+            'uv add "nichiyou-daiku[viz] @ git+https://github.com/ar90n/nichiyou-daiku"'
         )
 
     parts = []

@@ -43,3 +43,8 @@ Tell the user the file path, the overall size, the lumber to buy (from the shopp
 ## The CLI
 
 `nichiyou-daiku` runs an installed nichiyou-daiku if there is one, otherwise this plugin's own copy through uv. If it says it found neither, ask the user to install uv.
+
+An installed CLI can be behind this plugin. Ask the user to reinstall it when:
+
+- `drawing` or `export` says build123d is missing (it lacks the viz extra): `uv tool install --force "nichiyou-daiku[viz] @ git+https://github.com/ar90n/nichiyou-daiku"`
+- `validate` rejects syntax that the DSL specification documents (it is older than the plugin): `uv tool install --force "git+https://github.com/ar90n/nichiyou-daiku"`, or the `[viz]` form above

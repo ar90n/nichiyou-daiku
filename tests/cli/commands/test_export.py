@@ -193,7 +193,11 @@ class TestExportCommand:
 
                 assert result.exit_code != 0
                 assert "build123d" in result.output.lower()
-                assert "install" in result.output.lower()
+                # The installed CLI lacks the extra; reinstall it with it
+                assert (
+                    'uv tool install --force "nichiyou-daiku[viz] @ '
+                    'git+https://github.com/ar90n/nichiyou-daiku"' in result.output
+                )
             finally:
                 export_module.HAS_BUILD123D = original_has_build123d
 

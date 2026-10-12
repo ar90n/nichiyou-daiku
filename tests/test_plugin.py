@@ -73,12 +73,33 @@ def _run(
 ):
     return subprocess.run(
         [str(command), *args],
-        env={"PATH": os.pathsep.join(str(p) for p in path), **(env or {})},
+        env={
+            "PATH": os.pathsep.join(str(p) for p in path),
+            "XDG_CACHE_HOME": "/nonexistent/cache",
+            **(env or {}),
+        },
         cwd=cwd,
         capture_output=True,
         text=True,
         timeout=10,
     )
+
+
+def _uv_call(root: Path, *args: str, viz: bool = False) -> list[str]:
+    """What the fake uv prints when the wrapper runs the plugin's source."""
+    extra = ["--extra", "viz"] if viz else []
+    return [
+        "uv",
+        "run",
+        "--project",
+        str(root),
+        "--frozen",
+        "--no-dev",
+        "--no-editable",
+        *extra,
+        "nichiyou-daiku",
+        *args,
+    ]
 
 
 def test_wrapper_is_an_executable_posix_shell_script():
@@ -110,16 +131,7 @@ def test_wrapper_runs_its_own_source_through_uv(tmp_path):
         tmp_path / "uv-bin",
         _tools(tmp_path),
     )
-    assert result.stdout.splitlines() == [
-        "uv",
-        "tool",
-        "run",
-        "--from",
-        str(root),
-        "nichiyou-daiku",
-        "validate",
-        "my table.nd",
-    ]
+    assert result.stdout.splitlines() == _uv_call(root, "validate", "my table.nd")
 
 
 @pytest.mark.parametrize(
@@ -140,11 +152,39 @@ def test_wrapper_adds_the_viz_extra_for_3d_commands(tmp_path, args):
         _tools(tmp_path),
         args=args,
     )
-    assert result.stdout.splitlines()[3:5] == [
-        "--from",
-        f"nichiyou-daiku[viz] @ {root}",
-    ]
-    assert result.stdout.splitlines()[6:] == list(args)
+    assert result.stdout.splitlines() == _uv_call(root, *args, viz=True)
+
+
+@pytest.mark.parametrize(
+    ("cache", "command", "environment"),
+    [
+        ({"XDG_CACHE_HOME": "/x/cache"}, "validate", "/x/cache/nichiyou-daiku/core"),
+        ({"XDG_CACHE_HOME": "/x/cache"}, "drawing", "/x/cache/nichiyou-daiku/viz"),
+        (
+            {"XDG_CACHE_HOME": "", "HOME": "/x/home"},
+            "report",
+            "/x/home/.cache/nichiyou-daiku/core",
+        ),
+    ],
+)
+def test_wrapper_keeps_its_environments_outside_the_plugin(
+    tmp_path, cache, command, environment
+):
+    # The plugin directory is replaced on every update, so uv must not put
+    # its virtual environment there
+    root = _plugin(tmp_path)
+    uv = tmp_path / "uv-bin" / "uv"
+    uv.parent.mkdir()
+    uv.write_text('#!/bin/sh\necho "$UV_PROJECT_ENVIRONMENT"\n')
+    uv.chmod(0o755)
+    result = _run(
+        root / "bin" / "nichiyou-daiku",
+        uv.parent,
+        _tools(tmp_path),
+        args=(command, "d.nd"),
+        env=cache,
+    )
+    assert result.stdout.splitlines() == [environment]
 
 
 def test_wrapper_keeps_a_plugin_path_with_spaces_whole(tmp_path):
@@ -153,7 +193,7 @@ def test_wrapper_keeps_a_plugin_path_with_spaces_whole(tmp_path):
     result = _run(
         root / "bin" / "nichiyou-daiku", tmp_path / "uv-bin", _tools(tmp_path)
     )
-    assert result.stdout.splitlines()[4] == str(root)
+    assert result.stdout.splitlines()[3] == str(root)
 
 
 def test_wrapper_called_by_another_copy_goes_straight_to_uv(tmp_path):
@@ -183,7 +223,7 @@ def test_copies_of_the_wrapper_do_not_call_each_other(tmp_path):
     )
     lines = result.stdout.splitlines()
     assert lines[0] == "uv"
-    assert lines[4] in (str(first), str(second))
+    assert lines[3] in (str(first), str(second))
 
 
 def test_wrapper_reached_through_a_symlink_uses_the_plugin_root(tmp_path):
@@ -196,7 +236,7 @@ def test_wrapper_reached_through_a_symlink_uses_the_plugin_root(tmp_path):
     result = _run(
         links / "nichiyou-daiku", links, tmp_path / "uv-bin", _tools(tmp_path)
     )
-    assert result.stdout.splitlines()[4] == str(root)
+    assert result.stdout.splitlines()[3] == str(root)
 
 
 def test_wrapper_skips_the_current_directory_and_directories(tmp_path):
@@ -252,3 +292,15 @@ def test_plugin_root_appears_only_in_skill_bodies():
         and "${CLAUDE_PLUGIN_ROOT}" in path.read_text()
     ]
     assert literal == []
+
+
+def test_skill_tells_how_to_reinstall_the_cli():
+    # An installed CLI can lack the viz extra or be older than the plugin's
+    # docs; the skill names the README's install commands to fix that
+    commands = re.findall(
+        r'`(uv tool install (?:--force )?"[^"`]+")`',
+        (ROOT / "skills" / "design" / "SKILL.md").read_text(),
+    )
+    readme = (ROOT / "README.md").read_text()
+    assert commands
+    assert [c for c in commands if c.replace("--force ", "") not in readme] == []

@@ -15,6 +15,12 @@ if TYPE_CHECKING:
     from nichiyou_daiku.core.assembly import Assembly
     from nichiyou_daiku.core.model import Model
 
+# The package is not on PyPI; the CLI comes from GitHub as a uv tool
+VIZ_INSTALL = (
+    'uv tool install --force "nichiyou-daiku[viz] @ '
+    'git+https://github.com/ar90n/nichiyou-daiku"'
+)
+
 
 def read_dsl_file(file_path: str) -> str:
     """Read DSL content from a file or stdin.
@@ -247,7 +253,7 @@ def ensure_build123d_available(echo: CliEcho) -> None:
     if not HAS_BUILD123D:
         echo.error(
             "Error: build123d is required for this operation.\n"
-            "Please install it with: uv sync --all-extras"
+            f"Install the CLI with the viz extra: {VIZ_INSTALL}"
         )
         sys.exit(1)
 

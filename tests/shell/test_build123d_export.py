@@ -27,4 +27,8 @@ def test_assembly_to_build123d_requires_build123d(without_build123d):
         export_module.assembly_to_build123d(assembly)
 
     assert "build123d is required" in str(exc_info.value)
-    assert "pip install nichiyou-daiku[viz]" in str(exc_info.value)
+    # Not on PyPI: the extra comes from GitHub
+    assert (
+        'uv add "nichiyou-daiku[viz] @ git+https://github.com/ar90n/nichiyou-daiku"'
+        in str(exc_info.value)
+    )

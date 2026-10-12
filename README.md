@@ -61,6 +61,8 @@ uv tool install "git+https://github.com/ar90n/nichiyou-daiku"                   
 uv tool install "nichiyou-daiku[viz] @ git+https://github.com/ar90n/nichiyou-daiku"  # plus 3D export and drawings (build123d)
 ```
 
+Run the command again with `--force` to update. The Claude Code plugin follows this repository, so keep an installed CLI up to date with it.
+
 > **Note** build123d currently has limited support for ARM64/aarch64. The core works everywhere.
 
 ## Documentation
