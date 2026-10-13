@@ -7,12 +7,12 @@ from typing import Optional
 import click
 
 from nichiyou_daiku.cli.utils import (
-    VIZ_INSTALL,
     CliEcho,
     convert_assembly_to_build123d,
     create_assembly_from_model,
     ensure_build123d_available,
     ensure_not_overwriting_input,
+    import_viz_module,
     parse_dsl_to_model,
     read_dsl_file,
     require_output_for_stdin,
@@ -65,14 +65,7 @@ def render(
     echo = CliEcho(ctx)
 
     ensure_build123d_available(echo)
-    try:
-        from nichiyou_daiku.shell.render import render_sheet
-    except ImportError as e:
-        echo.error(
-            f"Error importing dependencies: {e}\n"
-            f"Install the CLI with the viz extra: {VIZ_INSTALL}"
-        )
-        sys.exit(1)
+    render_sheet = import_viz_module("nichiyou_daiku.shell.render", echo).render_sheet
 
     require_output_for_stdin(input_file, output)
     output_path = output or Path(input_file).with_suffix(".png")

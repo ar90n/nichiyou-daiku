@@ -77,3 +77,18 @@ def test_render_reports_an_unwritable_output(runner, corner, tmp_path):
     assert result.exit_code == 1
     assert "Error rendering the image" in result.output
     assert "Traceback" not in result.output
+
+
+def test_render_explains_a_missing_cairo_library(runner, corner, monkeypatch):
+    import nichiyou_daiku.cli.utils as utils
+
+    def missing_cairo(name):
+        # What cairocffi raises at import without the system library
+        raise OSError('no library called "cairo-2" was found')
+
+    monkeypatch.setattr(utils, "import_module", missing_cairo)
+    result = runner.invoke(cli, ["render", str(corner)])
+    assert result.exit_code == 1
+    assert "the cairo library is missing" in result.output
+    assert "brew install cairo" in result.output
+    assert "Traceback" not in result.output

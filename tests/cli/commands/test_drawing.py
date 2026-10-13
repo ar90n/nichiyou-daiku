@@ -120,3 +120,18 @@ def test_page_size_choices_match_the_drawing_module():
     # page sizes itself
     option = next(param for param in drawing.params if param.name == "page_size")
     assert tuple(option.type.choices) == PAGE_SIZES  # type: ignore[attr-defined]
+
+
+def test_drawing_explains_a_missing_cairo_library(runner, beam_file, monkeypatch):
+    import nichiyou_daiku.cli.utils as utils
+
+    def missing_cairo(name):
+        # What cairocffi raises at import without the system library
+        raise OSError('no library called "cairo-2" was found')
+
+    monkeypatch.setattr(utils, "import_module", missing_cairo)
+    result = runner.invoke(cli, ["drawing", str(beam_file)])
+    assert result.exit_code == 1
+    assert "the cairo library is missing" in result.output
+    assert "brew install cairo" in result.output
+    assert "Traceback" not in result.output

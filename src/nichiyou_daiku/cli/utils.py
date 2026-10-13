@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import sys
 import traceback
+from importlib import import_module
 from pathlib import Path
+from types import ModuleType
 from typing import TYPE_CHECKING, Optional
 
 import click
@@ -237,6 +239,33 @@ def create_assembly_from_model(model: Model, echo: CliEcho) -> Assembly:
         sys.exit(1)
     warn_assembly_issues(assembly, echo)
     return assembly
+
+
+CAIRO_INSTALL = "macOS: brew install cairo, Debian/Ubuntu: sudo apt install libcairo2"
+
+
+def import_viz_module(name: str, echo: CliEcho) -> ModuleType:
+    """Import a module that needs the viz extra; exit saying what to install
+    when one of its dependencies is missing.
+
+    Raises:
+        SystemExit: If the module or a library it needs is missing
+    """
+    try:
+        return import_module(name)
+    except ImportError as e:
+        echo.error(
+            f"Error importing dependencies: {e}\n"
+            f"Install the CLI with the viz extra: {VIZ_INSTALL}"
+        )
+        sys.exit(1)
+    except OSError as e:
+        # cairocffi raises OSError, not ImportError, without the system library
+        echo.error(
+            f"Error: the cairo library is missing ({e}).\n"
+            f"Install it ({CAIRO_INSTALL}) and run the command again."
+        )
+        sys.exit(1)
 
 
 def ensure_build123d_available(echo: CliEcho) -> None:

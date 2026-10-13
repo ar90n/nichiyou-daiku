@@ -8,12 +8,12 @@ from typing import Optional
 import click
 
 from nichiyou_daiku.cli.utils import (
-    VIZ_INSTALL,
     CliEcho,
     convert_assembly_to_build123d,
     create_assembly_from_model,
     ensure_build123d_available,
     ensure_not_overwriting_input,
+    import_viz_module,
     parse_dsl_to_model,
     read_dsl_file,
     require_output_for_stdin,
@@ -91,16 +91,10 @@ def drawing(
     echo = CliEcho(ctx)
 
     ensure_build123d_available(echo)
-    try:
-        import cairosvg
-
-        from nichiyou_daiku.shell.drawing import technical_drawing
-    except ImportError as e:
-        echo.error(
-            f"Error importing dependencies: {e}\n"
-            f"Install the CLI with the viz extra: {VIZ_INSTALL}"
-        )
-        sys.exit(1)
+    cairosvg = import_viz_module("cairosvg", echo)
+    technical_drawing = import_viz_module(
+        "nichiyou_daiku.shell.drawing", echo
+    ).technical_drawing
 
     # Determine output path and title
     require_output_for_stdin(input_file, output)
