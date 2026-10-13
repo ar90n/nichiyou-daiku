@@ -49,8 +49,6 @@ Run `nichiyou-daiku render <name>.nd -o <name>.png` and read the PNG. It shows t
 - Drawing: `nichiyou-daiku drawing <name>.nd -o <name>.pdf`
 - 3D model: `nichiyou-daiku export <name>.nd -f step` (or `-f stl`)
 
-The first run of these installs build123d and can take a few minutes; tell the user.
-
 ## 8. Report
 
 Tell the user the file path, the overall size, the lumber to buy (from the shopping list) and any warning left, with its reason.
@@ -61,6 +59,9 @@ Tell the user the file path, the overall size, the lumber to buy (from the shopp
 
 An installed CLI can be behind this plugin. Ask the user to reinstall it when:
 
-- `drawing` or `export` says build123d is missing (it lacks the viz extra): `uv tool install --force "nichiyou-daiku[viz] @ git+https://github.com/ar90n/nichiyou-daiku"`
+- `render` says `No such command 'render'` (it predates the check image): `uv tool install --force "nichiyou-daiku[viz] @ git+https://github.com/ar90n/nichiyou-daiku"`
+- `drawing`, `export` or `render` says build123d is missing (it lacks the viz extra): `uv tool install --force "nichiyou-daiku[viz] @ git+https://github.com/ar90n/nichiyou-daiku"`
 - `validate` says `No such option: --json` (it predates the JSON output): `uv tool install --force "git+https://github.com/ar90n/nichiyou-daiku"`, or the `[viz]` form above
 - `validate` rejects syntax that the DSL specification documents (it is older than the plugin): `uv tool install --force "git+https://github.com/ar90n/nichiyou-daiku"`, or the `[viz]` form above
+
+If `render`, `drawing` or `export` says the cairo library is missing, ask the user to install it (macOS: `brew install cairo`, Debian/Ubuntu: `sudo apt install libcairo2`).
