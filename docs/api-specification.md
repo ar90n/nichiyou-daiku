@@ -273,6 +273,7 @@ class ScrewConnection(BaseModel, frozen=True):
     """Connection reinforced with screws."""
     diameter: float  # Screw diameter in mm
     length: float    # Screw length in mm
+    screw_type: Literal["slim", "coarse"] | None = None  # None when given by size alone
 
 ConnectionType = VanillaConnection | DowelConnection | ScrewConnection
 ```
@@ -711,6 +712,8 @@ from nichiyou_daiku.shell import (
     extract_resources,
     ResourceSummary,
     PieceResource,
+    HardwareItem,
+    DrillBit,
 )
 
 def extract_resources(assembly: Assembly) -> ResourceSummary:
@@ -726,6 +729,17 @@ def extract_resources(assembly: Assembly) -> ResourceSummary:
 >>> resources.total_pieces
 2
 >>> summary_text = resources.pretty_print()  # human-readable summary
+```
+
+`hardware` lists the dowels and screws to buy by kind and size (`HardwareItem`: `name`, `count`; screw presets keep `slim` or `coarse` in `ScrewConnection.screw_type`, a screw given by size alone is just "Screw"), and `drill_bits` the hole diameters with the number of holes and the deepest one (`DrillBit`; `deepest` is None when a hole goes through its piece):
+
+```python
+>>> from nichiyou_daiku.dsl import parse_dsl
+>>> doweled = Assembly.of(parse_dsl("(a:2x4 =500)\n(b:2x4 =300)\na -[FL<100 DF<0 D(:8x30)]- b\n"))
+>>> [(item.name, item.count) for item in extract_resources(doweled).hardware]
+[('Dowel 8x30', 2)]
+>>> [(bit.diameter, bit.holes, bit.deepest) for bit in extract_resources(doweled).drill_bits]
+[(8.0, 4, 15.0)]
 ```
 
 ### Report Generation
@@ -744,7 +758,7 @@ def generate_markdown_report(
     """Generate markdown report with cut optimization."""
 ```
 
-The cut plan allows a 3mm saw kerf per cut and warns about pieces longer than any stock board. Problems with the design (`ResourceSummary.issues`: contradicting connections, unconnected pieces, fasteners that do not fit, colliding holes) are listed in a Warnings section right after the overview. The cut plan itself comes from `nichiyou_daiku.shell.cutting.plan_cuts`, which returns a `LumberPlan` per lumber type; `CutPlan`, `DEFAULT_STANDARD_LENGTHS` and `DEFAULT_KERF_MM` live in the same module.
+The shopping list covers the lumber, the hardware and the drill bits. The cut plan allows a 3mm saw kerf per cut and warns about pieces longer than any stock board. Problems with the design (`ResourceSummary.issues`: contradicting connections, unconnected pieces, fasteners that do not fit, colliding holes) are listed in a Warnings section right after the overview. The cut plan itself comes from `nichiyou_daiku.shell.cutting.plan_cuts`, which returns a `LumberPlan` per lumber type; `CutPlan`, `DEFAULT_STANDARD_LENGTHS` and `DEFAULT_KERF_MM` live in the same module.
 
 **Example:**
 

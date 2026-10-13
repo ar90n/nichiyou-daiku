@@ -10,6 +10,8 @@ from .resources import (  # noqa: F401
     PieceResource,
     ResourceSummary,
     AnchorInfo,
+    HardwareItem,
+    DrillBit,
     extract_resources,
 )
 
@@ -19,6 +21,8 @@ __all__ = [
     "PieceResource",
     "ResourceSummary",
     "AnchorInfo",
+    "HardwareItem",
+    "DrillBit",
 ]
 
 # build123d_export imports build123d lazily, so it is always importable;

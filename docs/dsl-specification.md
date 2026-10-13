@@ -617,7 +617,7 @@ nichiyou-daiku report furniture.nd -o report.md
 nichiyou-daiku report furniture.nd --project-name "My Table" --no-cut-diagram
 ```
 
-Writes Markdown (to standard output without `-o`): an overview with the overall size, the bill of materials, anchor details, pilot holes, a shopping list, purchase recommendations and a cut list that allows a 3mm saw kerf. `--no-anchor-details`, `--no-pilot-holes` and `--no-cut-diagram` leave sections out.
+Writes Markdown (to standard output without `-o`): an overview with the overall size, the bill of materials, anchor details, pilot holes, a shopping list (the lumber, the dowels and screws by kind and size, and the drill sizes with their deepest hole), purchase recommendations and a cut list that allows a 3mm saw kerf. `--no-anchor-details`, `--no-pilot-holes` and `--no-cut-diagram` leave sections out.
 
 ### 3D View (requires build123d)
 

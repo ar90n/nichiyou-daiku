@@ -51,7 +51,7 @@ Run `nichiyou-daiku render <name>.nd -o <name>.png` and read the PNG. It shows t
 
 ## 8. Report
 
-Tell the user the file path, the overall size, the lumber to buy (from the shopping list) and any warning left, with its reason.
+Tell the user the file path, the overall size, what to buy from the shopping list (the lumber, the dowels and screws, and the drill bits for their holes) and any warning left, with its reason.
 
 ## The CLI
 
