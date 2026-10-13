@@ -53,19 +53,54 @@ def test_the_image_is_not_blank():
     assert dark > 500
 
 
+def _note_top(sheet) -> float:
+    """Top edge of the note's highest line."""
+    size = sheet.size
+    note_size = max(10, size / 60)
+    return size * 0.04 / 2 + (len(sheet.note) - 1) * note_size * 1.3 + note_size / 2
+
+
 def test_views_sit_in_their_cells_at_one_scale(shelf):
     size = shelf.size
     margin = size * 0.04
-    cell = (size - 2 * margin) / 2
+    note_size = max(10, size / 60)
+    # Room for three note lines below the views
+    bottom = margin / 2 + 2 * note_size * 1.3 + note_size
+    cell_width = (size - 2 * margin) / 2
+    cell_height = (size - margin - bottom) / 2
     for view in VIEWS:
         x0, y0, x1, y1 = shelf.view_boxes[view.caption]
-        left = margin + view.column * cell
-        top = size - margin - view.row * cell
-        assert left <= x0 < x1 <= left + cell
-        assert top - cell <= y0 < y1 <= top
+        left = margin + view.column * cell_width
+        top = size - margin - view.row * cell_height
+        assert left <= x0 < x1 <= left + cell_width
+        assert top - cell_height <= y0 < y1 <= top
     # The largest view fills 90% of a cell's drawing area (below the caption)
     largest = max(max(x1 - x0, y1 - y0) for x0, y0, x1, y1 in shelf.view_boxes.values())
-    assert largest == pytest.approx((cell - size * 0.04) * 0.9)
+    assert largest == pytest.approx(min(cell_width, cell_height - margin) * 0.9)
+
+
+@pytest.mark.parametrize("size", [400, 1400])
+def test_the_note_stays_below_the_views(size):
+    sheet = _sheet(SHELF, size=size, title="two-tier-shelf.nd")
+    lowest = min(y0 for _, y0, _, _ in sheet.view_boxes.values())
+    assert _note_top(sheet) <= lowest
+
+
+def test_a_long_list_of_unlabelled_pieces_is_cut_short():
+    # Forty boards face to face: from +x only the last shows, and from the
+    # other directions their labels crowd each other out
+    count = 40
+    pieces = "".join(f"(shelf_board_{i:02d}:1x4 =300)\n" for i in range(count))
+    joints = "".join(
+        f"shelf_board_{i:02d} -[FL<0 BL<0]- shelf_board_{i + 1:02d}\n"
+        for i in range(count - 1)
+    )
+    sheet = _sheet(pieces + joints, size=600, title="boards.nd")
+    assert len(sheet.unlabelled) > 10
+    assert len(sheet.note) <= 3
+    assert sheet.note[-1].endswith("more)")
+    lowest = min(y0 for _, y0, _, _ in sheet.view_boxes.values())
+    assert _note_top(sheet) <= lowest
 
 
 def test_labels_sit_inside_their_view(shelf):

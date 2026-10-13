@@ -29,6 +29,12 @@ VIEW_FILL = 0.9
 _MARGIN = 0.04
 """Margin and caption band, as a share of the sheet size."""
 
+_NOTE_LINES = 3
+"""Lines kept for the note below the views: the title and size, then two
+lines of unlabelled pieces."""
+
+_LINE_SPACING = 1.3
+
 
 @dataclass(frozen=True)
 class PlacedLabel:
@@ -82,7 +88,8 @@ def _note(
     assembly: Assembly, title: str, unlabelled: list[str], width: int
 ) -> list[str]:
     """The note's lines: the title and size, then the unlabelled pieces
-    wrapped to ``width`` characters."""
+    wrapped to ``width`` characters, cut short with a count of the rest when
+    they would take more than the note's lines."""
     if len(assembly.placement.groups) == 1:
         low, high = overall_bounds(assembly.model, assembly.placement)
         sizes = " x ".join(
@@ -94,7 +101,13 @@ def _note(
         head = f"{title}  pieces not connected"
     if not unlabelled:
         return [head]
-    return [head, *textwrap.wrap("not labelled: " + ", ".join(unlabelled), width)]
+    for shown in range(len(unlabelled), 0, -1):
+        rest = len(unlabelled) - shown
+        listed = "not labelled: " + ", ".join(unlabelled[:shown])
+        lines = textwrap.wrap(listed + (f" (+{rest} more)" if rest else ""), width)
+        if len(lines) < _NOTE_LINES:
+            return [head, *lines]
+    return [head, f"not labelled: {len(unlabelled)} pieces"]
 
 
 def _svg(exporter: ExportSVG, texts: list[_Text], size: int) -> str:
@@ -143,11 +156,16 @@ def render_sheet(
     note naming ``title`` and the overall size."""
     margin = size * _MARGIN
     caption_height = size * _MARGIN
-    cell = (size - 2 * margin) / 2
     # Floors keep small images readable
     label_size = max(10.0, size / 80)
     caption_size = max(12.0, size / 50)
     note_size = max(10.0, size / 60)
+    line_height = note_size * _LINE_SPACING
+    # The note's lines stack up from the bottom margin; the views stay above
+    bottom = margin / 2 + (_NOTE_LINES - 1) * line_height + note_size
+    cell_width = (size - 2 * margin) / 2
+    cell_height = (size - margin - bottom) / 2
+    drawing_height = cell_height - caption_height
 
     projected = []
     for view in VIEWS:
@@ -155,7 +173,9 @@ def render_sheet(
         lines = Compound(children=list(visible))
         projected.append((view, lines, lines.bounding_box()))
     largest = max(max(box.size.X, box.size.Y) for _, _, box in projected)
-    view_scale = (cell - caption_height) * VIEW_FILL / largest if largest > 0 else 1.0
+    view_scale = (
+        min(cell_width, drawing_height) * VIEW_FILL / largest if largest > 0 else 1.0
+    )
 
     exporter = ExportSVG(unit=Unit.MM)
     exporter.add_layer("Visible", line_weight=max(1.0, size / 1000))
@@ -163,9 +183,9 @@ def render_sheet(
     labels: list[PlacedLabel] = []
     view_boxes: dict[str, tuple[float, float, float, float]] = {}
     for view, lines, box in projected:
-        center_x = margin + view.column * cell + cell / 2
-        cell_top = size - margin - view.row * cell
-        center_y = cell_top - caption_height - (cell - caption_height) / 2
+        center_x = margin + view.column * cell_width + cell_width / 2
+        cell_top = size - margin - view.row * cell_height
+        center_y = cell_top - caption_height - drawing_height / 2
         dx = center_x - box.center().X * view_scale
         dy = center_y - box.center().Y * view_scale
         exporter.add_shape(Pos(dx, dy) * scale(lines, view_scale), layer="Visible")
@@ -207,7 +227,7 @@ def render_sheet(
     )
     for index, line in enumerate(reversed(note)):
         # The last line sits in the bottom margin; earlier lines stack above
-        y = margin / 2 + index * note_size * 1.3
+        y = margin / 2 + index * line_height
         texts.append(_Text(margin, y, line, note_size, "black", "start"))
     return Sheet(
         svg=_svg(exporter, texts, size),
