@@ -309,6 +309,12 @@ _SCREW_NAMES = {
 """Sort order and name of each screw type; None is a screw given by size alone."""
 
 
+def _size(value: float) -> float:
+    """A size at the 0.1mm the list prints, so sizes that print the same
+    (3.3 and 1.1 * 3) count together."""
+    return round(value, 1)
+
+
 def _hardware(assembly: Assembly) -> list[HardwareItem]:
     """Count the fasteners laid out, by kind and size: dowels first, then
     slim, coarse and untyped screws, each by diameter and length."""
@@ -317,10 +323,10 @@ def _hardware(assembly: Assembly) -> list[HardwareItem]:
         connection = assembly.model.connections[(fastener.base_id, fastener.target_id)]
         match connection.type:
             case DowelConnection(radius=radius, depth=length):
-                key = (0, 0, 2 * radius, length, "Dowel")
+                key = (0, 0, _size(2 * radius), _size(length), "Dowel")
             case ScrewConnection(diameter=diameter, length=length, screw_type=kind):
                 order, name = _SCREW_NAMES[kind]
-                key = (1, order, diameter, length, name)
+                key = (1, order, _size(diameter), _size(length), name)
             case _:
                 continue
         counts[key] = counts.get(key, 0) + 1
@@ -335,7 +341,7 @@ def _drill_bits(assembly: Assembly) -> list[DrillBit]:
     depths: dict[float, list[float | None]] = {}
     for holes in assembly.pilot_holes.values():
         for _, hole in holes:
-            depths.setdefault(hole.diameter, []).append(hole.depth)
+            depths.setdefault(_size(hole.diameter), []).append(hole.depth)
     bits = []
     for diameter, found in sorted(depths.items()):
         blind = [depth for depth in found if depth is not None]

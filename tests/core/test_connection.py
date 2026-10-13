@@ -358,3 +358,29 @@ class TestConnection:
         data = conn.model_dump()
         assert "type" in data
         assert data["type"] == {}
+
+
+def test_of_screw_keeps_the_preset_screw_type():
+    # Slim screws and coarse-thread screws are different things to buy
+    from nichiyou_daiku.core.connection import ScrewConnection
+    from nichiyou_daiku.core.screw import SlimScrew, as_spec
+
+    shelf = Piece.of(PieceType.PT_2x4, 600.0, "shelf")
+    side = Piece.of(PieceType.PT_2x4, 800.0, "side")
+    connection = Connection.of_screw(
+        BoundAnchor(
+            piece=shelf,
+            anchor=Anchor(
+                contact_face="down", edge_shared_face="left", offset=FromMin(value=0)
+            ),
+        ),
+        BoundAnchor(
+            piece=side,
+            anchor=Anchor(
+                contact_face="back", edge_shared_face="left", offset=FromMin(value=100)
+            ),
+        ),
+        as_spec(SlimScrew.D3_3_L45),
+    )
+    assert isinstance(connection.type, ScrewConnection)
+    assert connection.type.screw_type == "slim"

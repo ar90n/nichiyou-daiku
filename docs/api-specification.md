@@ -606,6 +606,7 @@ from nichiyou_daiku.core.screw import (
 class ScrewSpec(BaseModel, frozen=True):
     diameter: float  # mm
     length: float    # mm
+    screw_type: Literal["slim", "coarse"] | None = None  # set by as_spec(preset)
 
 class SlimScrew(Enum):
     D3_3_L25 = "3.3x25"

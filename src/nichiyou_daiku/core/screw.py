@@ -18,11 +18,13 @@ ScrewType = Literal["slim", "coarse"]
 
 
 class ScrewSpec(BaseModel, frozen=True):
-    """Specification for a screw (diameter and length).
+    """Specification for a screw (diameter, length and, for a preset, type).
 
     Attributes:
         diameter: Screw diameter in mm
         length: Screw length in mm
+        screw_type: "slim" or "coarse" for a preset (``as_spec`` sets it),
+            None for a screw given by size alone
 
     Example:
         >>> spec = ScrewSpec(diameter=3.8, length=50.0)

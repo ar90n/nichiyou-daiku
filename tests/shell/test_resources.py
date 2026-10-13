@@ -532,3 +532,16 @@ class TestHardware:
         source = "(a:2x4 =500)\n(b:2x4 =300)\na -[FL<100 DF<0]- b\n"
         summary = extract_resources(Assembly.of(parse_dsl(source)))
         assert (summary.hardware, summary.drill_bits) == ([], [])
+
+    def test_sizes_that_print_the_same_share_a_line(self):
+        # 1.1 * 3 is 3.3000000000000003, which prints as 3.3
+        source = (
+            "(shelf:2x4 =600)\n(side:2x4 =800)\n(shelf2:2x4 =600)\n"
+            "shelf -[DL<0 BL<100 S(3.3, 45)]- side\n"
+            "shelf2 -[DL<0 BL<300 S(1.1*3, 45)]- side\n"
+        )
+        summary = extract_resources(Assembly.of(parse_dsl(source)))
+        assert [(item.name, item.count) for item in summary.hardware] == [
+            ("Screw 3.3x45", 4)
+        ]
+        assert [(bit.diameter, bit.holes) for bit in summary.drill_bits] == [(3.3, 8)]
