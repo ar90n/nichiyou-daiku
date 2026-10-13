@@ -124,6 +124,22 @@ def _generate_shopping_list(summary: ResourceSummary) -> str:
             f"- **{piece_type.value}**: {count} pieces, total {length_m:.1f} meters"
         )
 
+    if summary.hardware:
+        lines.extend(["", "### Hardware Required:", ""])
+        lines.extend(f"- **{item.name}**: {item.count}" for item in summary.hardware)
+
+    if summary.drill_bits:
+        lines.extend(["", "### Drill Bits:", ""])
+        for bit in summary.drill_bits:
+            deepest = (
+                "deepest: through"
+                if bit.deepest is None
+                else f"deepest {format_mm(bit.deepest)}mm"
+            )
+            lines.append(
+                f"- **{format_mm(bit.diameter)}mm**: {bit.holes} holes, {deepest}"
+            )
+
     lines.extend(["", ""])
     return "\n".join(lines)
 

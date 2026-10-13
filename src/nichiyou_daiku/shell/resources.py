@@ -10,10 +10,11 @@ from pydantic import BaseModel
 
 from nichiyou_daiku.core.anchor import as_edge_point
 from nichiyou_daiku.core.assembly import Assembly, Hole
+from nichiyou_daiku.core.connection import DowelConnection, ScrewConnection
 from nichiyou_daiku.core.geometry import Point3D, Box, SurfacePoint
 from nichiyou_daiku.core.piece import PieceType, get_shape
 from nichiyou_daiku.core.placement import overall_bounds
-from nichiyou_daiku.shell.diagnostics import describe_assembly_issues
+from nichiyou_daiku.shell.diagnostics import describe_assembly_issues, format_mm
 
 
 class AnchorInfo(BaseModel):
@@ -123,6 +124,37 @@ class PieceResource(BaseModel):
     pilot_holes: list[PilotHoleInfo] = []
 
 
+class HardwareItem(BaseModel):
+    """Dowels or screws of one kind and size, and how many the design uses.
+
+    Examples:
+        >>> HardwareItem(name="Dowel 8x30", count=4).count
+        4
+    """
+
+    name: str
+    count: int
+
+
+class DrillBit(BaseModel):
+    """A drill size the holes need: how many holes and the deepest one.
+
+    Attributes:
+        diameter: Hole diameter in mm
+        holes: Number of holes of this diameter
+        deepest: Depth of the deepest hole in mm, or None when a hole goes
+            through its piece
+
+    Examples:
+        >>> DrillBit(diameter=8.0, holes=4, deepest=15.0).deepest
+        15.0
+    """
+
+    diameter: float
+    holes: int
+    deepest: float | None
+
+
 class ResourceSummary(BaseModel):
     """Summary of all resources required for a project.
 
@@ -139,6 +171,8 @@ class ResourceSummary(BaseModel):
         size_reference: Piece whose length runs along Z (the placement's first piece)
         issues: Problems with the design: contradicting connections, unconnected
             pieces, fasteners that do not fit and holes that collide
+        hardware: Dowels and screws to buy, by kind and size
+        drill_bits: Drill sizes the holes need
 
     Examples:
         >>> from nichiyou_daiku.core.piece import PieceType
@@ -173,6 +207,8 @@ class ResourceSummary(BaseModel):
     overall_size: tuple[float, float, float] | None = None
     size_reference: str | None = None
     issues: list[str] = []
+    hardware: list[HardwareItem] = []
+    drill_bits: list[DrillBit] = []
 
     def pretty_print(self) -> str:
         """Generate a human-readable summary of resources.
@@ -263,6 +299,49 @@ def _pilot_hole_info(position: SurfacePoint, hole: Hole, box: Box) -> "PilotHole
         diameter=hole.diameter,
         depth=hole.depth,
     )
+
+
+_SCREW_NAMES = {
+    "slim": (0, "Slim screw"),
+    "coarse": (1, "Coarse screw"),
+    None: (2, "Screw"),
+}
+"""Sort order and name of each screw type; None is a screw given by size alone."""
+
+
+def _hardware(assembly: Assembly) -> list[HardwareItem]:
+    """Count the fasteners laid out, by kind and size: dowels first, then
+    slim, coarse and untyped screws, each by diameter and length."""
+    counts: dict[tuple[int, int, float, float, str], int] = {}
+    for fastener in assembly.fasteners:
+        connection = assembly.model.connections[(fastener.base_id, fastener.target_id)]
+        match connection.type:
+            case DowelConnection(radius=radius, depth=length):
+                key = (0, 0, 2 * radius, length, "Dowel")
+            case ScrewConnection(diameter=diameter, length=length, screw_type=kind):
+                order, name = _SCREW_NAMES[kind]
+                key = (1, order, diameter, length, name)
+            case _:
+                continue
+        counts[key] = counts.get(key, 0) + 1
+    return [
+        HardwareItem(name=f"{name} {format_mm(diameter)}x{format_mm(length)}", count=n)
+        for (_, _, diameter, length, name), n in sorted(counts.items())
+    ]
+
+
+def _drill_bits(assembly: Assembly) -> list[DrillBit]:
+    """The hole diameters, each with its number of holes and deepest hole."""
+    depths: dict[float, list[float | None]] = {}
+    for holes in assembly.pilot_holes.values():
+        for _, hole in holes:
+            depths.setdefault(hole.diameter, []).append(hole.depth)
+    bits = []
+    for diameter, found in sorted(depths.items()):
+        blind = [depth for depth in found if depth is not None]
+        deepest = max(blind) if len(blind) == len(found) else None
+        bits.append(DrillBit(diameter=diameter, holes=len(found), deepest=deepest))
+    return bits
 
 
 def extract_resources(assembly: Assembly) -> ResourceSummary:
@@ -399,4 +478,6 @@ def extract_resources(assembly: Assembly) -> ResourceSummary:
         overall_size=overall_size,
         size_reference=size_reference,
         issues=describe_assembly_issues(assembly),
+        hardware=_hardware(assembly),
+        drill_bits=_drill_bits(assembly),
     )

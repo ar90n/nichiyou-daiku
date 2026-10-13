@@ -6,7 +6,13 @@ from unittest.mock import patch
 
 from nichiyou_daiku.core.piece import PieceType
 from nichiyou_daiku.shell.cutting import plan_cuts
-from nichiyou_daiku.shell.resources import ResourceSummary, PieceResource, AnchorInfo
+from nichiyou_daiku.shell.resources import (
+    AnchorInfo,
+    DrillBit,
+    HardwareItem,
+    PieceResource,
+    ResourceSummary,
+)
 from nichiyou_daiku.shell.report_generator import (
     _generate_overview_section,
     _generate_bill_of_materials,
@@ -128,6 +134,46 @@ class TestGenerateShoppingList:
         assert "## Shopping List" in shopping_list
         assert "**1x4**: 3 pieces, total 3.6 meters" in shopping_list
         assert "**2x4**: 4 pieces, total 4.8 meters" in shopping_list
+
+    def test_should_list_hardware_and_drill_bits(self):
+        summary = ResourceSummary(
+            pieces=[],
+            total_pieces=2,
+            pieces_by_type={PieceType.PT_2x4: 2},
+            total_length_by_type={PieceType.PT_2x4: 800.0},
+            total_volume=1.0,
+            hardware=[
+                HardwareItem(name="Dowel 8x30", count=32),
+                HardwareItem(name="Slim screw 3.3x45", count=24),
+            ],
+            drill_bits=[
+                DrillBit(diameter=3.3, holes=48, deepest=None),
+                DrillBit(diameter=8.0, holes=64, deepest=15.0),
+            ],
+        )
+
+        shopping_list = _generate_shopping_list(summary)
+
+        hardware = shopping_list.split("### Hardware Required:", 1)[1]
+        assert "- **Dowel 8x30**: 32" in hardware
+        assert "- **Slim screw 3.3x45**: 24" in hardware
+        drills = shopping_list.split("### Drill Bits:", 1)[1]
+        assert "- **3.3mm**: 48 holes, deepest: through" in drills
+        assert "- **8mm**: 64 holes, deepest 15mm" in drills
+
+    def test_should_leave_out_hardware_without_fasteners(self):
+        summary = ResourceSummary(
+            pieces=[],
+            total_pieces=1,
+            pieces_by_type={PieceType.PT_2x4: 1},
+            total_length_by_type={PieceType.PT_2x4: 400.0},
+            total_volume=1.0,
+        )
+
+        shopping_list = _generate_shopping_list(summary)
+
+        assert "Hardware" not in shopping_list
+        assert "Drill" not in shopping_list
 
 
 class TestGeneratePurchaseRecommendations:

@@ -11,6 +11,7 @@ from nichiyou_daiku.core.anchor import BoundAnchor
 from nichiyou_daiku.core.connection import Connection
 from nichiyou_daiku.core.assembly import Assembly
 from nichiyou_daiku.core.geometry import FromMax, FromMin
+from nichiyou_daiku.dsl import parse_dsl
 from nichiyou_daiku.shell.resources import (
     AnchorInfo,
     PieceResource,
@@ -473,3 +474,61 @@ class TestIssues:
 
         model = parse_dsl("(a:2x4 =500)\n(b:2x4 =300)\na -[FL<100 DF<0 D(4, 30)]- b\n")
         assert extract_resources(Assembly.of(model)).issues == []
+
+
+MIXED_FASTENERS = """
+(a:2x4 =500)
+(b:2x4 =300)
+(c:2x4 =300)
+(shelf:2x4 =600)
+(side:2x4 =800)
+(shelf2:2x4 =600)
+(shelf3:2x4 =600)
+a -[FL<100 DF<0 D(:8x30)]- b
+a -[BL<100 DB<0 D(4, 40)]- c
+shelf -[DL<0 BL<100 S(Slim:3.3x45)]- side
+shelf2 -[DL<0 BL<300 S(Coarse:3.8x57)]- side
+shelf3 -[DL<0 BL<500 S(3.5, 40)]- side
+"""
+
+
+class TestHardware:
+    def test_fasteners_are_counted_by_kind_and_size(self):
+        summary = extract_resources(Assembly.of(parse_dsl(MIXED_FASTENERS)))
+        # Two per connection, dowels first; slim, coarse, then untyped screws
+        assert [(item.name, item.count) for item in summary.hardware] == [
+            ("Dowel 8x30", 2),
+            ("Dowel 8x40", 2),
+            ("Slim screw 3.3x45", 2),
+            ("Coarse screw 3.8x57", 2),
+            ("Screw 3.5x40", 2),
+        ]
+
+    def test_connections_that_contradict_the_placement_get_no_fasteners(self):
+        source = (
+            "(a:2x4 =500)\n(b:2x4 =300)\n(c:2x4 =300)\n"
+            "a -[FL<100 DF<0 D(:8x30)]- b\n"
+            "a -[FL>100 DF<0 D(:8x30)]- c\n"
+            "b -[RF<0 LF<0 D(:8x30)]- c\n"
+        )
+        summary = extract_resources(Assembly.of(parse_dsl(source)))
+        assert [(item.name, item.count) for item in summary.hardware] == [
+            ("Dowel 8x30", 4)
+        ]
+
+    def test_drill_bits_list_each_diameter_with_its_deepest_hole(self):
+        summary = extract_resources(Assembly.of(parse_dsl(MIXED_FASTENERS)))
+        # A screw goes through its target, so those diameters have a through hole
+        assert [
+            (bit.diameter, bit.holes, bit.deepest) for bit in summary.drill_bits
+        ] == [
+            (3.3, 4, None),
+            (3.5, 4, None),
+            (3.8, 4, None),
+            (8.0, 8, 20.0),
+        ]
+
+    def test_a_model_without_fasteners_needs_no_hardware(self):
+        source = "(a:2x4 =500)\n(b:2x4 =300)\na -[FL<100 DF<0]- b\n"
+        summary = extract_resources(Assembly.of(parse_dsl(source)))
+        assert (summary.hardware, summary.drill_bits) == ([], [])
