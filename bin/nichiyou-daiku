@@ -53,7 +53,7 @@ fi
 group=core
 for arg in "$@"; do
   case $arg in
-    export | drawing | view) group=viz ;;
+    export | drawing | view | render) group=viz ;;
   esac
 done
 
