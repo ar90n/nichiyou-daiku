@@ -26,6 +26,7 @@ nichiyou-daiku validate corner.nd           # syntax, placement, overlaps, faste
 nichiyou-daiku report corner.nd -o report.md # bill of materials, shopping list, cut list
 nichiyou-daiku export corner.nd -f step      # 3D model (needs the viz extra)
 nichiyou-daiku drawing corner.nd             # technical drawing PDF (needs the viz extra)
+nichiyou-daiku render corner.nd              # check image PNG, four labelled views (needs the viz extra)
 ```
 
 See [`examples/nd_files/`](examples/nd_files/) for complete designs, such as a table written with variables ([`simple_table_parametric.nd`](examples/nd_files/simple_table_parametric.nd)) and one whose apron length is solved from the legs ([`simple_table_unknowns.nd`](examples/nd_files/simple_table_unknowns.nd)).

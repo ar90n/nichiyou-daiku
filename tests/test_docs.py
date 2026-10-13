@@ -230,3 +230,11 @@ def test_validate_json_example_matches_the_cli():
         cli, ["validate", "--json", str(ROOT / command.split()[-1])]
     )
     assert json.loads(documented) == json.loads(result.stdout)
+
+
+def test_every_cli_command_is_documented():
+    # The DSL specification is the CLI's reference
+    missing = [
+        name for name in cli.commands if f"nichiyou-daiku {name}" not in DSL_SPEC
+    ]
+    assert missing == []

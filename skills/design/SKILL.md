@@ -40,14 +40,18 @@ Read the JSON instead of guessing where pieces went (the DSL specification descr
 
 Check `overall_size` in the same JSON against the request (it is null while some pieces are not connected). Its x, y and z run along the width, thickness and length of `size_reference`, the first piece you declared; declare a leg first and z is the height. If it is off, find the piece that sets it in `pieces`, fix its length or offset and go back to step 4. Once the model is valid and the right size, run `nichiyou-daiku report <name>.nd --no-cut-diagram --no-anchor-details --no-pilot-holes` for the bill of materials and the shopping list.
 
-## 6. Output files on request
+## 6. Look at it
+
+Run `nichiyou-daiku render <name>.nd -o <name>.png` and read the PNG. It shows the model from +z, -y, +x and +x +y +z (the axes of `validate --json`), with each piece's ID where you can see it; pieces hidden in every view are listed in the note at the bottom. Compare it with the request: which way the boards run, the heights of shelves and aprons, which way the legs face, and that nothing floats or sticks out. If something is off, fix it and go back to step 4. The first run installs build123d and can take a few minutes; tell the user.
+
+## 7. Output files on request
 
 - Drawing: `nichiyou-daiku drawing <name>.nd -o <name>.pdf`
 - 3D model: `nichiyou-daiku export <name>.nd -f step` (or `-f stl`)
 
 The first run of these installs build123d and can take a few minutes; tell the user.
 
-## 7. Report
+## 8. Report
 
 Tell the user the file path, the overall size, the lumber to buy (from the shopping list) and any warning left, with its reason.
 

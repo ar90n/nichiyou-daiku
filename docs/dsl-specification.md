@@ -651,6 +651,15 @@ nichiyou-daiku drawing furniture.nd -o furniture.svg --page-size A4 --title "Sid
 
 Draws the top, front, right-side and isometric views on one page (A4 to A1, default A3); an output ending in `.svg` is written as SVG instead of PDF. `--drawing-number` and `--designed-by` fill in the title block.
 
+### Check Image (requires build123d)
+
+```bash
+nichiyou-daiku render furniture.nd                  # furniture.png
+nichiyou-daiku render furniture.nd -o check.png --size 1000
+```
+
+Draws one square PNG (default 1400px, at least 400px) for checking a design by eye: the model seen from +z, -y, +x and +x +y +z on a 2×2 grid at one scale, visible lines only, in the axes of `size_reference` (see `validate --json`). Each piece's ID is written at its center in every view where no other piece hides that center and it does not overlap another label; pieces labelled in no view are listed in the note at the bottom, below the file name and the overall size. Shapes are those of `export` and `drawing`, including holes and `--fillet-radius`.
+
 ## Grammar (EBNF)
 
 ```ebnf
