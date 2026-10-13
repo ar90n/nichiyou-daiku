@@ -49,9 +49,10 @@ nichiyou-daiku render design.nd -o check.png --size 1400 --fillet-radius 5
   大きく並べる。方向の定義は `drawing` と同じ。軸は `validate --json` の `size_reference`（最初に宣言した部材）の軸で、
   JSON の座標とそろう。
 - 形状は `drawing`・`export` と同じく build123d で作る（下穴、`--fillet-radius` の角の丸め、既定 5mm）。見える線だけを描く。
-- 各方向に見出しを付ける（`front (from -y)`、`right (from +x)`、`top (from +z)`、`isometric`）。
+- 各方向に、見る方向だけを見出しとして付ける（`from +z`、`from -y`、`from +x`、`from +x +y +z`）。「front」「top」とは書かない。DSL の面の名前（top は部材の木口）と紛れるうえ、脚の front が +y を向くモデルでは -y からの図が背面になるため（計画で変更）。
 - 各部材の ID を、その方向での部材の中心に書く。部材の中心から視点への直線が他の部材の箱を通るときは、その方向では
   書かない（上の天板に隠れる下の棚板には、上面図でラベルが付かない）。名前が別の部材の上に載らないようにするため。
+- 同じ方向で、すでに書いたラベルと重なるラベルは書かない。どの方向にもラベルが付かない部材は、隅の注記に `not labelled: ...` と並べる（4 方向のどこからも他の部材に隠れる部材があるため。計画で追加）。
 - 隅にファイル名と外形を書く（例: `two-tier-shelf.nd  600 x 300 x 800 mm`）。部材がつながっていなければ外形の代わりに
   `pieces not connected` と書く。
 - 問題があれば、他のコマンドと同じく警告して描く。

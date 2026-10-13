@@ -19,19 +19,12 @@ from build123d import (
 )
 from ezdxf.colors import RGB
 
+from nichiyou_daiku.shell.views import VIEWS
+
 PAGE_SIZES = ("A4", "A3", "A2", "A1")
 
 VIEW_FILL = 0.7
 """Share of a grid cell taken by the largest view."""
-
-# (viewport origin, viewport up, grid column, grid row). The order is the order
-# the edges are written in, kept from the original command.
-_VIEWS = (
-    ((0, 0, 100), (0, 1, 0), 0, 0),  # top
-    ((0, -100, 0), (0, 0, 1), 0, 1),  # front
-    ((100, 100, 100), (0, 0, 1), 1, 0),  # isometric
-    ((100, 0, 0), (0, 0, 1), 1, 1),  # right side
-)
 
 
 @dataclass
@@ -65,21 +58,21 @@ def _layout_views(part: Compound, width: float, height: float) -> list[_View]:
     y_offset = 10
 
     bounds = []
-    for origin, up, _, _ in _VIEWS:
-        view = _project(part, origin, up, 1.0, (0, 0))
+    for view_spec in VIEWS:
+        view = _project(part, view_spec.origin, view_spec.up, 1.0, (0, 0))
         bounds.append(Compound(children=view.visible + view.hidden).bounding_box())
     largest = max(max(box.size.X, box.size.Y) for box in bounds)
     view_scale = cell * VIEW_FILL / largest if largest > 0 else 1.0
 
     views = []
-    for (origin, up, column, row), box in zip(_VIEWS, bounds):
-        center_x = (area_width if column else -area_width) / 4
-        center_y = (-area_height if row else area_height) / 4 + y_offset
+    for view_spec, box in zip(VIEWS, bounds):
+        center_x = (area_width if view_spec.column else -area_width) / 4
+        center_y = (-area_height if view_spec.row else area_height) / 4 + y_offset
         # A view's bounds scale with it, so the unscaled bounds tell where the
         # scaled view lands without projecting it a third time
         x = center_x - box.center().X * view_scale
         y = center_y - box.center().Y * view_scale
-        views.append(_project(part, origin, up, view_scale, (x, y)))
+        views.append(_project(part, view_spec.origin, view_spec.up, view_scale, (x, y)))
     return views
 
 
