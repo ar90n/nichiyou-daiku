@@ -18,7 +18,7 @@ from nichiyou_daiku.core.geometry import (
     is_back_to_front_axis,
 )
 from nichiyou_daiku.core.piece import shape_for_checks
-from nichiyou_daiku.core.screw import ScrewSpec
+from nichiyou_daiku.core.screw import ScrewSpec, ScrewType
 from nichiyou_daiku.core.dowel import DowelSpec
 
 
@@ -49,6 +49,8 @@ class ScrewConnection(BaseModel, frozen=True):
 
     diameter: Millimeters
     length: Millimeters
+    # None when the screw was given by size alone
+    screw_type: ScrewType | None = None
 
 
 ConnectionType: TypeAlias = VanillaConnection | DowelConnection | ScrewConnection
@@ -158,7 +160,9 @@ class Connection(BaseModel, frozen=True):
             # Using custom spec
             conn = Connection.of_screw(base, target, ScrewSpec(diameter=4.0, length=55.0))
         """
-        screw_conn = ScrewConnection(diameter=spec.diameter, length=spec.length)
+        screw_conn = ScrewConnection(
+            diameter=spec.diameter, length=spec.length, screw_type=spec.screw_type
+        )
         return cls(base=base, target=target, type=screw_conn)
 
 

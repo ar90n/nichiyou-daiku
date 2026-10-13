@@ -222,3 +222,24 @@ class TestDSLScrewPresetIntegration:
         assert isinstance(conn.type, ScrewConnection)
         assert conn.type.diameter == expected_diameter
         assert conn.type.length == expected_length
+
+
+def test_presets_carry_their_screw_type():
+    from nichiyou_daiku.core.screw import as_spec
+
+    assert as_spec(SlimScrew.D3_3_L50).screw_type == "slim"
+    assert as_spec(CoarseThreadScrew.D3_8_L57).screw_type == "coarse"
+
+
+@pytest.mark.parametrize(
+    ("notation", "screw_type"),
+    [("S(Slim:3.3x45)", "slim"), ("S(Coarse:3.8x57)", "coarse"), ("S(3.5, 40)", None)],
+)
+def test_the_screw_type_is_kept(notation, screw_type):
+    # Slim screws and coarse-thread screws are different things to buy
+    model = parse_dsl(
+        f"(shelf:2x4 =600)\n(side:2x4 =800)\nshelf -[DL<0 BL<100 {notation}]- side\n"
+    )
+    [connection] = model.connections.values()
+    assert isinstance(connection.type, ScrewConnection)
+    assert connection.type.screw_type == screw_type

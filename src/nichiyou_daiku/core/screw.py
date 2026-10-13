@@ -5,12 +5,16 @@ including slim screws (スリムビス) and coarse thread screws (コースス�
 """
 
 from enum import Enum
-from typing import TypeAlias
+from typing import Literal, TypeAlias
 
 from pydantic import BaseModel
 
 from nichiyou_daiku.core.geometry import Millimeters
 from nichiyou_daiku.core.preset_base import StringEnumMixin
+
+
+ScrewType = Literal["slim", "coarse"]
+"""Slim screws and coarse-thread screws, sold as different things."""
 
 
 class ScrewSpec(BaseModel, frozen=True):
@@ -30,6 +34,7 @@ class ScrewSpec(BaseModel, frozen=True):
 
     diameter: Millimeters
     length: Millimeters
+    screw_type: ScrewType | None = None
 
 
 class SlimScrew(StringEnumMixin, Enum):
@@ -133,7 +138,11 @@ def as_spec(screw: ScrewPreset) -> ScrewSpec:
     """
     # Parse "diameter x length" format
     diameter_str, length_str = screw.value.split("x")
-    return ScrewSpec(diameter=float(diameter_str), length=float(length_str))
+    return ScrewSpec(
+        diameter=float(diameter_str),
+        length=float(length_str),
+        screw_type="slim" if isinstance(screw, SlimScrew) else "coarse",
+    )
 
 
 def find_preset(screw_type: str, diameter: float, length: float) -> ScrewPreset | None:

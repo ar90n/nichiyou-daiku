@@ -381,7 +381,9 @@ class DSLTransformer(Transformer):
             )
 
         spec = as_screw_spec(preset)
-        return ScrewConnection(diameter=spec.diameter, length=spec.length)
+        return ScrewConnection(
+            diameter=spec.diameter, length=spec.length, screw_type=spec.screw_type
+        )
 
 
 def _number_tokens(items: list[Any]) -> list[Token]:
