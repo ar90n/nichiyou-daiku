@@ -47,10 +47,10 @@ class TestFastenersAndHoles:
             "(base:2x4 =500)\n(target:1x4 =300)\nbase -[FL<100 BL<0 S(Slim:3.3x25)]- target\n"
         )
         assert [hole for _, hole in assembly.pilot_holes["target"]] == [
-            Hole(diameter=3.3)
+            Hole(diameter=2.0)
         ] * 2
         assert [hole for _, hole in assembly.pilot_holes["base"]] == [
-            Hole(diameter=3.3, depth=6.0)
+            Hole(diameter=2.0, depth=6.0)
         ] * 2
 
     def test_fastener_that_does_not_fit_is_reported_not_drilled(self):

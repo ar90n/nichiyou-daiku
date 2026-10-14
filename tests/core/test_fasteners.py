@@ -7,8 +7,15 @@ from hypothesis import strategies as st
 
 from nichiyou_daiku.core.anchor import Anchor, BoundAnchor
 from nichiyou_daiku.core.assembly import Assembly
-from nichiyou_daiku.core.assembly.fasteners import _Bore, _bores_meet, layout_fasteners
-from nichiyou_daiku.core.assembly.models import Hole
+from nichiyou_daiku.core.assembly.fasteners import (
+    _Bore,
+    _bores_meet,
+    _surface_point,
+    find_hole_collisions,
+    layout_fasteners,
+    pilot_diameter,
+)
+from nichiyou_daiku.core.assembly.models import Fastener, Hole
 from nichiyou_daiku.core.connection import (
     Connection,
     DowelConnection,
@@ -129,8 +136,10 @@ class TestLayoutFasteners:
         )
         assert issue is None
         assert len(fasteners) == 2
-        assert {f.target_hole for f in fasteners} == {Hole(diameter=3.3)}
-        assert {f.base_hole for f in fasteners} == {Hole(diameter=3.3, depth=6.0)}
+        # Pilot holes are about 65% of the screw; the screw keeps its own size
+        assert {f.target_hole for f in fasteners} == {Hole(diameter=2.0)}
+        assert {f.base_hole for f in fasteners} == {Hole(diameter=2.0, depth=6.0)}
+        assert {f.diameter for f in fasteners} == {3.3}
         assert {f.kind for f in fasteners} == {"screw"}
 
 
@@ -348,3 +357,43 @@ def test_perpendicular_bores_meet_only_where_their_walls_overlap(bore, meets):
     z_bore = _bore_along_z(x=0, y=0, low=0, high=10)
     assert _bores_meet(z_bore, bore) is meets
     assert _bores_meet(bore, z_bore) is meets
+
+
+@pytest.mark.parametrize(("screw", "pilot"), [(3.3, 2.0), (3.8, 2.5), (4.2, 2.5)])
+def test_screw_pilot_holes_are_about_two_thirds_of_the_screw(screw, pilot):
+    # A hole as wide as the screw would leave its thread nothing to bite
+    assert pilot_diameter(screw) == pilot
+
+
+def test_screw_bodies_collide_even_where_their_pilot_holes_do_not():
+    # Two 3.8mm screws 3mm apart, from the front and the back of a 38mm post:
+    # their 2.5mm pilot holes miss each other, the screws themselves do not
+    post = Piece.of(PieceType.PT_2x4, 600.0, "post")
+    targets = {
+        name: Piece.of(PieceType.PT_1x4, 300.0, name) for name in ("front", "back")
+    }
+    box = Box(shape=get_shape(post))
+
+    def screw(target: str, x: float) -> Fastener:
+        face = "front" if target == "front" else "back"
+        at = _surface_point(
+            box, face, np.array([x, 38.0 if face == "front" else 0.0, 300.0])
+        )
+        return Fastener(
+            base_id="post",
+            target_id=target,
+            kind="screw",
+            diameter=3.8,
+            base_position=at,
+            target_position=at,
+            base_hole=Hole(diameter=2.5, depth=20.0),
+            target_hole=Hole(diameter=2.5),
+        )
+
+    [issue] = find_hole_collisions(
+        [screw("front", 44.5), screw("back", 47.5)], {"post": post, **targets}
+    )
+    assert (issue.base_id, issue.target_id, issue.piece_id) == ("post", "back", "post")
+    # The issue reports the space the screws take, not the pilot holes
+    assert issue.holes is not None
+    assert [hole.diameter for _, hole in issue.holes] == [3.8, 3.8]

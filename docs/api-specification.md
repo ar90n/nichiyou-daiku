@@ -394,13 +394,14 @@ class Assembly(BaseModel, frozen=True):
 
 **Pilot holes:** a dowel connection adds a hole of the dowel diameter, length/2 deep, to each piece; a screw connection adds a through-hole to the target and a hole (length - target thickness) deep to the base; vanilla connections add none.
 
-**Fasteners:** dowels and screws are laid out inside the rectangle where the two contact faces overlap: across the middle of its short side, and at 1/4 and 3/4 of its long side (one in the middle when the long side is shorter than 4 × diameter). A contact area narrower than 2 × diameter, or pieces that only touch along an edge, give a `LayoutIssue` instead of fasteners; `validate` reports it and other commands warn and carry on. Connections that contradict the placement get no fasteners either: their holes would never meet. When holes of two connections run into each other inside a piece, the later connection gets a `LayoutIssue` and both keep their fasteners. That issue also names the piece (`piece_id`), the earlier connection (`other`) and the two holes (`holes`: this connection's first, each as the `SurfacePoint` where it enters the piece and its `Hole`).
+**Fasteners:** dowels and screws are laid out inside the rectangle where the two contact faces overlap: across the middle of its short side, and at 1/4 and 3/4 of its long side (one in the middle when the long side is shorter than 4 × diameter). A contact area narrower than 2 × diameter, or pieces that only touch along an edge, give a `LayoutIssue` instead of fasteners; `validate` reports it and other commands warn and carry on. Connections that contradict the placement get no fasteners either: their holes would never meet. When holes of two connections run into each other inside a piece, the later connection gets a `LayoutIssue` and both keep their fasteners. That issue also names the piece (`piece_id`), the earlier connection (`other`) and the two holes (`holes`: this connection's first, each as the `SurfacePoint` where it enters the piece and a `Hole` for the space the fastener takes: its own diameter over the hole's depth). A screw's holes are pilot holes about 65% of its diameter (`pilot_diameter` in `core.assembly.fasteners`); collisions are judged on `Fastener.diameter`.
 
 ```python
 class Fastener(BaseModel, frozen=True):
     base_id: str
     target_id: str
     kind: Literal["dowel", "screw"]
+    diameter: float                # of the dowel or screw itself
     base_position: SurfacePoint    # on the base's contact face
     target_position: SurfacePoint  # on the target's contact face
     base_hole: Hole

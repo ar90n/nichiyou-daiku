@@ -38,6 +38,8 @@ class Fastener(BaseModel, frozen=True):
         base_id: ID of the connection's base piece
         target_id: ID of the connection's target piece (one connection per pair)
         kind: "dowel" or "screw"
+        diameter: Diameter of the dowel or screw itself; a screw's holes are
+            narrower pilot holes, so collisions are judged on this
         base_position: Where it enters the base, on the base's contact face
         target_position: Where it enters the target, on the target's contact face
         base_hole: Hole drilled into the base
@@ -47,6 +49,7 @@ class Fastener(BaseModel, frozen=True):
     base_id: str
     target_id: str
     kind: FastenerKind
+    diameter: float
     base_position: SurfacePoint
     target_position: SurfacePoint
     base_hole: Hole
@@ -59,7 +62,8 @@ class LayoutIssue(BaseModel, frozen=True):
 
     For a collision, ``piece_id`` is the piece both holes are in, ``other`` the
     earlier connection and ``holes`` the two holes, this connection's first,
-    each as where it enters the piece (piece coordinates) and how it is drilled.
+    each as where it enters the piece (piece coordinates) and the space the
+    fastener takes there (its own diameter, the hole's depth).
     """
 
     base_id: str

@@ -518,13 +518,12 @@ class TestHardware:
 
     def test_drill_bits_list_each_diameter_with_its_deepest_hole(self):
         summary = extract_resources(Assembly.of(parse_dsl(MIXED_FASTENERS)))
-        # A screw goes through its target, so those diameters have a through hole
+        # Screw pilot holes (3.3 -> 2.0, 3.5 and 3.8 -> 2.5mm) go through the target
         assert [
             (bit.diameter, bit.holes, bit.deepest) for bit in summary.drill_bits
         ] == [
-            (3.3, 4, None),
-            (3.5, 4, None),
-            (3.8, 4, None),
+            (2.0, 4, None),
+            (2.5, 8, None),
             (8.0, 8, 20.0),
         ]
 
@@ -544,4 +543,4 @@ class TestHardware:
         assert [(item.name, item.count) for item in summary.hardware] == [
             ("Screw 3.3x45", 4)
         ]
-        assert [(bit.diameter, bit.holes) for bit in summary.drill_bits] == [(3.3, 8)]
+        assert [(bit.diameter, bit.holes) for bit in summary.drill_bits] == [(2.0, 8)]

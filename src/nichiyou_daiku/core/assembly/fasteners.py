@@ -27,6 +27,17 @@ from .models import Fastener, FastenerKind, Hole, LayoutIssue
 CONTACT_TOLERANCE_MM = 1e-6
 
 
+def pilot_diameter(screw_diameter: float) -> float:
+    """Pilot hole for a screw: about 65% of the screw, to the nearest 0.5mm.
+
+    A hole as wide as the screw would leave its thread nothing to bite.
+
+    >>> [pilot_diameter(d) for d in (3.3, 3.8, 4.2)]
+    [2.0, 2.5, 2.5]
+    """
+    return round(screw_diameter * 0.65 * 2) / 2
+
+
 def _positions_along(start: float, length: float, diameter: float) -> list[float]:
     if length / 2 >= 2 * diameter:
         return [start + length / 4, start + 3 * length / 4]
@@ -56,8 +67,9 @@ def layout_fasteners(
                 get_shape(connection.target.piece),
                 connection.target.anchor.contact_face,
             )
-            target_hole = Hole(diameter=diameter)
-            base_hole = Hole(diameter=diameter, depth=length - target_thickness)
+            pilot = pilot_diameter(diameter)
+            target_hole = Hole(diameter=pilot)
+            base_hole = Hole(diameter=pilot, depth=length - target_thickness)
         case VanillaConnection():
             return (), None
         case _:
@@ -109,6 +121,7 @@ def layout_fasteners(
                 base_id=base.piece.id,
                 target_id=target.piece.id,
                 kind=kind,
+                diameter=diameter,
                 base_position=_surface_point(base_box, base.anchor.contact_face, point),
                 target_position=_surface_point(
                     target_box, target.anchor.contact_face, to_target @ (point - shift)
@@ -173,6 +186,8 @@ def find_hole_collisions(
     Reported once on the later of the two connections, in the order of
     ``fasteners``; the fasteners themselves are kept. Holes of one connection
     never meet, since the layout spaces them at least two diameters apart.
+    Judged on the space each fastener takes (its own diameter over the hole's
+    depth): a screw is wider than its pilot hole.
     """
     bores: dict[str, list[tuple[Fastener, SurfacePoint, Hole, _Bore]]] = {}
     for fastener in fasteners:
@@ -181,8 +196,9 @@ def find_hole_collisions(
             (fastener.target_id, fastener.target_position, fastener.target_hole),
         ):
             box = Box(shape=get_shape(pieces[piece_id]))
+            space = Hole(diameter=fastener.diameter, depth=hole.depth)
             bores.setdefault(piece_id, []).append(
-                (fastener, position, hole, _bore(box, position, hole))
+                (fastener, position, space, _bore(box, position, space))
             )
 
     issues: dict[tuple[str, str, str, str], LayoutIssue] = {}

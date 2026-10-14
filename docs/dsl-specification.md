@@ -418,7 +418,7 @@ piece1 -[anchor anchor S(Type:DIAMETERxLENGTH)]- piece2
 - The target's contact_face must be `front` or `back` (the screw goes through the target's wide face).
 - Screw length must be greater than the target's thickness (38 for 2x lumber, 19 for 1x lumber).
 - Screw length must be shorter than the base's depth along its contact normal (front/back → thickness, left/right → width, top/down → piece length) plus the target's thickness, so the tip stays inside the base.
-- Holes: a through-hole in the target and a hole (length - target thickness) deep in the base.
+- Holes: pilot holes about 65% of the screw diameter, to the nearest 0.5mm (3.3 → 2.0, 3.8 and 4.2 → 2.5mm): through the target, and (length - target thickness) deep in the base. Holes running into each other are judged on the screw's own diameter.
 
 #### Choosing a Length
 
@@ -607,7 +607,7 @@ nichiyou-daiku validate --json examples/nd_files/corner_angle_compact.nd
 | `conflict` | `connection` (base, target), `constraint` (`rotation`, `contact`, `flush` or `edge`), `axis`, `mismatch_mm` (null for `rotation`), `loop` (the pieces the contradiction runs through) |
 | `unconnected` | `groups` (the piece IDs of each group) |
 | `fastener` | `connection`, `fastener` (`dowel` or `screw`) |
-| `hole_collision` | `connection`, `other_connection` (the earlier one), `piece`, `fastener`, `holes`: this connection's hole and the other's, each with `entry` (the world point where it enters the piece), `direction` (the world direction it runs), `depth` and `diameter` |
+| `hole_collision` | `connection`, `other_connection` (the earlier one), `piece`, `fastener`, `holes`: this connection's hole and the other's, each with `entry` (the world point where it enters the piece), `direction` (the world direction it runs), `depth` and `diameter` (of the dowel or screw itself, wider than a screw's pilot hole) |
 | `overlap` | `pieces`, `volume_mm3` |
 
 ### Report Generation
