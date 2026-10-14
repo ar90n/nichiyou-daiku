@@ -43,7 +43,8 @@ class SlimScrew(StringEnumMixin, Enum):
     """Standard slim screw sizes.
 
     Slim screws are thinner than coarse thread screws and are less likely
-    to split wood. They typically don't require pilot holes.
+    to split wood. Like coarse thread screws, they get pilot holes about
+    65% of their diameter.
 
     Naming convention: D{diameter}_L{length}
     - Diameter in mm (with underscore replacing decimal point)
