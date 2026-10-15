@@ -9,7 +9,7 @@ from typing import Dict, List, Optional
 from datetime import datetime
 
 from nichiyou_daiku.core.piece import PieceType
-from .cutting import LumberPlan, plan_cuts
+from .cutting import DEFAULT_KERF_MM, LumberPlan, plan_cuts
 from .diagnostics import format_mm
 from .resources import ResourceSummary
 
@@ -144,16 +144,24 @@ def _generate_shopping_list(summary: ResourceSummary) -> str:
     return "\n".join(lines)
 
 
-def _generate_purchase_recommendations(plans: Mapping[PieceType, LumberPlan]) -> str:
+def _generate_purchase_recommendations(
+    plans: Mapping[PieceType, LumberPlan], kerf: float = DEFAULT_KERF_MM
+) -> str:
     """Generate purchase recommendations from the cut plan.
 
     Args:
         plans: Cut plan per lumber type, in report order
+        kerf: Saw kerf the plan allows per cut, in mm
 
     Returns:
         Markdown formatted purchase recommendations
     """
-    lines = ["## Purchase Recommendations", ""]
+    lines = [
+        "## Purchase Recommendations",
+        "",
+        f"Saw kerf: {format_mm(kerf)}mm per cut",
+        "",
+    ]
 
     for piece_type, plan in plans.items():
         lengths_str = ", ".join(
@@ -409,6 +417,7 @@ def generate_markdown_report(
     include_cut_diagram: bool = True,
     include_anchor_details: bool = True,
     include_pilot_holes: bool = True,
+    kerf: float = DEFAULT_KERF_MM,
 ) -> str:
     """Generate a complete markdown report from ResourceSummary.
 
@@ -420,6 +429,7 @@ def generate_markdown_report(
         include_cut_diagram: Whether to include cut list section
         include_anchor_details: Whether to include anchor details section
         include_pilot_holes: Whether to include pilot holes section
+        kerf: Saw kerf in mm that each cut takes from a board
 
     Returns:
         Complete markdown report as string
@@ -445,7 +455,7 @@ def generate_markdown_report(
         >>> "PT_2x4" not in report  # Should show "2x4", not enum name
         True
     """
-    plans = plan_cuts(resource_summary, standard_lengths)
+    plans = plan_cuts(resource_summary, standard_lengths, kerf=kerf)
 
     # Generate all sections
     sections = []
@@ -464,7 +474,7 @@ def generate_markdown_report(
         sections.append(_generate_pilot_holes_section(resource_summary))
 
     sections.append(_generate_shopping_list(resource_summary))
-    sections.append(_generate_purchase_recommendations(plans))
+    sections.append(_generate_purchase_recommendations(plans, kerf))
 
     if include_cut_diagram:
         sections.append(_generate_cut_list(plans))

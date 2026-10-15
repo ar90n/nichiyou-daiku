@@ -333,6 +333,26 @@ class TestGenerateMarkdownReport:
         assert "Available: 1200mm, 1500mm" in report
         assert "1 × 1200mm boards" in report
 
+    def test_should_use_the_given_saw_kerf(self):
+        # Two 1220mm pieces fill a 2440mm board only if the cut takes nothing
+        summary = ResourceSummary(
+            pieces=[_piece("a", 1220.0), _piece("b", 1220.0)],
+            total_pieces=2,
+            pieces_by_type={PieceType.PT_2x4: 2},
+            total_length_by_type={PieceType.PT_2x4: 2440.0},
+            total_volume=1.0,
+        )
+        stock = {PieceType.PT_2x4: [2440.0]}
+
+        no_kerf = generate_markdown_report(summary, standard_lengths=stock, kerf=0)
+        kerf = generate_markdown_report(summary, standard_lengths=stock, kerf=3)
+
+        assert "- 1 × 2440mm boards" in no_kerf
+        assert "- 2 × 2440mm boards" in kerf
+        purchase = kerf.split("## Purchase Recommendations", 1)[1]
+        assert purchase.lstrip().startswith("Saw kerf: 3mm per cut")
+        assert "Saw kerf: 0mm per cut" in no_kerf
+
     def test_should_exclude_cut_diagram_when_requested(self):
         """Should exclude cut diagram section when include_cut_diagram=False."""
         pieces = [

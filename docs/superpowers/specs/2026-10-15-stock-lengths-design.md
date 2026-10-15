@@ -39,7 +39,7 @@ report の購入の推奨と木取りが、使う店で実際に売っている�
   次は「何が悪く、どう直すか」を書いた例外（`StockFileError`）で止める: 読めない・TOML の誤り、知らないキー
   （`lenghts` など）、知らない材種（使える材種を並べる）、空のリスト・0 以下の長さ、負の刃厚。
 - `shell/cutting.py`: `DEFAULT_STANDARD_LENGTHS` を上の既定値に。
-- `generate_markdown_report` に `kerf` を足し、`plan_cuts` に渡す。木取りの節に使った刃厚を書く（`Saw kerf: 2mm per cut`）。
+- `generate_markdown_report` に `kerf` を足し、`plan_cuts` に渡す。購入の推奨の節の頭に使った刃厚を書く（`Saw kerf: 2mm per cut`。木取りの節は `--no-cut-diagram` で消えるが、刃厚は購入の推奨にも効くため。実装時に変更）。
 - CLI `report --stock FILE`: 誤りはメッセージを出して終了コード 1。
 - スキル: 利用者が店の売り長さを言ったら `stock.toml` に書いて `--stock` で渡す。
 - ドキュメント: DSL 仕様の report の節（`--stock` とファイルの形）、API 仕様（`load_stock`、`kerf`、新しい既定値）。
