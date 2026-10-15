@@ -1,5 +1,7 @@
 """Tests for the report command."""
 
+import pytest
+
 from nichiyou_daiku.cli.dsl_cli import cli
 
 
@@ -162,3 +164,46 @@ def test_report_quiet_suppresses_status(runner, tmp_path, simple_dsl):
 
     assert result.exit_code == 0
     assert result.output == ""
+
+
+def _stock_case(tmp_path, stock_text):
+    design = tmp_path / "boards.nd"
+    design.write_text("(a:2x4 =1220)\n(b:2x4 =1220)\na -[FL<100 DF<0]- b\n")
+    stock = tmp_path / "stock.toml"
+    stock.write_text(stock_text)
+    return design, stock
+
+
+def test_report_uses_the_stock_file(runner, tmp_path):
+    # Two 1220mm pieces fit one 2440mm board only when the cut takes nothing
+    design, stock = _stock_case(tmp_path, 'kerf = 0\n[lengths]\n"2x4" = [2440]\n')
+    result = runner.invoke(
+        cli, ["report", str(design), "--stock", str(stock), "--no-pilot-holes"]
+    )
+    assert result.exit_code == 0, result.output
+    assert "Saw kerf: 0mm per cut" in result.stdout
+    assert "- 1 × 2440mm boards" in result.stdout
+
+
+@pytest.mark.parametrize(
+    ("stock_text", "message"),
+    [
+        ('[lengths]\n"2x5" = [1820]\n', "Unknown lumber type '2x5'"),
+        ("kerf = \n", "not valid TOML"),
+    ],
+)
+def test_report_explains_a_bad_stock_file(runner, tmp_path, stock_text, message):
+    design, stock = _stock_case(tmp_path, stock_text)
+    result = runner.invoke(cli, ["report", str(design), "--stock", str(stock)])
+    assert result.exit_code == 1
+    assert message in result.output
+    assert "Traceback" not in result.output
+
+
+def test_report_explains_a_missing_stock_file(runner, tmp_path):
+    design, _ = _stock_case(tmp_path, "")
+    result = runner.invoke(
+        cli, ["report", str(design), "--stock", str(tmp_path / "missing.toml")]
+    )
+    assert result.exit_code == 1
+    assert "Cannot read the stock file" in result.output

@@ -13,6 +13,8 @@ from nichiyou_daiku.cli.utils import (
     validate_output_path,
 )
 from nichiyou_daiku.shell import extract_resources, generate_markdown_report
+from nichiyou_daiku.shell.cutting import DEFAULT_KERF_MM
+from nichiyou_daiku.shell.stock import StockFileError, load_stock
 
 
 @click.command()
@@ -39,6 +41,13 @@ from nichiyou_daiku.shell import extract_resources, generate_markdown_report
     default=True,
     help="Include pilot holes drilling guide in report",
 )
+@click.option(
+    "--stock",
+    "stock_file",
+    type=str,
+    help="TOML file with the board lengths your store sells and the saw kerf "
+    "(default: 1820, 2440, 3050 and 3650mm boards, 3mm kerf)",
+)
 @click.pass_context
 def report(
     ctx: click.Context,
@@ -48,12 +57,22 @@ def report(
     include_cut_diagram: bool,
     include_anchor_details: bool,
     include_pilot_holes: bool,
+    stock_file: Optional[str],
 ) -> None:
     """Generate a markdown report from DSL file.
 
     FILE: Path to .nd file or '-' for stdin
     """
     echo = CliEcho(ctx)
+
+    # Read the stock file first, so a mistake in it stops before any work
+    stock = None
+    if stock_file is not None:
+        try:
+            stock = load_stock(stock_file)
+        except StockFileError as e:
+            echo.error(f"Error: {e}")
+            sys.exit(1)
 
     dsl_content = read_dsl_file(file)
 
@@ -81,6 +100,8 @@ def report(
             include_cut_diagram=include_cut_diagram,
             include_anchor_details=include_anchor_details,
             include_pilot_holes=include_pilot_holes,
+            standard_lengths=stock.lengths if stock else None,
+            kerf=stock.kerf if stock else DEFAULT_KERF_MM,
         )
 
     except Exception as e:
