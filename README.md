@@ -37,7 +37,7 @@ See [`examples/nd_files/`](examples/nd_files/) for complete designs, such as a t
 - 🧩 Unknown lengths (`=?`) and sliding connections (`?` offsets) solved from the other connections
 - 📐 Exact placement from all connections at once; contradictions and overlaps are reported
 - 🔩 Dowels and screws laid out in the contact area, with preset sizes
-- 📑 Markdown reports: bill of materials, shopping list, cut list with saw kerf
+- 📑 Markdown reports: bill of materials, shopping list with hardware and drill bits, cut list for your store's board lengths and saw kerf
 - 🎯 STL/STEP export and technical drawings with build123d (optional)
 - 🪵 Standard lumber: 1x4, 1x6, 1x8, 2x2, 2x4, 2x6
 - 🐍 Typed Python API

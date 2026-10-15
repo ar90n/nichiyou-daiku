@@ -756,11 +756,12 @@ def generate_markdown_report(
     include_cut_diagram: bool = True,
     include_anchor_details: bool = True,
     include_pilot_holes: bool = True,
+    kerf: float = DEFAULT_KERF_MM,
 ) -> str:
     """Generate markdown report with cut optimization."""
 ```
 
-The shopping list covers the lumber, the hardware and the drill bits. The cut plan allows a 3mm saw kerf per cut and warns about pieces longer than any stock board. Problems with the design (`ResourceSummary.issues`: contradicting connections, unconnected pieces, fasteners that do not fit, colliding holes) are listed in a Warnings section right after the overview. The cut plan itself comes from `nichiyou_daiku.shell.cutting.plan_cuts`, which returns a `LumberPlan` per lumber type; `CutPlan`, `DEFAULT_STANDARD_LENGTHS` and `DEFAULT_KERF_MM` live in the same module.
+The shopping list covers the lumber, the hardware and the drill bits. The cut plan takes `kerf` mm per cut (3mm by default) and warns about pieces longer than any stock board; without `standard_lengths`, every lumber type comes in the 1820, 2440, 3050 and 3650mm boards of Japanese home centres. `nichiyou_daiku.shell.stock.load_stock(path)` reads a store's TOML stock file (see `report --stock` in the DSL specification) into a `Stock` whose `lengths` and `kerf` go to these two parameters; it raises `StockFileError` saying what to fix. Problems with the design (`ResourceSummary.issues`: contradicting connections, unconnected pieces, fasteners that do not fit, colliding holes) are listed in a Warnings section right after the overview. The cut plan itself comes from `nichiyou_daiku.shell.cutting.plan_cuts`, which returns a `LumberPlan` per lumber type; `CutPlan`, `DEFAULT_STANDARD_LENGTHS` and `DEFAULT_KERF_MM` live in the same module.
 
 **Example:**
 

@@ -38,7 +38,7 @@ Read the JSON instead of guessing where pieces went (the DSL specification descr
 
 ## 5. Compare with the request
 
-Check `overall_size` in the same JSON against the request (it is null while some pieces are not connected). Its x, y and z run along the width, thickness and length of `size_reference`, the first piece you declared; declare a leg first and z is the height. If it is off, find the piece that sets it in `pieces`, fix its length or offset and go back to step 4. Once the model is valid and the right size, run `nichiyou-daiku report <name>.nd --no-cut-diagram --no-anchor-details --no-pilot-holes` for the bill of materials and the shopping list.
+Check `overall_size` in the same JSON against the request (it is null while some pieces are not connected). Its x, y and z run along the width, thickness and length of `size_reference`, the first piece you declared; declare a leg first and z is the height. If it is off, find the piece that sets it in `pieces`, fix its length or offset and go back to step 4. Once the model is valid and the right size, run `nichiyou-daiku report <name>.nd --no-cut-diagram --no-anchor-details --no-pilot-holes` for the bill of materials and the shopping list. If the user tells you the board lengths their store sells (or a saw kerf), write them to `stock.toml` (the format is in the DSL specification under "Report Generation") and add `--stock stock.toml`.
 
 ## 6. Look at it
 

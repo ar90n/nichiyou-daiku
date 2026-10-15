@@ -615,9 +615,22 @@ nichiyou-daiku validate --json examples/nd_files/corner_angle_compact.nd
 ```bash
 nichiyou-daiku report furniture.nd -o report.md
 nichiyou-daiku report furniture.nd --project-name "My Table" --no-cut-diagram
+nichiyou-daiku report furniture.nd --stock stock.toml
 ```
 
-Writes Markdown (to standard output without `-o`): an overview with the overall size, the bill of materials, anchor details, pilot holes, a shopping list (the lumber, the dowels and screws by kind and size, and the drill sizes with their deepest hole), purchase recommendations and a cut list that allows a 3mm saw kerf. `--no-anchor-details`, `--no-pilot-holes` and `--no-cut-diagram` leave sections out.
+Writes Markdown (to standard output without `-o`): an overview with the overall size, the bill of materials, anchor details, pilot holes, a shopping list (the lumber, the dowels and screws by kind and size, and the drill sizes with their deepest hole), purchase recommendations and a cut list. `--no-anchor-details`, `--no-pilot-holes` and `--no-cut-diagram` leave sections out.
+
+Purchases and cuts assume the boards Japanese home centres sell, 1820, 2440, 3050 and 3650mm long (6F to 12F) for every lumber type, and a 3mm saw kerf per cut; the purchase recommendations start with the kerf they used. `--stock` names a TOML file with the lengths your store sells instead:
+
+```toml
+kerf = 2                         # saw kerf in mm (3 when left out)
+
+[lengths]                        # lengths in mm; lumber types left out keep the defaults
+"2x4" = [1820, 2440, 3050, 3650]
+"1x4" = [910, 1820]
+```
+
+A mistake in the file (an unknown lumber type or key, a length list that is empty or has a length of 0 or less, a negative kerf, a TOML syntax error) stops the command with what to fix.
 
 ### 3D View (requires build123d)
 
