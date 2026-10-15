@@ -50,18 +50,11 @@ class TestCutPlan:
 
 
 class TestDefaultStandardLengths:
-    def test_every_lumber_type_has_common_stock_lengths(self):
-        one_by = [1830.0, 2440.0, 3050.0]  # 6, 8 and 10ft
-        two_by = [2440.0, 3050.0, 3660.0]  # 8, 10 and 12ft
-        expected = {
-            "1x4": one_by,
-            "1x6": one_by,
-            "1x8": one_by,
-            "2x2": two_by,
-            "2x4": two_by,
-            "2x6": two_by,
+    def test_every_lumber_type_has_japanese_home_centre_lengths(self):
+        # 6F, 8F, 10F and 12F boards, for every lumber type
+        assert {t.value: v for t, v in DEFAULT_STANDARD_LENGTHS.items()} == {
+            t.value: [1820.0, 2440.0, 3050.0, 3650.0] for t in PieceType
         }
-        assert {t.value: v for t, v in DEFAULT_STANDARD_LENGTHS.items()} == expected
 
 
 class TestOptimizeCuts:
@@ -125,8 +118,8 @@ class TestCutPlanKerf:
 class TestPlanCuts:
     def test_uses_the_default_stock_lengths(self):
         plan = plan_cuts(_summary(_piece("a", 1000.0)))[PieceType.PT_2x4]
-        assert plan.available_lengths == [2440.0, 3050.0, 3660.0]
-        assert plan.board_counts == {2440.0: 1}
+        assert plan.available_lengths == [1820.0, 2440.0, 3050.0, 3650.0]
+        assert plan.board_counts == {1820.0: 1}
 
     def test_type_missing_from_standard_lengths_uses_2440mm(self):
         summary = _summary(_piece("a", 1000.0, PieceType.PT_1x4))

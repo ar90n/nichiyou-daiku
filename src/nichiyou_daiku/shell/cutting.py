@@ -15,14 +15,9 @@ from .resources import PieceResource, ResourceSummary
 DEFAULT_KERF_MM = 3.0
 """Material removed by each saw cut."""
 
-# 1x lumber is commonly sold in 6, 8 and 10ft boards, 2x lumber in 8, 10 and 12ft
+# Japanese home centres sell SPF lumber as 6F, 8F, 10F and 12F boards
 DEFAULT_STANDARD_LENGTHS: Dict[PieceType, List[float]] = {
-    piece_type: (
-        [1830.0, 2440.0, 3050.0]
-        if piece_type.value.startswith("1x")
-        else [2440.0, 3050.0, 3660.0]
-    )
-    for piece_type in PieceType
+    piece_type: [1820.0, 2440.0, 3050.0, 3650.0] for piece_type in PieceType
 }
 
 FALLBACK_STANDARD_LENGTHS: List[float] = [2440.0]
@@ -194,7 +189,7 @@ def plan_cuts(
         ...     total_volume=0,
         ... )
         >>> plan_cuts(summary)[PieceType.PT_2x4].board_counts
-        {2440.0: 1}
+        {1820.0: 1}
     """
     if standard_lengths is None:
         standard_lengths = DEFAULT_STANDARD_LENGTHS
