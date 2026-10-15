@@ -6,6 +6,7 @@ output, not only the Markdown report.
 
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
+from itertools import combinations
 from typing import Dict, List, Tuple
 
 from nichiyou_daiku.core.piece import PieceType
@@ -80,44 +81,28 @@ def _oversize_pieces(
     return [p for p in pieces if p.length > longest]
 
 
-def _optimize_cuts(
+_MAX_SEARCHED_LENGTHS = 8
+"""Up to this many stock lengths, every set of them is tried; above it, all of
+them together and each alone."""
+
+
+def _cost(plan: List[CutPlan]) -> tuple[float, int]:
+    """What a plan costs: the lumber bought, then the number of boards."""
+    return sum(board.board_length for board in plan), len(plan)
+
+
+def _fill_boards(
     pieces: List[PieceResource],
     available_lengths: List[float],
     kerf: float = DEFAULT_KERF_MM,
 ) -> List[CutPlan]:
-    """Optimize piece cutting to minimize waste.
+    """Fill boards one at a time, each with the board length that wastes least.
 
-    Uses a simple first-fit decreasing algorithm to minimize waste. Every cut
-    removes ``kerf`` mm, except that a piece ending exactly at the board end
-    needs no final cut. Pieces longer than every board are left out; see
-    ``_oversize_pieces``.
-
-    Args:
-        pieces: List of pieces to cut (all same lumber type)
-        available_lengths: Available standard board lengths in mm
-        kerf: Material removed by each saw cut in mm
-
-    Returns:
-        List of cut plans showing how to cut pieces from standard boards
-
-    Examples:
-        >>> from nichiyou_daiku.core.piece import PieceType
-        >>> pieces = [
-        ...     PieceResource(id="p1", type=PieceType.PT_2x4, length=1000.0,
-        ...                  width=89.0, height=38.0, volume=0),
-        ...     PieceResource(id="p2", type=PieceType.PT_2x4, length=800.0,
-        ...                  width=89.0, height=38.0, volume=0)
-        ... ]
-        >>> plans = _optimize_cuts(pieces, [2440.0], kerf=3.0)
-        >>> len(plans)
-        1
-        >>> plans[0].board_length
-        2440.0
-        >>> len(plans[0].cuts)
-        2
-        >>> plans[0].waste
-        634.0
+    First fit decreasing over ``available_lengths``. Every cut removes ``kerf``
+    mm, except that a piece ending exactly at the board end needs no final
+    cut. Pieces longer than every board are left out; see ``_oversize_pieces``.
     """
+
     oversize = {p.id for p in _oversize_pieces(pieces, available_lengths)}
     # Sort pieces by length (descending) for better optimization
     remaining_pieces = sorted(
@@ -163,6 +148,68 @@ def _optimize_cuts(
         remaining_pieces = best_remaining
 
     return cut_plans
+
+
+def _optimize_cuts(
+    pieces: List[PieceResource],
+    available_lengths: List[float],
+    kerf: float = DEFAULT_KERF_MM,
+) -> List[CutPlan]:
+    """Plan the cuts that buy the least lumber.
+
+    Filling boards greedily (``_fill_boards``) can over-use a short board and
+    leave a small piece a whole board of its own, so a board size on offer
+    could make the purchase worse. The fill runs with every set of the stock
+    lengths whose longest board fits the longest piece, and the plan buying
+    the least total length (then the fewest boards) wins. Every cut removes
+    ``kerf`` mm; pieces longer than every board are left out.
+
+    Args:
+        pieces: List of pieces to cut (all same lumber type)
+        available_lengths: Available standard board lengths in mm
+        kerf: Material removed by each saw cut in mm
+
+    Returns:
+        List of cut plans showing how to cut pieces from standard boards
+
+    Examples:
+        >>> from nichiyou_daiku.core.piece import PieceType
+        >>> pieces = [
+        ...     PieceResource(id="p1", type=PieceType.PT_2x4, length=1000.0,
+        ...                  width=89.0, height=38.0, volume=0),
+        ...     PieceResource(id="p2", type=PieceType.PT_2x4, length=800.0,
+        ...                  width=89.0, height=38.0, volume=0)
+        ... ]
+        >>> plans = _optimize_cuts(pieces, [2440.0], kerf=3.0)
+        >>> len(plans)
+        1
+        >>> plans[0].board_length
+        2440.0
+        >>> len(plans[0].cuts)
+        2
+        >>> plans[0].waste
+        634.0
+    """
+    lengths = sorted(set(available_lengths))
+    oversize = {p.id for p in _oversize_pieces(pieces, lengths)}
+    longest = max((p.length for p in pieces if p.id not in oversize), default=0.0)
+    if len(lengths) <= _MAX_SEARCHED_LENGTHS:
+        candidates = [
+            list(chosen)
+            for count in range(1, len(lengths) + 1)
+            for chosen in combinations(lengths, count)
+        ]
+    else:
+        candidates = [lengths, *([length] for length in lengths)]
+
+    best: List[CutPlan] | None = None
+    for chosen in candidates:
+        if chosen[-1] < longest:
+            continue
+        plan = _fill_boards(pieces, chosen, kerf)
+        if best is None or _cost(plan) < _cost(best):
+            best = plan
+    return best or []
 
 
 def plan_cuts(

@@ -45,6 +45,12 @@ def _lengths(path: Path, table: object) -> dict[PieceType, list[float]]:
     known = {piece_type.value: piece_type for piece_type in PieceType}
     lengths = dict(DEFAULT_STANDARD_LENGTHS)
     for name, values in table.items():
+        if name == "kerf":
+            # TOML puts every key after [lengths] into that table
+            raise StockFileError(
+                f"{path}: kerf is inside [lengths]. "
+                f"Move kerf = {values} above the [lengths] line"
+            )
         if name not in known:
             raise StockFileError(
                 f"{path}: Unknown lumber type '{name}' in [lengths]. "
@@ -75,10 +81,15 @@ def load_stock(path: str | PathLike[str]) -> Stock:
     """
     path = Path(path)
     try:
-        data = tomllib.loads(path.read_text(encoding="utf-8"))
+        # utf-8-sig also reads a file that starts with a byte order mark
+        data = tomllib.loads(path.read_text(encoding="utf-8-sig"))
     except OSError as e:
         raise StockFileError(
             f"Cannot read the stock file {path}: {e.strerror or e}"
+        ) from e
+    except UnicodeDecodeError as e:
+        raise StockFileError(
+            f"{path}: not UTF-8 text (byte {e.start}). Save the file as UTF-8"
         ) from e
     except tomllib.TOMLDecodeError as e:
         raise StockFileError(

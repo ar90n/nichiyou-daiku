@@ -60,3 +60,23 @@ def test_an_unknown_type_lists_the_known_ones(tmp_path):
 def test_a_missing_file_is_explained(tmp_path):
     with pytest.raises(StockFileError, match="Cannot read the stock file"):
         load_stock(tmp_path / "missing.toml")
+
+
+def test_a_file_that_is_not_utf8_says_so(tmp_path):
+    # A shop name in a comment, saved in Shift_JIS by a Windows editor
+    path = tmp_path / "stock.toml"
+    path.write_bytes("# コーナン\nkerf = 2\n".encode("cp932"))
+    with pytest.raises(StockFileError, match="not UTF-8"):
+        load_stock(path)
+
+
+def test_a_utf8_file_with_a_byte_order_mark_is_read(tmp_path):
+    path = tmp_path / "stock.toml"
+    path.write_bytes("﻿kerf = 2\n".encode("utf-8"))
+    assert load_stock(path).kerf == 2.0
+
+
+def test_a_kerf_written_inside_lengths_is_explained(tmp_path):
+    # A key after [lengths] belongs to that table in TOML
+    with pytest.raises(StockFileError, match=re.escape("above the [lengths] line")):
+        load_stock(_write(tmp_path, '[lengths]\n"2x4" = [1820]\nkerf = 2\n'))

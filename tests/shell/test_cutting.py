@@ -153,3 +153,27 @@ class TestPlanCuts:
 
     def test_no_pieces_means_no_plans(self):
         assert plan_cuts(_summary()) == {}
+
+
+def test_more_board_sizes_never_make_the_purchase_longer():
+    # The example table: filling each board with the least waste on its own
+    # bought three 1820mm boards and left a 524mm piece a whole extra board
+    from pathlib import Path
+
+    from nichiyou_daiku.core.assembly import Assembly
+    from nichiyou_daiku.dsl import parse_dsl
+    from nichiyou_daiku.shell.resources import extract_resources
+
+    source = (
+        Path(__file__).parents[2] / "examples" / "nd_files" / "simple_table.nd"
+    ).read_text()
+    summary = extract_resources(Assembly.of(parse_dsl(source)))
+
+    def bought(lengths: list[float]) -> float:
+        plan = plan_cuts(summary, {PieceType.PT_2x4: lengths})[PieceType.PT_2x4]
+        return sum(board.board_length for board in plan.boards)
+
+    every_size = bought([1820.0, 2440.0, 3050.0, 3650.0])
+    assert every_size <= bought([2440.0, 3050.0, 3650.0])
+    assert every_size <= bought([1820.0, 3650.0])
+    assert every_size <= bought([3650.0])
