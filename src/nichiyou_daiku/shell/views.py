@@ -5,7 +5,7 @@ projection is the one build123d's ``project_to_viewport`` uses when looking at
 the origin, so a label placed here lands on the projected lines.
 """
 
-from typing import NamedTuple, Sequence
+from typing import Collection, NamedTuple, Sequence
 
 import numpy as np
 
@@ -88,11 +88,19 @@ def _blocks(
     return far - near > _TOLERANCE_MM
 
 
-def visible_labels(assembly: Assembly, view: View) -> list[Label]:
+def visible_labels(
+    assembly: Assembly, view: View, pieces: Collection[str] | None = None
+) -> list[Label]:
     """Labels at the centers the viewer can see: no other piece lies between
-    a piece's center and the viewer. In model order."""
+    a piece's center and the viewer. In model order.
+
+    With ``pieces``, only those are labelled and only they hide each other
+    (the others are not there yet).
+    """
     boxes = {}
     for piece_id, piece in assembly.model.pieces.items():
+        if pieces is not None and piece_id not in pieces:
+            continue
         low, high = assembly.placement.poses[piece_id].bounds(piece)
         boxes[piece_id] = (
             np.array([low.x, low.y, low.z]),

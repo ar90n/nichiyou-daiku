@@ -4,7 +4,7 @@ This module provides functionality to extract and summarize the resources
 (lumber pieces) required for a woodworking project from an Assembly.
 """
 
-from typing import Dict
+from typing import Collection, Dict
 
 from pydantic import BaseModel
 
@@ -315,11 +315,19 @@ def _size(value: float) -> float:
     return round(value, 1)
 
 
-def _hardware(assembly: Assembly) -> list[HardwareItem]:
+def _hardware(
+    assembly: Assembly, connections: Collection[tuple[str, str]] | None = None
+) -> list[HardwareItem]:
     """Count the fasteners laid out, by kind and size: dowels first, then
-    slim, coarse and untyped screws, each by diameter and length."""
+    slim, coarse and untyped screws, each by diameter and length. With
+    ``connections``, only theirs."""
     counts: dict[tuple[int, int, float, float, str], int] = {}
     for fastener in assembly.fasteners:
+        if (
+            connections is not None
+            and (fastener.base_id, fastener.target_id) not in connections
+        ):
+            continue
         connection = assembly.model.connections[(fastener.base_id, fastener.target_id)]
         match connection.type:
             case DowelConnection(radius=radius, depth=length):
