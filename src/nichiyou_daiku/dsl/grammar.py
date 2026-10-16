@@ -7,7 +7,11 @@ PIECE_TYPE_NAMES = sorted(piece_type.value for piece_type in PieceType)
 GRAMMAR = r"""
 start: statement+
 
-statement: piece_def | connection_def | var_def
+statement: piece_def | connection_def | var_def | steps_def
+
+// Assembly steps: each names the pieces it adds, in the order they are built
+steps_def: "steps" "{" step_def+ "}"
+step_def: ESCAPED_STRING ":" piece_ref ("," piece_ref)*
 
 // Variables and arithmetic: a variable must be defined before it is used
 var_def: CNAME "=" sum

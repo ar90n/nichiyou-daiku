@@ -15,7 +15,7 @@ from nichiyou_daiku.core.connection import (
 )
 from nichiyou_daiku.core.geometry.face import Face
 from nichiyou_daiku.core.geometry.offset import FromMax, FromMin, Offset
-from nichiyou_daiku.core.model import Model
+from nichiyou_daiku.core.model import Model, Step
 from nichiyou_daiku.core.piece import Piece, PieceType
 from nichiyou_daiku.core.resolve import ResolutionError, resolve_model
 from nichiyou_daiku.core.screw import as_spec as as_screw_spec
@@ -50,6 +50,8 @@ class DSLTransformer(Transformer):
         # Where pieces and connections are written, for errors found once the
         # whole model is known
         self.positions: dict[str | tuple[str, str], tuple[int | None, int | None]] = {}
+        self.steps: list[Step] | None = None
+        self.steps_position: tuple[int | None, int | None] = (None, None)
 
     # =========================================================================
     # Entry points
@@ -57,10 +59,16 @@ class DSLTransformer(Transformer):
 
     def start(self, items: list[Any]) -> Model:
         """Transform the start rule into a Model with its unknowns resolved."""
-        model = Model.of(
-            pieces=list(self.pieces.values()),
-            connections=self.connections.values(),
-        )
+        try:
+            model = Model.of(
+                pieces=list(self.pieces.values()),
+                connections=self.connections.values(),
+                steps=self.steps or (),
+            )
+        except ValueError as error:
+            # Pieces and connections were checked as they were read, so what
+            # is left is the steps block
+            raise DSLSemanticError(str(error), *self.steps_position) from error
         try:
             return resolve_model(model)
         except ResolutionError as error:
@@ -130,6 +138,25 @@ class DSLTransformer(Transformer):
         self._register_piece(piece)
         self.positions[piece.id] = _position(meta)
 
+    # =========================================================================
+    # Assembly steps
+    # =========================================================================
+
+    @v_args(meta=True)
+    def steps_def(self, meta: Meta, items: list[Step]) -> None:
+        """Keep the steps; they are checked once every piece is known."""
+        if self.steps is not None:
+            raise DSLSemanticError(
+                "Only one steps block is allowed; merge them into one"
+            )
+        self.steps = items
+        self.steps_position = _position(meta)
+
+    def step_def(self, items: list[Any]) -> Step:
+        """Transform one step: its name and the pieces it adds."""
+        name, *piece_ids = items
+        return Step(name=self._unescape_string(name), pieces=tuple(piece_ids))
+
     def _length_from_props(self, props: dict[str, Any]) -> float:
         """Extract the piece length from JSON properties."""
         if "length" not in props:
@@ -144,6 +171,10 @@ class DSLTransformer(Transformer):
 
     def _register_piece(self, piece: Piece) -> None:
         """Register a piece, checking for duplicates."""
+        if piece.id == "steps":
+            raise DSLSemanticError(
+                "'steps' names the steps block and cannot name a piece; rename the piece"
+            )
         if piece.id in self.pieces:
             raise DSLSemanticError(f"Duplicate piece ID: {piece.id}")
         self.pieces[piece.id] = piece

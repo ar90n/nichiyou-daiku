@@ -11,6 +11,7 @@ The nichiyou-daiku DSL (`.nd` files) is a domain-specific language for concisely
 - [Piece Definition](#piece-definition)
 - [Connection Definition](#connection-definition)
 - [Connection Types](#connection-types)
+- [Assembly Steps](#assembly-steps)
 - [Complete Examples](#complete-examples)
 - [CLI Tools](#cli-tools)
 - [Grammar (EBNF)](#grammar-ebnf)
@@ -23,6 +24,7 @@ An `.nd` file consists of the following elements:
 2. **Variable Definitions** - Named numbers for lengths and offsets (defined before use)
 3. **Piece Definitions** - Lumber piece declarations
 4. **Connection Definitions** - Connections between pieces (a piece must be defined before a connection refers to it)
+5. **Steps** (optional) - The order to assemble the pieces in, as one `steps { }` block
 
 ```text
 // Comment
@@ -450,6 +452,31 @@ post -[FL<100 BT<0 S(3.5, 50)]- rail_low
 post -[BT<0 FT<0 S(Coarse:3.8x57)]- cleat
 ```
 
+## Assembly Steps
+
+An optional `steps` block says in which order the pieces are put together, for the instructions written by `nichiyou-daiku steps`. Each step has a name, used only as its heading, and the pieces it adds. The connections keep their meaning and can still be written in any order; only this block is about order.
+
+```nd
+// Shelf with dowel connections, assembled in two steps
+(left_side:2x4 =800)
+(right_side:2x4 =800)
+(shelf:2x4 =600)
+
+left_side -[BL<300 DL<0 D(:8x30)]- shelf
+right_side -[FL<300 TL<0 D(:8x30)]- shelf
+
+steps {
+  "Left side and shelf": left_side, shelf
+  "Right side": right_side
+}
+```
+
+- At most one `steps` block, anywhere in the file. `steps` names the block, so it cannot name a piece or a variable.
+- Every piece is in exactly one step, and every step names at least one piece, separated by commas.
+- A connection is made in the step that adds the later of its two pieces (or in the step that adds both).
+- A step whose pieces touch nothing built before builds a **sub-assembly**; a step whose pieces bring two or more built parts together **joins** them. A step may not leave its own pieces in separate parts: split it into steps or connect the parts.
+- Without a `steps` block, `nichiyou-daiku steps` adds one piece per step: the first piece declared and the first piece touching it, then the first piece (in declaration order) touching what is built, starting a new part with the next declared piece when none touches.
+
 ## Complete Examples
 
 ### Corner Joint
@@ -686,7 +713,10 @@ Draws one square PNG (default 1400px, at least 400px) for checking a design by e
 
 ```ebnf
 start           = statement+
-statement       = piece_def | connection_def | var_def
+statement       = piece_def | connection_def | var_def | steps_def
+
+steps_def       = "steps" "{" step_def+ "}"
+step_def        = ESCAPED_STRING ":" piece_ref ("," piece_ref)*
 
 var_def         = CNAME "=" expr
 expr            = term (("+" | "-") term)*
@@ -751,6 +781,8 @@ DSLSemanticError: Duplicate piece ID: leg_1
 DSLSemanticError: Duplicate connection between 'a' and 'b': only one connection per piece pair is supported
 DSLSemanticError: Undefined variable 'W' (define it before it is used)
 DSLSemanticError: Variable 'W' is already defined
+DSLSemanticError: steps leaves out shelf_4; add them to a step
+DSLSemanticError: Step 'Posts' leaves its pieces in 2 separate parts: split it into steps or connect the parts
 ```
 
 ### Validation Errors

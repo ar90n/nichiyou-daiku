@@ -93,7 +93,10 @@ def resolve_model(model: Model) -> Model:
         except ValidationError as error:
             raise ResolutionError(_messages(error), connection=key) from error
     return Model.of(
-        pieces=list(pieces.values()), connections=connections, label=model.label
+        pieces=list(pieces.values()),
+        connections=connections,
+        label=model.label,
+        steps=model.steps,
     )
 
 
