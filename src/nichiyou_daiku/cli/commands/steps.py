@@ -25,7 +25,7 @@ from nichiyou_daiku.cli.utils import (
     "--output",
     type=click.Path(path_type=Path),
     help=(
-        "Directory for steps.md and the step images "
+        "Directory for steps.md, the part drawings and the step images "
         "(default: <input>-steps, required for stdin)."
     ),
 )
@@ -34,7 +34,7 @@ from nichiyou_daiku.cli.utils import (
     type=click.IntRange(min=400),
     default=1600,
     show_default=True,
-    help="Width of each step image in pixels.",
+    help="Width of each image in pixels.",
 )
 @click.option(
     "--fillet-radius",
@@ -50,13 +50,16 @@ def steps(
     size: int,
     fillet_radius: float,
 ) -> None:
-    """Write assembly instructions: steps.md and one image per step.
+    """Write assembly instructions: steps.md, a drawing of each drilled
+    part and one image per step.
 
     INPUT_FILE: Path to .nd file or '-' for stdin
 
-    The steps come from the file's steps block; without one, each step adds
-    one piece. Each image shows what is built so far in grey and the step's
-    pieces in black, beside a view dimensioning where they go.
+    The parts come first: what to cut, and where to drill each face, from
+    the reference end marked with a triangle. The steps come from the
+    file's steps block; without one, each step adds one piece. Each step
+    image shows what is built so far in grey and the step's pieces in
+    black, beside a view dimensioning where they go.
 
     \b
     Examples:
@@ -91,8 +94,15 @@ def steps(
         echo.info(result.hint)
     for message in result.crowded:
         echo.info(click.style(f"Warning: {message}", fg="yellow"))
-    images = len(result.files) - 1
+    images = len(result.files) - 1 - result.drawings
+    written = ["steps.md"]
+    if result.drawings:
+        written.append(_count(result.drawings, "part drawing"))
+    written.append(_count(images, "step image"))
     echo.info(
-        f"Successfully wrote steps.md and {images} step "
-        f"image{'' if images == 1 else 's'} to {directory}"
+        f"Successfully wrote {', '.join(written[:-1])} and {written[-1]} to {directory}"
     )
+
+
+def _count(n: int, thing: str) -> str:
+    return f"{n} {thing}{'' if n == 1 else 's'}"

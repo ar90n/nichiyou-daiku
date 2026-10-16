@@ -10,6 +10,8 @@ from nichiyou_daiku.cli.dsl_cli import cli  # noqa: E402
 
 CORNER = "(a:2x4 =400)\n(b:2x4 =400)\na -[TF<0 BD<0]- b\n"
 CORNER_STEPS = CORNER + 'steps {\n  "Corner": a, b\n}\n'
+# The corner joined with dowels: both pieces drilled, each its own part
+DOWELLED = CORNER.replace("BD<0]", "BD<0 D(:8x30)]")
 # A third piece across the far end of b: two steps without a steps block
 THREE = CORNER + "(c:2x4 =400)\nb -[TF<0 BD<0]- c\n"
 
@@ -35,6 +37,25 @@ def test_steps_writes_the_page_and_images_next_to_the_input(runner, corner):
     assert _png_width((directory / "step-01.png").read_bytes()) == 1600
     assert "Successfully wrote steps.md and 1 step image to" in result.stderr
     assert result.stdout == ""
+
+
+def test_steps_draws_the_drilled_parts(runner, tmp_path):
+    path = tmp_path / "corner.nd"
+    path.write_text(DOWELLED)
+    result = runner.invoke(cli, ["steps", str(path)])
+    assert result.exit_code == 0, result.output
+    directory = tmp_path / "corner-steps"
+    assert sorted(p.name for p in directory.iterdir()) == [
+        "part-01.png",
+        "part-02.png",
+        "step-01.png",
+        "steps.md",
+    ]
+    assert _png_width((directory / "part-01.png").read_bytes()) == 1600
+    assert (
+        "Successfully wrote steps.md, 2 part drawings and 1 step image to"
+        in result.stderr
+    )
 
 
 def test_steps_takes_a_directory_and_an_image_width(runner, corner, tmp_path):

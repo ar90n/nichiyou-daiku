@@ -14,6 +14,7 @@ from nichiyou_daiku.shell.build123d_export import assembly_to_build123d  # noqa:
 from nichiyou_daiku.shell.drawing import _arrow_points  # noqa: E402
 from nichiyou_daiku.shell.instructions import (  # noqa: E402
     image_name,
+    part_image_name,
     step_image,
     steps_markdown,
     write_instructions,
@@ -23,6 +24,8 @@ SHELF = (
     Path(__file__).parents[2] / "skills" / "design" / "examples" / "two-tier-shelf.nd"
 ).read_text()
 CORNER = "(a:2x4 =400)\n(b:2x4 =400)\na -[TF<0 BD<0]- b\n"
+# The corner joined with dowels: both pieces drilled, each its own part
+DOWELLED = "(a:2x4 =400)\n(b:2x4 =400)\na -[TF<0 BD<0 D(:8x30)]- b\n"
 # A third piece across the far end of b: two steps without a steps block
 THREE = CORNER + "(c:2x4 =400)\nb -[TF<0 BD<0]- c\n"
 # 39 slats 12.5mm apart up a 2m post, all in one step
@@ -180,6 +183,29 @@ def test_steps_page_lists_each_step_with_its_pieces_and_fasteners(shelf):
     assert "No steps block" not in page
 
 
+def test_steps_page_lists_the_parts_before_the_steps(shelf):
+    assembly, plan, _ = shelf
+    page = steps_markdown(assembly, plan, "two-tier-shelf")
+    parts = page.split("## Step 1", 1)[0]
+    assert "## Parts\n" in parts
+    assert "| Pieces | Lumber | Length (mm) | Count | Drawing |" in parts
+    assert "| leg_1 | 2x4 | 781 | 1 | [part-01.png](part-01.png) |" in parts
+    assert (
+        "| shelf_1, shelf_2, shelf_3, shelf_4 | 2x4 | 300 | 4 "
+        "| [part-10.png](part-10.png) |"
+    ) in parts
+    assert (
+        "### shelf_1, shelf_2, shelf_3, shelf_4 ×4\n\n![Part 10](part-10.png)" in parts
+    )
+
+
+def test_parts_without_holes_are_listed_without_a_drawing():
+    assembly = Assembly.of(parse_dsl(CORNER))
+    page = steps_markdown(assembly, plan_steps(assembly), "corner")
+    assert "| a, b | 2x4 | 400 | 2 |  |" in page
+    assert "part-" not in page
+
+
 def test_steps_page_without_steps_says_how_to_group_them():
     assembly = Assembly.of(parse_dsl(THREE))
     page = steps_markdown(assembly, plan_steps(assembly), "three")
@@ -206,6 +232,31 @@ def test_write_instructions_writes_the_page_and_one_image_per_step(tmp_path):
     assert result.crowded == []
 
 
+def test_write_instructions_draws_each_drilled_part(tmp_path):
+    assembly = Assembly.of(parse_dsl(DOWELLED))
+    part = assembly_to_build123d(assembly, fillet_radius=0)
+    result = write_instructions(assembly, part, tmp_path, "corner", size=400)
+    assert [path.name for path in result.files] == [
+        "steps.md",
+        "part-01.png",
+        "part-02.png",
+        "step-01.png",
+    ]
+    assert result.drawings == 2
+    assert (tmp_path / "part-01.png").read_bytes().startswith(b"\x89PNG")
+
+
+def test_rewriting_removes_drawings_of_parts_that_are_gone(tmp_path):
+    for source in (DOWELLED, CORNER):
+        assembly = Assembly.of(parse_dsl(source))
+        part = assembly_to_build123d(assembly, fillet_radius=0)
+        write_instructions(assembly, part, tmp_path, "design", size=400)
+    assert sorted(path.name for path in tmp_path.iterdir()) == [
+        "step-01.png",
+        "steps.md",
+    ]
+
+
 def test_unconnected_pieces_get_a_step_each(tmp_path):
     # Two loose posts: each step draws its own part
     assembly = Assembly.of(parse_dsl("(a:2x4 =400)\n(b:2x4 =400)\n"))
@@ -223,6 +274,7 @@ def test_image_names_are_wide_enough_for_every_step(shelf):
     _, plan, _ = shelf
     assert image_name(plan.steps[2], 5) == "step-03.png"
     assert image_name(plan.steps[2], 120) == "step-003.png"
+    assert part_image_name(3, 120) == "part-003.png"
 
 
 def test_crowded_values_say_to_split_the_step():

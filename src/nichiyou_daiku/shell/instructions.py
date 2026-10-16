@@ -37,6 +37,7 @@ from OCP.TopExp import TopExp_Explorer  # pyright: ignore[reportAttributeAccessI
 from OCP.TopoDS import TopoDS_Shape  # pyright: ignore[reportAttributeAccessIssue]
 
 from nichiyou_daiku.core.assembly import Assembly
+from nichiyou_daiku.core.assembly.parts import PartGroup, part_groups
 from nichiyou_daiku.core.assembly.steps import PlannedStep, StepPlan, plan_steps
 from nichiyou_daiku.shell.diagnostics import format_mm
 from nichiyou_daiku.shell.dimensioning import Axis, chain_for
@@ -49,6 +50,7 @@ from nichiyou_daiku.shell.drawing import (
     _text_size,
     _View,
 )
+from nichiyou_daiku.shell.parts import part_sheet
 from nichiyou_daiku.shell.resources import _hardware
 from nichiyou_daiku.shell.views import VIEWS, View, axis_view, label_at, project
 
@@ -63,7 +65,7 @@ ISO_FILL = 0.9
 _ISOMETRIC = next(view for view in VIEWS if view.caption == "from +x +y +z")
 _KIND_MARKS = {"sub-assembly": " (sub-assembly)", "join": " (join)"}
 _SPLIT_ADVICE = "Split the step into steps that add fewer pieces"
-_IMAGE = re.compile(r"step-\d+\.png")
+_IMAGE = re.compile(r"(step|part)-\d+\.png")
 
 Rect = tuple[float, float, float, float]
 
@@ -330,6 +332,49 @@ def image_name(step: PlannedStep, count: int) -> str:
     return f"step-{step.number:0{max(2, len(str(count)))}d}.png"
 
 
+def part_image_name(number: int, count: int) -> str:
+    """part-01.png, ...; wide enough for every drawn part."""
+    return f"part-{number:0{max(2, len(str(count)))}d}.png"
+
+
+def _drawn(groups: list[PartGroup]) -> list[PartGroup]:
+    # A part without holes is only cut to length: the table is enough
+    return [group for group in groups if group.holes]
+
+
+def _parts(assembly: Assembly) -> list[str]:
+    """Every part's lumber, length and count, then the drawings of the
+    drilled ones."""
+    groups = part_groups(assembly)
+    drawn = _drawn(groups)
+    images = {
+        group.pieces: part_image_name(number, len(drawn))
+        for number, group in enumerate(drawn, 1)
+    }
+    lines = [
+        "## Parts",
+        "",
+        "| Pieces | Lumber | Length (mm) | Count | Drawing |",
+        "|--------|--------|-------------|-------|---------|",
+    ]
+    for group in groups:
+        image = images.get(group.pieces)
+        lumber = assembly.model.pieces[group.pieces[0]].type.value
+        lines.append(
+            f"| {', '.join(group.pieces)} | {lumber} | {format_mm(group.size[2])} "
+            f"| {len(group.pieces)} | {f'[{image}]({image})' if image else ''} |"
+        )
+    lines.append("")
+    for number, group in enumerate(drawn, 1):
+        lines += [
+            f"### {group.name}",
+            "",
+            f"![Part {number}]({images[group.pieces]})",
+            "",
+        ]
+    return lines
+
+
 def grouping_hint(plan: StepPlan) -> str | None:
     """How to group the steps, with the design's own first pieces; None when
     a steps block is declared or there is one step only, nothing to group."""
@@ -343,12 +388,13 @@ def grouping_hint(plan: StepPlan) -> str | None:
 
 
 def steps_markdown(assembly: Assembly, plan: StepPlan, title: str) -> str:
-    """The instructions page: per step, its heading, image, pieces and
-    fasteners. No prose: the images and numbers tell how."""
+    """The instructions page: the parts to make, then per step its heading,
+    image, pieces and fasteners. No prose: the images and numbers tell how."""
     lines = [f"# {title}: assembly steps", ""]
     hint = grouping_hint(plan)
     if hint:
         lines += [hint, ""]
+    lines += _parts(assembly)
     for step in plan.steps:
         lines += [
             f"## {_heading(step)}",
@@ -375,6 +421,8 @@ class Instructions:
     """The written files and what the user should hear about them."""
 
     files: list[Path]
+    drawings: int
+    """How many of ``files`` are part drawings."""
     declared: bool
     crowded: list[str]
     hint: str | None
@@ -384,12 +432,19 @@ class Instructions:
 def write_instructions(
     assembly: Assembly, part: Compound, directory: Path, title: str, size: int = 1600
 ) -> Instructions:
-    """Write ``steps.md`` and one PNG per step (``size`` px wide) into
-    ``directory``, creating it if needed. Step images left there by an
-    earlier run with more steps are removed."""
+    """Write ``steps.md``, one PNG per drilled part and one per step
+    (``size`` px wide) into ``directory``, creating it if needed. Images
+    left there by an earlier run with more parts or steps are removed."""
     plan = plan_steps(assembly)
+    drawn = _drawn(part_groups(assembly))
     directory.mkdir(parents=True, exist_ok=True)
     files, crowded = [], []
+    for number, group in enumerate(drawn, 1):
+        sheet = part_sheet(assembly, group)
+        path = directory / part_image_name(number, len(drawn))
+        path.write_bytes(sheet.png(size))
+        files.append(path)
+        crowded += sheet.dimensions.crowded
     for step in plan.steps:
         image = step_image(assembly, part, step)
         path = directory / image_name(step, len(plan.steps))
@@ -398,8 +453,10 @@ def write_instructions(
         crowded += image.dimensions.crowded
     page = directory / "steps.md"
     page.write_text(steps_markdown(assembly, plan, title))
-    # An old image would pass for a step of this design
+    # An old image would pass for a part or a step of this design
     for old in directory.iterdir():
         if _IMAGE.fullmatch(old.name) and old not in files:
             old.unlink()
-    return Instructions([page, *files], plan.declared, crowded, grouping_hint(plan))
+    return Instructions(
+        [page, *files], len(drawn), plan.declared, crowded, grouping_hint(plan)
+    )

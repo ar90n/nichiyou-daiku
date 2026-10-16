@@ -47,7 +47,7 @@ Run `nichiyou-daiku render <name>.nd -o <name>.png` and read the PNG. It shows t
 ## 7. Output files on request
 
 - Drawing: `nichiyou-daiku drawing <name>.nd -o <name>.pdf`
-- Assembly instructions: `nichiyou-daiku steps <name>.nd` (a `<name>-steps` directory with `steps.md` and one image per step); read a few of the images to check the order and the dimensions
+- Assembly instructions: `nichiyou-daiku steps <name>.nd` (a `<name>-steps` directory with `steps.md`, a drawing of each drilled part and one image per step); read a few of the images to check the order, the holes and the dimensions
 - 3D model: `nichiyou-daiku export <name>.nd -f step` (or `-f stl`)
 
 ## 8. Report

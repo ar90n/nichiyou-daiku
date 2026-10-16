@@ -829,10 +829,28 @@ Pass the `assembly` that `part` was built from to dimension the drawing (overall
 
 `nichiyou_daiku.core.assembly.steps.plan_steps(assembly)` plans the steps without build123d: a `StepPlan` whose `declared` says whether the model has a `steps` block and whose `steps` are `PlannedStep`s with the `pieces` each adds, the `connections` it makes, its `kind` (`first`, `attach`, `sub-assembly` or `join`), the pieces `shown` in its image and the `view` (world axis and side) its dimension view looks from.
 
+`nichiyou_daiku.core.assembly.parts.part_groups(assembly)` groups the pieces made the same way (see `steps` in the [DSL Specification](./dsl-specification.md)), in declaration order. A `PartGroup` has its `pieces`, `size` (width, thickness, length), `holes` and `name`; a `LocalHole` has the `face` it is drilled into, its centre `point` in the piece's own axes (x across the width, y across the thickness, z along the length from the down end), `diameter` and `depth` (None when drilled through).
+
+```python
+>>> from nichiyou_daiku.core.assembly.parts import part_groups
+>>> posts = Assembly.of(parse_dsl("""
+... (side_l:2x4 =800)
+... (side_r:2x4 =800)
+... (shelf:2x4 =600)
+... shelf -[DL<0 BL<100 S(Slim:3.8x65)]- side_l
+... shelf -[TL<0 FL<100 S(Slim:3.8x65)]- side_r
+... """))
+>>> [group.name for group in part_groups(posts)]
+['side_l, side_r ×2', 'shelf']
+>>> part_groups(posts)[0].holes[0]
+LocalHole(face='back', point=(22.25, 0.0, 119.0), diameter=2.5, depth=None)
+```
+
 Requires `build123d` package to draw them.
 
 ```python
 from nichiyou_daiku.shell.instructions import write_instructions
+from nichiyou_daiku.shell.parts import part_sheet
 
 def write_instructions(
     assembly: Assembly,
@@ -841,10 +859,14 @@ def write_instructions(
     title: str,
     size: int = 1600,
 ) -> Instructions:
-    """Write steps.md and one PNG per step (size px wide) into directory."""
+    """Write steps.md, one PNG per drilled part and one per step (size px
+    wide) into directory."""
+
+def part_sheet(assembly: Assembly, group: PartGroup) -> PartSheet:
+    """The drawing of one part: its svg, and png(size) for a PNG."""
 ```
 
-`part` is the `assembly_to_build123d` result for `assembly`. The returned `Instructions` has the written `files` (`steps.md` first), `declared` as above, and `crowded`: a message for each step whose dimension values do not fit. See `steps` in the [DSL Specification](./dsl-specification.md).
+`part` is the `assembly_to_build123d` result for `assembly`. The returned `Instructions` has the written `files` (`steps.md` first, then the part drawings and the step images), `drawings`: how many of them are part drawings, `declared` as above, and `crowded`: a message for each part or step whose dimension values do not fit. See `steps` in the [DSL Specification](./dsl-specification.md).
 
 ## Complete Examples
 
