@@ -54,6 +54,14 @@ def test_steps_without_a_steps_block_says_how_to_group(runner, tmp_path):
     assert "Warning" not in result.stderr
 
 
+def test_steps_hint_names_the_designs_own_pieces(runner, tmp_path):
+    path = tmp_path / "three.nd"
+    path.write_text(THREE)
+    result = runner.invoke(cli, ["steps", str(path)])
+    assert result.exit_code == 0, result.output
+    assert 'steps { "Frame": a, b, ... }' in result.stderr
+
+
 def test_a_single_step_gets_no_hint(runner, tmp_path):
     path = tmp_path / "corner.nd"
     path.write_text(CORNER)

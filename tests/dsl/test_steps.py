@@ -61,6 +61,11 @@ def test_steps_cannot_name_a_piece():
         parse_dsl("(steps:2x4 =400)\n")
 
 
+def test_steps_cannot_name_a_variable():
+    with pytest.raises(DSLSyntaxError, match="'steps' starts the steps block"):
+        parse_dsl("steps = 3\n(a:2x4 =400)\n")
+
+
 def test_steps_survive_solving_unknowns():
     source = (ROOT / "examples" / "nd_files" / "simple_table_unknowns.nd").read_text()
     pieces = [

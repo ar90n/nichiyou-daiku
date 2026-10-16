@@ -87,14 +87,11 @@ def steps(
         echo.exception(f"Error writing the steps: {e}")
         sys.exit(1)
 
-    images = len(result.files) - 1
-    if not result.declared and images > 1:
-        echo.info(
-            "No steps block: each step adds one piece. Group the pieces with a "
-            'steps block, e.g. steps { "Frame": leg_1, apron_1 }'
-        )
+    if result.hint:
+        echo.info(result.hint)
     for message in result.crowded:
         echo.info(click.style(f"Warning: {message}", fg="yellow"))
+    images = len(result.files) - 1
     echo.info(
         f"Successfully wrote steps.md and {images} step "
         f"image{'' if images == 1 else 's'} to {directory}"

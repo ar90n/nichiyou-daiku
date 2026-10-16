@@ -118,3 +118,39 @@ def visible_labels(
         if not hidden:
             labels.append(Label(piece_id, *project(view, center)))
     return labels
+
+
+# Where along its longest side a piece is labelled when its centre is hidden
+_FALLBACK_FRACTIONS = (0.25, 0.75, 0.125, 0.875)
+
+
+def label_at(
+    assembly: Assembly, view: View, piece_id: str, pieces: Collection[str]
+) -> Label | None:
+    """A label for ``piece_id`` at its centre or, when another of ``pieces``
+    hides the centre, at the first point along its longest side that shows;
+    None when none does."""
+    boxes = {}
+    for other in pieces:
+        low, high = assembly.placement.poses[other].bounds(assembly.model.pieces[other])
+        boxes[other] = (
+            np.array([low.x, low.y, low.z]),
+            np.array([high.x, high.y, high.z]),
+        )
+    low, high = boxes[piece_id]
+    centre = (low + high) / 2
+    longest = int(np.argmax(high - low))
+    points = [centre]
+    for fraction in _FALLBACK_FRACTIONS:
+        point = centre.copy()
+        point[longest] = low[longest] + fraction * (high[longest] - low[longest])
+        points.append(point)
+    toward_viewer = _unit(view.origin)
+    for point in points:
+        if not any(
+            _blocks(point, toward_viewer, *box)
+            for other, box in boxes.items()
+            if other != piece_id
+        ):
+            return Label(piece_id, *project(view, point))
+    return None

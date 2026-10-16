@@ -98,6 +98,27 @@ def test_hidden_lines_are_drawn_for_this_steps_pieces_only(shelf):
     assert 'id="NewHidden"' in join.svg
 
 
+def test_every_new_piece_is_named_in_every_step(shelf):
+    # A piece whose centre is hidden is named where some of it shows
+    _, _, images = shelf
+    for image in images:
+        assert set(image.labels) == set(image.step.pieces), image.step.name
+
+
+def test_rewriting_removes_images_of_steps_that_are_gone(tmp_path):
+    for source in (THREE, CORNER):
+        assembly = Assembly.of(parse_dsl(source))
+        part = assembly_to_build123d(assembly, fillet_radius=0)
+        write_instructions(assembly, part, tmp_path, "design", size=400)
+    (tmp_path / "notes.txt").write_text("mine")
+    write_instructions(assembly, part, tmp_path, "design", size=400)
+    assert sorted(path.name for path in tmp_path.iterdir()) == [
+        "notes.txt",
+        "step-01.png",
+        "steps.md",
+    ]
+
+
 def test_labels_name_this_steps_pieces_without_overlapping(shelf):
     _, plan, images = shelf
     top = images[4]

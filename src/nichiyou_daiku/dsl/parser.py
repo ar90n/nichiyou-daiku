@@ -133,6 +133,12 @@ def _describe_syntax_error(error: UnexpectedInput, parser: Lark) -> str:
         message += (
             ". '?' (unknown) works in compact notation only, e.g. (x:2x4 =?) or RB? BD?"
         )
+    previous = getattr(getattr(state, "parser_state", None), "value_stack", None)
+    if previous and getattr(previous[-1], "type", None) == "STEPS":
+        message += (
+            ". 'steps' starts the steps block, so it cannot name a piece or a "
+            'variable: rename it, or write a block such as steps { "Frame": a, b }'
+        )
     if (
         isinstance(error, UnexpectedToken)
         and error.token.value in _ARITHMETIC

@@ -6,6 +6,7 @@ Needs build123d, so ``nichiyou_daiku.shell`` does not import this module.
 """
 
 import io
+import re
 import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -49,7 +50,7 @@ from nichiyou_daiku.shell.drawing import (
     _View,
 )
 from nichiyou_daiku.shell.resources import _hardware
-from nichiyou_daiku.shell.views import VIEWS, View, axis_view, project, visible_labels
+from nichiyou_daiku.shell.views import VIEWS, View, axis_view, label_at, project
 
 # Page mm of a step image: an isometric half and a dimensioned half. Small
 # enough that 2.5mm figures stay readable at the default 1600px.
@@ -62,6 +63,7 @@ ISO_FILL = 0.9
 _ISOMETRIC = next(view for view in VIEWS if view.caption == "from +x +y +z")
 _KIND_MARKS = {"sub-assembly": " (sub-assembly)", "join": " (join)"}
 _SPLIT_ADVICE = "Split the step into steps that add fewer pieces"
+_IMAGE = re.compile(r"step-\d+\.png")
 
 Rect = tuple[float, float, float, float]
 
@@ -234,8 +236,9 @@ def step_image(assembly: Assembly, part: Compound, step: PlannedStep) -> StepIma
     factor, offset = _fit(_bounds(iso_lines), iso_area, ISO_FILL)
     iso = _placed(iso_lines, factor, offset)
     labels: dict[str, Rect] = {}
-    for label in visible_labels(assembly, _ISOMETRIC, step.shown):
-        if label.piece_id not in step.pieces:
+    for piece_id in step.pieces:
+        label = label_at(assembly, _ISOMETRIC, piece_id, step.shown)
+        if label is None:
             continue
         x, y = offset[0] + label.x * factor, offset[1] + label.y * factor
         width, height = _text_size(label.piece_id, 0.0)
@@ -327,18 +330,25 @@ def image_name(step: PlannedStep, count: int) -> str:
     return f"step-{step.number:0{max(2, len(str(count)))}d}.png"
 
 
+def grouping_hint(plan: StepPlan) -> str | None:
+    """How to group the steps, with the design's own first pieces; None when
+    a steps block is declared or there is one step only, nothing to group."""
+    if plan.declared or len(plan.steps) < 2:
+        return None
+    first = ", ".join(plan.steps[0].pieces)
+    return (
+        "No steps block: each step adds one piece. Group pieces with a steps "
+        f'block, e.g. `steps {{ "Frame": {first}, ... }}`.'
+    )
+
+
 def steps_markdown(assembly: Assembly, plan: StepPlan, title: str) -> str:
     """The instructions page: per step, its heading, image, pieces and
     fasteners. No prose: the images and numbers tell how."""
     lines = [f"# {title}: assembly steps", ""]
-    # One step needs no grouping
-    if not plan.declared and len(plan.steps) > 1:
-        first = ", ".join(plan.steps[0].pieces)
-        lines += [
-            "No steps block: each step adds one piece. Group pieces with a steps "
-            f'block, e.g. `steps {{ "Frame": {first}, ... }}`.',
-            "",
-        ]
+    hint = grouping_hint(plan)
+    if hint:
+        lines += [hint, ""]
     for step in plan.steps:
         lines += [
             f"## {_heading(step)}",
@@ -367,13 +377,16 @@ class Instructions:
     files: list[Path]
     declared: bool
     crowded: list[str]
+    hint: str | None
+    """How to group the steps (see ``grouping_hint``)."""
 
 
 def write_instructions(
     assembly: Assembly, part: Compound, directory: Path, title: str, size: int = 1600
 ) -> Instructions:
     """Write ``steps.md`` and one PNG per step (``size`` px wide) into
-    ``directory``, creating it if needed."""
+    ``directory``, creating it if needed. Step images left there by an
+    earlier run with more steps are removed."""
     plan = plan_steps(assembly)
     directory.mkdir(parents=True, exist_ok=True)
     files, crowded = [], []
@@ -385,4 +398,8 @@ def write_instructions(
         crowded += image.dimensions.crowded
     page = directory / "steps.md"
     page.write_text(steps_markdown(assembly, plan, title))
-    return Instructions([page, *files], plan.declared, crowded)
+    # An old image would pass for a step of this design
+    for old in directory.iterdir():
+        if _IMAGE.fullmatch(old.name) and old not in files:
+            old.unlink()
+    return Instructions([page, *files], plan.declared, crowded, grouping_hint(plan))
