@@ -18,6 +18,7 @@ from nichiyou_daiku.shell.dimensioning import CrowdedDimensionsWarning  # noqa: 
 from nichiyou_daiku.shell.drawing import (  # noqa: E402
     FIRST,
     PAD,
+    TEXT_SIZE,
     _arrow_points,
     _compose,
     _crowded_advice,
@@ -289,6 +290,18 @@ def test_dimensions_stay_inside_the_frame_and_off_the_title_block(sheets, path):
 @pytest.mark.parametrize("path", EXAMPLES, ids=lambda p: p.name)
 def test_example_values_all_fit(sheets, path):
     assert sheets[path.name].dimensions.crowded == []
+
+
+def test_figures_are_as_tall_as_jis_asks(shelf):
+    # JIS sizes lettering by the height of its capitals and figures, while a
+    # font size is the taller em
+    heights = [
+        label.box[3] - label.box[1]
+        if label.side == "below"
+        else label.box[2] - label.box[0]
+        for label in shelf.dimensions.labels
+    ]
+    assert max(heights) == pytest.approx(TEXT_SIZE, abs=0.01)
 
 
 def test_vertical_values_sit_left_of_their_dimension_line(shelf):

@@ -44,7 +44,7 @@ from nichiyou_daiku.shell.views import VIEWS, project
 PAGE_SIZES = ("A4", "A3", "A2", "A1")
 
 # Page mm. Figures, arrows and extension lines follow JIS Z 8317-1.
-TEXT_SIZE = 2.5
+TEXT_SIZE = 2.5  # height of the figures, which JIS sizes lettering by
 ARROW = 2.0
 GAP = 1.0  # outline to the start of an extension line
 OVER = 2.0  # extension line beyond its dimension line
@@ -115,9 +115,17 @@ def _frame(page_size: str) -> tuple[Rect, Rect]:
     return frame, title_block
 
 
+@lru_cache(maxsize=1)
+def _font_size() -> float:
+    """Font size whose figures are TEXT_SIZE high; a font size is the em,
+    which is taller than the figures."""
+    figures = Text("0123456789", font_size=TEXT_SIZE).bounding_box().size.Y
+    return TEXT_SIZE * TEXT_SIZE / figures
+
+
 def _text(content: str, rotation: float) -> Shape:
     return Rot(0, 0, rotation) * Text(
-        content, font_size=TEXT_SIZE, align=(Align.CENTER, Align.CENTER)
+        content, font_size=_font_size(), align=(Align.CENTER, Align.CENTER)
     )
 
 
