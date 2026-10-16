@@ -109,13 +109,15 @@ steps {
 
 - 見出しの印は `(sub-assembly)` と `(join)` だけ。留め具の名前と数え方は report の買い物リストと同じ。下穴の位置は繰り返さない。
 - 見出しのファイル名: `# <入力ファイル名の stem>: assembly steps`（drawing の表題と同じ）。
-- steps がないときは、冒頭に 1 行「No steps block: each step adds one piece. Group pieces with a steps block, e.g. ...」を
-  書き、CLI も同じ案内を出す（警告ではなく案内）。
+- steps がなく手順が 2 つ以上のときは、冒頭に 1 行「No steps block: each step adds one piece. Group pieces with a steps
+  block, e.g. ...」を書き、CLI も同じ案内を出す（警告ではなく案内）。手順が 1 つ（部材 1〜2 本の小物）なら、まとめようが
+  ないので案内しない（ユーザー:「小物はなくても問題ない」）。
 
 ### 4. 手順の画像（1 手順 1 枚。左に立体図、右に寸法図）
 
 - **立体図**: +x +y +z から、描くまとまりを描く。前の手順までの部材は灰色の細線、今回の部材は黒の太線、今回の部材には
-  部材名を添える（render と同じく、見える中心に重ならないように。隠れの判定は描くまとまりの部材だけで行う）。前の部材の
+  部材名を添える（render と同じく、見える中心に重ならないように。隠れの判定は描くまとまりの部材だけで行う。線の上でも
+  読めるよう、部材名の後ろは白で塗る）。前の部材の
   見えない線は描かない。今回の部材の見えない線は黒の破線で描く（ほかの部材に隠れていても、どこに付くか分かる）。
 - **部材ごとの隠れ線処理**（試作で確かめた）: 描くまとまりの部材を 1 本ずつ OCCT の `HLRBRep_Algo` に足して一度に
   隠れ線を処理し、`HLRBRep_HLRToShape.VCompound(部材)` などで部材ごとに見える線・見えない線を取り出す。部材同士の
@@ -144,7 +146,8 @@ steps {
 - `shell/drawing.py`: 1 つの直列寸法を、置いた図の横に描く関数（今の `_dimension`）を、手順の図からも使える形にする。
   寸法の帯の深さ（`_levels`）と文字の測り方も共通に使う。
 - 新規 `shell/instructions.py`（build123d 必須）: 部材ごとの隠れ線処理、手順の画像、`steps.md`。
-- CLI `nichiyou-daiku steps FILE [-o DIR] [--size N]`（viz の extra が要る）。
+- CLI `nichiyou-daiku steps FILE [-o DIR] [--size N] [--fillet-radius R]`（viz の extra が要る。プラグインの
+  `bin/nichiyou-daiku` も steps を viz の環境で動かす）。画像は 280×140mm の紙を既定 1600px 幅で PNG にする。
 - ドキュメント: DSL 仕様（steps ブロック・steps コマンド）、API 仕様、設計スキル（部材が多い家具は steps を書く）、
   例のファイル（2 段の棚・サイドテーブル・簡単なテーブル）に steps を足す。`tests/test_docs.py` は CLI のコマンドがすべて
   DSL 仕様に載っていることと、ドキュメントの `nd` の例と例のファイルがすべて解けて組めることを確かめるので、steps の例は
