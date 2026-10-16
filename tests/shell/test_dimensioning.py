@@ -6,7 +6,15 @@ import pytest
 
 from nichiyou_daiku.core.assembly import Assembly
 from nichiyou_daiku.dsl import parse_dsl
-from nichiyou_daiku.shell.dimensioning import Chain, _stops, chain_for, chains, spread
+from nichiyou_daiku.shell.dimensioning import (
+    Chain,
+    Segment,
+    _stops,
+    chain_for,
+    chain_from_stops,
+    chains,
+    spread,
+)
 
 SHELF = (
     Path(__file__).parents[2] / "skills" / "design" / "examples" / "two-tier-shelf.nd"
@@ -129,3 +137,18 @@ def test_a_chain_can_cover_some_pieces_only():
     assert [segment.text for segment in chain.segments] == ["38", "224", "38"]
     assert chain.overall.text == "300"
     assert chain.view == "from +x"
+
+
+def test_a_chain_through_hole_centres_stops_at_each_once():
+    # Two holes side by side across the face share one stop along it
+    chain = chain_from_stops("from -y", "x", "below", [781.0, 172.25, 0.0, 172.25])
+    assert chain.stops == (0.0, 172.25, 781.0)
+    assert chain.segments == (
+        Segment(0.0, 172.25, lumber=False),
+        Segment(172.25, 781.0, lumber=False),
+    )
+    assert chain.overall.text == "781"
+
+
+def test_a_chain_without_stops_between_its_ends_has_only_the_overall_size():
+    assert chain_from_stops("from -y", "z", "left", [0.0, 89.0]).segments == ()

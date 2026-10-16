@@ -124,6 +124,21 @@ def chain_for(
     return Chain(view, axis, side, stops, segments)
 
 
+def chain_from_stops(
+    view: str, axis: Axis, side: Side, stops: Iterable[float]
+) -> Chain:
+    """Chain dimensions through given stops, such as hole centres, between
+    the lowest and the highest; none of its stretches is a lumber size."""
+    ordered = sorted(stops)
+    merged = _stops(ordered[1:-1], ordered[0], ordered[-1])
+    segments = (
+        tuple(Segment(a, b, lumber=False) for a, b in zip(merged, merged[1:]))
+        if len(merged) > 2
+        else ()
+    )
+    return Chain(view, axis, side, merged, segments)
+
+
 def chains(assembly: Assembly) -> list[Chain]:
     """The drawing's dimension chains; none when the pieces are not all
     connected, since then the overall size means nothing.
