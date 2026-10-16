@@ -35,6 +35,17 @@ VIEWS = (
 )
 
 
+def axis_view(axis: int, sign: int) -> View:
+    """The view from the ``sign`` side of world ``axis`` (0, 1, 2 for x, y,
+    z): z is up, or +y when looking along z. The three that ``VIEWS`` also
+    has project the same way."""
+    origin = [0.0, 0.0, 0.0]
+    origin[axis] = 100.0 * sign
+    up = (0, 1, 0) if axis == 2 else (0, 0, 1)
+    caption = f"from {'+' if sign > 0 else '-'}{'xyz'[axis]}"
+    return View(caption, (origin[0], origin[1], origin[2]), up, 0, 0)
+
+
 class Label(NamedTuple):
     """A piece ID at a point of the viewport."""
 

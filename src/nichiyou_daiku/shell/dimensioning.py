@@ -93,7 +93,7 @@ def _is_lumber(
     return False
 
 
-def _chain(
+def chain_for(
     view: str,
     axis: Axis,
     side: Side,
@@ -101,6 +101,12 @@ def _chain(
     pieces: dict[str, Piece],
     chosen: Sequence[str],
 ) -> Chain:
+    """Chain dimensions along ``axis`` over the pieces in ``bounds`` (their
+    world boxes), stopping at both ends of the ``chosen`` ones.
+
+    ``pieces`` gives the lumber of the chosen pieces, so stretches that are
+    their width or thickness are marked as lumber.
+    """
     low = min(getattr(box[0], axis) for box in bounds.values())
     high = max(getattr(box[1], axis) for box in bounds.values())
     extents = [
@@ -145,11 +151,11 @@ def chains(assembly: Assembly) -> list[Chain]:
         if box[1].z >= top - _TOP_TOLERANCE_MM
     ]
     return [
-        _chain("from -y", "z", "left", bounds, pieces, list(pieces)),
-        _chain("from -y", "x", "below", bounds, pieces, upright),
-        _chain("from +x", "y", "below", bounds, pieces, upright),
-        _chain("from +z", "x", "below", bounds, pieces, top_layer),
-        _chain("from +z", "y", "left", bounds, pieces, top_layer),
+        chain_for("from -y", "z", "left", bounds, pieces, list(pieces)),
+        chain_for("from -y", "x", "below", bounds, pieces, upright),
+        chain_for("from +x", "y", "below", bounds, pieces, upright),
+        chain_for("from +z", "x", "below", bounds, pieces, top_layer),
+        chain_for("from +z", "y", "left", bounds, pieces, top_layer),
     ]
 
 

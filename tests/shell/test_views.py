@@ -6,7 +6,7 @@ import pytest
 
 from nichiyou_daiku.core.assembly import Assembly
 from nichiyou_daiku.dsl import parse_dsl
-from nichiyou_daiku.shell.views import VIEWS, project, visible_labels
+from nichiyou_daiku.shell.views import VIEWS, axis_view, project, visible_labels
 
 ROOT = Path(__file__).parents[2]
 SHELF = (ROOT / "skills" / "design" / "examples" / "two-tier-shelf.nd").read_text()
@@ -71,3 +71,23 @@ def test_labels_sit_on_their_piece():
             ]
             assert min(x for x, _ in corners) <= label.x <= max(x for x, _ in corners)
             assert min(y for _, y in corners) <= label.y <= max(y for _, y in corners)
+
+
+def test_axis_views_match_the_views_they_share_a_caption_with():
+    shared = {view.caption: view for view in VIEWS}
+    for axis in range(3):
+        for sign in (1, -1):
+            view = axis_view(axis, sign)
+            if view.caption in shared:
+                assert (view.origin, view.up) == (
+                    shared[view.caption].origin,
+                    shared[view.caption].up,
+                )
+
+
+def test_axis_views_look_from_their_side_with_z_up():
+    assert axis_view(0, -1).caption == "from -x"
+    assert axis_view(0, -1).origin == (-100.0, 0.0, 0.0)
+    assert axis_view(1, 1).up == (0, 0, 1)
+    # Looking along z, +y is up
+    assert axis_view(2, -1).up == (0, 1, 0)

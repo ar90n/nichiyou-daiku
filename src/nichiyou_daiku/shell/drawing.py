@@ -39,7 +39,7 @@ from nichiyou_daiku.shell.dimensioning import (
     chains,
     spread,
 )
-from nichiyou_daiku.shell.views import VIEWS, project
+from nichiyou_daiku.shell.views import VIEWS, axis_view, project
 
 PAGE_SIZES = ("A4", "A3", "A2", "A1")
 
@@ -61,7 +61,10 @@ Point = tuple[float, float]
 Rect = tuple[float, float, float, float]
 """min x, min y, max x, max y on the page."""
 
-_VIEW = {view.caption: view for view in VIEWS}
+_VIEW = {
+    view.caption: view
+    for view in [*(axis_view(a, s) for a in range(3) for s in (1, -1)), *VIEWS]
+}
 _ISOMETRIC = "from +x +y +z"
 
 
@@ -263,9 +266,13 @@ def _crowded_advice(page_size: str) -> str:
     )
 
 
-def _dimension(chain: Chain, view: _View, out: _Dimensions, page_size: str) -> None:
+def _dimension(
+    chain: Chain, view: _View, out: _Dimensions, where: str, advice: str
+) -> None:
     """Draw one chain beside its view: extension lines, the chain with its
-    values (inside their stretch, else in a row with leaders), the overall."""
+    values (inside their stretch, else in a row with leaders), the overall.
+    Values that do not fit are reported as being in ``where``, with
+    ``advice`` on making room."""
     horizontal = chain.side == "below"
     levels = _levels(chain.side)
     edge = view.box[1] if horizontal else view.box[0]
@@ -325,6 +332,8 @@ def _dimension(chain: Chain, view: _View, out: _Dimensions, page_size: str) -> N
             elif not segment.lumber:
                 outside.append((segment.text, (a + b) / 2, length, across))
         if outside:
+            # A view can run the axis leftward or down; spread wants them in page order
+            outside.sort(key=lambda value: value[1])
             centres, fits = spread(
                 [middle for _, middle, _, _ in outside],
                 [length for _, _, length, _ in outside],
@@ -334,9 +343,8 @@ def _dimension(chain: Chain, view: _View, out: _Dimensions, page_size: str) -> N
             )
             if not fits:
                 out.crowded.append(
-                    f"{len(outside)} dimension values along {chain.axis} in the "
-                    f"{VIEW_NAMES[chain.view]} view do not fit beside their chain "
-                    f"and overlap. {_crowded_advice(page_size)}"
+                    f"{len(outside)} dimension values along {chain.axis} in "
+                    f"{where} do not fit beside their chain and overlap. {advice}"
                 )
             for (text, middle, _, across), centre in zip(outside, centres):
                 out.lines.append((at(middle, levels.line), at(middle, levels.bend)))
@@ -367,7 +375,13 @@ def _compose(part: Compound, assembly: Assembly | None, page_size: str) -> _Shee
     denominator, views = _layout(part, frame, title_block, bands=bool(found))
     dimensions = _Dimensions()
     for chain in found:
-        _dimension(chain, views[chain.view], dimensions, page_size)
+        _dimension(
+            chain,
+            views[chain.view],
+            dimensions,
+            f"the {VIEW_NAMES[chain.view]} view",
+            _crowded_advice(page_size),
+        )
     return _Sheet(frame, title_block, denominator, views, dimensions)
 
 

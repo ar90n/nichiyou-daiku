@@ -14,7 +14,11 @@ import nichiyou_daiku.shell.drawing as drawing_module  # noqa: E402
 from nichiyou_daiku.core.assembly import Assembly  # noqa: E402
 from nichiyou_daiku.dsl import parse_dsl  # noqa: E402
 from nichiyou_daiku.shell.build123d_export import assembly_to_build123d  # noqa: E402
-from nichiyou_daiku.shell.dimensioning import CrowdedDimensionsWarning  # noqa: E402
+from nichiyou_daiku.shell.dimensioning import (  # noqa: E402
+    Chain,
+    CrowdedDimensionsWarning,
+    Segment,
+)
 from nichiyou_daiku.shell.drawing import (  # noqa: E402
     FIRST,
     PAD,
@@ -22,7 +26,10 @@ from nichiyou_daiku.shell.drawing import (  # noqa: E402
     _arrow_points,
     _compose,
     _crowded_advice,
+    _Dimensions,
+    _dimension,
     _frame,
+    _View,
     technical_drawing,
 )
 
@@ -380,3 +387,26 @@ def test_crowded_values_warn_and_say_what_to_do():
     message = str(caught[0].message)
     assert "--page-size A2" in message
     assert "--no-dimensions" in message
+
+
+def test_values_keep_their_order_when_the_axis_runs_leftward():
+    # From +y, x grows to the left of the page, so the chain's stretches come
+    # in right to left; the values too small for their stretch must still go
+    # in the outside row in page order
+    stops = (0.0, 10.0, 25.0, 45.0, 300.0)
+    chain = Chain(
+        view="from +y",
+        axis="x",
+        side="below",
+        stops=stops,
+        segments=tuple(Segment(a, b, lumber=False) for a, b in zip(stops, stops[1:])),
+    )
+    view = _View("from +y", (0.0, 0.0), 0.2, (-60.0, 0.0, 0.0, 20.0), [], [])
+    out = _Dimensions()
+    _dimension(chain, view, out, "here", "Make room")
+    row = sorted(
+        (label for label in out.labels if label.text in {"10", "15", "20"}),
+        key=lambda label: label.centre[0],
+    )
+    assert [label.text for label in row] == ["20", "15", "10"]
+    assert out.crowded == []

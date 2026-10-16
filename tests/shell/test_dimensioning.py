@@ -6,7 +6,7 @@ import pytest
 
 from nichiyou_daiku.core.assembly import Assembly
 from nichiyou_daiku.dsl import parse_dsl
-from nichiyou_daiku.shell.dimensioning import Chain, _stops, chains, spread
+from nichiyou_daiku.shell.dimensioning import Chain, _stops, chain_for, chains, spread
 
 SHELF = (
     Path(__file__).parents[2] / "skills" / "design" / "examples" / "two-tier-shelf.nd"
@@ -114,3 +114,18 @@ def test_spread_keeps_order_and_never_overlaps():
 
 def test_spread_of_nothing_fits():
     assert spread([], [], 0.0, 1.0, 1.0) == ([], True)
+
+
+def test_a_chain_can_cover_some_pieces_only():
+    assembly = Assembly.of(parse_dsl(SHELF.read_text()))
+    frame = ["leg_1", "leg_3", "apron_upper_left", "apron_lower_left"]
+    bounds = {
+        p: assembly.placement.poses[p].bounds(assembly.model.pieces[p]) for p in frame
+    }
+    chain = chain_for(
+        "from +x", "y", "below", bounds, dict(assembly.model.pieces), frame
+    )
+    # The frame alone: 38 + 224 + 38 deep, the legs' faces as stops
+    assert [segment.text for segment in chain.segments] == ["38", "224", "38"]
+    assert chain.overall.text == "300"
+    assert chain.view == "from +x"
