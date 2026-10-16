@@ -244,7 +244,18 @@ def _arrow_points(tip: Point, direction: Point) -> tuple[Point, Point, Point]:
     )
 
 
-def _dimension(chain: Chain, view: _View, out: _Dimensions) -> None:
+def _crowded_advice(page_size: str) -> str:
+    """How to make room for crowded values on a ``page_size`` page."""
+    leave_out = "leave the dimensions out (drawing --no-dimensions)"
+    larger = PAGE_SIZES.index(page_size) + 1
+    if larger == len(PAGE_SIZES):
+        return leave_out.capitalize()
+    return (
+        f"Use a larger page (drawing --page-size {PAGE_SIZES[larger]}) or {leave_out}"
+    )
+
+
+def _dimension(chain: Chain, view: _View, out: _Dimensions, page_size: str) -> None:
     """Draw one chain beside its view: extension lines, the chain with its
     values (inside their stretch, else in a row with leaders), the overall."""
     horizontal = chain.side == "below"
@@ -317,8 +328,7 @@ def _dimension(chain: Chain, view: _View, out: _Dimensions) -> None:
                 out.crowded.append(
                     f"{len(outside)} dimension values along {chain.axis} in the "
                     f"{VIEW_NAMES[chain.view]} view do not fit beside their chain "
-                    "and overlap. Use a larger page (drawing --page-size A2) or "
-                    "leave the dimensions out (drawing --no-dimensions)"
+                    f"and overlap. {_crowded_advice(page_size)}"
                 )
             for (text, middle, _, across), centre in zip(outside, centres):
                 out.lines.append((at(middle, levels.line), at(middle, levels.bend)))
@@ -349,7 +359,7 @@ def _compose(part: Compound, assembly: Assembly | None, page_size: str) -> _Shee
     denominator, views = _layout(part, frame, title_block, bands=bool(found))
     dimensions = _Dimensions()
     for chain in found:
-        _dimension(chain, views[chain.view], dimensions)
+        _dimension(chain, views[chain.view], dimensions, page_size)
     return _Sheet(frame, title_block, denominator, views, dimensions)
 
 

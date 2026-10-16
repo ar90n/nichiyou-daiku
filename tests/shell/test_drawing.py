@@ -20,6 +20,7 @@ from nichiyou_daiku.shell.drawing import (  # noqa: E402
     PAD,
     _arrow_points,
     _compose,
+    _crowded_advice,
     _frame,
     technical_drawing,
 )
@@ -347,6 +348,14 @@ def test_no_dimensions_without_an_assembly(part):
     sheet = _compose(part, None, "A3")
     assert sheet.dimensions.lines == []
     assert sheet.dimensions.labels == []
+
+
+def test_crowded_advice_names_the_next_larger_page():
+    assert "--page-size A2" in _crowded_advice("A3")
+    assert "--page-size A1" in _crowded_advice("A2")
+    largest = _crowded_advice("A1")
+    assert "--page-size" not in largest
+    assert "--no-dimensions" in largest
 
 
 def test_crowded_values_warn_and_say_what_to_do():
