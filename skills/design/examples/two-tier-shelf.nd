@@ -124,3 +124,14 @@ apron_lower_front -[RF<0 BT<0 D(:8x30)]- shelf_1
 apron_lower_front -[RF<111 BT<0 D(:8x30)]- shelf_2
 apron_lower_front -[RF<222 BT<0 D(:8x30)]- shelf_3
 apron_lower_front -[RF<333 BT<0 D(:8x30)]- shelf_4
+
+// ============================================
+// Assembly: the side frames, the aprons joining them, the shelf, the top
+// ============================================
+steps {
+  "Left frame":  leg_1, leg_3, apron_upper_left, apron_lower_left
+  "Right frame": leg_2, leg_4, apron_upper_right, apron_lower_right
+  "Join":        apron_upper_front, apron_upper_back, apron_lower_front, apron_lower_back
+  "Shelf":       shelf_1, shelf_2, shelf_3, shelf_4
+  "Top":         top_1, top_2, top_3, top_4, top_5, top_6
+}
