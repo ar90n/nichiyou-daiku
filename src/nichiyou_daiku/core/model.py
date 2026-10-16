@@ -4,12 +4,87 @@ This module provides the main Model class that represents a complete
 woodworking project with pieces and their connections.
 """
 
+from difflib import get_close_matches
 from typing import Iterable
 
 from pydantic import BaseModel
 
 from nichiyou_daiku.core.piece import Piece
 from nichiyou_daiku.core.connection import Connection
+
+
+class Step(BaseModel, frozen=True):
+    """An assembly step: the pieces added in it, and a name for its heading."""
+
+    name: str
+    pieces: tuple[str, ...]
+
+
+def connected_parts(
+    pieces: Iterable[str], pairs: Iterable[tuple[str, str]]
+) -> list[frozenset[str]]:
+    """The pieces grouped by the pairs that join them; pairs naming other
+    pieces are ignored.
+
+    Examples:
+        >>> sorted(sorted(part) for part in connected_parts("abc", [("a", "b")]))
+        [['a', 'b'], ['c']]
+    """
+    parent = {piece: piece for piece in pieces}
+
+    def root(piece: str) -> str:
+        while parent[piece] != piece:
+            piece = parent[piece]
+        return piece
+
+    for a, b in pairs:
+        if a in parent and b in parent:
+            parent[root(a)] = root(b)
+    parts: dict[str, set[str]] = {}
+    for piece in parent:
+        parts.setdefault(root(piece), set()).add(piece)
+    return [frozenset(part) for part in parts.values()]
+
+
+def _check_steps(
+    pieces: dict[str, Piece],
+    pairs: list[tuple[str, str]],
+    steps: tuple[Step, ...],
+) -> None:
+    """Raise what is wrong with the steps and how to fix it."""
+    step_of: dict[str, str] = {}
+    for step in steps:
+        if not step.pieces:
+            raise ValueError(f"Step '{step.name}' adds no pieces; name at least one")
+        for piece_id in step.pieces:
+            if piece_id not in pieces:
+                close = get_close_matches(piece_id, pieces, n=1)
+                hint = f"; did you mean '{close[0]}'?" if close else ""
+                raise ValueError(
+                    f"Step '{step.name}' names unknown piece '{piece_id}'{hint}"
+                )
+            if piece_id in step_of:
+                where = (
+                    f"twice in step '{step.name}'"
+                    if step_of[piece_id] == step.name
+                    else f"in steps '{step_of[piece_id]}' and '{step.name}'"
+                )
+                raise ValueError(f"'{piece_id}' is {where}; keep it in one step")
+            step_of[piece_id] = step.name
+    missing = [piece_id for piece_id in pieces if piece_id not in step_of]
+    if missing:
+        raise ValueError(f"steps leaves out {', '.join(missing)}; add them to a step")
+    placed: list[str] = []
+    for step in steps:
+        placed += step.pieces
+        parts = [
+            part for part in connected_parts(placed, pairs) if part & set(step.pieces)
+        ]
+        if len(parts) > 1:
+            raise ValueError(
+                f"Step '{step.name}' leaves its pieces in {len(parts)} separate "
+                "parts: split it into steps or connect the parts"
+            )
 
 
 class Model(BaseModel, frozen=True):
@@ -21,6 +96,7 @@ class Model(BaseModel, frozen=True):
     Attributes:
         pieces: Dictionary mapping piece IDs to Piece objects
         connections: Dictionary mapping (base_id, target_id) to Connection objects
+        steps: The assembly steps in order; empty when none are declared
 
     Examples:
         >>> from nichiyou_daiku.core.piece import Piece, PieceType
@@ -65,6 +141,7 @@ class Model(BaseModel, frozen=True):
     pieces: dict[str, Piece]
     connections: dict[tuple[str, str], Connection]
     label: str | None = None
+    steps: tuple[Step, ...] = ()
 
     @property
     def has_unknowns(self) -> bool:
@@ -80,6 +157,7 @@ class Model(BaseModel, frozen=True):
         pieces: Iterable[Piece],
         connections: Iterable[Connection],
         label: str | None = None,
+        steps: Iterable[Step] = (),
     ) -> "Model":
         """Create a Model instance from pieces and connections.
 
@@ -88,6 +166,9 @@ class Model(BaseModel, frozen=True):
         Args:
             pieces: Iterable of Piece objects
             connections: Iterable of Connection objects
+            label: Name of the model
+            steps: Assembly steps; when given, every piece is in exactly one
+                and no step leaves its pieces in separate parts
 
         Returns:
             New Model instance
@@ -155,4 +236,9 @@ class Model(BaseModel, frozen=True):
                 )
             connections_dict[key] = conn
 
-        return cls(pieces=pieces_dict, connections=connections_dict, label=label)
+        steps = tuple(steps)
+        if steps:
+            _check_steps(pieces_dict, list(connections_dict), steps)
+        return cls(
+            pieces=pieces_dict, connections=connections_dict, label=label, steps=steps
+        )
