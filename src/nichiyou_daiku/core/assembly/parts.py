@@ -29,6 +29,7 @@ _TURNS = (
     np.diag([1.0, -1.0, -1.0]),
     np.diag([-1.0, 1.0, -1.0]),
 )
+_QUARTER = np.array([[0.0, -1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]])
 
 # Seen from outside, a long face has its length to the right; the ends are
 # turned so their width runs right on top and left on the down end
@@ -119,6 +120,14 @@ def _turned(
     return turned
 
 
+def _turns(size: tuple[float, float, float]) -> list[np.ndarray]:
+    """The turns that bring a board of ``size`` onto itself; a square
+    section (2x2) also turns onto itself a quarter turn about its length."""
+    if abs(size[0] - size[1]) > TOLERANCE_MM:
+        return list(_TURNS)
+    return [turn @ quarter for turn in _TURNS for quarter in (np.eye(3), _QUARTER)]
+
+
 def _close(a: float | None, b: float | None) -> bool:
     if a is None or b is None:
         return a is None and b is None
@@ -162,7 +171,7 @@ def part_groups(assembly: Assembly) -> list[PartGroup]:
                 and all(_close(p, q) for p, q in zip(group.size, size))
                 and any(
                     _same_holes(group.holes, _turned(holes, turn, size))
-                    for turn in _TURNS
+                    for turn in _turns(size)
                 )
             ):
                 groups[i] = group.model_copy(
@@ -216,9 +225,14 @@ def edge_neighbours(face: Face) -> dict[str, Face]:
 def _end_turns_free(
     holes: Sequence[LocalHole], size: tuple[float, float, float]
 ) -> bool:
-    """Whether each end's holes look the same after a half turn about z."""
+    """Whether each end's holes look the same after every turn about z that
+    brings the section onto itself."""
     ends = [h for h in holes if h.face in ("top", "down")]
-    return _same_holes(ends, _turned(ends, _TURNS[1], size))
+    return all(
+        _same_holes(ends, _turned(ends, turn, size))
+        for turn in _turns(size)
+        if turn[2, 2] == 1.0
+    )
 
 
 def face_letters(
@@ -227,7 +241,8 @@ def face_letters(
     """A, B, ... for the drilled faces in ``FACE_ORDER``. A face without
     holes gets one only when nothing else ties the two ends' turn together:
     both ends drilled, no long face drilled and the end holes not the same
-    after a half turn; then the front is lettered too."""
+    after a turn about the length (a half turn, or a quarter turn for a
+    square section); then the front is lettered too."""
     drilled: list[Face] = [f for f in FACE_ORDER if any(h.face == f for h in holes)]
     lettered: list[Face] = list(drilled)
     if (

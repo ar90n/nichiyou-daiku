@@ -36,6 +36,13 @@ shelf_top -[DL<0 BL>38 S(Slim:3.8x65)]- side_l
 shelf_top -[TL<0 FL>38 S(Slim:3.8x65)]- side_r
 """
 LEG = (89.0, 38.0, 781.0)
+# A 2x2 rung dowelled into two posts by its ends
+RUNG = """(post_l:2x4 =600)
+(post_r:2x4 =600)
+(rung:2x2 =400)
+post_l -[RF<300 DF<0 D(:8x30)]- rung
+post_r -[LF<300 TF<0 D(:8x30)]- rung
+"""
 
 
 @pytest.fixture(scope="module")
@@ -91,6 +98,16 @@ def test_boards_turned_end_for_end_are_one_part(contact):
         "(post:2x4 =800)\n(a:2x4 =300)\n(b:2x4 =300)\n"
         "post -[FL<100 BD<0 D(:8x30)]- a\n"
         f"post -[FL<500 {contact}<0 D(:8x30)]- b\n"
+    )
+    assert ("a", "b") in _groups(Assembly.of(parse_dsl(source)))
+
+
+def test_square_boards_turned_a_quarter_are_one_part():
+    # a is drilled on its back, b on its left: a quarter turn apart
+    source = (
+        "(post:2x4 =800)\n(a:2x2 =300)\n(b:2x2 =300)\n"
+        "post -[FL<100 BD<0 D(:8x30)]- a\n"
+        "post -[FL<500 LD<0 D(:8x30)]- b\n"
     )
     assert ("a", "b") in _groups(Assembly.of(parse_dsl(source)))
 
@@ -164,6 +181,26 @@ def test_ends_without_a_drilled_long_face_get_a_reference_when_turning_matters()
         LocalHole("down", (20.0, 19.0, 0.0), 8.0, 15.0),
     )
     assert face_letters(off_centre, size) == {"top": "A", "down": "B", "front": "C"}
+
+
+def test_square_ends_get_a_reference_when_a_quarter_turn_matters():
+    # Each end's pair looks the same turned half, but one end drilled a
+    # quarter turn off would not fit: the front ties the two ends
+    rung = next(
+        group
+        for group in part_groups(Assembly.of(parse_dsl(RUNG)))
+        if group.pieces == ("rung",)
+    )
+    assert face_letters(rung.holes, rung.size) == {
+        "top": "A",
+        "down": "B",
+        "front": "C",
+    }
+    centred = (
+        LocalHole("top", (19.0, 19.0, 400.0), 8.0, 15.0),
+        LocalHole("down", (19.0, 19.0, 0.0), 8.0, 15.0),
+    )
+    assert face_letters(centred, (38.0, 38.0, 400.0)) == {"top": "A", "down": "B"}
 
 
 def test_view_shows_the_most_lettered_faces():
