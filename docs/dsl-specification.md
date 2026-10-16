@@ -709,6 +709,17 @@ nichiyou-daiku render furniture.nd -o check.png --size 1000
 
 Draws one square PNG (default 1400px, at least 400px) for checking a design by eye: the model seen from +z, -y, +x and +x +y +z on a 2×2 grid at one scale, visible lines only, in the axes of `size_reference` (see `validate --json`). Each piece's ID is written at its center in every view where no other piece hides that center and it does not overlap another label; pieces labelled in no view are listed in the note at the bottom, below the file name and the overall size. Shapes are those of `export` and `drawing`, including holes and `--fillet-radius`.
 
+### Assembly Steps (requires build123d)
+
+```bash
+nichiyou-daiku steps shelf.nd                    # shelf-steps/steps.md and step-01.png, ...
+nichiyou-daiku steps shelf.nd -o instructions --size 1200
+```
+
+Writes `steps.md` and one PNG per step (default 1600px wide) into a directory, by default `<input>-steps`. The steps come from the file's `steps` block (see [Assembly Steps](#assembly-steps)). The page has no prose: per step, its heading (`Step 2 - Right frame (sub-assembly)`, with `(join)` for a step that joins parts), its image, the pieces it adds with their lumber and length, and its fasteners counted as in the report's shopping list.
+
+Each image shows the part the step leaves from +x +y +z, the pieces built before in grey and the step's pieces in black with their IDs (their hidden edges dashed), beside an orthographic view dimensioning where the step's pieces go: chain dimensions as in `drawing`, stopping at both ends of the step's pieces and of the pieces they are joined to, with the part's overall size. That view looks across the edges the step's connections are measured along, along the axis where the step's pieces hide each other least, from the side where the rest of the part hides them least. When values do not fit beside their chain, the command warns and suggests splitting the step. Without a `steps` block it says how to add one. `--fillet-radius` is that of `export`.
+
 ## Grammar (EBNF)
 
 ```ebnf

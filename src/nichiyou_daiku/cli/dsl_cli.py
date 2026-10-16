@@ -8,6 +8,7 @@ from nichiyou_daiku.cli.commands.view import view
 from nichiyou_daiku.cli.commands.export import export
 from nichiyou_daiku.cli.commands.drawing import drawing
 from nichiyou_daiku.cli.commands.render import render
+from nichiyou_daiku.cli.commands.steps import steps
 
 
 @click.group()
@@ -37,6 +38,7 @@ cli.add_command(view)
 cli.add_command(export)
 cli.add_command(drawing)
 cli.add_command(render)
+cli.add_command(steps)
 
 
 if __name__ == "__main__":

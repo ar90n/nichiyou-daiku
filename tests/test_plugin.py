@@ -141,6 +141,7 @@ def test_wrapper_runs_its_own_source_through_uv(tmp_path):
         ("drawing", "d.nd"),
         ("view", "d.nd"),
         ("render", "d.nd"),
+        ("steps", "d.nd"),
         ("-v", "export", "d.nd"),
     ],
 )
