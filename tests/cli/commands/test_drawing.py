@@ -135,3 +135,63 @@ def test_drawing_explains_a_missing_cairo_library(runner, beam_file, monkeypatch
     assert "the cairo library is missing" in result.output
     assert "brew install cairo" in result.output
     assert "Traceback" not in result.output
+
+
+def _record_drawing_options(monkeypatch, *warn: Warning) -> dict:
+    """Replace technical_drawing with one that records its options and
+    raises the warnings ``warn``."""
+    import warnings
+
+    import nichiyou_daiku.shell.drawing as drawing_module
+
+    real = drawing_module.technical_drawing
+    options: dict = {}
+
+    def recording(part, **kwargs):
+        options.update(kwargs)
+        for warning in warn:
+            warnings.warn(warning)
+        return real(part, **kwargs)
+
+    monkeypatch.setattr(drawing_module, "technical_drawing", recording)
+    return options
+
+
+def test_drawing_has_dimensions_unless_asked_not_to(
+    runner, tmp_path, beam_file, monkeypatch
+):
+    pytest.importorskip("build123d")
+    options = _record_drawing_options(monkeypatch)
+    output_file = tmp_path / "out.svg"
+
+    result = runner.invoke(cli, ["drawing", str(beam_file), "-o", str(output_file)])
+    assert result.exit_code == 0, result.output
+    assert options["assembly"] is not None
+
+    result = runner.invoke(
+        cli, ["drawing", str(beam_file), "-o", str(output_file), "--no-dimensions"]
+    )
+    assert result.exit_code == 0, result.output
+    assert options["assembly"] is None
+
+
+def test_drawing_warns_about_crowded_dimensions(
+    runner, tmp_path, beam_file, monkeypatch
+):
+    pytest.importorskip("build123d")
+    from nichiyou_daiku.shell.dimensioning import CrowdedDimensionsWarning
+
+    _record_drawing_options(
+        monkeypatch,
+        CrowdedDimensionsWarning("5 dimension values overlap"),
+        UserWarning("a library has something to say"),
+    )
+    output_file = tmp_path / "out.svg"
+
+    # Other warnings are passed on, not swallowed
+    with pytest.warns(UserWarning, match="a library has something to say"):
+        result = runner.invoke(cli, ["drawing", str(beam_file), "-o", str(output_file)])
+
+    assert result.exit_code == 0, result.output
+    assert "Warning: 5 dimension values overlap" in result.stderr
+    assert output_file.exists()

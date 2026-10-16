@@ -2,6 +2,7 @@
 
 import sys
 import tempfile
+import warnings
 from pathlib import Path
 from typing import Optional
 
@@ -18,6 +19,7 @@ from nichiyou_daiku.cli.utils import (
     read_dsl_file,
     require_output_for_stdin,
 )
+from nichiyou_daiku.shell.dimensioning import CrowdedDimensionsWarning
 
 
 @click.command()
@@ -60,6 +62,11 @@ from nichiyou_daiku.cli.utils import (
     default="A3",
     help="Drawing page size (default: A3)",
 )
+@click.option(
+    "--no-dimensions",
+    is_flag=True,
+    help="Leave out the dimensions (overall size and where the pieces go)",
+)
 @click.pass_context
 def drawing(
     ctx: click.Context,
@@ -70,6 +77,7 @@ def drawing(
     designed_by: str,
     fillet_radius: float,
     page_size: str,
+    no_dimensions: bool,
 ) -> None:
     """Generate technical drawing (PDF) with orthographic views.
 
@@ -80,6 +88,7 @@ def drawing(
     - Front view (elevation)
     - Side view (right side)
     - Isometric view
+    - Dimensions: overall size and where the pieces go
 
     \b
     Examples:
@@ -87,6 +96,7 @@ def drawing(
         nichiyou-daiku drawing table.nd -o table_drawing.pdf
         nichiyou-daiku drawing chair.nd --title "Chair Design"
         nichiyou-daiku drawing shelf.nd --page-size A2
+        nichiyou-daiku drawing shelf.nd --no-dimensions
     """
     echo = CliEcho(ctx)
 
@@ -111,16 +121,27 @@ def drawing(
     )
 
     try:
-        exporter = technical_drawing(
-            compound,
-            title=title or source_stem,
-            drawing_number=drawing_number,
-            designed_by=designed_by,
-            page_size=page_size,
-        )
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always", CrowdedDimensionsWarning)
+            exporter = technical_drawing(
+                compound,
+                title=title or source_stem,
+                drawing_number=drawing_number,
+                designed_by=designed_by,
+                page_size=page_size,
+                assembly=None if no_dimensions else assembly,
+            )
     except Exception as e:
         echo.exception(f"Error creating drawing: {e}")
         sys.exit(1)
+    for warning in caught:
+        if issubclass(warning.category, CrowdedDimensionsWarning):
+            echo.info(click.style(f"Warning: {warning.message}", fg="yellow"))
+        else:
+            # Recording catches every warning; pass the others on
+            warnings.warn_explicit(
+                warning.message, warning.category, warning.filename, warning.lineno
+            )
 
     if write_svg_only:
         try:
