@@ -798,6 +798,28 @@ def assembly_to_build123d(
 >>> # Use with ocp-vscode or export to STL/STEP
 ```
 
+### Technical Drawing (Optional)
+
+Requires `build123d` package.
+
+```python
+from nichiyou_daiku.shell.drawing import technical_drawing
+
+def technical_drawing(
+    part: "Compound",
+    *,
+    title: str,
+    drawing_number: str,
+    designed_by: str,
+    page_size: str = "A3",
+    design_date: date | None = None,
+    assembly: Assembly | None = None,
+) -> "ExportSVG":
+    """Top, front, right-side and isometric views on a titled page (A4-A1)."""
+```
+
+Pass the `assembly` that `part` was built from to dimension the drawing (overall size and where the pieces go; see `drawing` in the [DSL Specification](./dsl-specification.md)). Values that cannot be placed without overlapping raise `nichiyou_daiku.shell.dimensioning.CrowdedDimensionsWarning`. `exporter.write("drawing.svg")` writes the page as SVG.
+
 ## Complete Examples
 
 ### Simple Frame

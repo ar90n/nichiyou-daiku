@@ -25,7 +25,7 @@ corner_piece_a -[TF<0 BD<0]- corner_piece_b
 nichiyou-daiku validate corner.nd           # syntax, placement, overlaps, fasteners
 nichiyou-daiku report corner.nd -o report.md # bill of materials, shopping list, cut list
 nichiyou-daiku export corner.nd -f step      # 3D model (needs the viz extra)
-nichiyou-daiku drawing corner.nd             # technical drawing PDF (needs the viz extra)
+nichiyou-daiku drawing corner.nd             # technical drawing PDF with dimensions (needs the viz extra)
 nichiyou-daiku render corner.nd              # check image PNG, four labelled views (needs the viz extra)
 ```
 
