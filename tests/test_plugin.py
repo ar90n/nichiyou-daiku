@@ -318,5 +318,5 @@ def test_skill_covers_render_with_an_old_or_partial_install():
     # Step 6 is the first command that needs the viz extra and cairo
     skill = (ROOT / "skills" / "design" / "SKILL.md").read_text()
     assert "No such command 'render'" in skill
-    assert "`drawing`, `export` or `render` says build123d is missing" in skill
+    assert "`drawing`, `export`, `render` or `steps` says build123d is missing" in skill
     assert "the cairo library is missing" in skill

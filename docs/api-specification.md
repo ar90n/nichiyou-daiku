@@ -335,15 +335,20 @@ class Model(BaseModel, frozen=True):
     pieces: dict[str, Piece]                      # Piece ID -> Piece
     connections: dict[tuple[str, str], Connection] # (base_id, target_id) -> Connection
     label: str | None = None                       # Optional project label
+    steps: tuple[Step, ...] = ()                   # Assembly order; empty when not declared
+
+class Step(BaseModel, frozen=True):
+    name: str                                      # Heading of the step
+    pieces: tuple[str, ...]                        # IDs of the pieces it adds
 ```
 
 **Factory Methods:**
 
 | Method | Description |
 |--------|-------------|
-| `Model.of(pieces, connections, label=None)` | Create from iterables |
+| `Model.of(pieces, connections, label=None, steps=())` | Create from iterables |
 
-`Model.of` raises `ValueError` for duplicate piece IDs, connections that reference pieces not in `pieces`, and a second connection for the same (base, target) pair.
+`Model.of` raises `ValueError` for duplicate piece IDs, connections that reference pieces not in `pieces`, and a second connection for the same (base, target) pair. With `steps`, it also raises it when a piece is in no step or in two, a step names an unknown piece or none, or a step leaves its own pieces in separate parts; see [Assembly Steps](./dsl-specification.md#assembly-steps).
 
 **Example:**
 
@@ -819,6 +824,27 @@ def technical_drawing(
 ```
 
 Pass the `assembly` that `part` was built from to dimension the drawing (overall size and where the pieces go; see `drawing` in the [DSL Specification](./dsl-specification.md)). Values that cannot be placed without overlapping raise `nichiyou_daiku.shell.dimensioning.CrowdedDimensionsWarning`. `exporter.write("drawing.svg")` writes the page as SVG.
+
+### Assembly Instructions (Optional)
+
+`nichiyou_daiku.core.assembly.steps.plan_steps(assembly)` plans the steps without build123d: a `StepPlan` whose `declared` says whether the model has a `steps` block and whose `steps` are `PlannedStep`s with the `pieces` each adds, the `connections` it makes, its `kind` (`first`, `attach`, `sub-assembly` or `join`), the pieces `shown` in its image and the `view` (world axis and side) its dimension view looks from.
+
+Requires `build123d` package to draw them.
+
+```python
+from nichiyou_daiku.shell.instructions import write_instructions
+
+def write_instructions(
+    assembly: Assembly,
+    part: "Compound",
+    directory: Path,
+    title: str,
+    size: int = 1600,
+) -> Instructions:
+    """Write steps.md and one PNG per step (size px wide) into directory."""
+```
+
+`part` is the `assembly_to_build123d` result for `assembly`. The returned `Instructions` has the written `files` (`steps.md` first), `declared` as above, and `crowded`: a message for each step whose dimension values do not fit. See `steps` in the [DSL Specification](./dsl-specification.md).
 
 ## Complete Examples
 

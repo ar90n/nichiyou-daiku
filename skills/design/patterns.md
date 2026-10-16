@@ -170,6 +170,8 @@ Name the overall sizes as variables (`WIDTH = 800`) and derive lengths and offse
 3. Top surface connections
 4. Shelf connections
 
+This order only keeps the file readable: connections mean the same in any order. The order a person builds the furniture in goes in a `steps` block at the end (see "Assembly Steps" in the DSL specification).
+
 ### 3. Comments
 
 Always include:

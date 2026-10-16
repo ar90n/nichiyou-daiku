@@ -70,3 +70,11 @@ apron_front -[RF<13.75 BT<0 D(:8x30)]- top_2
 apron_front -[RF<116.5 BT<0 D(:8x30)]- top_3
 apron_front -[RF<219.25 BT<0 D(:8x30)]- top_4
 top_5 -[BD<0 TF<0 D(:8x30)]- leg_fr
+
+// Assembly: the side frames, the aprons joining them, the top
+steps {
+  "Left frame":  leg_fl, leg_bl, apron_left
+  "Right frame": leg_fr, leg_br, apron_right
+  "Join":        apron_front, apron_back
+  "Top":         top_1, top_2, top_3, top_4, top_5
+}
