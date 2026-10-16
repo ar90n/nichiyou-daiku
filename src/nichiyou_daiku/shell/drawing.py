@@ -331,7 +331,15 @@ def _dimension(chain: Chain, view: _View, out: _Dimensions) -> None:
         out.lines.append((at(end, start), at(end, overall + OVER)))
     dimension_line(low, high, overall)
     text = chain.overall.text
-    label(text, (low + high) / 2, overall + up * (PAD + sizes(text)[1] / 2))
+    length, across = sizes(text)
+    if length + 2 * PAD <= high - low:
+        position = (low + high) / 2
+    else:
+        # Too long for the stretch: beyond its low end, on the dimension
+        # line extended under it (JIS); the bands leave room there
+        position = low - PAD - length / 2
+        out.lines.append((at(low, overall), at(low - 2 * PAD - length, overall)))
+    label(text, position, overall + up * (PAD + across / 2))
 
 
 def _compose(part: Compound, assembly: Assembly | None, page_size: str) -> _Sheet:

@@ -333,6 +333,16 @@ def test_fillets_do_not_change_the_drawn_size(shelf_model):
     assert _problems(sheet) == []
 
 
+@pytest.mark.parametrize(
+    ("source", "page_size"),
+    [("(board:1x4 =1800)", "A3"), ("(post:2x4 =2000)", "A4")],
+)
+def test_overall_values_wider_than_their_stretch_go_beside_it(source, page_size):
+    # A 19mm or 38mm extent drawn this small has no room for its value
+    part, assembly = _model(source)
+    assert _problems(_compose(part, assembly, page_size)) == []
+
+
 def test_no_dimensions_without_an_assembly(part):
     sheet = _compose(part, None, "A3")
     assert sheet.dimensions.lines == []
