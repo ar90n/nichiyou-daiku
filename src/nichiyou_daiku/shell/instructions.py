@@ -8,8 +8,8 @@ Needs build123d, so ``nichiyou_daiku.shell`` does not import this module.
 import io
 import re
 import tempfile
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Callable
 from pathlib import Path
 
 import cairosvg
@@ -18,7 +18,6 @@ from build123d import (
     Compound,
     Edge,
     ExportSVG,
-    LineType,
     Polygon,
     Pos,
     Shape,
@@ -46,6 +45,7 @@ from nichiyou_daiku.shell.dimensioning import Axis, chain_for
 from nichiyou_daiku.shell.drawing import (
     arrow_points,
     DrawnDimensions,
+    Point,
     draw_chain,
     dimension_levels,
     text_shape,
@@ -71,7 +71,6 @@ _ONE_PIECE_ADVICE = "The report's Anchor Details give where each connection is"
 _IMAGE = re.compile(r"(step|part)-\d+\.png")
 
 Rect = tuple[float, float, float, float]
-Point = tuple[float, float]
 
 # The arrow showing the way the dimension view looks stays in the
 # isometric's lower left corner, which a box seen from -x +y +z leaves empty;
@@ -79,7 +78,8 @@ Point = tuple[float, float]
 # isometric shortens them.
 _CUE_CENTRE = (MARGIN + 22.0, MARGIN + 16.0)
 _CUE_LENGTH, _CUE_WIDTH, _CUE_HEAD, _CUE_HEAD_WIDTH = 30.0, 5.0, 10.0, 12.0
-_CUE_CLEARANCE = 1.5
+# A drawing nearer the arrow than this would seem pushed by it
+_CUE_CLEARANCE = 6.0
 # A name sits this far across the page from another to tell left from right
 _APART = 10.0
 
@@ -298,30 +298,63 @@ def _free(box: Rect, taken: list[Rect]) -> bool:
     )
 
 
+def _samples(lines: dict[str, _PieceLines]) -> dict[str, np.ndarray]:
+    """Points along each piece's visible lines, close enough to stand for
+    them where a box is checked against them."""
+    return {
+        piece_id: np.array(
+            [
+                (p.X, p.Y)
+                for shape in piece.visible
+                for edge in shape.edges()
+                for p in (edge.position_at(t / 20) for t in range(21))
+            ]
+        ).reshape(-1, 2)
+        for piece_id, piece in lines.items()
+    }
+
+
+def _any_inside(points: np.ndarray, box: Rect) -> bool:
+    return bool(
+        (
+            (points[:, 0] > box[0])
+            & (points[:, 0] < box[2])
+            & (points[:, 1] > box[1])
+            & (points[:, 1] < box[3])
+        ).any()
+    )
+
+
+def _crosses(box: Rect, segment: tuple[Point, Point]) -> bool:
+    """Whether a segment passes through the inside of a box (Liang-Barsky)."""
+    (ax, ay), (bx, by) = segment
+    dx, dy = bx - ax, by - ay
+    start, end = 0.0, 1.0
+    for p, q in (
+        (-dx, ax - box[0]),
+        (dx, box[2] - ax),
+        (-dy, ay - box[1]),
+        (dy, box[3] - ay),
+    ):
+        if p == 0:
+            if q <= 0:
+                return False
+        elif p < 0:
+            start = max(start, q / p)
+        else:
+            end = min(end, q / p)
+    return start < end
+
+
 def _clear_fit(
     lines: dict[str, _PieceLines], area: Rect, keep_out: Rect
 ) -> tuple[float, tuple[float, float]]:
     """``_fit`` in ``area``, drawn smaller until no line enters ``keep_out``."""
-    points = np.array(
-        [
-            (p.X, p.Y)
-            for piece in lines.values()
-            for shape in piece.visible + piece.hidden
-            for edge in shape.edges()
-            for p in (edge.position_at(t / 20) for t in range(21))
-        ]
-    )
+    points = np.concatenate(list(_samples(lines).values()))
     fill = ISO_FILL
     while True:
         factor, offset = _fit(_bounds(lines), area, fill)
-        placed = points * factor + np.array(offset)
-        inside = (
-            (placed[:, 0] >= keep_out[0])
-            & (placed[:, 0] <= keep_out[2])
-            & (placed[:, 1] >= keep_out[1])
-            & (placed[:, 1] <= keep_out[3])
-        )
-        if not inside.any() or fill < 0.3:
+        if not _any_inside(points * factor + np.array(offset), keep_out) or fill < 0.3:
             return factor, offset
         fill *= 0.95
 
@@ -334,9 +367,11 @@ def _named(
     scale: float,
     offset: tuple[float, float],
     taken: list[Rect],
+    segments: list[tuple[Point, Point]] | None = None,
 ) -> dict[str, Rect]:
     """Label boxes for ``pieces`` at the centres the viewer sees; a label
-    that would cover another or anything ``taken`` is left out."""
+    that would cover another, anything ``taken`` or one of ``segments`` is
+    left out."""
     boxes: dict[str, Rect] = {}
     for piece_id in pieces:
         label = label_at(assembly, view, piece_id, step.shown)
@@ -345,7 +380,9 @@ def _named(
         x, y = offset[0] + label.x * scale, offset[1] + label.y * scale
         width, height = text_size(piece_id, 0.0)
         box = (x - width / 2, y - height / 2, x + width / 2, y + height / 2)
-        if _free(box, [*taken, *boxes.values()]):
+        if _free(box, [*taken, *boxes.values()]) and not any(
+            _crosses(box, segment) for segment in segments or []
+        ):
             boxes[piece_id] = box
     return boxes
 
@@ -364,16 +401,20 @@ def _references(
 ) -> list[str]:
     """Earlier pieces to name in both halves, added to ``left`` and
     ``right``, until two names in both sit apart across the dimension view
-    and so show which way round it is. Pieces joined in this step come
-    first, then the nearest."""
+    and so show which way round it is; none when that cannot be reached.
+    Pieces joined in this step come first, then the nearest."""
     both = [right[p] for p in step.pieces if p in left and p in right]
+    # A view from the side can be mirrored left to right; from above or
+    # below the names tie it down whichever way they sit apart
+    across_only = step.view[0] != 2
+
+    def apart(a: Rect, b: Rect) -> bool:
+        dx = abs(_centre_x(a) - _centre_x(b))
+        dy = abs((a[1] + a[3]) / 2 - (b[1] + b[3]) / 2)
+        return (dx if across_only else max(dx, dy)) >= _APART
 
     def told() -> bool:
-        return any(
-            abs(_centre_x(a) - _centre_x(b)) >= _APART
-            for i, a in enumerate(both)
-            for b in both[i + 1 :]
-        )
+        return any(apart(a, b) for i, a in enumerate(both) for b in both[i + 1 :])
 
     model, poses = assembly.model, assembly.placement.poses
 
@@ -397,11 +438,16 @@ def _references(
         if (
             in_left is not None
             and in_right is not None
-            and all(abs(_centre_x(in_right) - _centre_x(b)) >= _APART for b in both)
+            and all(apart(in_right, b) for b in both)
         ):
             left[piece_id], right[piece_id] = in_left, in_right
             both.append(in_right)
             chosen.append(piece_id)
+    if not told():
+        # Names that cannot tell which way round it is only add to read
+        for piece_id in chosen:
+            del left[piece_id], right[piece_id]
+        return []
     return chosen
 
 
@@ -431,9 +477,28 @@ def step_image(assembly: Assembly, part: Compound, step: PlannedStep) -> StepIma
     view, placed, dimensions = _dimension_view(assembly, step, dim_lines, dim_area)
     dims = _placed(dim_lines, placed.scale, placed.offset)
     values = [label.box for label in dimensions.labels]
+    segments = list(dimensions.lines)
+    for arrow in dimensions.arrows:
+        a, b, c = arrow_points(*arrow)
+        segments += [(a, b), (b, c), (c, a)]
     dimension_labels = _named(
-        assembly, view, step, list(step.pieces), placed.scale, placed.offset, values
+        assembly,
+        view,
+        step,
+        list(step.pieces),
+        placed.scale,
+        placed.offset,
+        values,
+        segments,
     )
+    iso_points, dim_points = _samples(iso), _samples(dims)
+
+    def on_others(box: Rect, points: dict[str, np.ndarray], piece_id: str) -> bool:
+        # A grey name stands on its own piece: on another it would hide that
+        # one's lines and seem to name it
+        return any(
+            _any_inside(other, box) for p, other in points.items() if p != piece_id
+        )
 
     def name_left(piece_id: str) -> Rect | None:
         boxes = _named(
@@ -445,7 +510,8 @@ def step_image(assembly: Assembly, part: Compound, step: PlannedStep) -> StepIma
             offset,
             [keep_out, *labels.values()],
         )
-        return boxes.get(piece_id)
+        box = boxes.get(piece_id)
+        return None if box is None or on_others(box, iso_points, piece_id) else box
 
     def name_right(piece_id: str) -> Rect | None:
         boxes = _named(
@@ -456,8 +522,10 @@ def step_image(assembly: Assembly, part: Compound, step: PlannedStep) -> StepIma
             placed.scale,
             placed.offset,
             [*values, *dimension_labels.values()],
+            segments,
         )
-        return boxes.get(piece_id)
+        box = boxes.get(piece_id)
+        return None if box is None or on_others(box, dim_points, piece_id) else box
 
     references = _references(
         assembly, step, labels, dimension_labels, name_left, name_right
@@ -466,7 +534,6 @@ def step_image(assembly: Assembly, part: Compound, step: PlannedStep) -> StepIma
     exporter = ExportSVG(unit=Unit.MM)
     exporter.add_layer("Before", line_color=RGB(160, 160, 160), line_weight=0.18)
     exporter.add_layer("New", line_weight=0.5)
-    exporter.add_layer("NewHidden", line_weight=0.25, line_type=LineType.ISO_DASH)
     exporter.add_layer("Dimensions", line_weight=0.13)
     # A white ground under each piece name keeps it readable over the lines
     exporter.add_layer(
@@ -487,10 +554,9 @@ def step_image(assembly: Assembly, part: Compound, step: PlannedStep) -> StepIma
     for drawn in (iso, dims):
         for piece_id, piece in drawn.items():
             new = piece_id in step.pieces
+            # Hidden edges are left out: dashed back edges only crowd the image
             if piece.visible:
                 exporter.add_shape(piece.visible, layer="New" if new else "Before")
-            if new and piece.hidden:
-                exporter.add_shape(piece.hidden, layer="NewHidden")
     if dimensions.lines:
         exporter.add_shape(
             [Edge.make_line(a, b) for a, b in dimensions.lines], layer="Dimensions"

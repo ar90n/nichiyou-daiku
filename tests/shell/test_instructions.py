@@ -21,6 +21,7 @@ from nichiyou_daiku.shell.instructions import (  # noqa: E402
     PAGE_HEIGHT,
     PAGE_WIDTH,
     _advice,
+    _cue,
     image_name,
     part_image_name,
     step_image,
@@ -54,11 +55,61 @@ CROWDED = (
 )
 
 
+# Two boards on a rail, seen from above one above the other on the page
+BOARDS = """(leg_1:2x4 =720)
+(leg_3:2x4 =720)
+(apron_left:2x4 =524)
+(board_a:1x4 =300)
+(board_b:1x4 =300)
+leg_1 -[BR<100 DB<0]- apron_left
+leg_3 -[FR<100 TB<0]- apron_left
+apron_left -[RF<50 BT<0]- board_a
+apron_left -[RF<350 BT<0]- board_b
+steps {
+  "Frame": leg_1, leg_3, apron_left
+  "Boards": board_a, board_b
+}
+"""
+
+
 @pytest.fixture(scope="module")
-def table_step_4():
+def table():
+    """Steps 1, 4 and 13 of the table: the first leg alone, a leg at the
+    back, and a top board."""
     assembly = Assembly.of(parse_dsl(TABLE))
     part = assembly_to_build123d(assembly, fillet_radius=0)
-    return step_image(assembly, part, plan_steps(assembly).steps[3])
+    steps = plan_steps(assembly).steps
+    return {n: step_image(assembly, part, steps[n - 1]) for n in (1, 4, 13)}
+
+
+@pytest.fixture(scope="module")
+def table_step_4(table):
+    return table[4]
+
+
+def _points(lines, leave_out=()) -> np.ndarray:
+    """Points along the visible lines of every piece but ``leave_out``."""
+    return np.array(
+        [
+            (p.X, p.Y)
+            for piece_id, piece in lines.items()
+            if piece_id not in leave_out
+            for shape in piece.visible
+            for edge in shape.edges()
+            for p in (edge.position_at(t / 40) for t in range(41))
+        ]
+    )
+
+
+def _inside(points: np.ndarray, box) -> bool:
+    return bool(
+        (
+            (points[:, 0] > box[0])
+            & (points[:, 0] < box[2])
+            & (points[:, 1] > box[1])
+            & (points[:, 1] < box[3])
+        ).any()
+    )
 
 
 def _direction(cue) -> np.ndarray:
@@ -132,29 +183,12 @@ def test_this_steps_pieces_are_black_and_earlier_ones_grey(shelf):
     assert _drawn(images[3].svg, "New") > 0
 
 
-def test_hidden_lines_are_drawn_for_this_steps_pieces_only(shelf):
-    _, plan, images = shelf
-    join = images[2]
-    assert any(join.lines[p].hidden for p in plan.steps[2].pieces)
-    assert 'id="NewHidden"' in join.svg
-
-
-def test_earlier_pieces_hidden_lines_are_left_out(shelf):
-    _, plan, images = shelf
-    join, step = images[2], plan.steps[2]
-
-    def hidden_edges(pieces) -> int:
-        return sum(
-            len(shape.edges())
-            for lines in (join.lines, join.dimension_lines)
-            for piece_id in pieces
-            for shape in lines[piece_id].hidden
-        )
-
-    earlier = [piece_id for piece_id in step.shown if piece_id not in step.pieces]
-    assert hidden_edges(earlier) > 0
-    # An SVG element draws one edge or more, so there is no room for theirs
-    assert 0 < _drawn(join.svg, "NewHidden") <= hidden_edges(step.pieces)
+def test_hidden_lines_are_left_out(shelf):
+    # Dashed back edges only crowd the image; what shows is enough to build
+    _, _, images = shelf
+    for image in images:
+        assert any(piece.hidden for piece in image.lines.values())
+        assert "stroke-dasharray" not in image.svg, image.step.name
 
 
 def test_every_new_piece_is_named_in_every_step(shelf):
@@ -411,11 +445,99 @@ def test_a_reference_piece_tells_left_from_right_when_the_step_cannot(
     assert reference in table_step_4.dimension_labels
 
 
-def test_a_step_named_in_one_half_only_gets_two_references(shelf):
-    # The join's aprons hide behind the legs seen from the side, so two
-    # earlier pieces, apart across the view, show which way round it is
-    _, _, images = shelf
-    join = images[2]
+def test_a_step_named_in_one_half_only_gets_two_references():
+    # The side table's joining aprons hide behind the legs seen from the
+    # side, so two earlier pieces, apart across the view, show which way
+    # round it is
+    source = (
+        Path(__file__).parents[2] / "skills" / "design" / "examples" / "side-table.nd"
+    ).read_text()
+    assembly = Assembly.of(parse_dsl(source))
+    part = assembly_to_build123d(assembly, fillet_radius=0)
+    join = step_image(assembly, part, plan_steps(assembly).steps[2])
     assert len(join.references) == 2
     a, b = (join.dimension_labels[p] for p in join.references)
     assert abs((a[0] + a[2]) / 2 - (b[0] + b[2]) / 2) >= 10
+
+
+def test_one_grey_name_alone_is_left_out(shelf):
+    # Only one earlier piece of the shelf's join can be named clear of the
+    # others: a lone name cannot tell which way round the view is, and the
+    # arrow already does
+    _, _, images = shelf
+    assert images[2].references == []
+
+
+def test_grey_names_cover_no_other_piece(shelf, table):
+    # A grey name stands on its own piece: its ground would hide the lines
+    # of any other, and on another piece it would seem to name that one
+    _, _, images = shelf
+    for image in [*images, *table.values()]:
+        for reference in image.references:
+            for lines, boxes in (
+                (image.lines, image.labels),
+                (image.dimension_lines, image.dimension_labels),
+            ):
+                others = _points(lines, leave_out=(reference,))
+                assert not _inside(others, boxes[reference]), (
+                    image.step.number,
+                    reference,
+                )
+
+
+def test_the_arrow_keeps_well_clear_of_a_drawing_that_reaches_its_corner(table):
+    # The first leg alone is tall enough to reach the corner, so it is drawn
+    # smaller; even so the arrow's tip must not seem to push at it
+    first = table[1]
+    every = np.array(
+        [
+            (p.X, p.Y)
+            for piece in first.lines.values()
+            for shape in piece.visible + piece.hidden
+            for edge in shape.edges()
+            for p in (edge.position_at(t / 40) for t in range(41))
+        ]
+    )
+    width = every[:, 0].max() - every[:, 0].min()
+    height = every[:, 1].max() - every[:, 1].min()
+    area = (PAGE_WIDTH / 2 - 2 * 6.0, PAGE_HEIGHT - 10.0 - 6.0)
+    assert max(width / area[0], height / area[1]) < 0.85
+    drawn = _points(first.lines)
+    gaps = np.linalg.norm(drawn - np.array(first.cue[3]), axis=1)
+    assert gaps.min() >= 6.0
+
+
+def test_a_grey_name_sits_apart_from_the_steps_own(table_step_4):
+    [reference] = table_step_4.references
+    leg, other = (table_step_4.dimension_labels[p] for p in ("leg_3", reference))
+    assert abs((leg[0] + leg[2]) / 2 - (other[0] + other[2]) / 2) >= 10
+
+
+def test_from_below_the_arrow_points_up():
+    assert _direction(_cue((2, -1))) == pytest.approx((0.0, 1.0))
+
+
+def test_a_top_view_needs_no_grey_name_when_its_names_sit_apart_up_the_page():
+    # Seen from above nothing is mirrored: names one above the other already
+    # tie the view to the isometric
+    assembly = Assembly.of(parse_dsl(BOARDS))
+    part = assembly_to_build123d(assembly, fillet_radius=0)
+    boards = step_image(assembly, part, plan_steps(assembly).steps[1])
+    assert boards.view.caption == "from +z"
+    assert {"board_a", "board_b"} <= set(boards.dimension_labels)
+    assert boards.references == []
+
+
+def test_names_on_the_dimension_view_cross_no_dimension_line():
+    assembly = Assembly.of(parse_dsl(CROWDED))
+    part = assembly_to_build123d(assembly, fillet_radius=0)
+    image = step_image(assembly, part, plan_steps(assembly).steps[0])
+    segments = list(image.dimensions.lines)
+    for arrow in image.dimensions.arrows:
+        a, b, c = arrow_points(*arrow)
+        segments += [(a, b), (b, c), (c, a)]
+    assert [
+        name
+        for name, box in image.dimension_labels.items()
+        if any(_crosses(box, segment) for segment in segments)
+    ] == []
