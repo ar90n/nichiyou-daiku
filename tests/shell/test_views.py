@@ -6,11 +6,13 @@ import pytest
 
 from nichiyou_daiku.core.assembly import Assembly
 from nichiyou_daiku.dsl import parse_dsl
+from nichiyou_daiku.shell.dimensioning import VIEW_NAMES
 from nichiyou_daiku.shell.views import VIEWS, axis_view, project, visible_labels
 
 ROOT = Path(__file__).parents[2]
 SHELF = (ROOT / "skills" / "design" / "examples" / "two-tier-shelf.nd").read_text()
 VIEW = {view.caption: view for view in VIEWS}
+CAPTION = {name: caption for caption, name in VIEW_NAMES.items()}
 
 
 def _labels(source: str, caption: str) -> list[str]:
@@ -20,11 +22,34 @@ def _labels(source: str, caption: str) -> list[str]:
 
 def test_the_views_are_the_drawings():
     assert [(v.caption, v.origin, v.up, v.column, v.row) for v in VIEWS] == [
-        ("from +z", (0, 0, 100), (0, 1, 0), 0, 0),
-        ("from -y", (0, -100, 0), (0, 0, 1), 0, 1),
-        ("from +x +y +z", (100, 100, 100), (0, 0, 1), 1, 0),
-        ("from +x", (100, 0, 0), (0, 0, 1), 1, 1),
+        ("from +z", (0, 0, 100), (0, -1, 0), 0, 0),
+        ("from +y", (0, 100, 0), (0, 0, 1), 0, 1),
+        ("from -x +y +z", (-100, 100, 100), (0, 0, 1), 1, 0),
+        ("from -x", (-100, 0, 0), (0, 0, 1), 1, 1),
     ]
+
+
+def test_the_front_view_shows_the_front_and_the_side_view_the_right_side():
+    # The design skill turns the furniture's front toward +y and its left
+    # toward +x (patterns.md), as the shelf's names say
+    front = _labels(SHELF, CAPTION["front"])
+    side = _labels(SHELF, CAPTION["right side"])
+    assert "apron_upper_front" in front
+    assert "apron_upper_back" not in front
+    assert "apron_upper_right" in side
+    assert "apron_upper_left" not in side
+
+
+def test_the_views_line_up_with_the_front_view_in_third_angle():
+    top, front, side = (VIEW[CAPTION[name]] for name in ("top", "front", "right side"))
+    for point in ((10.0, 20.0, 30.0), (-5.0, 7.0, 2.0)):
+        assert project(top, point)[0] == pytest.approx(project(front, point)[0])
+        assert project(side, point)[1] == pytest.approx(project(front, point)[1])
+    # The front edge faces the front view: at the bottom of the top view
+    # above it and at the left of the side view right of it
+    near, far = (0.0, 100.0, 0.0), (0.0, 0.0, 0.0)
+    assert project(top, near)[1] < project(top, far)[1]
+    assert project(side, near)[0] < project(side, far)[0]
 
 
 @pytest.mark.parametrize("view", VIEWS, ids=lambda v: v.caption)
@@ -45,16 +70,16 @@ def test_projection_matches_build123d(view):
 def test_a_shelf_under_the_top_is_labelled_from_the_side_not_from_above():
     shelves = {"shelf_1", "shelf_2", "shelf_3", "shelf_4"}
     assert shelves.isdisjoint(_labels(SHELF, "from +z"))
-    assert shelves <= set(_labels(SHELF, "from -y"))
+    assert shelves <= set(_labels(SHELF, "from +y"))
 
 
 def test_touching_pieces_do_not_hide_each_other():
     # b stands right beside a, face to face
     source = "(a:2x4 =400)\n(b:2x4 =400)\na -[RF<0 LF<0]- b\n"
     assert _labels(source, "from +z") == ["a", "b"]
-    assert _labels(source, "from -y") == ["a", "b"]
-    # Seen from +x, b is in front of a
-    assert _labels(source, "from +x") == ["b"]
+    assert _labels(source, "from +y") == ["a", "b"]
+    # Seen from -x, a is in front of b
+    assert _labels(source, "from -x") == ["a"]
 
 
 def test_labels_sit_on_their_piece():
@@ -89,5 +114,5 @@ def test_axis_views_look_from_their_side_with_z_up():
     assert axis_view(0, -1).caption == "from -x"
     assert axis_view(0, -1).origin == (-100.0, 0.0, 0.0)
     assert axis_view(1, 1).up == (0, 0, 1)
-    # Looking along z, +y is up
-    assert axis_view(2, -1).up == (0, 1, 0)
+    # Looking along z, the front (+y) is down, as in the top view
+    assert axis_view(2, -1).up == (0, -1, 0)

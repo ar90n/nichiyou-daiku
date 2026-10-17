@@ -62,7 +62,7 @@ MARGIN = 6.0
 HEADING = 10.0  # band at the top for the step's heading
 ISO_FILL = 0.9
 
-_ISOMETRIC = next(view for view in VIEWS if view.caption == "from +x +y +z")
+_ISOMETRIC = next(view for view in VIEWS if view.caption == "from -x +y +z")
 _KIND_MARKS = {"sub-assembly": " (sub-assembly)", "join": " (join)"}
 _SPLIT_ADVICE = "Split the step into steps that add fewer pieces"
 _IMAGE = re.compile(r"(step|part)-\d+\.png")

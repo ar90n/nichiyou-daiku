@@ -46,7 +46,7 @@ CORNER = "(a:2x4 =400)\n(b:2x4 =400)\na -[TF<0 BD<0]- b\n"
 CROWDED = "(rail:2x4 =2000)\n" + "".join(
     f"(s{i}:2x2 =300)\nrail -[RF<{i * 50.5:g} BT<0]- s{i}\n" for i in range(39)
 )
-ORTHOGRAPHIC = ("from +z", "from -y", "from +x")
+ORTHOGRAPHIC = ("from +z", "from +y", "from -x")
 
 
 def _model(source: str) -> tuple[Compound, Assembly]:
@@ -187,7 +187,7 @@ def test_orthographic_views_line_up_in_third_angle(shelf):
 
 def test_drawn_size_is_the_scale_written(shelf):
     # The shelf is 600 x 300 x 800
-    front, side = shelf.views["from -y"].box, shelf.views["from +x"].box
+    front, side = shelf.views["from +y"].box, shelf.views["from -x"].box
     assert front[2] - front[0] == pytest.approx(600 / shelf.denominator)
     assert front[3] - front[1] == pytest.approx(800 / shelf.denominator)
     assert side[2] - side[0] == pytest.approx(300 / shelf.denominator)
@@ -317,7 +317,7 @@ def test_figures_are_as_tall_as_jis_asks(shelf):
 
 def test_vertical_values_sit_left_of_their_dimension_line(shelf):
     # JIS: read from the right of the page, so above the line is its left
-    for caption in ("from -y", "from +z"):
+    for caption in ("from +y", "from +z"):
         line = shelf.views[caption].box[0] - FIRST
         boxes = [
             label.box
@@ -329,11 +329,11 @@ def test_vertical_values_sit_left_of_their_dimension_line(shelf):
 
 
 def test_shelf_values(shelf):
-    heights = _texts(shelf, "from -y", "left")
+    heights = _texts(shelf, "from +y", "left")
     # 19 (the top boards' thickness) is lumber and does not fit at this scale
     assert sorted(heights) == sorted(["150", "89", "38", "415", "89", "800"])
-    assert sorted(_texts(shelf, "from -y", "below")) == ["422", "600", "89", "89"]
-    assert sorted(_texts(shelf, "from +x", "below")) == ["224", "300", "38", "38"]
+    assert sorted(_texts(shelf, "from +y", "below")) == ["422", "600", "89", "89"]
+    assert sorted(_texts(shelf, "from -x", "below")) == ["224", "300", "38", "38"]
     top = _texts(shelf, "from +z", "below")
     assert top.count("13.2") == 5 and top.count("600") == 1
     assert _texts(shelf, "from +z", "left") == ["300"]
@@ -353,7 +353,7 @@ def test_fillets_do_not_change_the_drawn_size(shelf_model):
     assembly = shelf_model[1]
     part = assembly_to_build123d(assembly, fillet_radius=5)
     sheet = _compose(part, assembly, "A3")
-    front = sheet.views["from -y"].box
+    front = sheet.views["from +y"].box
     assert front[2] - front[0] == pytest.approx(600 / sheet.denominator)
     assert _problems(sheet) == []
 

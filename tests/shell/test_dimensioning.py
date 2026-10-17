@@ -42,7 +42,7 @@ def _lumber(chain: Chain) -> list[bool]:
 
 
 def test_heights_stop_at_both_ends_of_every_piece(shelf):
-    chain = shelf[("from -y", "z")]
+    chain = shelf[("from +y", "z")]
     assert chain.side == "left"
     assert chain.stops == pytest.approx((0, 150, 239, 277, 692, 781, 800))
     assert _texts(chain) == ["150", "89", "38", "415", "89", "19"]
@@ -52,8 +52,8 @@ def test_heights_stop_at_both_ends_of_every_piece(shelf):
 
 
 def test_front_and_side_stop_at_the_legs(shelf):
-    front = shelf[("from -y", "x")]
-    side = shelf[("from +x", "y")]
+    front = shelf[("from +y", "x")]
+    side = shelf[("from -x", "y")]
     assert (front.side, side.side) == ("below", "below")
     assert _texts(front) == ["89", "422", "89"]
     assert _lumber(front) == [True, False, True]

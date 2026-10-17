@@ -42,7 +42,7 @@ Check `overall_size` in the same JSON against the request (it is null while some
 
 ## 6. Look at it
 
-Run `nichiyou-daiku render <name>.nd -o <name>.png` and read the PNG. It shows the model from +z, -y, +x and +x +y +z (the axes of `validate --json`), with each piece's ID where you can see it; pieces hidden in every view are listed in the note at the bottom. Compare it with the request: which way the boards run, the heights of shelves and aprons, which way the legs face, and that nothing floats or sticks out. If something is off, fix it and go back to step 4. The first run installs build123d and can take a few minutes; tell the user.
+Run `nichiyou-daiku render <name>.nd -o <name>.png` and read the PNG. It shows the model from +z, +y, -x and -x +y +z (the axes of `validate --json`): the top, the front (the furniture's front faces +y), the right side and an isometric view, with each piece's ID where you can see it; pieces hidden in every view are listed in the note at the bottom. Compare it with the request: which way the boards run, the heights of shelves and aprons, which way the legs face, and that nothing floats or sticks out. If something is off, fix it and go back to step 4. The first run installs build123d and can take a few minutes; tell the user.
 
 ## 7. Output files on request
 

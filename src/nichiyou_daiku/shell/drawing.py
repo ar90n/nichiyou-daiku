@@ -65,7 +65,7 @@ _VIEW = {
     view.caption: view
     for view in [*(axis_view(a, s) for a in range(3) for s in (1, -1)), *VIEWS]
 }
-_ISOMETRIC = "from +x +y +z"
+_ISOMETRIC = "from -x +y +z"
 
 
 @dataclass
@@ -187,7 +187,7 @@ def _layout(
         )
         box = Compound(children=list(visible) + list(hidden)).bounding_box()
         projections[view.caption] = (visible, hidden, box)
-    top, front, side = (projections[c][2] for c in ("from +z", "from -y", "from +x"))
+    top, front, side = (projections[c][2] for c in ("from +z", "from +y", "from -x"))
     left_band = _levels("left").depth if bands else 0.0
     bottom_band = _levels("below").depth if bands else 0.0
 
@@ -207,8 +207,8 @@ def _layout(
     lower = top_edge - top.size.Y * factor - bottom_band - SPACE
     corners = {
         "from +z": (x0, top_edge),
-        "from -y": (x0, lower),
-        "from +x": (x0 + column * factor + SPACE, lower),
+        "from +y": (x0, lower),
+        "from -x": (x0 + column * factor + SPACE, lower),
     }
     views = {}
     for caption, (x, y) in corners.items():
@@ -225,7 +225,7 @@ def _layout(
 
     visible, hidden, box = projections[_ISOMETRIC]
     space = (
-        views["from +x"].box[2] + SPACE,
+        views["from -x"].box[2] + SPACE,
         title_block[3] + INSET,
         frame[2] - INSET,
         top_edge,

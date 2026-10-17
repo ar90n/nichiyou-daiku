@@ -21,7 +21,7 @@ _TOP_TOLERANCE_MM = 1e-6
 Axis = Literal["x", "y", "z"]
 Side = Literal["left", "below"]
 
-VIEW_NAMES = {"from +z": "top", "from -y": "front", "from +x": "right side"}
+VIEW_NAMES = {"from +z": "top", "from +y": "front", "from -x": "right side"}
 """Names of the dimensioned views, by their caption in ``views.VIEWS``."""
 
 
@@ -166,9 +166,9 @@ def chains(assembly: Assembly) -> list[Chain]:
         if box[1].z >= top - _TOP_TOLERANCE_MM
     ]
     return [
-        chain_for("from -y", "z", "left", bounds, pieces, list(pieces)),
-        chain_for("from -y", "x", "below", bounds, pieces, upright),
-        chain_for("from +x", "y", "below", bounds, pieces, upright),
+        chain_for("from +y", "z", "left", bounds, pieces, list(pieces)),
+        chain_for("from +y", "x", "below", bounds, pieces, upright),
+        chain_for("from -x", "y", "below", bounds, pieces, upright),
         chain_for("from +z", "x", "below", bounds, pieces, top_layer),
         chain_for("from +z", "y", "left", bounds, pieces, top_layer),
     ]

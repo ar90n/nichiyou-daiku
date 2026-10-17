@@ -26,22 +26,25 @@ class View(NamedTuple):
     row: int
 
 
-# The order is the order the technical drawing writes its edges in
+# The furniture's front faces +y and its left +x (the design skill's rule),
+# so these are the top, front and right side views in third angle, each
+# with the front edge toward the front view. The order is the order the
+# technical drawing writes its edges in.
 VIEWS = (
-    View("from +z", (0, 0, 100), (0, 1, 0), 0, 0),
-    View("from -y", (0, -100, 0), (0, 0, 1), 0, 1),
-    View("from +x +y +z", (100, 100, 100), (0, 0, 1), 1, 0),
-    View("from +x", (100, 0, 0), (0, 0, 1), 1, 1),
+    View("from +z", (0, 0, 100), (0, -1, 0), 0, 0),
+    View("from +y", (0, 100, 0), (0, 0, 1), 0, 1),
+    View("from -x +y +z", (-100, 100, 100), (0, 0, 1), 1, 0),
+    View("from -x", (-100, 0, 0), (0, 0, 1), 1, 1),
 )
 
 
 def axis_view(axis: int, sign: int) -> View:
     """The view from the ``sign`` side of world ``axis`` (0, 1, 2 for x, y,
-    z): z is up, or +y when looking along z. The three that ``VIEWS`` also
+    z): z is up, or -y when looking along z. The three that ``VIEWS`` also
     has project the same way."""
     origin = [0.0, 0.0, 0.0]
     origin[axis] = 100.0 * sign
-    up = (0, 1, 0) if axis == 2 else (0, 0, 1)
+    up = (0, -1, 0) if axis == 2 else (0, 0, 1)
     caption = f"from {'+' if sign > 0 else '-'}{'xyz'[axis]}"
     return View(caption, (origin[0], origin[1], origin[2]), up, 0, 0)
 
