@@ -162,6 +162,8 @@ def _levels(side: Side) -> _Levels:
     line = FIRST
     bend = line + beyond
     row = bend + SLANT
+    # Keep the band depth fixed even when no value needs the outside row, so
+    # the layout needs one scale pass (spec: band depth independent of scale)
     overall = row + PAD + height + PAD + OVERALL
     text_beyond = PAD + height if side == "left" else 0.0
     return _Levels(line, bend, row, overall, overall + max(OVER, text_beyond))
@@ -344,7 +346,8 @@ def _dimension(
             if not fits:
                 out.crowded.append(
                     f"{len(outside)} dimension values along {chain.axis} in "
-                    f"{where} do not fit beside their chain and overlap. {advice}"
+                    f"{where} do not fit beside their chain without crossing "
+                    f"its lines. {advice}"
                 )
             for (text, middle, _, across), centre in zip(outside, centres):
                 out.lines.append((at(middle, levels.line), at(middle, levels.bend)))

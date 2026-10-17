@@ -26,7 +26,7 @@ VIEW_NAMES = {"from +z": "top", "from -y": "front", "from +x": "right side"}
 
 
 class CrowdedDimensionsWarning(UserWarning):
-    """Dimension values that overlap: they do not fit beside their chain."""
+    """Dimension values that do not fit beside their chain."""
 
 
 class Segment(NamedTuple):

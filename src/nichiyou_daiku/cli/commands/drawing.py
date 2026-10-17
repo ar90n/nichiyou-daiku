@@ -88,7 +88,8 @@ def drawing(
     - Front view (elevation)
     - Side view (right side)
     - Isometric view
-    - Dimensions: overall size and where the pieces go
+    - Dimensions: overall size and where the pieces go (omitted with
+      --no-dimensions)
 
     \b
     Examples:

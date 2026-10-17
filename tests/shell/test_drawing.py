@@ -155,9 +155,11 @@ def _texts(sheet, view, side):
 # Layout and scale
 
 
-def test_frame_and_title_block_follow_build123d():
-    # A3: the frame is 390 x 260 around the page centre; the title block
-    # fills the bottom right quarter of its height
+def test_frame_and_title_block_are_pinned_for_a3():
+    # Pins the formula copied from build123d.drafting.TechnicalDrawing:
+    # width = page width - 2 * margin - 2 * nominal_text_size, height = 2/3
+    # of that, title block filling the bottom right quarter of its height.
+    # If build123d's page sizes or margin change, this fails and both move.
     assert _frame("A3") == ((-195.0, -130.0, 195.0, 130.0), (0.0, -130.0, 195.0, -65.0))
 
 
@@ -296,6 +298,8 @@ def test_dimensions_stay_inside_the_frame_and_off_the_title_block(sheets, path):
 
 @pytest.mark.parametrize("path", EXAMPLES, ids=lambda p: p.name)
 def test_example_values_all_fit(sheets, path):
+    # The examples are laid out on the default A3 page; smaller pages are
+    # allowed to ask for a larger one (CrowdedDimensionsWarning)
     assert sheets[path.name].dimensions.crowded == []
 
 
@@ -387,6 +391,39 @@ def test_crowded_values_warn_and_say_what_to_do():
     message = str(caught[0].message)
     assert "--page-size A2" in message
     assert "--no-dimensions" in message
+
+
+def test_values_keep_their_order_when_the_axis_runs_upward():
+    # The left band runs up the page. Values too small for their stretch go
+    # in the outside row bottom to top, without crossing a line or each other.
+    stops = (0.0, 10.0, 25.0, 45.0, 300.0)
+    chain = Chain(
+        view="from -y",
+        axis="z",
+        side="left",
+        stops=stops,
+        segments=tuple(Segment(a, b, lumber=False) for a, b in zip(stops, stops[1:])),
+    )
+    view = _View("from -y", (0.0, 0.0), 0.2, (0.0, 0.0, 60.0, 60.0), [], [])
+    out = _Dimensions()
+    _dimension(chain, view, out, "here", "Make room")
+    row = sorted(
+        (label for label in out.labels if label.text in {"10", "15", "20"}),
+        key=lambda label: label.centre[1],
+    )
+    assert [label.text for label in row] == ["10", "15", "20"]
+    assert out.crowded == []
+    assert [
+        (label.text, segment)
+        for label in out.labels
+        for segment in out.lines
+        if _crosses(label.box, segment)
+    ] == []
+    assert [
+        (a, b)
+        for a, b in combinations([label.box for label in out.labels], 2)
+        if _overlap(a, b)
+    ] == []
 
 
 def test_values_keep_their_order_when_the_axis_runs_leftward():
