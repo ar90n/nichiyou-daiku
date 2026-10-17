@@ -11,8 +11,9 @@ from nichiyou_daiku.core.assembly import Assembly  # noqa: E402
 from nichiyou_daiku.core.assembly.steps import plan_steps  # noqa: E402
 from nichiyou_daiku.dsl import parse_dsl  # noqa: E402
 from nichiyou_daiku.shell.build123d_export import assembly_to_build123d  # noqa: E402
-from nichiyou_daiku.shell.drawing import _arrow_points  # noqa: E402
+from nichiyou_daiku.shell.drawing import arrow_points  # noqa: E402
 from nichiyou_daiku.shell.instructions import (  # noqa: E402
+    _advice,
     image_name,
     part_image_name,
     step_image,
@@ -101,6 +102,24 @@ def test_hidden_lines_are_drawn_for_this_steps_pieces_only(shelf):
     assert 'id="NewHidden"' in join.svg
 
 
+def test_earlier_pieces_hidden_lines_are_left_out(shelf):
+    _, plan, images = shelf
+    join, step = images[2], plan.steps[2]
+
+    def hidden_edges(pieces) -> int:
+        return sum(
+            len(shape.edges())
+            for lines in (join.lines, join.dimension_lines)
+            for piece_id in pieces
+            for shape in lines[piece_id].hidden
+        )
+
+    earlier = [piece_id for piece_id in step.shown if piece_id not in step.pieces]
+    assert hidden_edges(earlier) > 0
+    # An SVG element draws one edge or more, so there is no room for theirs
+    assert 0 < _drawn(join.svg, "NewHidden") <= hidden_edges(step.pieces)
+
+
 def test_every_new_piece_is_named_in_every_step(shelf):
     # A piece whose centre is hidden is named where some of it shows
     _, _, images = shelf
@@ -158,7 +177,7 @@ def test_dimension_values_touch_no_line_and_no_other_value(shelf):
         out = image.dimensions
         segments = list(out.lines)
         for arrow in out.arrows:
-            a, b, c = _arrow_points(*arrow)
+            a, b, c = arrow_points(*arrow)
             segments += [(a, b), (b, c), (c, a)]
         boxes = [label.box for label in out.labels]
         assert [
@@ -284,3 +303,10 @@ def test_crowded_values_say_to_split_the_step():
     assert image.dimensions.crowded
     assert "step 1" in image.dimensions.crowded[0]
     assert "Split the step" in image.dimensions.crowded[0]
+
+
+def test_a_one_piece_step_is_not_told_to_split():
+    # Step 1 adds a and b; step 2 adds c alone and cannot be split
+    plan = plan_steps(Assembly.of(parse_dsl(THREE)))
+    assert "Split the step" in _advice(plan.steps[0])
+    assert "Anchor Details" in _advice(plan.steps[1])

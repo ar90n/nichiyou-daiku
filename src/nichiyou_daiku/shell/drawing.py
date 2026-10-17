@@ -69,7 +69,7 @@ _ISOMETRIC = "from -x +y +z"
 
 
 @dataclass
-class _View:
+class PlacedView:
     """A view's projected lines, placed on the page."""
 
     caption: str
@@ -90,7 +90,7 @@ class _Label(NamedTuple):
 
 
 @dataclass
-class _Dimensions:
+class DrawnDimensions:
     lines: list[tuple[Point, Point]] = field(default_factory=list)
     arrows: list[tuple[Point, Point]] = field(default_factory=list)
     """Tip and the unit direction it points in."""
@@ -104,8 +104,8 @@ class _Sheet:
     frame: Rect
     title_block: Rect
     denominator: float
-    views: dict[str, _View]
-    dimensions: _Dimensions
+    views: dict[str, PlacedView]
+    dimensions: DrawnDimensions
 
 
 def _frame(page_size: str) -> tuple[Rect, Rect]:
@@ -126,22 +126,22 @@ def _font_size() -> float:
     return TEXT_SIZE * TEXT_SIZE / figures
 
 
-def _text(content: str, rotation: float) -> Shape:
+def text_shape(content: str, rotation: float) -> Shape:
     return Rot(0, 0, rotation) * Text(
         content, font_size=_font_size(), align=(Align.CENTER, Align.CENTER)
     )
 
 
 @lru_cache(maxsize=None)
-def _text_size(content: str, rotation: float) -> Point:
-    box = _text(content, rotation).bounding_box()
+def text_size(content: str, rotation: float) -> Point:
+    box = text_shape(content, rotation).bounding_box()
     return box.size.X, box.size.Y
 
 
 @lru_cache(maxsize=1)
-def _line_height() -> float:
+def figure_line_height() -> float:
     """Height of a line of figures; the bands leave room for one."""
-    return max(_text_size(figure, 0.0)[1] for figure in "0123456789.")
+    return max(text_size(figure, 0.0)[1] for figure in "0123456789.")
 
 
 class _Levels(NamedTuple):
@@ -154,8 +154,8 @@ class _Levels(NamedTuple):
     depth: float  # the farthest thing drawn: the band's depth
 
 
-def _levels(side: Side) -> _Levels:
-    height = _line_height()
+def dimension_levels(side: Side) -> _Levels:
+    height = figure_line_height()
     # Values sit above their line: toward the view below it, and away from
     # the view beside it (read from the right of the page)
     beyond = OVER if side == "below" else max(OVER, PAD + height + PAD)
@@ -177,7 +177,7 @@ def _place(edges: ShapeList, factor: float, offset: Point) -> list[Shape]:
 
 def _layout(
     part: Compound, frame: Rect, title_block: Rect, bands: bool
-) -> tuple[float, dict[str, _View]]:
+) -> tuple[float, dict[str, PlacedView]]:
     """Scale denominator and placed views: the orthographic views at one
     scale left of the title block, the isometric one above it at its own."""
     projections = {}
@@ -188,8 +188,8 @@ def _layout(
         box = Compound(children=list(visible) + list(hidden)).bounding_box()
         projections[view.caption] = (visible, hidden, box)
     top, front, side = (projections[c][2] for c in ("from +z", "from +y", "from -x"))
-    left_band = _levels("left").depth if bands else 0.0
-    bottom_band = _levels("below").depth if bands else 0.0
+    left_band = dimension_levels("left").depth if bands else 0.0
+    bottom_band = dimension_levels("below").depth if bands else 0.0
 
     left, bottom, top_edge = frame[0] + INSET, frame[1] + INSET, frame[3] - INSET
     right = title_block[0] - INSET
@@ -214,7 +214,7 @@ def _layout(
     for caption, (x, y) in corners.items():
         visible, hidden, box = projections[caption]
         offset = (x - box.min.X * factor, y - box.max.Y * factor)
-        views[caption] = _View(
+        views[caption] = PlacedView(
             caption,
             offset,
             factor,
@@ -236,7 +236,7 @@ def _layout(
     cx, cy = (space[0] + space[2]) / 2, (space[1] + space[3]) / 2
     offset = (cx - box.center().X * factor, cy - box.center().Y * factor)
     half_width, half_height = box.size.X * factor / 2, box.size.Y * factor / 2
-    views[_ISOMETRIC] = _View(
+    views[_ISOMETRIC] = PlacedView(
         _ISOMETRIC,
         offset,
         factor,
@@ -247,7 +247,7 @@ def _layout(
     return denominator, views
 
 
-def _arrow_points(tip: Point, direction: Point) -> tuple[Point, Point, Point]:
+def arrow_points(tip: Point, direction: Point) -> tuple[Point, Point, Point]:
     back = (tip[0] - direction[0] * ARROW, tip[1] - direction[1] * ARROW)
     normal = (-direction[1] * ARROW / 6, direction[0] * ARROW / 6)
     return (
@@ -268,15 +268,15 @@ def _crowded_advice(page_size: str) -> str:
     )
 
 
-def _dimension(
-    chain: Chain, view: _View, out: _Dimensions, where: str, advice: str
+def draw_chain(
+    chain: Chain, view: PlacedView, out: DrawnDimensions, where: str, advice: str
 ) -> None:
     """Draw one chain beside its view: extension lines, the chain with its
     values (inside their stretch, else in a row with leaders), the overall.
     Values that do not fit are reported as being in ``where``, with
     ``advice`` on making room."""
     horizontal = chain.side == "below"
-    levels = _levels(chain.side)
+    levels = dimension_levels(chain.side)
     edge = view.box[1] if horizontal else view.box[0]
     rotation = 0.0 if horizontal else 90.0
     # Depth of a value's top: toward the view below, away from it beside
@@ -297,12 +297,12 @@ def _dimension(
 
     def sizes(text: str) -> Point:
         """Size along the dimension line and across it."""
-        width, height = _text_size(text, rotation)
+        width, height = text_size(text, rotation)
         return (width, height) if horizontal else (height, width)
 
     def label(text: str, position: float, depth: float) -> None:
         centre = at(position, depth)
-        width, height = _text_size(text, rotation)
+        width, height = text_size(text, rotation)
         box = (
             centre[0] - width / 2,
             centre[1] - height / 2,
@@ -376,9 +376,9 @@ def _compose(part: Compound, assembly: Assembly | None, page_size: str) -> _Shee
     frame, title_block = _frame(page_size)
     found = chains(assembly) if assembly is not None else []
     denominator, views = _layout(part, frame, title_block, bands=bool(found))
-    dimensions = _Dimensions()
+    dimensions = DrawnDimensions()
     for chain in found:
-        _dimension(
+        draw_chain(
             chain,
             views[chain.view],
             dimensions,
@@ -459,9 +459,9 @@ def technical_drawing(
             [Edge.make_line(a, b) for a, b in dimensions.lines], layer="Dimensions"
         )
         exporter.add_shape(
-            [Polygon(*_arrow_points(*arrow), align=None) for arrow in dimensions.arrows]
+            [Polygon(*arrow_points(*arrow), align=None) for arrow in dimensions.arrows]
             + [
-                Pos(*label.centre) * _text(label.text, label.rotation)
+                Pos(*label.centre) * text_shape(label.text, label.rotation)
                 for label in dimensions.labels
             ],
             layer="DimensionText",

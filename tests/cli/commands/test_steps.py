@@ -112,3 +112,16 @@ def test_steps_reports_a_wrong_steps_block(runner, tmp_path):
     result = runner.invoke(cli, ["steps", str(path)])
     assert result.exit_code == 1
     assert "steps leaves out b" in result.stderr
+
+
+def test_steps_without_the_viz_extra_says_how_to_install_it(
+    runner, corner, monkeypatch
+):
+    import nichiyou_daiku.shell.build123d_export as export_module
+
+    monkeypatch.setattr(export_module, "HAS_BUILD123D", False)
+    result = runner.invoke(cli, ["steps", str(corner)])
+    assert result.exit_code == 1
+    assert "build123d is required" in result.stderr
+    assert 'uv tool install --force "nichiyou-daiku[viz] @ ' in result.stderr
+    assert not corner.with_name("corner-steps").exists()

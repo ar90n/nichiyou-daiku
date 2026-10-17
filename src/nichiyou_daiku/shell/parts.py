@@ -46,14 +46,14 @@ from nichiyou_daiku.core.placement import face_normal
 from nichiyou_daiku.shell.diagnostics import format_mm
 from nichiyou_daiku.shell.dimensioning import chain_from_stops
 from nichiyou_daiku.shell.drawing import (
-    _arrow_points,
-    _Dimensions,
-    _dimension,
-    _levels,
-    _line_height,
-    _text,
-    _text_size,
-    _View,
+    arrow_points,
+    DrawnDimensions,
+    draw_chain,
+    dimension_levels,
+    figure_line_height,
+    text_shape,
+    text_size,
+    PlacedView,
 )
 
 # Page mm, as wide as a step image
@@ -81,7 +81,7 @@ class PartSheet:
     """Each drilled face's outline."""
     texts: list[tuple[str, Rect]]
     """Every word and number drawn, with its box."""
-    dimensions: _Dimensions
+    dimensions: DrawnDimensions
     svg: str
 
     def png(self, size: int) -> bytes:
@@ -118,9 +118,7 @@ def _title_lines(title: str) -> list[str]:
     or between its fields."""
     lines = [""]
     for word in re.split(r"(?<=, )|(?<=   )", title):
-        wider = (
-            _text_size((lines[-1] + word).rstrip(), 0.0)[0] > PAGE_WIDTH - 2 * MARGIN
-        )
+        wider = text_size((lines[-1] + word).rstrip(), 0.0)[0] > PAGE_WIDTH - 2 * MARGIN
         if lines[-1] and wider:
             lines.append(word)
         else:
@@ -159,14 +157,14 @@ class _Page:
         self.texts: list[tuple[str, Rect]] = []
 
     def text(self, content: str, x: float, y: float) -> None:
-        width, height = _text_size(content, 0.0)
-        self.fills.append(Pos(x, y) * _text(content, 0.0))
+        width, height = text_size(content, 0.0)
+        self.fills.append(Pos(x, y) * text_shape(content, 0.0))
         self.texts.append(
             (content, (x - width / 2, y - height / 2, x + width / 2, y + height / 2))
         )
 
     def letter(self, content: str, x: float, y: float, hidden: bool = False) -> None:
-        ring = Pos(x, y) * Edge.make_circle(_line_height() * 0.9)
+        ring = Pos(x, y) * Edge.make_circle(figure_line_height() * 0.9)
         (self.hidden if hidden else self.thin).append(ring)
         self.text(content, x, y)
 
@@ -217,13 +215,13 @@ def _isometric(
         ((face, on_page(centre + face_normal(face) * extent / 2)) for face in letters),
         key=lambda target: -target[1][1],
     )
-    step = _line_height() * 2.6
+    step = figure_line_height() * 2.6
     first = top - ISO_HEIGHT / 2 + step * (len(targets) - 1) / 2
     for i, (face, point) in enumerate(targets):
         y = first - i * step
         hidden_face = bool(face_normal(face) @ toward <= 0)
         page.letter(letters[face], column, y, hidden_face)
-        leader = Edge.make_line((column - _line_height() * 0.9, y), tuple(point))
+        leader = Edge.make_line((column - figure_line_height() * 0.9, y), tuple(point))
         (page.hidden if hidden_face else page.thin).append(leader)
     # The reference (down) end: a triangle pointing at it from beyond it
     end = on_page(centre - np.array([0.0, 0.0, extent[2] / 2]))
@@ -249,13 +247,13 @@ def _face_view(
     face: Face,
     letters: dict[Face, str],
     page: _Page,
-    dimensions: _Dimensions,
+    dimensions: DrawnDimensions,
     bottom: float,
 ) -> Rect:
     """Draw one drilled face with its lower edge at ``bottom``; return its
     outline."""
     width, height = face_size(face, group.size)
-    left = MARGIN + LETTER_COLUMN + _levels("left").depth
+    left = MARGIN + LETTER_COLUMN + dimension_levels("left").depth
     along = min((PAGE_WIDTH - MARGIN - left) / width, MAX_SCALE)
     across = max(along, MIN_FACE_HEIGHT / height)
     rect = (left, bottom, left + width * along, bottom + height * across)
@@ -282,16 +280,16 @@ def _face_view(
         )
     where = f"face {letters[face]} of {group.pieces[0]}"
     # "from -y" puts a chain's x along the page and its z up the page
-    _dimension(
+    draw_chain(
         chain_from_stops("from -y", "x", "below", us),
-        _View("from -y", (left, bottom), along, rect, [], []),
+        PlacedView("from -y", (left, bottom), along, rect, [], []),
         dimensions,
         where,
         _ADVICE,
     )
-    _dimension(
+    draw_chain(
         chain_from_stops("from -y", "z", "left", vs),
-        _View("from -y", (left, bottom), across, rect, [], []),
+        PlacedView("from -y", (left, bottom), across, rect, [], []),
         dimensions,
         where,
         _ADVICE,
@@ -306,7 +304,7 @@ def _face_view(
             page.text(letters[neighbours[edge]], column, y)
     if face in ("top", "down"):
         # An end turns freely about the length, so its sides are named too
-        offset = _line_height() * 2
+        offset = figure_line_height() * 2
         for edge, x in (("left", column - offset), ("right", column + offset)):
             if neighbours[edge] in letters:
                 page.text(letters[neighbours[edge]], x, middle)
@@ -324,21 +322,21 @@ def part_sheet(assembly: Assembly, group: PartGroup) -> PartSheet:
         face for face in letters if any(h.face == face for h in group.holes)
     ]
     page = _Page()
-    dimensions = _Dimensions()
+    dimensions = DrawnDimensions()
 
     # Faces from the bottom of the page up, the first lettered at the top
-    below = _levels("below").depth
+    below = dimension_levels("below").depth
     y = MARGIN + below
     faces: dict[Face, Rect] = {}
     for face in reversed(drilled):
         faces[face] = _face_view(group, face, letters, page, dimensions, y)
-        y = faces[face][3] + _line_height() + FACE_GAP + below
+        y = faces[face][3] + figure_line_height() + FACE_GAP + below
     top = y - below + ISO_HEIGHT
     _isometric(group, letters, page, top)
     lines = _title_lines(part_title(assembly, group))
-    spacing = _line_height() * 1.6
+    spacing = figure_line_height() * 1.6
     for i, line in enumerate(reversed(lines)):
-        width, _ = _text_size(line, 0.0)
+        width, _ = text_size(line, 0.0)
         page.text(line, MARGIN + width / 2, top + 8 + i * spacing)
     height = top + 14 + (len(lines) - 1) * spacing
 
@@ -365,12 +363,10 @@ def part_sheet(assembly: Assembly, group: PartGroup) -> PartSheet:
         if shapes:
             exporter.add_shape(shapes, layer=layer)
     labels = [
-        Pos(*label.centre) * _text(label.text, label.rotation)
+        Pos(*label.centre) * text_shape(label.text, label.rotation)
         for label in dimensions.labels
     ]
-    arrows = [
-        Polygon(*_arrow_points(*arrow), align=None) for arrow in dimensions.arrows
-    ]
+    arrows = [Polygon(*arrow_points(*arrow), align=None) for arrow in dimensions.arrows]
     exporter.add_shape(page.fills + labels + arrows, layer="Text")
     with tempfile.TemporaryDirectory() as directory:
         path = Path(directory) / "part.svg"

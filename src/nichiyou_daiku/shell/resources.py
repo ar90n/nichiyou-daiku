@@ -315,7 +315,7 @@ def _size(value: float) -> float:
     return round(value, 1)
 
 
-def _hardware(
+def count_hardware(
     assembly: Assembly, connections: Collection[tuple[str, str]] | None = None
 ) -> list[HardwareItem]:
     """Count the fasteners laid out, by kind and size: dowels first, then
@@ -492,6 +492,6 @@ def extract_resources(assembly: Assembly) -> ResourceSummary:
         overall_size=overall_size,
         size_reference=size_reference,
         issues=describe_assembly_issues(assembly),
-        hardware=_hardware(assembly),
+        hardware=count_hardware(assembly),
         drill_bits=_drill_bits(assembly),
     )

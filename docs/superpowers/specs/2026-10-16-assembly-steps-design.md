@@ -52,7 +52,7 @@ steps {
 - 文法: `steps "{" step+ "}"`、`step: ESCAPED_STRING ":" piece_ref ("," piece_ref)*`。`steps` は予約語（部材名・変数名に
   使えない）。手順は 1 つ以上、手順の部材は 1 つ以上（空は文法の誤り）。末尾のカンマは書かない。
 - .nd に 0 か 1 つ。どこに書いてもよい。各手順は名前（文字列）と、その手順で付ける部材の ID の並び。
-- 名前は見出しのラベル（`Step 1 — Left frame`）にだけ使う。
+- 名前は見出しのラベル（`Step 1 - Left frame`）にだけ使う。区切りは「 - 」（当初この仕様書は「—」と書いていたが、実装と出力は「 - 」なので仕様書を合わせた）。
 - 各手順は必ず新しい部材を含むので、部材を足さずに組同士を合わせるだけの手順は書けない（合わせるのは、両方の組に付く部材を
   足す手順になる）。
 - 検査（DSL の意味の誤りとして、validate でも出る。何が悪く、どう直すかを書く）:
@@ -93,7 +93,7 @@ steps {
 ```
 # two-tier-shelf: assembly steps
 
-## Step 2 — Right frame (sub-assembly)
+## Step 2 - Right frame (sub-assembly)
 
 ![Step 2](step-02.png)
 

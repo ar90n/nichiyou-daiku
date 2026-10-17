@@ -23,13 +23,13 @@ from nichiyou_daiku.shell.drawing import (  # noqa: E402
     FIRST,
     PAD,
     TEXT_SIZE,
-    _arrow_points,
+    arrow_points,
     _compose,
     _crowded_advice,
-    _Dimensions,
-    _dimension,
+    DrawnDimensions,
+    draw_chain,
     _frame,
-    _View,
+    PlacedView,
     technical_drawing,
 )
 
@@ -119,7 +119,7 @@ def _segments(sheet):
     """Every dimension line, leader and arrow edge."""
     segments = list(sheet.dimensions.lines)
     for arrow in sheet.dimensions.arrows:
-        a, b, c = _arrow_points(*arrow)
+        a, b, c = arrow_points(*arrow)
         segments += [(a, b), (b, c), (c, a)]
     return segments
 
@@ -415,9 +415,9 @@ def test_values_keep_their_order_when_the_axis_runs_upward():
         stops=stops,
         segments=tuple(Segment(a, b, lumber=False) for a, b in zip(stops, stops[1:])),
     )
-    view = _View("from -y", (0.0, 0.0), 0.2, (0.0, 0.0, 60.0, 60.0), [], [])
-    out = _Dimensions()
-    _dimension(chain, view, out, "here", "Make room")
+    view = PlacedView("from -y", (0.0, 0.0), 0.2, (0.0, 0.0, 60.0, 60.0), [], [])
+    out = DrawnDimensions()
+    draw_chain(chain, view, out, "here", "Make room")
     row = sorted(
         (label for label in out.labels if label.text in {"10", "15", "20"}),
         key=lambda label: label.centre[1],
@@ -449,9 +449,9 @@ def test_values_keep_their_order_when_the_axis_runs_leftward():
         stops=stops,
         segments=tuple(Segment(a, b, lumber=False) for a, b in zip(stops, stops[1:])),
     )
-    view = _View("from +y", (0.0, 0.0), 0.2, (-60.0, 0.0, 0.0, 20.0), [], [])
-    out = _Dimensions()
-    _dimension(chain, view, out, "here", "Make room")
+    view = PlacedView("from +y", (0.0, 0.0), 0.2, (-60.0, 0.0, 0.0, 20.0), [], [])
+    out = DrawnDimensions()
+    draw_chain(chain, view, out, "here", "Make room")
     row = sorted(
         (label for label in out.labels if label.text in {"10", "15", "20"}),
         key=lambda label: label.centre[0],

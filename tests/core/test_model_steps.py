@@ -31,8 +31,12 @@ def test_a_model_needs_no_steps():
 
 
 def test_every_piece_must_be_in_a_step():
-    with pytest.raises(ValueError, match="steps leaves out block; add them to a step"):
+    with pytest.raises(ValueError, match="steps leaves out block; add it to a step"):
         _with_steps(Step(name="Frame", pieces=("post_a", "rail", "post_b")))
+    with pytest.raises(
+        ValueError, match="steps leaves out rail, block; add them to a step"
+    ):
+        _with_steps(Step(name="Frame", pieces=("post_a", "post_b")))
 
 
 def test_unknown_piece_names_a_close_one():
@@ -49,6 +53,17 @@ def test_a_piece_in_two_steps_is_an_error():
         _with_steps(
             Step(name="Frame", pieces=("post_a", "rail", "post_b")),
             Step(name="Block", pieces=("block", "rail")),
+        )
+
+
+def test_a_piece_in_two_steps_of_one_name_says_which_steps():
+    with pytest.raises(
+        ValueError,
+        match="'rail' is in steps 1 and 2, both named 'Frame'; keep it in one step",
+    ):
+        _with_steps(
+            Step(name="Frame", pieces=("post_a", "rail", "post_b")),
+            Step(name="Frame", pieces=("block", "rail")),
         )
 
 

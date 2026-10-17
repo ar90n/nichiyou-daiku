@@ -42,16 +42,16 @@ from nichiyou_daiku.core.assembly.steps import PlannedStep, StepPlan, plan_steps
 from nichiyou_daiku.shell.diagnostics import format_mm
 from nichiyou_daiku.shell.dimensioning import Axis, chain_for
 from nichiyou_daiku.shell.drawing import (
-    _arrow_points,
-    _Dimensions,
-    _dimension,
-    _levels,
-    _text,
-    _text_size,
-    _View,
+    arrow_points,
+    DrawnDimensions,
+    draw_chain,
+    dimension_levels,
+    text_shape,
+    text_size,
+    PlacedView,
 )
 from nichiyou_daiku.shell.parts import part_sheet
-from nichiyou_daiku.shell.resources import _hardware
+from nichiyou_daiku.shell.resources import count_hardware
 from nichiyou_daiku.shell.views import VIEWS, View, axis_view, label_at, project
 
 # Page mm of a step image: an isometric half and a dimensioned half. Small
@@ -65,6 +65,7 @@ ISO_FILL = 0.9
 _ISOMETRIC = next(view for view in VIEWS if view.caption == "from -x +y +z")
 _KIND_MARKS = {"sub-assembly": " (sub-assembly)", "join": " (join)"}
 _SPLIT_ADVICE = "Split the step into steps that add fewer pieces"
+_ONE_PIECE_ADVICE = "The report's Anchor Details give where each connection is"
 _IMAGE = re.compile(r"(step|part)-\d+\.png")
 
 Rect = tuple[float, float, float, float]
@@ -83,11 +84,13 @@ class StepImage:
     step: PlannedStep
     lines: dict[str, _PieceLines]
     """Isometric lines of each piece shown."""
+    dimension_lines: dict[str, _PieceLines]
+    """The dimension view's lines of each piece shown."""
     labels: dict[str, Rect]
     """Boxes of the labels naming this step's pieces."""
     view: View
     """The view dimensioning this step."""
-    dimensions: _Dimensions
+    dimensions: DrawnDimensions
     svg: str
 
     def png(self, size: int) -> bytes:
@@ -179,6 +182,12 @@ def _placed(
     }
 
 
+def _advice(step: PlannedStep) -> str:
+    """What to do when a step's values do not fit: a step of one piece
+    cannot be split, so the report has to give its places."""
+    return _SPLIT_ADVICE if len(step.pieces) > 1 else _ONE_PIECE_ADVICE
+
+
 def _heading(step: PlannedStep) -> str:
     name = f" - {step.name}" if step.name else ""
     return f"Step {step.number}{name}{_KIND_MARKS.get(step.kind, '')}"
@@ -186,11 +195,11 @@ def _heading(step: PlannedStep) -> str:
 
 def _dimension_view(
     assembly: Assembly, step: PlannedStep, lines: dict[str, _PieceLines], area: Rect
-) -> tuple[View, _View, _Dimensions]:
+) -> tuple[View, PlacedView, DrawnDimensions]:
     """The step's view placed in ``area`` with its chains drawn: the shown
     pieces as the extent, stops at this step's pieces and their partners."""
     view = axis_view(*step.view)
-    left, below = _levels("left").depth, _levels("below").depth
+    left, below = dimension_levels("left").depth, dimension_levels("below").depth
     inner = (area[0] + left, area[1] + below, area[2], area[3])
     bounds = _bounds(lines)
     factor = min(
@@ -204,7 +213,7 @@ def _dimension_view(
         inner[0] + (bounds[2] - bounds[0]) * factor,
         inner[3],
     )
-    placed = _View(view.caption, offset, factor, box, [], [])
+    placed = PlacedView(view.caption, offset, factor, box, [], [])
 
     model, poses = assembly.model, assembly.placement.poses
     partners = {
@@ -215,7 +224,7 @@ def _dimension_view(
     }
     chosen = [*step.pieces, *sorted(partners)]
     world = {p: poses[p].bounds(model.pieces[p]) for p in step.shown}
-    dimensions = _Dimensions()
+    dimensions = DrawnDimensions()
     names: tuple[Axis, Axis, Axis] = ("x", "y", "z")
     for axis in (a for a in range(3) if a != step.view[0]):
         unit = [0.0, 0.0, 0.0]
@@ -225,7 +234,7 @@ def _dimension_view(
         chain = chain_for(
             view.caption, names[axis], side, world, dict(model.pieces), chosen
         )
-        _dimension(chain, placed, dimensions, f"step {step.number}", _SPLIT_ADVICE)
+        draw_chain(chain, placed, dimensions, f"step {step.number}", _advice(step))
     return view, placed, dimensions
 
 
@@ -243,7 +252,7 @@ def step_image(assembly: Assembly, part: Compound, step: PlannedStep) -> StepIma
         if label is None:
             continue
         x, y = offset[0] + label.x * factor, offset[1] + label.y * factor
-        width, height = _text_size(label.piece_id, 0.0)
+        width, height = text_size(label.piece_id, 0.0)
         box = (x - width / 2, y - height / 2, x + width / 2, y + height / 2)
         # A label that would cover another is left out; the table names it
         if all(
@@ -305,26 +314,26 @@ def step_image(assembly: Assembly, part: Compound, step: PlannedStep) -> StepIma
             ],
             layer="LabelGround",
         )
-    heading_size = _text_size(_heading(step), 0.0)
+    heading_size = text_size(_heading(step), 0.0)
     texts = [
         Pos(MARGIN + heading_size[0] / 2, PAGE_HEIGHT - HEADING / 2)
-        * _text(_heading(step), 0.0),
+        * text_shape(_heading(step), 0.0),
         *(
-            Pos((b[0] + b[2]) / 2, (b[1] + b[3]) / 2) * _text(piece_id, 0.0)
+            Pos((b[0] + b[2]) / 2, (b[1] + b[3]) / 2) * text_shape(piece_id, 0.0)
             for piece_id, b in labels.items()
         ),
         *(
-            Pos(*label.centre) * _text(label.text, label.rotation)
+            Pos(*label.centre) * text_shape(label.text, label.rotation)
             for label in dimensions.labels
         ),
-        *(Polygon(*_arrow_points(*arrow), align=None) for arrow in dimensions.arrows),
+        *(Polygon(*arrow_points(*arrow), align=None) for arrow in dimensions.arrows),
     ]
     exporter.add_shape(texts, layer="Text")
     with tempfile.TemporaryDirectory() as directory:
         path = Path(directory) / "step.svg"
         exporter.write(str(path))
         svg = path.read_text()
-    return StepImage(step, iso, labels, view, dimensions, svg)
+    return StepImage(step, iso, dims, labels, view, dimensions, svg)
 
 
 def image_name(step: PlannedStep, count: int) -> str:
@@ -408,7 +417,7 @@ def steps_markdown(assembly: Assembly, plan: StepPlan, title: str) -> str:
             piece = assembly.model.pieces[piece_id]
             length = format_mm(piece.length) if piece.length is not None else "?"
             lines.append(f"| {piece_id} | {piece.type.value} | {length} |")
-        hardware = _hardware(assembly, step.connections)
+        hardware = count_hardware(assembly, step.connections)
         if hardware:
             lines += ["", "| Fastener | Count |", "|----------|-------|"]
             lines += [f"| {item.name} | {item.count} |" for item in hardware]

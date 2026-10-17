@@ -15,7 +15,7 @@ from nichiyou_daiku.core.assembly.parts import (  # noqa: E402
     part_groups,
 )
 from nichiyou_daiku.dsl import parse_dsl  # noqa: E402
-from nichiyou_daiku.shell.drawing import _arrow_points, _text_size  # noqa: E402
+from nichiyou_daiku.shell.drawing import arrow_points, text_size  # noqa: E402
 from nichiyou_daiku.shell.parts import (  # noqa: E402
     PAGE_WIDTH,
     part_sheet,
@@ -112,7 +112,7 @@ def _problems(sheet) -> list:
     boxes = [box for _, box in sheet.texts]
     segments = list(sheet.dimensions.lines)
     for arrow in sheet.dimensions.arrows:
-        a, b, c = _arrow_points(*arrow)
+        a, b, c = arrow_points(*arrow)
         segments += [(a, b), (b, c), (c, a)]
     values = [label.box for label in sheet.dimensions.labels]
     return (
@@ -236,7 +236,7 @@ def test_mixed_holes_draw_cleanly():
 
 def test_the_depth_symbol_is_drawn():
     # A font without it would draw nothing
-    assert _text_size("↧", 0.0)[0] > 0
+    assert text_size("↧", 0.0)[0] > 0
 
 
 def test_png_is_written(shelf):

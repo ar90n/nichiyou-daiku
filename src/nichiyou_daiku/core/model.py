@@ -52,8 +52,9 @@ def _check_steps(
     steps: tuple[Step, ...],
 ) -> None:
     """Raise what is wrong with the steps and how to fix it."""
-    step_of: dict[str, str] = {}
-    for step in steps:
+    # A step's number, not its name, tells it apart: names may repeat
+    step_of: dict[str, int] = {}
+    for number, step in enumerate(steps, 1):
         if not step.pieces:
             raise ValueError(f"Step '{step.name}' adds no pieces; name at least one")
         for piece_id in step.pieces:
@@ -64,16 +65,19 @@ def _check_steps(
                     f"Step '{step.name}' names unknown piece '{piece_id}'{hint}"
                 )
             if piece_id in step_of:
-                where = (
-                    f"twice in step '{step.name}'"
-                    if step_of[piece_id] == step.name
-                    else f"in steps '{step_of[piece_id]}' and '{step.name}'"
-                )
+                first = step_of[piece_id]
+                if first == number:
+                    where = f"twice in step '{step.name}'"
+                elif steps[first - 1].name == step.name:
+                    where = f"in steps {first} and {number}, both named '{step.name}'"
+                else:
+                    where = f"in steps '{steps[first - 1].name}' and '{step.name}'"
                 raise ValueError(f"'{piece_id}' is {where}; keep it in one step")
-            step_of[piece_id] = step.name
+            step_of[piece_id] = number
     missing = [piece_id for piece_id in pieces if piece_id not in step_of]
     if missing:
-        raise ValueError(f"steps leaves out {', '.join(missing)}; add them to a step")
+        them = "it" if len(missing) == 1 else "them"
+        raise ValueError(f"steps leaves out {', '.join(missing)}; add {them} to a step")
     placed: list[str] = []
     for step in steps:
         placed += step.pieces
