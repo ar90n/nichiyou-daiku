@@ -16,6 +16,8 @@ from nichiyou_daiku.core.piece import PieceType, get_shape
 from nichiyou_daiku.core.placement import find_overlaps, overall_bounds
 from nichiyou_daiku.core.screw import CoarseThreadScrew, SlimScrew
 from nichiyou_daiku.dsl import parse_dsl
+from nichiyou_daiku.shell.cutting import DEFAULT_STANDARD_LENGTHS
+from nichiyou_daiku.shell.stock import load_stock
 
 ROOT = Path(__file__).parents[1]
 MARKDOWN = sorted(
@@ -154,6 +156,17 @@ def test_api_spec_examples_run():
     results = runner.summarize(verbose=False)
     assert results.failed == 0
     assert results.attempted > 0
+
+
+def test_the_stock_file_example_reads_as_described(tmp_path):
+    [example] = [body for _, language, body in _fences(DSL_SPEC) if language == "toml"]
+    path = tmp_path / "stock.toml"
+    path.write_text(example)
+    stock = load_stock(path)
+    assert stock.kerf == 2
+    assert stock.lengths[PieceType.PT_1x4] == [910, 1820]
+    # Lumber types left out keep the defaults
+    assert stock.lengths[PieceType.PT_2x6] == DEFAULT_STANDARD_LENGTHS[PieceType.PT_2x6]
 
 
 def test_lumber_table_matches_the_code():

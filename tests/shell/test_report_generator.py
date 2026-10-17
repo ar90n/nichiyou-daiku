@@ -333,6 +333,23 @@ class TestGenerateMarkdownReport:
         assert "Available: 1200mm, 1500mm" in report
         assert "1 × 1200mm boards" in report
 
+    def test_stock_lengths_keep_their_fraction(self):
+        # A store's board of 1820.5mm is not a 1820mm one
+        summary = ResourceSummary(
+            pieces=[_piece("a", 1000.0), _piece("b", 2000.0)],
+            total_pieces=2,
+            pieces_by_type={PieceType.PT_2x4: 2},
+            total_length_by_type={PieceType.PT_2x4: 3000.0},
+            total_volume=1.0,
+        )
+        report = generate_markdown_report(
+            summary, standard_lengths={PieceType.PT_2x4: [1820.5]}
+        )
+        assert "Available: 1820.5mm" in report
+        assert "- 1 × 1820.5mm boards" in report
+        assert "**Board 1** (1820.5mm):" in report
+        assert "longest available board (1820.5mm)" in report
+
     def test_should_use_the_given_saw_kerf(self):
         # Two 1220mm pieces fill a 2440mm board only if the cut takes nothing
         summary = ResourceSummary(

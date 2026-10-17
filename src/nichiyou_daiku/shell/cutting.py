@@ -21,9 +21,6 @@ DEFAULT_STANDARD_LENGTHS: Dict[PieceType, List[float]] = {
     piece_type: [1820.0, 2440.0, 3050.0, 3650.0] for piece_type in PieceType
 }
 
-FALLBACK_STANDARD_LENGTHS: List[float] = [2440.0]
-"""Stock lengths for a lumber type that ``standard_lengths`` does not list."""
-
 
 @dataclass
 class CutPlan:
@@ -221,9 +218,9 @@ def plan_cuts(
 
     Args:
         summary: Pieces to cut
-        standard_lengths: Stock board lengths per lumber type; defaults to
-            ``DEFAULT_STANDARD_LENGTHS``. Types it does not list use
-            ``FALLBACK_STANDARD_LENGTHS``.
+        standard_lengths: Stock board lengths per lumber type; types it
+            does not list (all of them when None) keep
+            ``DEFAULT_STANDARD_LENGTHS``, as a stock file's do.
         kerf: Material removed by each saw cut in mm
 
     Examples:
@@ -239,11 +236,13 @@ def plan_cuts(
         {1820.0: 1}
     """
     if standard_lengths is None:
-        standard_lengths = DEFAULT_STANDARD_LENGTHS
+        standard_lengths = {}
     plans: Dict[PieceType, LumberPlan] = {}
     for piece_type in sorted(summary.pieces_by_type, key=lambda t: t.value):
         pieces = [p for p in summary.pieces if p.type == piece_type]
-        available = list(standard_lengths.get(piece_type, FALLBACK_STANDARD_LENGTHS))
+        available = list(
+            standard_lengths.get(piece_type, DEFAULT_STANDARD_LENGTHS[piece_type])
+        )
         plans[piece_type] = LumberPlan(
             available_lengths=available,
             boards=_optimize_cuts(pieces, available, kerf),

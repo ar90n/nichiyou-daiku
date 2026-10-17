@@ -18,7 +18,7 @@ def _oversize_warning(plan: LumberPlan) -> List[str]:
     longest = max(plan.available_lengths)
     return [
         f"- ⚠ {p.id} ({format_mm(p.length)}mm) is longer than the longest available "
-        f"board ({longest:.0f}mm) and cannot be cut from stock"
+        f"board ({format_mm(longest)}mm) and cannot be cut from stock"
         for p in plan.oversize
     ]
 
@@ -165,7 +165,7 @@ def _generate_purchase_recommendations(
 
     for piece_type, plan in plans.items():
         lengths_str = ", ".join(
-            f"{length:.0f}mm" for length in sorted(plan.available_lengths)
+            f"{format_mm(length)}mm" for length in sorted(plan.available_lengths)
         )
         lines.extend(
             [
@@ -174,7 +174,7 @@ def _generate_purchase_recommendations(
             ]
         )
         for board_length, count in sorted(plan.board_counts.items()):
-            lines.append(f"- {count} × {board_length:.0f}mm boards")
+            lines.append(f"- {count} × {format_mm(board_length)}mm boards")
         lines.append(
             f"Total waste: {format_mm(plan.total_waste)}mm "
             f"({plan.waste_percentage:.1f}%)"
@@ -203,7 +203,7 @@ def _generate_cut_list(plans: Mapping[PieceType, LumberPlan]) -> str:
             lines.extend([*warnings, ""])
 
         for i, board in enumerate(plan.boards, 1):
-            lines.append(f"**Board {i}** ({board.board_length:.0f}mm):")
+            lines.append(f"**Board {i}** ({format_mm(board.board_length)}mm):")
             for piece_id, length in board.cuts:
                 lines.append(f"- Cut {format_mm(length)}mm → {piece_id}")
             if board.waste > 0:
@@ -424,8 +424,8 @@ def generate_markdown_report(
     Args:
         resource_summary: The resource summary to report on
         project_name: Name of the project
-        standard_lengths: Dict mapping PieceType to available lengths in mm.
-                        If None, uses sensible defaults.
+        standard_lengths: Dict mapping PieceType to available lengths in mm;
+                        types it leaves out keep the default lengths.
         include_cut_diagram: Whether to include cut list section
         include_anchor_details: Whether to include anchor details section
         include_pilot_holes: Whether to include pilot holes section

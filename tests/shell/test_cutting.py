@@ -121,10 +121,14 @@ class TestPlanCuts:
         assert plan.available_lengths == [1820.0, 2440.0, 3050.0, 3650.0]
         assert plan.board_counts == {1820.0: 1}
 
-    def test_type_missing_from_standard_lengths_uses_2440mm(self):
+    def test_type_missing_from_standard_lengths_keeps_the_defaults(self):
+        # As a stock file does: listing 2x4 leaves 1x4 at the store's lengths
         summary = _summary(_piece("a", 1000.0, PieceType.PT_1x4))
         plans = plan_cuts(summary, {PieceType.PT_2x4: [3050.0]})
-        assert plans[PieceType.PT_1x4].available_lengths == [2440.0]
+        assert (
+            plans[PieceType.PT_1x4].available_lengths
+            == DEFAULT_STANDARD_LENGTHS[PieceType.PT_1x4]
+        )
 
     def test_oversize_pieces_are_listed_instead_of_planned(self):
         summary = _summary(_piece("long", 4000.0), _piece("short", 500.0))

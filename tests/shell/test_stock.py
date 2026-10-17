@@ -42,7 +42,11 @@ def test_kerf_and_lengths_are_optional(tmp_path):
         ('[lengths]\n"2x4" = []\n', "'2x4' needs at least one length"),
         ('[lengths]\n"2x4" = [1820, 0]\n', "'2x4' lengths must be positive"),
         ('[lengths]\n"2x4" = [true]\n', "'2x4' lengths must be positive"),
+        # TOML has nan and inf; a board of no finite length cannot be bought
+        ('[lengths]\n"2x4" = [inf]\n', "'2x4' lengths must be positive"),
         ('kerf = "3"\n', "kerf must be a number"),
+        ("kerf = nan\n", "kerf must be a number"),
+        ("kerf = inf\n", "kerf must be a number"),
         ("kerf = -1\n", "kerf must be 0 or more"),
     ],
 )

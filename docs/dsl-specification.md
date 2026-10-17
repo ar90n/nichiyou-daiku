@@ -657,7 +657,7 @@ kerf = 2                         # saw kerf in mm (3 when left out)
 "1x4" = [910, 1820]
 ```
 
-A mistake in the file (an unknown lumber type or key, a length list that is empty or has a length of 0 or less, a negative kerf, a TOML syntax error) stops the command with what to fix.
+A mistake in the file (an unknown lumber type or key, a length list that is empty or has a length of 0 or less, a negative kerf, a length or kerf that is not a finite number such as TOML's `nan` and `inf`, a TOML syntax error) stops the command with what to fix.
 
 ### 3D View (requires build123d)
 

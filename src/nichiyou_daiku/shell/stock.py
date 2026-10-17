@@ -9,6 +9,7 @@
     "1x4" = [910, 1820]
 """
 
+import math
 import tomllib
 from os import PathLike
 from pathlib import Path
@@ -33,8 +34,13 @@ class Stock(BaseModel, frozen=True):
 
 
 def _is_number(value: object) -> bool:
-    # TOML booleans are Python ints; a length of `true` is a mistake
-    return isinstance(value, (int, float)) and not isinstance(value, bool)
+    # TOML booleans are Python ints; a length of `true` is a mistake, and so
+    # are TOML's nan and inf
+    return (
+        isinstance(value, (int, float))
+        and not isinstance(value, bool)
+        and math.isfinite(value)
+    )
 
 
 def _lengths(path: Path, table: object) -> dict[PieceType, list[float]]:
