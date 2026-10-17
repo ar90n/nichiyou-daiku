@@ -79,11 +79,13 @@ def test_a_step_shows_the_part_it_leaves(plan):
 
 
 def test_frames_are_seen_from_the_side_and_boards_from_above(plan):
-    # (axis, side): 0 = x, 2 = z
+    # (axis, side): 0 = x, 2 = z. Nothing hides the frames from either side,
+    # so they are seen from the isometric's side (-x +y +z): both halves of
+    # the step image then show the part the same way round
     assert [step.view for step in plan.steps] == [
-        (0, 1),
-        (0, 1),
-        (0, 1),
+        (0, -1),
+        (0, -1),
+        (0, -1),
         (2, 1),
         (2, 1),
     ]

@@ -52,10 +52,11 @@ def render(
 
     INPUT_FILE: Path to .nd file or '-' for stdin
 
-    The views look from +z, -y, +x and +x +y +z, in the axes of the first
-    piece declared (see validate --json). Each piece's ID is written where
-    the viewer can see its center; pieces hidden in every view are listed
-    in the note.
+    The views look from +z, +y, -x and -x +y +z (the top, the front, the
+    right side and an isometric view; the furniture's front faces +y), in
+    the axes of the first piece declared (see validate --json). Each
+    piece's ID is written where the viewer can see its center; pieces
+    hidden in every view are listed in the note.
 
     \b
     Examples:

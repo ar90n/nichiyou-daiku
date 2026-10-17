@@ -8,11 +8,15 @@ import pytest
 pytest.importorskip("build123d")
 
 from nichiyou_daiku.core.assembly import Assembly  # noqa: E402
-from nichiyou_daiku.core.assembly.steps import plan_steps  # noqa: E402
+from nichiyou_daiku.core.assembly.steps import (  # noqa: E402
+    _ISOMETRIC_SIDE,
+    plan_steps,
+)
 from nichiyou_daiku.dsl import parse_dsl  # noqa: E402
 from nichiyou_daiku.shell.build123d_export import assembly_to_build123d  # noqa: E402
 from nichiyou_daiku.shell.drawing import arrow_points  # noqa: E402
 from nichiyou_daiku.shell.instructions import (  # noqa: E402
+    _ISOMETRIC,
     _advice,
     image_name,
     part_image_name,
@@ -166,7 +170,7 @@ def test_dimension_view_shows_where_the_shelf_boards_go(shelf):
 
 def test_frame_heights_are_dimensioned_from_the_side(shelf):
     _, _, images = shelf
-    assert images[0].view.caption == "from +x"
+    assert images[0].view.caption == "from -x"
     texts = [label.text for label in images[0].dimensions.labels]
     assert {"150", "453", "781", "224", "300"} <= set(texts)
 
@@ -310,3 +314,8 @@ def test_a_one_piece_step_is_not_told_to_split():
     plan = plan_steps(Assembly.of(parse_dsl(THREE)))
     assert "Split the step" in _advice(plan.steps[0])
     assert "Anchor Details" in _advice(plan.steps[1])
+
+
+def test_ties_look_from_the_isometrics_side():
+    # The plan, free of build123d, keeps its own copy of the image's side
+    assert tuple(1 if c > 0 else -1 for c in _ISOMETRIC.origin) == _ISOMETRIC_SIDE

@@ -21,6 +21,10 @@ built so far. join: brings two or more parts together. attach: adds to one."""
 
 # Tie-break for the dimension view: from above, then the front, then the side
 _AXIS_PREFERENCE = (2, 1, 0)
+# The step images' isometric looks from -x +y +z (shell/views.py). A
+# dimension view from the same side of its axis shows the part the same way
+# round, so that side wins a tie
+_ISOMETRIC_SIDE = (-1, 1, 1)
 
 
 class PlannedStep(BaseModel, frozen=True):
@@ -138,7 +142,9 @@ def _view(
             if sign * _centre(boxes[o], axis) > sign * _centre(boxes[p], axis)
         )
 
-    return axis, min((1, -1), key=hidden)
+    # min keeps the first side on ties: the isometric's
+    side = _ISOMETRIC_SIDE[axis]
+    return axis, min((side, -side), key=hidden)
 
 
 def plan_steps(assembly: Assembly) -> StepPlan:

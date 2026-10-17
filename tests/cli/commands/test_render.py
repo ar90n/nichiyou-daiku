@@ -92,3 +92,8 @@ def test_render_explains_a_missing_cairo_library(runner, corner, monkeypatch):
     assert "the cairo library is missing" in result.output
     assert "brew install cairo" in result.output
     assert "Traceback" not in result.output
+
+
+def test_render_help_names_the_views(runner):
+    result = runner.invoke(cli, ["render", "--help"])
+    assert "+z, +y, -x and -x +y +z" in result.output
