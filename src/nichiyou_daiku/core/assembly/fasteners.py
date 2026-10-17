@@ -28,14 +28,15 @@ CONTACT_TOLERANCE_MM = 1e-6
 
 
 def pilot_diameter(screw_diameter: float) -> float:
-    """Pilot hole for a screw: about 65% of the screw, to the nearest 0.5mm.
+    """Pilot hole for a screw: about 65% of the screw, to the nearest 0.5mm
+    and at least 0.5mm.
 
     A hole as wide as the screw would leave its thread nothing to bite.
 
     >>> [pilot_diameter(d) for d in (3.3, 3.8, 4.2)]
     [2.0, 2.5, 2.5]
     """
-    return round(screw_diameter * 0.65 * 2) / 2
+    return max(0.5, round(screw_diameter * 0.65 * 2) / 2)
 
 
 def _positions_along(start: float, length: float, diameter: float) -> list[float]:

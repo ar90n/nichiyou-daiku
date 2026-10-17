@@ -22,6 +22,12 @@ COLLISION = (
     "post -[FL<300 DF<0 D(4, 40)]- front\n"
     "post -[BL<300 DB<0 D(4, 40)]- other\n"
 )
+# Two screws from the post's front and back, 27 into its 38: they meet
+SCREW_COLLISION = (
+    "(post:2x4 =600)\n(front:2x4 =300)\n(other:2x4 =300)\n"
+    "post -[FL<300 BD<0 S(Slim:3.8x65)]- front\n"
+    "post -[BL<300 FD<0 S(Slim:3.8x65)]- other\n"
+)
 
 
 def _report(source: str) -> ValidationReport:
@@ -152,6 +158,15 @@ class TestProblems:
             assert post.min[axis] <= hole.entry[axis] + inward * 20 <= post.max[axis]
         # From the back and the front, towards each other
         assert problem.holes[0].direction == _flip(problem.holes[1].direction)
+
+    def test_a_screw_collision_gives_the_screws_body_not_its_pilot_hole(self):
+        [problem] = _report(SCREW_COLLISION).problems
+        assert (problem.kind, problem.fastener) == ("hole_collision", "screw")
+        # The bodies collide: 3.8 wide although the pilot holes are 2.5
+        assert [(h.direction, h.depth, h.diameter) for h in problem.holes] == [
+            ("+y", 27, 3.8),
+            ("-y", 27, 3.8),
+        ]
 
     def test_overlaps_carry_the_pieces_and_volume(self):
         [problem] = _report(OVERLAP).problems

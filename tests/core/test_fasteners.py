@@ -365,6 +365,11 @@ def test_screw_pilot_holes_are_about_two_thirds_of_the_screw(screw, pilot):
     assert pilot_diameter(screw) == pilot
 
 
+def test_a_tiny_screw_still_gets_a_pilot_hole():
+    # 65% of 0.3 rounds to 0: a hole of no width would draw and drill nothing
+    assert pilot_diameter(0.3) == 0.5
+
+
 def test_screw_bodies_collide_even_where_their_pilot_holes_do_not():
     # Two 3.8mm screws 3mm apart, from the front and the back of a 38mm post:
     # their 2.5mm pilot holes miss each other, the screws themselves do not

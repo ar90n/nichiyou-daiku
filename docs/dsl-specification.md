@@ -420,7 +420,7 @@ piece1 -[anchor anchor S(Type:DIAMETERxLENGTH)]- piece2
 - The target's contact_face must be `front` or `back` (the screw goes through the target's wide face).
 - Screw length must be greater than the target's thickness (38 for 2x lumber, 19 for 1x lumber).
 - Screw length must be shorter than the base's depth along its contact normal (front/back → thickness, left/right → width, top/down → piece length) plus the target's thickness, so the tip stays inside the base.
-- Holes: pilot holes about 65% of the screw diameter, to the nearest 0.5mm (3.3 → 2.0, 3.8 and 4.2 → 2.5mm): through the target, and (length - target thickness) deep in the base. Holes running into each other are judged on the screw's own diameter.
+- Holes: pilot holes about 65% of the screw diameter, to the nearest 0.5mm and at least 0.5mm (3.3 → 2.0, 3.8 and 4.2 → 2.5mm): through the target, and (length - target thickness) deep in the base. Holes running into each other are judged on the screw's own diameter.
 
 #### Choosing a Length
 
