@@ -156,6 +156,38 @@ def _same_holes(a: Sequence[LocalHole], b: Sequence[LocalHole]) -> bool:
     return True
 
 
+def _through_on_one_side(
+    holes: Sequence[LocalHole], size: tuple[float, float, float]
+) -> list[LocalHole]:
+    """The holes with each through hole moved to the first face of its
+    opposite pair: drilled through, it is the same hole from either face."""
+    moved = []
+    for hole in holes:
+        index = FACE_ORDER.index(hole.face)
+        if hole.depth is None and index % 2 == 1:
+            face = FACE_ORDER[index - 1]
+            normal = face_normal(face)
+            axis = int(np.argmax(np.abs(normal)))
+            point = list(hole.point)
+            point[axis] = size[axis] if normal[axis] > 0 else 0.0
+            hole = hole._replace(face=face, point=(point[0], point[1], point[2]))
+        moved.append(hole)
+    return moved
+
+
+def _same_part(
+    a: Sequence[LocalHole], b: Sequence[LocalHole], size: tuple[float, float, float]
+) -> bool:
+    """Whether a board drilled with ``b`` is one drilled with ``a``, turned."""
+    return any(
+        _same_holes(
+            _through_on_one_side(a, size),
+            _through_on_one_side(_turned(b, turn, size), size),
+        )
+        for turn in _turns(size)
+    )
+
+
 def part_groups(assembly: Assembly) -> list[PartGroup]:
     """The pieces grouped by how they are made, in declaration order: the
     same lumber and length, and holes that match after a turn that brings
@@ -169,10 +201,7 @@ def part_groups(assembly: Assembly) -> list[PartGroup]:
             if (
                 first.type == piece.type
                 and all(_close(p, q) for p, q in zip(group.size, size))
-                and any(
-                    _same_holes(group.holes, _turned(holes, turn, size))
-                    for turn in _turns(size)
-                )
+                and _same_part(group.holes, holes, size)
             ):
                 groups[i] = group.model_copy(
                     update={"pieces": (*group.pieces, piece_id)}
@@ -225,14 +254,15 @@ def edge_neighbours(face: Face) -> dict[str, Face]:
 def _end_turns_free(
     holes: Sequence[LocalHole], size: tuple[float, float, float]
 ) -> bool:
-    """Whether each end's holes look the same after every turn about z that
-    brings the section onto itself."""
-    ends = [h for h in holes if h.face in ("top", "down")]
-    return all(
-        _same_holes(ends, _turned(ends, turn, size))
-        for turn in _turns(size)
-        if turn[2, 2] == 1.0
-    )
+    """Whether the ends' turns about z are tied without a reference: one
+    end's holes look the same after every turn about z that brings the
+    section onto itself, so that end can be drilled turned any way."""
+    about_z = [turn for turn in _turns(size) if turn[2, 2] == 1.0]
+    for end in ("top", "down"):
+        on_end = [h for h in holes if h.face == end]
+        if all(_same_holes(on_end, _turned(on_end, turn, size)) for turn in about_z):
+            return True
+    return False
 
 
 def face_letters(
@@ -240,9 +270,9 @@ def face_letters(
 ) -> dict[Face, str]:
     """A, B, ... for the drilled faces in ``FACE_ORDER``. A face without
     holes gets one only when nothing else ties the two ends' turn together:
-    both ends drilled, no long face drilled and the end holes not the same
-    after a turn about the length (a half turn, or a quarter turn for a
-    square section); then the front is lettered too."""
+    both ends drilled, no long face drilled and neither end's holes the same
+    after every turn about the length (a half turn, and a quarter turn for
+    a square section); then the front is lettered too."""
     drilled: list[Face] = [f for f in FACE_ORDER if any(h.face == f for h in holes)]
     lettered: list[Face] = list(drilled)
     if (

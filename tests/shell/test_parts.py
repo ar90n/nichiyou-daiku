@@ -4,6 +4,7 @@ from functools import lru_cache
 from itertools import combinations
 from pathlib import Path
 
+import numpy as np
 import pytest
 
 pytest.importorskip("build123d")
@@ -18,6 +19,7 @@ from nichiyou_daiku.dsl import parse_dsl  # noqa: E402
 from nichiyou_daiku.shell.drawing import arrow_points, text_size  # noqa: E402
 from nichiyou_daiku.shell.parts import (  # noqa: E402
     PAGE_WIDTH,
+    _past,
     part_sheet,
     part_title,
 )
@@ -106,19 +108,28 @@ def _crosses(rect, segment, margin: float = 1e-6) -> bool:
     return start <= end
 
 
+def _box(points) -> tuple[float, float, float, float]:
+    xs, ys = [x for x, _ in points], [y for _, y in points]
+    return min(xs), min(ys), max(xs), max(ys)
+
+
 def _problems(sheet) -> list:
-    """Texts on each other or off the page, values on dimension lines,
-    crowded values."""
+    """Texts on each other, off the page or on a face; values on dimension
+    lines; reference marks on texts or dimension lines; crowded values."""
     boxes = [box for _, box in sheet.texts]
     segments = list(sheet.dimensions.lines)
     for arrow in sheet.dimensions.arrows:
         a, b, c = arrow_points(*arrow)
         segments += [(a, b), (b, c), (c, a)]
     values = [label.box for label in sheet.dimensions.labels]
+    marks = [_box(mark) for mark in sheet.marks]
     return (
         [(a, b) for a, b in combinations(boxes, 2) if _overlap(a, b)]
         + [box for box in boxes if box[0] < 0 or box[2] > PAGE_WIDTH]
+        + [(b, f) for b in boxes for f in sheet.faces.values() if _overlap(b, f)]
         + [(v, s) for v in values for s in segments if _crosses(v, s)]
+        + [(m, b) for m in marks for b in boxes if _overlap(m, b)]
+        + [(m, s) for m in marks for s in segments if _crosses(m, s)]
         + sheet.dimensions.crowded
     )
 
@@ -163,6 +174,32 @@ def test_every_face_drilled_is_lettered_without_clashes():
     assert _problems(post) == []
 
 
+def test_letters_beside_an_end_keep_clear_of_its_values():
+    # The letters either side of an end's own letter belong to it: they stand
+    # twice as far from the values beside the face as from its ring
+    _, sheets = _sheets(SIX)
+    post = sheets[0]
+    letters = [box for text, box in post.texts if len(text) == 1 and text.isalpha()]
+    values = [label.box for label in post.dimensions.labels]
+    gaps = [
+        max(value[0] - letter[2], letter[0] - value[2])
+        for letter in letters
+        for value in values
+        if letter[1] < value[3] and value[1] < letter[3]
+    ]
+    assert min(gaps) >= 4.0
+
+
+def test_the_reference_mark_stands_past_the_whole_piece():
+    # A short wide piece's down end is drawn well inside its outline, so the
+    # mark goes past every corner, not just past the end
+    corners = [
+        np.array(c) for c in ((0.0, 0.0), (40.0, -8.0), (40.0, 12.0), (0.0, 20.0))
+    ]
+    tip = _past(corners, np.array([20.0, 6.0]), np.array([0.0, -1.0]), 1.0)
+    assert tuple(tip) == pytest.approx((20.0, -9.0))
+
+
 def test_values_that_do_not_fit_point_to_the_pilot_holes_table():
     # Holes 12.5mm apart along 2m leave no room for their values
     holes = tuple(
@@ -171,7 +208,11 @@ def test_values_that_do_not_fit_point_to_the_pilot_holes_table():
     group = PartGroup(pieces=("rail",), size=(89.0, 38.0, 2000.0), holes=holes)
     sheet = part_sheet(Assembly.of(parse_dsl("(rail:2x4 =2000)")), group)
     assert len(sheet.dimensions.crowded) == 1
-    assert "face A of rail" in sheet.dimensions.crowded[0]
+    # Named as the drawing shows them, not by the axes of a view
+    assert (
+        "horizontal dimension values in face A (front) of rail"
+        in (sheet.dimensions.crowded[0])
+    )
     assert "Pilot Holes table" in sheet.dimensions.crowded[0]
 
 

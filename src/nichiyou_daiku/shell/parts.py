@@ -12,6 +12,7 @@ import tempfile
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Sequence
 
 import cairosvg
 import numpy as np
@@ -61,12 +62,13 @@ PAGE_WIDTH = 280.0
 MARGIN = 6.0
 ISO_WIDTH = 70.0
 ISO_HEIGHT = 60.0
-LETTER_COLUMN = 16.0  # a face's letter and the letters of its neighbours
+LETTER_COLUMN = 22.0  # a face's letter and the letters of its neighbours
 MIN_FACE_HEIGHT = 22.0  # a thin face is drawn taller so its values fit
 MAX_SCALE = 0.8
 FACE_GAP = 10.0
 MARK = 3.5  # length of the reference end's triangle
 
+Point = tuple[float, float]
 Rect = tuple[float, float, float, float]
 _ADVICE = "The report's Pilot Holes table lists the same holes"
 
@@ -79,6 +81,8 @@ class PartSheet:
     letters: dict[Face, str]
     faces: dict[Face, Rect]
     """Each drilled face's outline."""
+    marks: list[tuple[Point, Point, Point]]
+    """The reference end's triangles."""
     texts: list[tuple[str, Rect]]
     """Every word and number drawn, with its box."""
     dimensions: DrawnDimensions
@@ -104,7 +108,7 @@ def part_title(assembly: Assembly, group: PartGroup) -> str:
         f"φ{format_mm(diameter)}"
         + ("" if depth is None else f" ↧{format_mm(depth)}")
         + f" ×{n}"
-        # Blind holes first, through holes (no depth) last
+        # By diameter; of one diameter, blind holes before through holes
         for (diameter, depth), n in sorted(
             kinds.items(),
             key=lambda kind: (kind[0][0], kind[0][1] is None, kind[0][1] or 0),
@@ -155,6 +159,7 @@ class _Page:
         self.thin: list[Shape] = []
         self.fills: list[Shape] = []
         self.texts: list[tuple[str, Rect]] = []
+        self.marks: list[tuple[Point, Point, Point]] = []
 
     def text(self, content: str, x: float, y: float) -> None:
         width, height = text_size(content, 0.0)
@@ -172,9 +177,13 @@ class _Page:
         d = direction / np.linalg.norm(direction)
         side = np.array([-d[1], d[0]]) * MARK / 2
         back = tip - d * MARK
-        self.fills.append(
-            Polygon(tuple(tip), tuple(back + side), tuple(back - side), align=None)
+        corners: tuple[Point, Point, Point] = (
+            (float(tip[0]), float(tip[1])),
+            (float(back[0] + side[0]), float(back[1] + side[1])),
+            (float(back[0] - side[0]), float(back[1] - side[1])),
         )
+        self.marks.append(corners)
+        self.fills.append(Polygon(*corners, align=None))
 
 
 def _isometric(
@@ -223,12 +232,27 @@ def _isometric(
         page.letter(letters[face], column, y, hidden_face)
         leader = Edge.make_line((column - figure_line_height() * 0.9, y), tuple(point))
         (page.hidden if hidden_face else page.thin).append(leader)
-    # The reference (down) end: a triangle pointing at it from beyond it
+    # The reference (down) end: a triangle pointing at it from past the
+    # whole piece, so that it never sits on the outline
     end = on_page(centre - np.array([0.0, 0.0, extent[2] / 2]))
     beyond = on_page(centre - np.array([0.0, 0.0, extent[2] / 2 + 60 / factor]))
-    # Its tip stops short of the end so it does not cover the outline
     toward_end = (end - beyond) / np.linalg.norm(end - beyond)
-    page.triangle(end - toward_end * 3.0, toward_end)
+    corners = [
+        on_page(np.array([x, y, z]))
+        for x in (0.0, extent[0])
+        for y in (0.0, extent[1])
+        for z in (0.0, extent[2])
+    ]
+    page.triangle(_past(corners, end, -toward_end, 1.0), toward_end)
+
+
+def _past(
+    points: Sequence[np.ndarray], start: np.ndarray, away: np.ndarray, gap: float
+) -> np.ndarray:
+    """The point ``gap`` past all of ``points`` on the way from ``start``
+    along the unit vector ``away``."""
+    reach = max(float((point - start) @ away) for point in points)
+    return start + away * (reach + gap)
 
 
 def _mark_height(stops: list[float], bottom: float, top: float) -> float:
@@ -278,7 +302,7 @@ def _face_view(
         page.lines.append(
             Pos(left + u * along, bottom + v * across) * Edge.make_circle(radius)
         )
-    where = f"face {letters[face]} of {group.pieces[0]}"
+    where = f"face {letters[face]} ({face}) of {group.pieces[0]}"
     # "from -y" puts a chain's x along the page and its z up the page
     draw_chain(
         chain_from_stops("from -y", "x", "below", us),
@@ -286,6 +310,7 @@ def _face_view(
         dimensions,
         where,
         _ADVICE,
+        "horizontal",
     )
     draw_chain(
         chain_from_stops("from -y", "z", "left", vs),
@@ -293,6 +318,7 @@ def _face_view(
         dimensions,
         where,
         _ADVICE,
+        "vertical",
     )
 
     column = MARGIN + LETTER_COLUMN / 2
@@ -373,4 +399,4 @@ def part_sheet(assembly: Assembly, group: PartGroup) -> PartSheet:
         exporter.write(str(path))
         svg = path.read_text()
     texts = page.texts + [(label.text, label.box) for label in dimensions.labels]
-    return PartSheet(group, letters, faces, texts, dimensions, svg)
+    return PartSheet(group, letters, faces, page.marks, texts, dimensions, svg)

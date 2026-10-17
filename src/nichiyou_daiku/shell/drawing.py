@@ -269,12 +269,18 @@ def _crowded_advice(page_size: str) -> str:
 
 
 def draw_chain(
-    chain: Chain, view: PlacedView, out: DrawnDimensions, where: str, advice: str
+    chain: Chain,
+    view: PlacedView,
+    out: DrawnDimensions,
+    where: str,
+    advice: str,
+    direction: str | None = None,
 ) -> None:
     """Draw one chain beside its view: extension lines, the chain with its
     values (inside their stretch, else in a row with leaders), the overall.
     Values that do not fit are reported as being in ``where``, with
-    ``advice`` on making room."""
+    ``advice`` on making room, and as ``direction`` values when given rather
+    than along the chain's axis."""
     horizontal = chain.side == "below"
     levels = dimension_levels(chain.side)
     edge = view.box[1] if horizontal else view.box[0]
@@ -344,10 +350,14 @@ def draw_chain(
                 2 * PAD,
             )
             if not fits:
+                values = (
+                    f"{direction} dimension values"
+                    if direction
+                    else f"dimension values along {chain.axis}"
+                )
                 out.crowded.append(
-                    f"{len(outside)} dimension values along {chain.axis} in "
-                    f"{where} do not fit beside their chain without crossing "
-                    f"its lines. {advice}"
+                    f"{len(outside)} {values} in {where} do not fit beside "
+                    f"their chain without crossing its lines. {advice}"
                 )
             for (text, middle, _, across), centre in zip(outside, centres):
                 out.lines.append((at(middle, levels.line), at(middle, levels.bend)))

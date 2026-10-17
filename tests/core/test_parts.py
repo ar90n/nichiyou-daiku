@@ -10,6 +10,7 @@ from nichiyou_daiku.core.assembly.parts import (
     FACE_ORDER,
     LocalHole,
     _same_holes,
+    _same_part,
     edge_neighbours,
     face_frame,
     face_letters,
@@ -58,7 +59,7 @@ def test_piece_holes_are_in_the_pieces_own_axes(shelf):
     holes = piece_holes(shelf, "leg_1")
     assert len(holes) == 10
     back = sorted(h.point for h in holes if h.face == "back")
-    # Dowels for the side aprons, 19 from the edge the left face is on
+    # Dowels for the side aprons, 19 from the edge the right face is on
     assert back[0] == pytest.approx((70.0, 0.0, 172.25))
     assert {h.diameter for h in holes} == {8.0}
     assert {h.depth for h in holes} == {15.0}
@@ -129,6 +130,18 @@ def test_holes_match_within_the_tolerance():
     assert not _same_holes(one, far)
 
 
+def test_a_through_hole_is_the_same_from_either_face():
+    size = (89.0, 38.0, 400.0)
+    end = LocalHole("top", (44.5, 19.0, 400.0), 8.0, 15.0)
+    from_back = (end, LocalHole("back", (20.0, 0.0, 100.0), 2.5, None))
+    from_front = (end, LocalHole("front", (20.0, 38.0, 100.0), 2.5, None))
+    assert _same_part(from_back, from_front, size)
+    # A blind hole is drilled into one face only
+    blind_back = (end, LocalHole("back", (20.0, 0.0, 100.0), 8.0, 15.0))
+    blind_front = (end, LocalHole("front", (20.0, 38.0, 100.0), 8.0, 15.0))
+    assert not _same_part(blind_back, blind_front, size)
+
+
 def test_every_face_is_seen_from_outside():
     for face in FACE_ORDER:
         right, up = face_frame(face)
@@ -150,6 +163,26 @@ def test_face_points_are_measured_from_the_lower_left_corner(shelf):
     assert top == [pytest.approx((22.25, 19.0)), pytest.approx((66.75, 19.0))]
     assert face_size("back", LEG) == (781.0, 89.0)
     assert face_size("top", LEG) == (89.0, 38.0)
+
+
+@pytest.mark.parametrize("face", FACE_ORDER)
+def test_face_points_run_right_and_up_on_every_face(face):
+    right, up = face_frame(face)
+    width, height = face_size(face, LEG)
+    centre = np.array(LEG) / 2 * (1 + face_normal(face))
+    assert face_point(face, tuple(centre), LEG) == pytest.approx(
+        (width / 2, height / 2)
+    )
+    moved = centre + right * 10 + up * 5
+    assert face_point(face, tuple(moved), LEG) == pytest.approx(
+        (width / 2 + 10, height / 2 + 5)
+    )
+
+
+def test_the_down_end_is_seen_mirrored():
+    # Seen from below, x runs right to left: 20 from the left face is 69
+    # from the corner on the left of the drawing
+    assert face_point("down", (20.0, 10.0, 0.0), LEG) == pytest.approx((69.0, 10.0))
 
 
 def test_neighbours_across_each_edge():
@@ -181,6 +214,25 @@ def test_ends_without_a_drilled_long_face_get_a_reference_when_turning_matters()
         LocalHole("down", (20.0, 19.0, 0.0), 8.0, 15.0),
     )
     assert face_letters(off_centre, size) == {"top": "A", "down": "B", "front": "C"}
+
+
+def test_one_end_that_looks_the_same_turned_ties_the_ends():
+    # The top's hole is centred, so the top can be drilled turned either way
+    # and the off-centre down end alone sets how the board turns
+    size = (89.0, 38.0, 400.0)
+    holes = (
+        LocalHole("top", (44.5, 19.0, 400.0), 8.0, 15.0),
+        LocalHole("down", (20.0, 19.0, 0.0), 8.0, 15.0),
+    )
+    assert face_letters(holes, size) == {"top": "A", "down": "B"}
+    # On a 2x2 the end has to look the same after a quarter turn too
+    square = (38.0, 38.0, 400.0)
+    centred_and_pair = (
+        LocalHole("top", (19.0, 19.0, 400.0), 8.0, 15.0),
+        LocalHole("down", (19.0, 9.5, 0.0), 8.0, 15.0),
+        LocalHole("down", (19.0, 28.5, 0.0), 8.0, 15.0),
+    )
+    assert face_letters(centred_and_pair, square) == {"top": "A", "down": "B"}
 
 
 def test_square_ends_get_a_reference_when_a_quarter_turn_matters():
