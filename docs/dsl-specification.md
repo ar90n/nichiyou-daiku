@@ -698,7 +698,7 @@ The top, front and right-side views are in third-angle projection, with the furn
 - **Where the pieces go**: chain dimensions inside the overall ones, from stop to stop. The front view's heights stop at both ends of every piece; its widths and the side view's depths stop at the upright pieces (length along z); the top view stops at the top layer (the pieces whose top is the model's top).
 - **Values**: a stretch that is a piece's width or thickness (89, 38, 19, ...) is written only where its value fits, since the lumber size gives it; every other stretch, such as a gap, is always written, beside the chain with a leader when it does not fit. If those values still do not fit, the drawing warns and suggests a larger `--page-size` or `--no-dimensions`.
 
-Piece lengths are not dimensioned (the cut list in `report` has them), nor are the positions of lying pieces below the top layer. Unconnected pieces get no dimensions, and `--no-dimensions` leaves them out to draw the views larger.
+Piece lengths are not dimensioned (the cut list in `report` has them), nor are the positions of lying pieces below the top layer. A model whose pieces are not all connected gets no dimensions (its parts have no places relative to each other), and the command warns why; `--no-dimensions` leaves them out to draw the views larger.
 
 ### Check Image (requires build123d)
 

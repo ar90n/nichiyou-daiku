@@ -195,3 +195,41 @@ def test_drawing_warns_about_crowded_dimensions(
     assert result.exit_code == 0, result.output
     assert "Warning: 5 dimension values overlap" in result.stderr
     assert output_file.exists()
+
+
+def test_drawing_says_why_an_unconnected_design_has_no_dimensions(runner, tmp_path):
+    pytest.importorskip("build123d")
+    design = tmp_path / "two.nd"
+    design.write_text("(a:2x4 =400)\n(b:2x4 =400)\n")
+    output_file = tmp_path / "out.svg"
+
+    result = runner.invoke(cli, ["drawing", str(design), "-o", str(output_file)])
+    assert result.exit_code == 0, result.output
+    assert "no dimensions" in result.stderr
+    assert "2 separate parts" in result.stderr
+
+    result = runner.invoke(
+        cli, ["drawing", str(design), "-o", str(output_file), "--no-dimensions"]
+    )
+    assert "no dimensions" not in result.stderr
+
+
+def test_drawing_keeps_the_warnings_given_before_a_failure(
+    runner, tmp_path, beam_file, monkeypatch
+):
+    import warnings
+
+    import nichiyou_daiku.shell.drawing as drawing_module
+    from nichiyou_daiku.shell.dimensioning import CrowdedDimensionsWarning
+
+    def failing(*args, **kwargs):
+        warnings.warn(CrowdedDimensionsWarning("5 dimension values overlap"))
+        raise RuntimeError("no projection")
+
+    monkeypatch.setattr(drawing_module, "technical_drawing", failing)
+    result = runner.invoke(
+        cli, ["drawing", str(beam_file), "-o", str(tmp_path / "out.svg")]
+    )
+    assert result.exit_code == 1
+    assert "Warning: 5 dimension values overlap" in result.stderr
+    assert "Error creating drawing: no projection" in result.stderr

@@ -124,6 +124,11 @@ def _segments(sheet):
     return segments
 
 
+def _bounds(segment):
+    (ax, ay), (bx, by) = segment
+    return (min(ax, bx), min(ay, by), max(ax, bx), max(ay, by))
+
+
 def _view_boxes(sheet):
     return [view.box for view in sheet.views.values()]
 
@@ -132,8 +137,14 @@ def _problems(sheet) -> list:
     """Every overlap, every escape from the drawing area, every crowded chain."""
     boxes = [label.box for label in sheet.dimensions.labels]
     views = _view_boxes(sheet)
+    segments = _segments(sheet)
     return (
-        [(b, s) for b in boxes for s in _segments(sheet) if _crosses(b, s)]
+        [(b, s) for b in boxes for s in segments if _crosses(b, s)]
+        # Dimension lines run outside the views, inside the frame, clear of
+        # the title block
+        + [(v, s) for v in views for s in segments if _crosses(v, s)]
+        + [s for s in segments if not _within(_bounds(s), sheet.frame)]
+        + [s for s in segments if _crosses(sheet.title_block, s)]
         + [(a, b) for a, b in combinations(boxes + views, 2) if _overlap(a, b)]
         + [
             box

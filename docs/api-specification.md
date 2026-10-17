@@ -823,7 +823,7 @@ def technical_drawing(
     """Top, front, right-side and isometric views on a titled page (A4-A1)."""
 ```
 
-Pass the `assembly` that `part` was built from to dimension the drawing (overall size and where the pieces go; see `drawing` in the [DSL Specification](./dsl-specification.md)). Values that cannot be placed without overlapping raise `nichiyou_daiku.shell.dimensioning.CrowdedDimensionsWarning`. `exporter.write("drawing.svg")` writes the page as SVG.
+Pass the `assembly` that `part` was built from to dimension the drawing (overall size and where the pieces go; see `drawing` in the [DSL Specification](./dsl-specification.md)). Values that cannot be placed without overlapping issue a `nichiyou_daiku.shell.dimensioning.CrowdedDimensionsWarning` with `warnings.warn` (the drawing is still returned); a model whose pieces are not all connected gets no dimensions. `exporter.write("drawing.svg")` writes the page as SVG.
 
 ### Assembly Instructions (Optional)
 

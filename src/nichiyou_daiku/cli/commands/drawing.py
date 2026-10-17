@@ -121,6 +121,19 @@ def drawing(
         assembly, echo, fillet_radius=fillet_radius
     )
 
+    parts = len(assembly.placement.groups)
+    if not no_dimensions and parts > 1:
+        # Dimensions measure the whole model, which has no size when its
+        # parts' places relative to each other are undefined
+        echo.info(
+            click.style(
+                f"Warning: the drawing has no dimensions: the pieces are in "
+                f"{parts} separate parts. Connect them to dimension it",
+                fg="yellow",
+            )
+        )
+
+    caught: list[warnings.WarningMessage] = []
     try:
         with warnings.catch_warnings(record=True) as caught:
             warnings.simplefilter("always", CrowdedDimensionsWarning)
@@ -133,16 +146,10 @@ def drawing(
                 assembly=None if no_dimensions else assembly,
             )
     except Exception as e:
+        _show_warnings(caught, echo)
         echo.exception(f"Error creating drawing: {e}")
         sys.exit(1)
-    for warning in caught:
-        if issubclass(warning.category, CrowdedDimensionsWarning):
-            echo.info(click.style(f"Warning: {warning.message}", fg="yellow"))
-        else:
-            # Recording catches every warning; pass the others on
-            warnings.warn_explicit(
-                warning.message, warning.category, warning.filename, warning.lineno
-            )
+    _show_warnings(caught, echo)
 
     if write_svg_only:
         try:
@@ -162,3 +169,14 @@ def drawing(
                 sys.exit(1)
 
     echo.info(f"Successfully created technical drawing: {output_path}")
+
+
+def _show_warnings(caught: list[warnings.WarningMessage], echo: CliEcho) -> None:
+    for warning in caught:
+        if issubclass(warning.category, CrowdedDimensionsWarning):
+            echo.info(click.style(f"Warning: {warning.message}", fg="yellow"))
+        else:
+            # Recording catches every warning; pass the others on
+            warnings.warn_explicit(
+                warning.message, warning.category, warning.filename, warning.lineno
+            )
