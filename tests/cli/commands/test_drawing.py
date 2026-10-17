@@ -183,7 +183,9 @@ def test_drawing_warns_about_crowded_dimensions(
 
     _record_drawing_options(
         monkeypatch,
-        CrowdedDimensionsWarning("5 dimension values overlap"),
+        CrowdedDimensionsWarning(
+            "5 dimension values along x in the front view do not fit beside their chain"
+        ),
         UserWarning("a library has something to say"),
     )
     output_file = tmp_path / "out.svg"
@@ -193,7 +195,10 @@ def test_drawing_warns_about_crowded_dimensions(
         result = runner.invoke(cli, ["drawing", str(beam_file), "-o", str(output_file)])
 
     assert result.exit_code == 0, result.output
-    assert "Warning: 5 dimension values overlap" in result.stderr
+    assert (
+        "Warning: 5 dimension values along x in the front view do not fit beside their chain"
+        in result.stderr
+    )
     assert output_file.exists()
 
 
@@ -223,7 +228,11 @@ def test_drawing_keeps_the_warnings_given_before_a_failure(
     from nichiyou_daiku.shell.dimensioning import CrowdedDimensionsWarning
 
     def failing(*args, **kwargs):
-        warnings.warn(CrowdedDimensionsWarning("5 dimension values overlap"))
+        warnings.warn(
+            CrowdedDimensionsWarning(
+                "5 dimension values along x in the front view do not fit beside their chain"
+            )
+        )
         raise RuntimeError("no projection")
 
     monkeypatch.setattr(drawing_module, "technical_drawing", failing)
@@ -231,5 +240,8 @@ def test_drawing_keeps_the_warnings_given_before_a_failure(
         cli, ["drawing", str(beam_file), "-o", str(tmp_path / "out.svg")]
     )
     assert result.exit_code == 1
-    assert "Warning: 5 dimension values overlap" in result.stderr
+    assert (
+        "Warning: 5 dimension values along x in the front view do not fit beside their chain"
+        in result.stderr
+    )
     assert "Error creating drawing: no projection" in result.stderr

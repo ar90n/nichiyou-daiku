@@ -87,7 +87,7 @@ def test_the_note_stays_below_the_views(size):
 
 
 def test_a_long_list_of_unlabelled_pieces_is_cut_short():
-    # Forty boards face to face: from +x only the last shows, and from the
+    # Forty boards face to face along y: from +y only the last shows, and from the
     # other directions their labels crowd each other out
     count = 40
     pieces = "".join(f"(shelf_board_{i:02d}:1x4 =300)\n" for i in range(count))

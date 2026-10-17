@@ -144,7 +144,7 @@ def figure_line_height() -> float:
     return max(text_size(figure, 0.0)[1] for figure in "0123456789.")
 
 
-class _Levels(NamedTuple):
+class DimensionLevels(NamedTuple):
     """Distances out from a view's edge, in page mm."""
 
     line: float  # the chain's dimension line
@@ -154,7 +154,7 @@ class _Levels(NamedTuple):
     depth: float  # the farthest thing drawn: the band's depth
 
 
-def dimension_levels(side: Side) -> _Levels:
+def dimension_levels(side: Side) -> DimensionLevels:
     height = figure_line_height()
     # Values sit above their line: toward the view below it, and away from
     # the view beside it (read from the right of the page)
@@ -166,7 +166,7 @@ def dimension_levels(side: Side) -> _Levels:
     # the layout needs one scale pass (spec: band depth independent of scale)
     overall = row + PAD + height + PAD + OVERALL
     text_beyond = PAD + height if side == "left" else 0.0
-    return _Levels(line, bend, row, overall, overall + max(OVER, text_beyond))
+    return DimensionLevels(line, bend, row, overall, overall + max(OVER, text_beyond))
 
 
 def _place(edges: ShapeList, factor: float, offset: Point) -> list[Shape]:
