@@ -3,6 +3,7 @@
 from itertools import combinations
 from pathlib import Path
 
+import numpy as np
 import pytest
 
 pytest.importorskip("build123d")
@@ -17,6 +18,8 @@ from nichiyou_daiku.shell.build123d_export import assembly_to_build123d  # noqa:
 from nichiyou_daiku.shell.drawing import arrow_points  # noqa: E402
 from nichiyou_daiku.shell.instructions import (  # noqa: E402
     _ISOMETRIC,
+    PAGE_HEIGHT,
+    PAGE_WIDTH,
     _advice,
     image_name,
     part_image_name,
@@ -24,6 +27,7 @@ from nichiyou_daiku.shell.instructions import (  # noqa: E402
     steps_markdown,
     write_instructions,
 )
+from nichiyou_daiku.shell.views import project  # noqa: E402
 
 SHELF = (
     Path(__file__).parents[2] / "skills" / "design" / "examples" / "two-tier-shelf.nd"
@@ -33,6 +37,11 @@ CORNER = "(a:2x4 =400)\n(b:2x4 =400)\na -[TF<0 BD<0]- b\n"
 DOWELLED = "(a:2x4 =400)\n(b:2x4 =400)\na -[TF<0 BD<0 D(:8x30)]- b\n"
 # A third piece across the far end of b: two steps without a steps block
 THREE = CORNER + "(c:2x4 =400)\nb -[TF<0 BD<0]- c\n"
+# Without a steps block each step adds one piece; step 4 adds leg_3 at the
+# back, so its dimension view looks from the back
+TABLE = (
+    Path(__file__).parents[2] / "examples" / "nd_files" / "simple_table_compact.nd"
+).read_text()
 # 39 slats 12.5mm apart up a 2m post, all in one step
 CROWDED = (
     "(rail:2x4 =2000)\n"
@@ -43,6 +52,30 @@ CROWDED = (
     + ", ".join(f"s{i}" for i in range(39))
     + "\n}\n"
 )
+
+
+@pytest.fixture(scope="module")
+def table_step_4():
+    assembly = Assembly.of(parse_dsl(TABLE))
+    part = assembly_to_build123d(assembly, fillet_radius=0)
+    return step_image(assembly, part, plan_steps(assembly).steps[3])
+
+
+def _direction(cue) -> np.ndarray:
+    """The way an arrow points: from the middle of its tail to its tip."""
+    tail = (np.array(cue[0]) + np.array(cue[-1])) / 2
+    way = np.array(cue[3]) - tail
+    return way / np.linalg.norm(way)
+
+
+def _unit(vector) -> np.ndarray:
+    v = np.asarray(vector, dtype=float)
+    return v / np.linalg.norm(v)
+
+
+def _box(points):
+    xs, ys = [x for x, _ in points], [y for _, y in points]
+    return min(xs), min(ys), max(xs), max(ys)
 
 
 @pytest.fixture(scope="module")
@@ -128,7 +161,8 @@ def test_every_new_piece_is_named_in_every_step(shelf):
     # A piece whose centre is hidden is named where some of it shows
     _, _, images = shelf
     for image in images:
-        assert set(image.labels) == set(image.step.pieces), image.step.name
+        names = set(image.labels) - set(image.references)
+        assert names == set(image.step.pieces), image.step.name
 
 
 def test_rewriting_removes_images_of_steps_that_are_gone(tmp_path):
@@ -148,9 +182,9 @@ def test_rewriting_removes_images_of_steps_that_are_gone(tmp_path):
 def test_labels_name_this_steps_pieces_without_overlapping(shelf):
     _, plan, images = shelf
     top = images[4]
-    assert set(top.labels) == set(plan.steps[4].pieces)
+    assert set(top.labels) - set(top.references) == set(plan.steps[4].pieces)
     for image in images:
-        assert set(image.labels) <= set(image.step.pieces)
+        assert set(image.labels) <= {*image.step.pieces, *image.references}
         boxes = list(image.labels.values())
         assert [(a, b) for a, b in combinations(boxes, 2) if _overlap(a, b)] == []
 
@@ -319,3 +353,69 @@ def test_a_one_piece_step_is_not_told_to_split():
 def test_ties_look_from_the_isometrics_side():
     # The plan, free of build123d, keeps its own copy of the image's side
     assert tuple(1 if c > 0 else -1 for c in _ISOMETRIC.origin) == _ISOMETRIC_SIDE
+
+
+def test_the_arrow_points_the_way_the_dimension_view_looks(shelf, table_step_4):
+    # The table's step is seen from the back, looking toward +y; the shelf's
+    # boards from above, looking down
+    assert table_step_4.view.caption == "from -y"
+    assert _direction(table_step_4.cue) == pytest.approx(
+        _unit(project(_ISOMETRIC, (0.0, 1.0, 0.0)))
+    )
+    _, _, images = shelf
+    assert images[3].view.caption == "from +z"
+    assert _direction(images[3].cue) == pytest.approx((0.0, -1.0))
+
+
+def test_the_arrow_keeps_its_place_and_clear_of_the_drawing(shelf, table_step_4):
+    _, _, images = shelf
+    boxes = {_box(image.cue) for image in [*images, table_step_4]}
+    # Only its direction changes: every arrow fits one corner box
+    corner = (
+        min(b[0] for b in boxes),
+        min(b[1] for b in boxes),
+        max(b[2] for b in boxes),
+        max(b[3] for b in boxes),
+    )
+    assert corner[2] < PAGE_WIDTH / 4 and corner[3] < PAGE_HEIGHT / 3
+    for image in [*images, table_step_4]:
+        cue = _box(image.cue)
+        for piece in image.lines.values():
+            for shape in piece.visible + piece.hidden:
+                for edge in shape.edges():
+                    points = [edge.position_at(t / 20) for t in range(21)]
+                    assert not any(
+                        cue[0] <= p.X <= cue[2] and cue[1] <= p.Y <= cue[3]
+                        for p in points
+                    ), image.step.name
+        assert not any(_overlap(cue, box) for box in image.labels.values())
+
+
+def test_the_dimension_view_names_the_steps_pieces(shelf):
+    _, plan, images = shelf
+    frame = images[0]
+    assert set(frame.dimension_labels) <= set(plan.steps[0].pieces)
+    assert {"leg_1", "leg_3"} <= set(frame.dimension_labels)
+    # leg_1 and leg_3 sit apart in both halves: they tell left from right
+    assert frame.references == []
+
+
+def test_a_reference_piece_tells_left_from_right_when_the_step_cannot(
+    table_step_4,
+):
+    # leg_3 alone cannot show which way round the view is, so one earlier
+    # piece is named in grey in both halves
+    [reference] = table_step_4.references
+    assert reference not in table_step_4.step.pieces
+    assert reference in table_step_4.labels
+    assert reference in table_step_4.dimension_labels
+
+
+def test_a_step_named_in_one_half_only_gets_two_references(shelf):
+    # The join's aprons hide behind the legs seen from the side, so two
+    # earlier pieces, apart across the view, show which way round it is
+    _, _, images = shelf
+    join = images[2]
+    assert len(join.references) == 2
+    a, b = (join.dimension_labels[p] for p in join.references)
+    assert abs((a[0] + a[2]) / 2 - (b[0] + b[2]) / 2) >= 10

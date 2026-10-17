@@ -9,9 +9,11 @@ import io
 import re
 import tempfile
 from dataclasses import dataclass, field
+from typing import Callable
 from pathlib import Path
 
 import cairosvg
+import numpy as np
 from build123d import (
     Compound,
     Edge,
@@ -69,6 +71,17 @@ _ONE_PIECE_ADVICE = "The report's Anchor Details give where each connection is"
 _IMAGE = re.compile(r"(step|part)-\d+\.png")
 
 Rect = tuple[float, float, float, float]
+Point = tuple[float, float]
+
+# The arrow showing the way the dimension view looks stays in the
+# isometric's lower left corner, which a box seen from -x +y +z leaves empty;
+# only its direction changes. Sizes are along the arrow, before the
+# isometric shortens them.
+_CUE_CENTRE = (MARGIN + 22.0, MARGIN + 16.0)
+_CUE_LENGTH, _CUE_WIDTH, _CUE_HEAD, _CUE_HEAD_WIDTH = 30.0, 5.0, 10.0, 12.0
+_CUE_CLEARANCE = 1.5
+# A name sits this far across the page from another to tell left from right
+_APART = 10.0
 
 
 @dataclass
@@ -87,9 +100,16 @@ class StepImage:
     dimension_lines: dict[str, _PieceLines]
     """The dimension view's lines of each piece shown."""
     labels: dict[str, Rect]
-    """Boxes of the labels naming this step's pieces."""
+    """Boxes of the isometric's labels: this step's pieces and ``references``."""
     view: View
     """The view dimensioning this step."""
+    dimension_labels: dict[str, Rect]
+    """Boxes of the dimension view's labels, as in ``labels``."""
+    references: list[str]
+    """Earlier pieces named in both halves, in grey, when this step's own
+    names cannot tell which way round the dimension view is."""
+    cue: list[Point]
+    """The arrow pointing the way the dimension view looks."""
     dimensions: DrawnDimensions
     svg: str
 
@@ -238,28 +258,167 @@ def _dimension_view(
     return view, placed, dimensions
 
 
+def _cue(view: tuple[int, int]) -> list[Point]:
+    """The arrow's outline, pointing the way a view from ``view`` (axis,
+    side) looks: flat on the floor, or straight down the page from above."""
+    axis, side = view
+    shorten = np.sqrt(2 / 3)  # how much the isometric shortens a level line
+    if axis == 2:
+        way = np.array([0.0, -float(side)]) * shorten
+        across = np.array([shorten, 0.0])
+    else:
+        looking, sideways = [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]
+        looking[axis], sideways[1 - axis] = float(-side), 1.0
+        way = np.array(project(_ISOMETRIC, looking))
+        across = np.array(project(_ISOMETRIC, sideways))
+    centre = np.array(_CUE_CENTRE)
+    tail, tip = centre - way * _CUE_LENGTH / 2, centre + way * _CUE_LENGTH / 2
+    neck = tip - way * _CUE_HEAD
+    outline = [
+        tail + across * _CUE_WIDTH / 2,
+        neck + across * _CUE_WIDTH / 2,
+        neck + across * _CUE_HEAD_WIDTH / 2,
+        tip,
+        neck - across * _CUE_HEAD_WIDTH / 2,
+        neck - across * _CUE_WIDTH / 2,
+        tail - across * _CUE_WIDTH / 2,
+    ]
+    return [(float(x), float(y)) for x, y in outline]
+
+
+def _box(points: list[Point], grow: float = 0.0) -> Rect:
+    xs, ys = [x for x, _ in points], [y for _, y in points]
+    return min(xs) - grow, min(ys) - grow, max(xs) + grow, max(ys) + grow
+
+
+def _free(box: Rect, taken: list[Rect]) -> bool:
+    return all(
+        box[2] <= b[0] or b[2] <= box[0] or box[3] <= b[1] or b[3] <= box[1]
+        for b in taken
+    )
+
+
+def _clear_fit(
+    lines: dict[str, _PieceLines], area: Rect, keep_out: Rect
+) -> tuple[float, tuple[float, float]]:
+    """``_fit`` in ``area``, drawn smaller until no line enters ``keep_out``."""
+    points = np.array(
+        [
+            (p.X, p.Y)
+            for piece in lines.values()
+            for shape in piece.visible + piece.hidden
+            for edge in shape.edges()
+            for p in (edge.position_at(t / 20) for t in range(21))
+        ]
+    )
+    fill = ISO_FILL
+    while True:
+        factor, offset = _fit(_bounds(lines), area, fill)
+        placed = points * factor + np.array(offset)
+        inside = (
+            (placed[:, 0] >= keep_out[0])
+            & (placed[:, 0] <= keep_out[2])
+            & (placed[:, 1] >= keep_out[1])
+            & (placed[:, 1] <= keep_out[3])
+        )
+        if not inside.any() or fill < 0.3:
+            return factor, offset
+        fill *= 0.95
+
+
+def _named(
+    assembly: Assembly,
+    view: View,
+    step: PlannedStep,
+    pieces: list[str],
+    scale: float,
+    offset: tuple[float, float],
+    taken: list[Rect],
+) -> dict[str, Rect]:
+    """Label boxes for ``pieces`` at the centres the viewer sees; a label
+    that would cover another or anything ``taken`` is left out."""
+    boxes: dict[str, Rect] = {}
+    for piece_id in pieces:
+        label = label_at(assembly, view, piece_id, step.shown)
+        if label is None:
+            continue
+        x, y = offset[0] + label.x * scale, offset[1] + label.y * scale
+        width, height = text_size(piece_id, 0.0)
+        box = (x - width / 2, y - height / 2, x + width / 2, y + height / 2)
+        if _free(box, [*taken, *boxes.values()]):
+            boxes[piece_id] = box
+    return boxes
+
+
+def _centre_x(box: Rect) -> float:
+    return (box[0] + box[2]) / 2
+
+
+def _references(
+    assembly: Assembly,
+    step: PlannedStep,
+    left: dict[str, Rect],
+    right: dict[str, Rect],
+    name_left: Callable[[str], Rect | None],
+    name_right: Callable[[str], Rect | None],
+) -> list[str]:
+    """Earlier pieces to name in both halves, added to ``left`` and
+    ``right``, until two names in both sit apart across the dimension view
+    and so show which way round it is. Pieces joined in this step come
+    first, then the nearest."""
+    both = [right[p] for p in step.pieces if p in left and p in right]
+
+    def told() -> bool:
+        return any(
+            abs(_centre_x(a) - _centre_x(b)) >= _APART
+            for i, a in enumerate(both)
+            for b in both[i + 1 :]
+        )
+
+    model, poses = assembly.model, assembly.placement.poses
+
+    def centre(piece_id: str) -> np.ndarray:
+        low, high = poses[piece_id].bounds(model.pieces[piece_id])
+        return (
+            np.array([low.x, low.y, low.z]) + np.array([high.x, high.y, high.z])
+        ) / 2
+
+    middle = np.mean([centre(p) for p in step.pieces], axis=0)
+    partners = {p for key in step.connections for p in key if p not in step.pieces}
+    earlier = sorted(
+        (p for p in step.shown if p not in step.pieces),
+        key=lambda p: (p not in partners, float(np.linalg.norm(centre(p) - middle))),
+    )
+    chosen: list[str] = []
+    for piece_id in earlier:
+        if told():
+            break
+        in_left, in_right = name_left(piece_id), name_right(piece_id)
+        if (
+            in_left is not None
+            and in_right is not None
+            and all(abs(_centre_x(in_right) - _centre_x(b)) >= _APART for b in both)
+        ):
+            left[piece_id], right[piece_id] = in_left, in_right
+            both.append(in_right)
+            chosen.append(piece_id)
+    return chosen
+
+
 def step_image(assembly: Assembly, part: Compound, step: PlannedStep) -> StepImage:
     """The step's image: the isometric view on the left, the dimension view
     on the right, the heading at the top."""
     shapes = {child.label: child for child in part.children}
     iso_area = (MARGIN, MARGIN, PAGE_WIDTH / 2 - MARGIN, PAGE_HEIGHT - HEADING)
     iso_lines = _piece_lines(shapes, step.shown, _ISOMETRIC)
-    factor, offset = _fit(_bounds(iso_lines), iso_area, ISO_FILL)
+    cue = _cue(step.view)
+    keep_out = _box(cue, _CUE_CLEARANCE)
+    factor, offset = _clear_fit(iso_lines, iso_area, keep_out)
     iso = _placed(iso_lines, factor, offset)
-    labels: dict[str, Rect] = {}
-    for piece_id in step.pieces:
-        label = label_at(assembly, _ISOMETRIC, piece_id, step.shown)
-        if label is None:
-            continue
-        x, y = offset[0] + label.x * factor, offset[1] + label.y * factor
-        width, height = text_size(label.piece_id, 0.0)
-        box = (x - width / 2, y - height / 2, x + width / 2, y + height / 2)
-        # A label that would cover another is left out; the table names it
-        if all(
-            box[2] <= b[0] or b[2] <= box[0] or box[3] <= b[1] or b[3] <= box[1]
-            for b in labels.values()
-        ):
-            labels[label.piece_id] = box
+    # A label that would cover another is left out; the table names it
+    labels = _named(
+        assembly, _ISOMETRIC, step, list(step.pieces), factor, offset, [keep_out]
+    )
 
     dim_area = (
         PAGE_WIDTH / 2 + MARGIN,
@@ -271,6 +430,38 @@ def step_image(assembly: Assembly, part: Compound, step: PlannedStep) -> StepIma
     dim_lines = _piece_lines(shapes, step.shown, view)
     view, placed, dimensions = _dimension_view(assembly, step, dim_lines, dim_area)
     dims = _placed(dim_lines, placed.scale, placed.offset)
+    values = [label.box for label in dimensions.labels]
+    dimension_labels = _named(
+        assembly, view, step, list(step.pieces), placed.scale, placed.offset, values
+    )
+
+    def name_left(piece_id: str) -> Rect | None:
+        boxes = _named(
+            assembly,
+            _ISOMETRIC,
+            step,
+            [piece_id],
+            factor,
+            offset,
+            [keep_out, *labels.values()],
+        )
+        return boxes.get(piece_id)
+
+    def name_right(piece_id: str) -> Rect | None:
+        boxes = _named(
+            assembly,
+            view,
+            step,
+            [piece_id],
+            placed.scale,
+            placed.offset,
+            [*values, *dimension_labels.values()],
+        )
+        return boxes.get(piece_id)
+
+    references = _references(
+        assembly, step, labels, dimension_labels, name_left, name_right
+    )
 
     exporter = ExportSVG(unit=Unit.MM)
     exporter.add_layer("Before", line_color=RGB(160, 160, 160), line_weight=0.18)
@@ -304,13 +495,14 @@ def step_image(assembly: Assembly, part: Compound, step: PlannedStep) -> StepIma
         exporter.add_shape(
             [Edge.make_line(a, b) for a, b in dimensions.lines], layer="Dimensions"
         )
-    if labels:
+    named = [*labels.items(), *dimension_labels.items()]
+    if named:
         exporter.add_shape(
             [
                 Polygon(
                     (b[0], b[1]), (b[2], b[1]), (b[2], b[3]), (b[0], b[3]), align=None
                 )
-                for b in labels.values()
+                for _, b in named
             ],
             layer="LabelGround",
         )
@@ -320,7 +512,8 @@ def step_image(assembly: Assembly, part: Compound, step: PlannedStep) -> StepIma
         * text_shape(_heading(step), 0.0),
         *(
             Pos((b[0] + b[2]) / 2, (b[1] + b[3]) / 2) * text_shape(piece_id, 0.0)
-            for piece_id, b in labels.items()
+            for piece_id, b in named
+            if piece_id not in references
         ),
         *(
             Pos(*label.centre) * text_shape(label.text, label.rotation)
@@ -329,11 +522,40 @@ def step_image(assembly: Assembly, part: Compound, step: PlannedStep) -> StepIma
         *(Polygon(*arrow_points(*arrow), align=None) for arrow in dimensions.arrows),
     ]
     exporter.add_shape(texts, layer="Text")
+    # The reference and the arrow are grey: they orient, they are not built
+    exporter.add_layer(
+        "Cue",
+        fill_color=RGB(150, 150, 150),
+        line_color=RGB(150, 150, 150),
+        line_weight=0.01,
+    )
+    exporter.add_shape(
+        [
+            Polygon(*cue, align=None),
+            *(
+                Pos((b[0] + b[2]) / 2, (b[1] + b[3]) / 2) * text_shape(piece_id, 0.0)
+                for piece_id, b in named
+                if piece_id in references
+            ),
+        ],
+        layer="Cue",
+    )
     with tempfile.TemporaryDirectory() as directory:
         path = Path(directory) / "step.svg"
         exporter.write(str(path))
         svg = path.read_text()
-    return StepImage(step, iso, dims, labels, view, dimensions, svg)
+    return StepImage(
+        step,
+        iso,
+        dims,
+        labels,
+        view,
+        dimension_labels,
+        references,
+        cue,
+        dimensions,
+        svg,
+    )
 
 
 def image_name(step: PlannedStep, count: int) -> str:
