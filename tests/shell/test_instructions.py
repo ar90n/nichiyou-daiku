@@ -1,5 +1,6 @@
 """Tests for the assembly instructions: step images and the steps page."""
 
+import re
 from itertools import combinations
 from pathlib import Path
 
@@ -183,12 +184,21 @@ def test_this_steps_pieces_are_black_and_earlier_ones_grey(shelf):
     assert _drawn(images[3].svg, "New") > 0
 
 
-def test_hidden_lines_are_left_out(shelf):
-    # Dashed back edges only crowd the image; what shows is enough to build
-    _, _, images = shelf
-    for image in images:
-        assert any(piece.hidden for piece in image.lines.values())
-        assert "stroke-dasharray" not in image.svg, image.step.name
+def test_hidden_lines_are_dashed_in_the_dimension_view_only(shelf):
+    # Back edges only crowd the isometric; in the dimension view they show
+    # this step's pieces where earlier ones hide them
+    _, plan, images = shelf
+    join, step = images[2], plan.steps[2]
+    dashed = re.findall(r"[ML] ([-\d.]+),", _layer(join.svg, "NewHidden"))
+    assert dashed
+    assert all(float(x) > PAGE_WIDTH / 2 for x in dashed)
+    # One SVG element draws one edge or more: no room for earlier pieces'
+    hidden = sum(
+        len(shape.edges())
+        for piece_id in step.pieces
+        for shape in join.dimension_lines[piece_id].hidden
+    )
+    assert _drawn(join.svg, "NewHidden") <= hidden
 
 
 def test_every_new_piece_is_named_in_every_step(shelf):

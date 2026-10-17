@@ -18,6 +18,7 @@ from build123d import (
     Compound,
     Edge,
     ExportSVG,
+    LineType,
     Polygon,
     Pos,
     Shape,
@@ -534,6 +535,7 @@ def step_image(assembly: Assembly, part: Compound, step: PlannedStep) -> StepIma
     exporter = ExportSVG(unit=Unit.MM)
     exporter.add_layer("Before", line_color=RGB(160, 160, 160), line_weight=0.18)
     exporter.add_layer("New", line_weight=0.5)
+    exporter.add_layer("NewHidden", line_weight=0.25, line_type=LineType.ISO_DASH)
     exporter.add_layer("Dimensions", line_weight=0.13)
     # A white ground under each piece name keeps it readable over the lines
     exporter.add_layer(
@@ -554,9 +556,12 @@ def step_image(assembly: Assembly, part: Compound, step: PlannedStep) -> StepIma
     for drawn in (iso, dims):
         for piece_id, piece in drawn.items():
             new = piece_id in step.pieces
-            # Hidden edges are left out: dashed back edges only crowd the image
             if piece.visible:
                 exporter.add_shape(piece.visible, layer="New" if new else "Before")
+            # Dashed back edges only crowd the isometric; in the dimension
+            # view they show this step's pieces where earlier ones hide them
+            if new and drawn is dims and piece.hidden:
+                exporter.add_shape(piece.hidden, layer="NewHidden")
     if dimensions.lines:
         exporter.add_shape(
             [Edge.make_line(a, b) for a, b in dimensions.lines], layer="Dimensions"
