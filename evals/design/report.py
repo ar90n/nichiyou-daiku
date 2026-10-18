@@ -170,6 +170,6 @@ def report_markdown(
                 f"| judge: {name} | {_mark(verdict['passed'])} | {verdict['detail']} |"
             )
         if row.get("judge"):
-            lines += ["", f"![{run}]({run}/render.png)"]
+            lines += ["", f"![{run}]({run}/judge/render.png)"]
         lines.append("")
     return "\n".join(lines)

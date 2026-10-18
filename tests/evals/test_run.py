@@ -237,7 +237,7 @@ def test_the_report_rates_come_from_the_rows(fake, tmp_path):
     assert counts["all checks"] == (1, 1)
     assert "| all checks | 1/1 | 100% |" in report
     assert "- bench-1: timeout: no result within 40 minutes" in report
-    assert "![side-table-1](side-table-1/render.png)" in report
+    assert "![side-table-1](side-table-1/judge/render.png)" in report
 
 
 def test_the_report_counts_the_usage_of_failed_attempts(fake, tmp_path):

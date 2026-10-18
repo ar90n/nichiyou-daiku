@@ -2,6 +2,7 @@
 and have it answer concrete questions about the picture."""
 
 import json
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -124,11 +125,17 @@ def read_judgement(result: dict) -> Judgement:
 def judge(
     design: Path, request: str, model: str, repo: Path, workdir: Path, timeout_s: float
 ) -> Judgement:
-    """Render ``design`` into ``workdir`` and have ``model`` judge it."""
-    render(design, workdir / "render.png", repo)
+    """Render ``design`` and have ``model`` judge it, in ``workdir``/judge:
+    apart from the agent's files, and under a neutral name, since the
+    picture shows the file name."""
+    directory = workdir / "judge"
+    directory.mkdir(exist_ok=True)
+    neutral = directory / "design.nd"
+    shutil.copyfile(design, neutral)
+    render(neutral, directory / "render.png", repo)
     command = judge_command(judge_prompt(request, "render.png"), model)
-    record = workdir / "judge.json"
-    run_claude(command, workdir, agent_env(repo), record, timeout_s)
+    record = directory / "judge.json"
+    run_claude(command, directory, agent_env(repo), record, timeout_s)
     try:
         result = json.loads(record.read_text(encoding="utf-8"))
     except json.JSONDecodeError as e:
