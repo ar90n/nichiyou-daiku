@@ -214,8 +214,23 @@ def _flat_board(piece: PiecePosition) -> bool:
     return piece.faces.front[1] == "z" and section.width > section.height
 
 
+def _holds_up(lower: PiecePosition, upper: PiecePosition) -> bool:
+    """Whether ``lower`` lies right under ``upper``, touching it."""
+    return abs(lower.max[2] - upper.min[2]) <= _LEVEL_MM and all(
+        lower.min[axis] < upper.max[axis] and upper.min[axis] < lower.max[axis]
+        for axis in (0, 1)
+    )
+
+
 def _level_tops(pieces: tuple[PiecePosition, ...]) -> list[float]:
-    tops = sorted(piece.max[2] for piece in pieces if _flat_board(piece))
+    boards = [piece for piece in pieces if _flat_board(piece)]
+    # A flat apron or cleat right under a board holds it up; it is not a
+    # level of its own
+    tops = sorted(
+        board.max[2]
+        for board in boards
+        if not any(_holds_up(board, other) for other in boards)
+    )
     levels: list[list[float]] = []
     for top in tops:
         if levels and top - levels[-1][0] <= _LEVEL_MM:

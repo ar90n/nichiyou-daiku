@@ -4,7 +4,8 @@ import os
 from pathlib import Path
 
 from evals.design.cases import Fasteners, Legs, Levels, Lumber, Shelf, Size, load_cases
-from evals.design.checks import CHECKS, check_design, find_design
+from evals.design.checks import CHECKS, _level_tops, check_design, find_design
+from nichiyou_daiku.shell.diagnostics import PieceFaces, PiecePosition
 
 ROOT = Path(__file__).parents[2]
 SIDE_TABLE = ROOT / "skills" / "design" / "examples" / "side-table.nd"
@@ -98,6 +99,30 @@ def test_levels_count_boards_and_their_spacing():
     assert check_design(SHELF, two)["levels"].passed is True
     three = shelf.model_copy(update={"levels": Levels(count=3)})
     assert "2 levels, asked 3" in check_design(SHELF, three)["levels"].detail
+
+
+def _flat(id: str, type: str, low: tuple, high: tuple) -> PiecePosition:
+    faces = PieceFaces(top="+x", right="+y", front="+z")
+    return PiecePosition(
+        id=id,
+        type=type,
+        length=high[0] - low[0],
+        group=0,
+        min=low,
+        max=high,
+        faces=faces,
+    )
+
+
+def test_a_flat_board_holding_up_another_is_not_a_level():
+    # A tv stand: a flat 2x4 apron right under the 2x6 top holds it up
+    top = _flat("top", "2x6", (0, 0, 362), (1200, 140, 400))
+    apron = _flat("apron", "2x4", (0, 20, 324), (1200, 109, 362))
+    shelf = _flat("shelf", "2x6", (0, 0, 62), (1200, 140, 100))
+    assert _level_tops((top, apron, shelf)) == [100, 400]
+    # A board at that height but elsewhere is a level of its own
+    aside = _flat("aside", "2x4", (0, 200, 324), (1200, 289, 362))
+    assert _level_tops((top, aside, shelf)) == [100, 362, 400]
 
 
 def test_only_the_height_is_checked_when_only_the_height_is_asked():
