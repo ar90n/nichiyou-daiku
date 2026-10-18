@@ -284,14 +284,13 @@ def test_skill_frontmatter_names_and_describes_the_skill(path):
     assert 0 < len(fields["description"]) <= 1024
 
 
-def test_plugin_root_appears_only_in_skill_bodies():
-    # Claude Code substitutes it in SKILL.md; a file read later keeps it literal
+def test_the_skill_does_not_rely_on_claude_code_s_plugin_root():
+    # Only Claude Code substitutes it: opencode and other tools read the same
+    # skill, so files are linked relative to the skill instead
     literal = [
         str(path.relative_to(ROOT))
         for path in (ROOT / "skills").rglob("*")
-        if path.is_file()
-        and path.name != "SKILL.md"
-        and "${CLAUDE_PLUGIN_ROOT}" in path.read_text()
+        if path.is_file() and "${CLAUDE_PLUGIN_ROOT}" in path.read_text()
     ]
     assert literal == []
 

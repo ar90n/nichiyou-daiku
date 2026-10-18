@@ -13,7 +13,7 @@ Check the request against [requirements.md](requirements.md). Ask only for what 
 
 ## 2. Read
 
-- The DSL specification: `${CLAUDE_PLUGIN_ROOT}/docs/dsl-specification.md`. Every rule in it applies: faces and offsets, placement, variables, unknowns, fasteners.
+- The DSL specification: [docs/dsl-specification.md](../../docs/dsl-specification.md), in the plugin's root two directories above this skill. Every rule in it applies: faces and offsets, placement, variables, unknowns, fasteners.
 - [patterns.md](patterns.md): verified joints and layouts, length formulas, naming and a checklist.
 - [examples/](examples/): requirements with a matching `.nd` (a side table, a two-tier shelf, a corner joint). Start from the closest one.
 
