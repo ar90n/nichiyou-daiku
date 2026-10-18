@@ -31,8 +31,10 @@ TRANSCRIPT = Transcript(
     usage={},
     shared_tmp=0,
     last_checked=None,
-    claude_code_version="2.1.0",
+    tool="Claude Code 2.1.0",
     api_key_source="none",
+    input_tokens=25_000,
+    output_tokens=5_000,
 )
 
 
@@ -293,9 +295,35 @@ def test_the_report_says_what_ran_and_sums_up_each_case(fake, tmp_path):
         "judge: claude-opus-5" in report
     )
     assert "at API prices" in report
-    assert "| Case | Graded | All checks | Judge | Time | Usage |" in report
-    assert "| side-table | 1 | 1/1 | 1/1 | 5.0 min | 0.50 USD |" in report
-    assert "| bench | 0 | - | - | - | - |" in report
+    assert "| Case | Graded | All checks | Judge | Time | Usage | Tokens |" in report
+    assert "| side-table | 1 | 1/1 | 1/1 | 5.0 min | 0.50 USD | 30.0 k |" in report
+    assert "| bench | 0 | - | - | - | - | - |" in report
+    # Free models cost nothing: tokens compare their runs
+    assert "- Agent tokens in: 25.0 k (25.0 – 25.0)" in report
+    assert "- Agent tokens out: 5.0 k (5.0 – 5.0)" in report
+
+
+def test_a_run_without_an_api_key_source_says_nothing_of_one():
+    row = {
+        "case": "bench",
+        "rep": 1,
+        "design": "bench.nd",
+        "checks": {name: {"passed": True, "detail": ""} for name in CHECKS},
+        "judge": None,
+        "judge_cost_usd": 0.0,
+        **TRANSCRIPT.model_copy(
+            update={
+                "model": "opencode/deepseek-v4.1-flash-free",
+                "tool": "opencode 1.18.30",
+                "api_key_source": None,
+            }
+        ).model_dump(),
+    }
+    report = report_markdown({"cases": ["bench"], "reps": 1}, [row], [])
+    assert (
+        "- Agent: opencode/deepseek-v4.1-flash-free on opencode 1.18.30; judge: -"
+        in report
+    )
 
 
 def test_a_run_of_changed_code_keeps_the_changes(fake, monkeypatch, tmp_path):

@@ -94,10 +94,11 @@ def test_the_record_tells_what_the_agent_did():
     assert transcript.model == "claude-sonnet-5"
     # An alias such as sonnet moves to new models, and an API key in the
     # environment would bill an account instead of the plan
-    assert (transcript.claude_code_version, transcript.api_key_source) == (
-        "2.1.0",
+    assert (transcript.tool, transcript.api_key_source) == (
+        "Claude Code 2.1.0",
         "none",
     )
+    assert (transcript.input_tokens, transcript.output_tokens) == (10, 20)
     assert transcript.skill_used
     assert (transcript.validates, transcript.renders, transcript.images_read) == (
         1,
@@ -110,6 +111,17 @@ def test_the_record_tells_what_the_agent_did():
         0.42,
     )
     assert transcript.denials == 1
+
+
+def test_tokens_read_from_the_cache_count_as_input():
+    usage = {
+        "input_tokens": 10,
+        "cache_creation_input_tokens": 100,
+        "cache_read_input_tokens": 1000,
+        "output_tokens": 20,
+    }
+    transcript = read_transcript(_events({**RESULT, "usage": usage}))
+    assert (transcript.input_tokens, transcript.output_tokens) == (1110, 20)
 
 
 def test_each_validate_and_render_in_a_command_counts():

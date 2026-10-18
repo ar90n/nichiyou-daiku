@@ -106,7 +106,7 @@ def _values(rows: list[dict], key: str) -> str:
 def _case_line(case: str, rows: list[dict]) -> str:
     runs = [row for row in rows if row["case"] == case]
     if not runs:
-        return f"| {case} | 0 | - | - | - | - |"
+        return f"| {case} | 0 | - | - | - | - | - |"
     judged = [row for row in runs if row.get("judge")]
     judge_passed = sum(
         all(verdict["passed"] for verdict in row["judge"].values()) for row in judged
@@ -114,10 +114,15 @@ def _case_line(case: str, rows: list[dict]) -> str:
     judge = f"{judge_passed}/{len(judged)}" if judged else "-"
     minutes = median(row["duration_s"] / 60 for row in runs)
     usage = median(row["cost_usd"] for row in runs)
+    tokens = median(_tokens(row) for row in runs) / 1000
     return (
         f"| {case} | {len(runs)} | {sum(all_passed(row) for row in runs)}/{len(runs)} "
-        f"| {judge} | {minutes:.1f} min | {usage:.2f} USD |"
+        f"| {judge} | {minutes:.1f} min | {usage:.2f} USD | {tokens:.1f} k |"
     )
+
+
+def _tokens(row: dict) -> int:
+    return row.get("input_tokens", 0) + row.get("output_tokens", 0)
 
 
 def _mark(passed: bool | None) -> str:
@@ -155,10 +160,13 @@ def report_markdown(
         f"- Repetitions: {meta.get('reps')}; model: {meta.get('model')}; judge: {meta.get('judge_model')}",
         f"- Commit: {meta.get('commit')}"
         + (f" (the changes are in {meta['diff']})" if meta.get("diff") else ""),
-        f"- Agent: {_values(rows, 'model')} on Claude Code "
-        f"{_values(rows, 'claude_code_version')}, API key: "
-        f"{_values(rows, 'api_key_source')}; judge: "
-        f"{_values([row for row in rows if row.get('judge')], 'judge_model')}",
+        f"- Agent: {_values(rows, 'model')} on {_values(rows, 'tool')}"
+        + (
+            f", API key: {_values(keyed, 'api_key_source')}"
+            if (keyed := [row for row in rows if row.get("api_key_source")])
+            else ""
+        )
+        + f"; judge: {_values([row for row in rows if row.get('judge')], 'judge_model')}",
         f"- Graded runs: {len(rows)}; failed attempts: {len(errors)} ({pending} not graded yet)",
         f"- Runs that used /tmp outside their own directory: "
         f"{sum(1 for row in rows if row.get('shared_tmp'))} of {len(rows)}",
@@ -193,8 +201,8 @@ def report_markdown(
         "",
         "## Cases",
         "",
-        "| Case | Graded | All checks | Judge | Time | Usage |",
-        "|---|---|---|---|---|---|",
+        "| Case | Graded | All checks | Judge | Time | Usage | Tokens |",
+        "|---|---|---|---|---|---|---|",
         *(_case_line(case, rows) for case in meta.get("cases", [])),
     ]
     lines += [
@@ -208,6 +216,8 @@ def report_markdown(
         f"- Turns: {_spread([float(row['turns']) for row in rows], '')}",
         f"- Agent usage: {_spread([row['cost_usd'] for row in rows], 'USD')}",
         f"- Judge usage: {_spread([row['judge_cost_usd'] for row in rows if row.get('judge')], 'USD')}",
+        f"- Agent tokens in: {_spread([row.get('input_tokens', 0) / 1000 for row in rows], 'k')}",
+        f"- Agent tokens out: {_spread([row.get('output_tokens', 0) / 1000 for row in rows], 'k')}",
         _failed_usage(errors),
         f"- Total usage: {_total_usage(rows, errors):.2f} USD",
         "",

@@ -77,7 +77,7 @@ class AgentFailed(Exception):
 
 
 class Transcript(BaseModel, frozen=True):
-    """What one run did, read from ``claude -p``'s stream-json record."""
+    """What one run did, read from the agent's record."""
 
     model: str | None
     skill_used: bool
@@ -93,9 +93,13 @@ class Transcript(BaseModel, frozen=True):
     """Tool calls that touched /tmp outside the run's own directories."""
     last_checked: str | None
     """The file name of the last design the agent validated or rendered."""
-    claude_code_version: str | None
+    tool: str | None
+    """The agent's tool and its version, as "Claude Code 2.1.0"."""
     api_key_source: str | None
     """Where claude took its credentials from: "none" is the plan's login."""
+    input_tokens: int
+    """Tokens read, including those from the cache."""
+    output_tokens: int
 
 
 def isolated_flags() -> list[str]:
@@ -249,6 +253,7 @@ def read_transcript(lines: Iterable[str]) -> Transcript:
             f"claude reported an error: {str(result.get('result', ''))[:300]}",
             cost_usd=result.get("total_cost_usd"),
         )
+    usage = result.get("usage") or {}
     return Transcript(
         model=model,
         skill_used=skill_used,
@@ -259,11 +264,20 @@ def read_transcript(lines: Iterable[str]) -> Transcript:
         turns=result.get("num_turns", 0),
         duration_s=result.get("duration_ms", 0) / 1000,
         cost_usd=result.get("total_cost_usd", 0.0),
-        usage=result.get("usage") or {},
+        usage=usage,
         shared_tmp=shared_tmp,
         last_checked=last_checked,
-        claude_code_version=version,
+        tool=f"Claude Code {version}" if version else None,
         api_key_source=key_source,
+        input_tokens=sum(
+            usage.get(key, 0)
+            for key in (
+                "input_tokens",
+                "cache_creation_input_tokens",
+                "cache_read_input_tokens",
+            )
+        ),
+        output_tokens=usage.get("output_tokens", 0),
     )
 
 
