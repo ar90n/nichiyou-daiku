@@ -163,6 +163,26 @@ def test_the_agent_works_outside_the_repository_on_a_copy_of_the_plugin(
     assert (out / "side-table-1" / "design.nd").is_file()
 
 
+def test_the_plugin_is_copied_without_git_too(tmp_path):
+    # A copy of the repository without .git, as CI tests it
+    repo = tmp_path / "repo"
+    for name in (
+        "skills/design/SKILL.md",
+        "src/nichiyou_daiku/__init__.py",
+        "src/nichiyou_daiku/__pycache__/x.pyc",
+        ".venv/bin/python",
+        "evals/design/cases/bench.toml",
+        ".claude/settings.json",
+        "CLAUDE.md",
+    ):
+        (repo / name).parent.mkdir(parents=True, exist_ok=True)
+        (repo / name).write_text(name)
+    copy = run.plugin_copy(repo, tmp_path / "copy")
+    assert sorted(
+        str(path.relative_to(copy)) for path in copy.rglob("*") if path.is_file()
+    ) == ["skills/design/SKILL.md", "src/nichiyou_daiku/__init__.py"]
+
+
 def test_the_self_check_judges_outside_the_repository(monkeypatch, tmp_path):
     places = []
 

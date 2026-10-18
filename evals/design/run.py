@@ -5,6 +5,7 @@ uv run python -m evals.design.run --cases core --reps 1
 
 import argparse
 import json
+import os
 import shutil
 import signal
 import subprocess
@@ -35,17 +36,32 @@ CONDITIONS = {"cases": "core", "reps": 1, "model": "sonnet", "judge_model": "opu
 HIDDEN = ("evals/", ".claude/", "CLAUDE.md")
 
 
+# Never part of the plugin when the repository is copied without git
+_NOT_SOURCE = {".git", ".venv", "__pycache__", ".pytest_cache", ".ruff_cache"}
+
+
+def _source_files(repo: Path) -> list[str]:
+    """The files git tracks or would track; in a copy without git (as CI
+    tests it), every file outside caches and environments."""
+    if (repo / ".git").exists():
+        return subprocess.run(
+            ["git", "-C", str(repo), "ls-files", "-z", "--cached", "--others"]
+            + ["--exclude-standard"],
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout.split("\0")
+    names = []
+    for directory, subdirectories, files in os.walk(repo):
+        subdirectories[:] = [d for d in subdirectories if d not in _NOT_SOURCE]
+        names += [str((Path(directory) / f).relative_to(repo)) for f in files]
+    return names
+
+
 def plugin_copy(repo: Path, into: Path) -> Path:
-    """The plugin as a person installs it, with today's changes: the files
-    git tracks or would track, without HIDDEN."""
-    names = subprocess.run(
-        ["git", "-C", str(repo), "ls-files", "-z", "--cached", "--others"]
-        + ["--exclude-standard"],
-        capture_output=True,
-        text=True,
-        check=True,
-    ).stdout.split("\0")
-    for name in names:
+    """The plugin as a person installs it, with today's changes: the
+    repository's source files without HIDDEN."""
+    for name in _source_files(repo):
         source = repo / name
         if not name or name.startswith(HIDDEN) or not source.is_file():
             continue
