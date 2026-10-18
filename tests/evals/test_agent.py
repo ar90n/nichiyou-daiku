@@ -225,6 +225,15 @@ def test_no_session_starts_after_a_stop(tmp_path, stop):
     assert not (tmp_path / "started").exists()
 
 
+def test_a_session_s_pwd_is_its_directory(tmp_path):
+    # opencode takes its working directory from PWD, not from the process: a
+    # PWD left at the repository had the agent write its design there
+    command = [sys.executable, "-c", "import os; print(os.environ['PWD'])"]
+    env = {**os.environ, "PWD": "/somewhere/else"}
+    run_claude(command, tmp_path, env, tmp_path / "out", 60)
+    assert (tmp_path / "out").read_text().strip() == str(tmp_path)
+
+
 def test_a_run_past_its_limit_is_killed(tmp_path):
     command = [sys.executable, "-c", "import time; time.sleep(30)"]
     with pytest.raises(AgentFailed) as failed:

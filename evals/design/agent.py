@@ -40,6 +40,27 @@ _RENDER = re.compile(_COMMAND.format("render"))
 _CHECKED = re.compile(
     _COMMAND.format("(?:validate|render)") + r"(?:\s+-[-\w]+)*\s+([^\s;&|]+\.nd)\b"
 )
+# Claude Code's model names; other LLMs run through opencode
+CLAUDE_MODELS = ("sonnet", "opus", "haiku")
+
+
+def is_claude(model: str) -> bool:
+    return model in CLAUDE_MODELS or model.startswith("claude-")
+
+
+def cli_calls(command: str) -> tuple[int, int, str | None]:
+    """The validate and render calls in a shell command, and the file name
+    of the last design one of them reads."""
+    checked = [Path(name.strip("'\"")).name for name in _CHECKED.findall(command)]
+    return (
+        len(_VALIDATE.findall(command)),
+        len(_RENDER.findall(command)),
+        checked[-1] if checked else None,
+    )
+
+
+def in_shared_tmp(text: str) -> bool:
+    return bool(_SHARED_TMP.search(text))
 
 
 # Set when the evaluation is stopped: running sessions are ended and no new
@@ -100,6 +121,9 @@ class Transcript(BaseModel, frozen=True):
     input_tokens: int
     """Tokens read, including those from the cache."""
     output_tokens: int
+    ended: str | None = None
+    """Why the agent's last step ended, when not with its answer: opencode's
+    "length" is the model's output limit."""
 
 
 def isolated_flags() -> list[str]:
@@ -171,7 +195,9 @@ def run_claude(
         process = subprocess.Popen(
             command,
             cwd=cwd,
-            env=env,
+            # opencode takes its working directory from PWD, not from the
+            # process: left at the repository, it had the agent write there
+            env={**env, "PWD": str(cwd)},
             stdin=subprocess.DEVNULL,
             stdout=out,
             stderr=err,
@@ -232,15 +258,13 @@ def read_transcript(lines: Iterable[str]) -> Transcript:
                 target = " ".join(
                     str(args.get(key, "")) for key in ("command", "file_path", "path")
                 )
-                shared_tmp += bool(_SHARED_TMP.search(target))
+                shared_tmp += in_shared_tmp(target)
                 if name == "Skill" and args.get("skill") == SKILL:
                     skill_used = True
                 elif name == "Bash":
-                    command = args.get("command", "")
-                    validates += len(_VALIDATE.findall(command))
-                    renders += len(_RENDER.findall(command))
-                    for checked in _CHECKED.findall(command):
-                        last_checked = Path(checked.strip("'\"")).name
+                    valid, drawn, checked = cli_calls(args.get("command", ""))
+                    validates, renders = validates + valid, renders + drawn
+                    last_checked = checked or last_checked
                 elif name == "Read" and args.get("file_path", "").endswith(".png"):
                     images_read += 1
         elif event.get("type") == "result":
