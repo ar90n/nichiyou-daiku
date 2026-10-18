@@ -243,7 +243,10 @@ def report_markdown(
             f"- Design: {row.get('design') or 'none'}{_chosen(row)}; {row['duration_s'] / 60:.1f} min, {row['turns']} turns, "
             f"{row['cost_usd']:.2f} USD; skill {'used' if row['skill_used'] else 'NOT used'}, "
             f"validate ×{row['validates']}, render ×{row['renders']}, images read ×{row['images_read']}, "
-            f"refused ×{row['denials']}, shared /tmp ×{row.get('shared_tmp', 0)}",
+            f"refused ×{row['denials']}, shared /tmp ×{row.get('shared_tmp', 0)}"
+            + (
+                f"; its last step ended with {row['ended']}" if row.get("ended") else ""
+            ),
             "",
             "| Check | | Detail |",
             "|---|---|---|",

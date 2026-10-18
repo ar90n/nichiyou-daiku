@@ -17,11 +17,15 @@ lint:  ## Run linting checks
 format:  ## Format code with black
 	uv run ruff format src/ tests/ evals/
 
-eval:  ## Check the design skill on the 5 core requests once, ~15 min (uses your Claude allowance)
-	uv run python -m evals.design.run --cases core --reps 1
+# The LLM that designs: sonnet, opus or haiku through Claude Code, deepseek or
+# glm (free) or an opencode/... name through opencode
+MODEL ?= sonnet
 
-eval-full:  ## Measure the design skill on all 10 requests 3 times, before merging skill changes (uses your Claude allowance)
-	uv run python -m evals.design.run --cases all --reps 3
+eval:  ## Check the design skill on the 5 core requests once, ~15 min (MODEL=sonnet; uses your Claude allowance)
+	uv run python -m evals.design.run --cases core --reps 1 --model $(MODEL)
+
+eval-full:  ## Measure the design skill on all 10 requests 3 times, before merging skill changes (MODEL=sonnet; uses your Claude allowance)
+	uv run python -m evals.design.run --cases all --reps 3 --model $(MODEL)
 
 ci-setup:  ## Install CI dependencies for local CI runs
 	uv sync --group ci --group dev --all-extras

@@ -6,6 +6,7 @@ uv run python -m evals.design.run --cases core --reps 1
 import argparse
 import json
 import os
+import re
 import shutil
 import signal
 import subprocess
@@ -18,10 +19,19 @@ from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
 
-from .agent import STOP, AgentFailed, agent_env, run_agent, stop_all
+from .agent import (
+    CLAUDE_MODELS,
+    STOP,
+    AgentFailed,
+    agent_env,
+    is_claude,
+    run_agent,
+    stop_all,
+)
 from .cases import Case, load_cases
 from .checks import assembles, check_design, find_design
 from .judge import judge, self_check
+from .opencode import MODELS, model_id, opencode_env, run_opencode, uses_opencode
 from .report import load_jsonl, report_markdown
 
 REPO = Path(__file__).resolve().parents[2]
@@ -186,7 +196,8 @@ def run_one(
     with outside_repo(keep) as workdir:
         if row is None:
             try:
-                transcript = run_agent(
+                design_with = run_opencode if uses_opencode(args.model) else run_agent
+                transcript = design_with(
                     case.request, args.model, plugin, env, workdir, timeout_s
                 )
             except AgentFailed as e:
@@ -281,20 +292,25 @@ def _conditions(args: argparse.Namespace) -> str | None:
         for name, default in CONDITIONS.items():
             if getattr(args, name) is None:
                 setattr(args, name, default)
-        return None
-    meta_path = args.resume / "meta.json"
-    if not meta_path.exists():
-        return f"{args.resume} has no meta.json; give --resume a directory an earlier run wrote"
-    given = [name for name in CONDITIONS if getattr(args, name) is not None]
-    if given:
+    else:
+        meta_path = args.resume / "meta.json"
+        if not meta_path.exists():
+            return f"{args.resume} has no meta.json; give --resume a directory an earlier run wrote"
+        if any(getattr(args, name) is not None for name in CONDITIONS):
+            return (
+                f"--resume continues {args.resume} with its own cases, repetitions and "
+                "models; leave out --cases, --reps, --model and --judge-model"
+            )
+        meta = json.loads(meta_path.read_text(encoding="utf-8"))
+        args.cases = ",".join(meta["cases"])
+        for name in ("reps", "model", "judge_model"):
+            setattr(args, name, meta[name])
+    if not (is_claude(args.model) or uses_opencode(args.model)):
         return (
-            f"--resume continues {args.resume} with its own cases, repetitions and "
-            "models; leave out --cases, --reps, --model and --judge-model"
+            f"Unknown model {args.model}; use {', '.join(CLAUDE_MODELS)} or a "
+            f"claude-... name for Claude Code, or {', '.join(MODELS)} or an "
+            "opencode/... or opencode-go/... name for opencode"
         )
-    meta = json.loads(meta_path.read_text(encoding="utf-8"))
-    args.cases = ",".join(meta["cases"])
-    for name in ("reps", "model", "judge_model"):
-        setattr(args, name, meta[name])
     return None
 
 
@@ -308,10 +324,13 @@ def _uv_cache() -> str:
     return found.stdout.strip()
 
 
-def preflight(plugin: Path, env: dict[str, str], scratch: Path) -> str | None:
+def preflight(
+    plugin: Path, env: dict[str, str], scratch: Path, model: str | None
+) -> str | None:
     """What would make every run fail, found before any allowance is spent:
-    claude, and the plugin's CLI validating and drawing the skill's example
-    (which builds its environments once for all the runs)."""
+    claude (the judge's), the plugin's CLI validating and drawing the skill's
+    example (which builds its environments once for all the runs), and for
+    an opencode ``model``, opencode serving it."""
     if shutil.which("claude", path=env["PATH"]) is None:
         return "claude is not on PATH; install Claude Code to run the evaluation"
     example = plugin / "skills" / "design" / "examples" / "side-table.nd"
@@ -329,7 +348,30 @@ def preflight(plugin: Path, env: dict[str, str], scratch: Path) -> str | None:
                 f"the plugin's CLI could not {command[0]} the skill's example "
                 f"({said}); check that bin/nichiyou-daiku runs with uv"
             )
-    return None
+    if model is None or not uses_opencode(model):
+        return None
+    if shutil.which("opencode", path=env["PATH"]) is None:
+        return "opencode is not on PATH; install it (https://opencode.ai) to run this model"
+    # This also fills opencode's cache, which the runs share: on an empty
+    # one, opencode lists the catalog it ships with and fetches the current
+    # one for the next call, and the first run starts before its skills are
+    # found
+    settings = opencode_env(env, scratch / "opencode")
+    listed = subprocess.run(
+        ["opencode", "models"], env=settings, capture_output=True, text=True
+    )
+    if model_id(model) not in listed.stdout.split():
+        listed = subprocess.run(
+            ["opencode", "models"], env=settings, capture_output=True, text=True
+        )
+    if model_id(model) in listed.stdout.split():
+        return None
+    said = (listed.stderr.strip().splitlines() or [""])[-1]
+    return (
+        f"opencode does not offer {model_id(model)} now"
+        + (f" ({said})" if said else "")
+        + "; pick a model from opencode models"
+    )
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -351,7 +393,9 @@ def main(argv: list[str] | None = None) -> int:
     ):
         plugin = plugin_copy(REPO, Path(tmp) / "plugin")
         env = agent_env(plugin, Path(cache), _uv_cache(), REPO / ".venv")
-        if wrong := preflight(plugin, env, Path(tmp)):
+        if wrong := preflight(
+            plugin, env, Path(tmp), None if args.self_check else args.model
+        ):
             print(wrong, file=sys.stderr)
             return 2
         if args.self_check:
@@ -377,7 +421,9 @@ def _self_check(args: argparse.Namespace, plugin: Path, env: dict[str, str]) -> 
 def _evaluate(
     args: argparse.Namespace, cases: list[Case], plugin: Path, env: dict[str, str]
 ) -> int:
-    out = args.resume or args.out or RUNS / f"{datetime.now():%Y%m%d-%H%M%S}"
+    # The model in the name: two started in the same second do not mix
+    named = f"{datetime.now():%Y%m%d-%H%M%S}-{re.sub(r'[^\w.-]+', '-', args.model)}"
+    out = args.resume or args.out or RUNS / named
     out.mkdir(parents=True, exist_ok=True)
     meta_path = out / "meta.json"
     if not meta_path.exists():

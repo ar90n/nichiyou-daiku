@@ -117,7 +117,7 @@ def fake(monkeypatch, seen, tmp_path_factory):
         return Judgement(checks=checks, model="claude-opus-5", cost_usd=0.05, usage={})
 
     monkeypatch.setattr(run, "ENVIRONMENTS", tmp_path_factory.mktemp("envs"))
-    monkeypatch.setattr(run, "preflight", lambda plugin, env, scratch: None)
+    monkeypatch.setattr(run, "preflight", lambda plugin, env, scratch, model: None)
     monkeypatch.setattr(run, "run_agent", agent)
     monkeypatch.setattr(run, "judge", judge)
     monkeypatch.setattr(run, "_commit", lambda: "abc123")
@@ -187,7 +187,7 @@ def test_the_agent_works_outside_the_repository_on_a_copy_of_the_plugin(
 
 def test_a_failed_preflight_spends_nothing(fake, monkeypatch, tmp_path, capsys):
     monkeypatch.setattr(
-        run, "preflight", lambda plugin, env, scratch: "claude is not on PATH"
+        run, "preflight", lambda plugin, env, scratch, model: "claude is not on PATH"
     )
     assert run.main(["--cases", "side-table", "--out", str(tmp_path / "out")]) == 2
     assert "claude is not on PATH" in capsys.readouterr().err
@@ -203,11 +203,61 @@ def test_the_preflight_names_what_does_not_work(tmp_path):
     tools = tmp_path / "tools"
     tools.mkdir()
     env = {"PATH": f"{plugin / 'bin'}:{tools}"}
-    assert "claude is not on PATH" in run.preflight(plugin, env, tmp_path)
+    assert "claude is not on PATH" in run.preflight(plugin, env, tmp_path, "sonnet")
     (tools / "claude").write_text("#!/bin/sh\n")
     (tools / "claude").chmod(0o755)
-    wrong = run.preflight(plugin, env, tmp_path)
+    wrong = run.preflight(plugin, env, tmp_path, "sonnet")
     assert "could not validate" in wrong and "build123d is required" in wrong
+
+
+def _tool(directory: Path, name: str, script: str) -> None:
+    (directory / name).write_text("#!/bin/sh\n" + script)
+    (directory / name).chmod(0o755)
+
+
+def test_the_preflight_checks_opencode_and_its_model(tmp_path):
+    plugin = tmp_path / "plugin"
+    (plugin / "bin").mkdir(parents=True)
+    _tool(plugin / "bin", "nichiyou-daiku", "exit 0\n")
+    tools = tmp_path / "tools"
+    tools.mkdir()
+    _tool(tools, "claude", "")
+    env = {"PATH": f"{plugin / 'bin'}:{tools}"}
+    assert "opencode is not on PATH" in run.preflight(plugin, env, tmp_path, "deepseek")
+    # opencode models lists what it serves now, from its own settings
+    _tool(
+        tools,
+        "opencode",
+        f'echo "$XDG_CONFIG_HOME" > "{tmp_path}/config_home"\n'
+        "echo opencode/glm-5.3-flash-free\n",
+    )
+    wrong = run.preflight(plugin, env, tmp_path, "deepseek")
+    assert "opencode does not offer opencode/deepseek-v4.1-flash-free" in wrong
+    assert run.preflight(plugin, env, tmp_path, "glm") is None
+    assert (tmp_path / "config_home").read_text().strip() == str(
+        tmp_path / "opencode" / "config"
+    )
+    # A Claude model does not need opencode
+    assert run.preflight(plugin, env, tmp_path, "sonnet") is None
+
+
+def test_the_preflight_asks_opencode_again_once_its_cache_is_filled(tmp_path):
+    # On an empty cache opencode lists the catalog it ships with, and fetches
+    # the current one for the next call
+    plugin = tmp_path / "plugin"
+    (plugin / "bin").mkdir(parents=True)
+    _tool(plugin / "bin", "nichiyou-daiku", "exit 0\n")
+    tools = tmp_path / "tools"
+    tools.mkdir()
+    _tool(tools, "claude", "")
+    _tool(
+        tools,
+        "opencode",
+        f'if [ -e "{tmp_path}/filled" ]; then echo opencode/glm-5.3-flash-free; '
+        f'else : > "{tmp_path}/filled"; echo opencode/old-free; fi\n',
+    )
+    env = {"PATH": f"{plugin / 'bin'}:{tools}"}
+    assert run.preflight(plugin, env, tmp_path, "glm") is None
 
 
 def test_the_plugin_is_copied_without_git_too(tmp_path):
@@ -241,7 +291,7 @@ def test_the_self_check_judges_outside_the_repository(monkeypatch, tmp_path):
 
     monkeypatch.setattr(run, "self_check", self_check)
     monkeypatch.setattr(run, "ENVIRONMENTS", tmp_path / "envs")
-    monkeypatch.setattr(run, "preflight", lambda plugin, env, scratch: None)
+    monkeypatch.setattr(run, "preflight", lambda plugin, env, scratch, model: None)
     checkout = tmp_path / "checkout"
     subprocess.run(["git", "init", "-q", str(checkout)], check=True)
     assert run.main(["--self-check", "--out", str(checkout / "check")]) == 0
@@ -333,6 +383,20 @@ def test_a_run_of_changed_code_keeps_the_changes(fake, monkeypatch, tmp_path):
     assert (tmp_path / "commit.diff").read_text() == "--- a/skills/design/SKILL.md\n"
     report = (tmp_path / "report.md").read_text()
     assert "- Commit: abc123-dirty (the changes are in commit.diff)" in report
+
+
+def test_the_report_says_why_an_agent_stopped_early():
+    row = {
+        "case": "bench",
+        "rep": 1,
+        "design": None,
+        "checks": {name: {"passed": False, "detail": ""} for name in CHECKS},
+        "judge": None,
+        "judge_cost_usd": 0.0,
+        **TRANSCRIPT.model_copy(update={"ended": "length"}).model_dump(),
+    }
+    report = report_markdown({"cases": ["bench"], "reps": 1}, [row], [])
+    assert "; its last step ended with length" in report
 
 
 def test_a_bar_in_a_reason_keeps_the_table(tmp_path):
@@ -494,6 +558,43 @@ def test_rows_from_before_a_check_existed_are_not_counted_for_it():
     counts = rates([row])
     assert counts[CHECKS[-1]] == (0, 0)
     assert counts[f"judge: {list(CRITERIA)[-1]}"] == (0, 0)
+
+
+def test_an_unknown_model_stops_before_anything_runs(fake, tmp_path, capsys):
+    assert run.main(["--model", "gpt-9", "--out", str(tmp_path)]) == 2
+    said = capsys.readouterr().err
+    assert "Unknown model gpt-9" in said and "deepseek" in said
+    assert fake == []
+
+
+def test_a_model_opencode_serves_runs_through_opencode(fake, monkeypatch, tmp_path):
+    asked = []
+
+    def opencode(request, model, plugin, env, workdir, timeout_s):
+        asked.append(model)
+        shutil.copy(EXAMPLE, workdir / "design.nd")
+        return TRANSCRIPT
+
+    monkeypatch.setattr(run, "run_opencode", opencode)
+    run.main(["--cases", "side-table", "--model", "glm", "--out", str(tmp_path)])
+    assert (asked, fake) == (["glm"], [])
+    assert [row["case"] for row in load_jsonl(tmp_path / "results.jsonl")] == [
+        "side-table"
+    ]
+
+
+def test_each_model_gets_its_own_run_directory(fake, monkeypatch, tmp_path):
+    # Runs of two models started in the same second must not mix
+    monkeypatch.setattr(run, "RUNS", tmp_path)
+    monkeypatch.setattr(run, "run_opencode", lambda *args: TRANSCRIPT)
+    run.main(["--cases", "side-table"])
+    run.main(["--cases", "side-table", "--model", "opencode/glm-5.3-flash-free"])
+    names = sorted(path.name for path in tmp_path.iterdir())
+    assert len(names) == 2
+    assert names[0].endswith("-opencode-glm-5.3-flash-free") or names[1].endswith(
+        "-opencode-glm-5.3-flash-free"
+    )
+    assert any(name.endswith("-sonnet") for name in names)
 
 
 def test_an_unknown_case_stops_before_anything_runs(fake, tmp_path, capsys):
