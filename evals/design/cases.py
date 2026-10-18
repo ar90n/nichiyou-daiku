@@ -15,12 +15,15 @@ class _Requirement(BaseModel):
 
 class Size(_Requirement):
     """Width along x, depth along y, height along z, in mm. A request that
-    only names the height leaves width and depth out."""
+    only names the height leaves width and depth out. ``either_way`` lets
+    width and depth swap: in a box without legs the first piece is a side,
+    and the library lays a first piece's width along x."""
 
     width: float | None = None
     depth: float | None = None
     height: float
     tolerance: float = 1.0
+    either_way: bool = False
 
 
 class Lumber(_Requirement):

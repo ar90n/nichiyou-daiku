@@ -6,6 +6,8 @@ tags = ["脚のない箱もの"]
 width = 600
 depth = 184
 height = 900
+# The first piece is a side, whose width (the depth) the library lays along x
+either_way = true
 
 [lumber]
 allowed = ["1x8"]

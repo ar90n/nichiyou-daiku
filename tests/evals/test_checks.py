@@ -57,6 +57,39 @@ def test_a_design_turned_on_its_side_has_the_right_size_and_the_wrong_orientatio
     assert check_design(turned, CASES["side-table"])["size"].passed is True
 
 
+BOOKSHELF = """// 1x8 bookshelf: 600 (W) x 184 (D) x 900 (H), four equal levels
+(left_side:1x8 =900)
+(right_side:1x8 =900)
+(bottom:1x8 =562)
+(shelf_1:1x8 =562)
+(shelf_2:1x8 =562)
+(top:1x8 =562)
+
+left_side -[BL<0 DL<0 D(:8x30)]- bottom
+right_side -[FL<0 TL<0 D(:8x30)]- bottom
+left_side -[BL<294 DL<0 D(:8x30)]- shelf_1
+right_side -[FL<294 TL<0 D(:8x30)]- shelf_1
+left_side -[BL<587 DL<0 D(:8x30)]- shelf_2
+right_side -[FL<587 TL<0 D(:8x30)]- shelf_2
+left_side -[BL<881 DL<0 D(:8x30)]- top
+right_side -[FL<881 TL<0 D(:8x30)]- top
+"""
+
+
+def test_a_box_without_legs_may_face_either_way(tmp_path):
+    # Its first piece is a side, and the library lays a first piece's width
+    # along x: the bookshelf's depth comes out along x however it is written
+    design = tmp_path / "bookshelf.nd"
+    design.write_text(BOOKSHELF)
+    assert check_design(design, CASES["bookshelf"])["orientation"].passed is True
+    # Still the right way up: the height along z
+    lying = tmp_path / "lying.nd"
+    lying.write_text("(top:1x8 =562)\n" + BOOKSHELF.replace("(top:1x8 =562)\n", ""))
+    checks = check_design(lying, CASES["bookshelf"])
+    assert checks["size"].passed is True
+    assert checks["orientation"].passed is False
+
+
 def test_levels_count_boards_and_their_spacing():
     shelf = CASES["two-tier-shelf"]
     # The shelf's boards: the 2x4 shelf on the lower aprons and the 1x4 top

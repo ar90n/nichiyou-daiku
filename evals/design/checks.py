@@ -147,9 +147,12 @@ def _orientation(report: ValidationReport, case: Case) -> Check:
     wanted = case.size
     if size is None or wanted.width is None or wanted.depth is None:
         return Check(False, "no overall size")
+    plan, asked = size[:2], (wanted.width, wanted.depth)
+    if wanted.either_way:
+        plan, asked = sorted(plan), sorted(asked)
     passed = all(
         _close(a, b, wanted.tolerance)
-        for a, b in zip(size, (wanted.width, wanted.depth, wanted.height))
+        for a, b in zip((*plan, size[2]), (*asked, wanted.height))
     )
     return Check(passed, f"x {size[0]:g}, y {size[1]:g}, z {size[2]:g}")
 

@@ -145,7 +145,7 @@ uv run python -m evals.design.run --resume runs/<日時>   # 止まった回の�
 |---|---|
 | valid | `validate --json` の `valid` |
 | size | 外形の 3 辺が要件と許容差内で合う（向きは問わない） |
-| orientation | 幅が x、奥行が y、高さが z |
+| orientation | 幅が x、奥行が y、高さが z。脚のない箱もの（本棚）は幅と奥行の向きを問わない: 最初の部材の側板の幅（奥行）が必ず x になる（実装のとき、最終レビューで指摘） |
 | lumber | 使った材種が `allowed` に収まり、`required` をすべて使う |
 | legs | 長さの方向が縦で、下端が床（z=0）にある部材の数が要件どおり |
 | shelves | 長さの方向が水平の部材の上面か下面が、要件の高さに許容差内である |
