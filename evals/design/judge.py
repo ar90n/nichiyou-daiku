@@ -2,7 +2,9 @@
 and have it answer concrete questions about the picture."""
 
 import json
+import os
 import shutil
+import signal
 import subprocess
 from pathlib import Path
 
@@ -43,6 +45,8 @@ SCHEMA = {
     "additionalProperties": False,
 }
 FIXTURES = Path(__file__).parent / "fixtures"
+# A render takes seconds; one still going after this hangs
+RENDER_TIMEOUT_S = 300.0
 
 
 class Judgement(BaseModel, frozen=True):
@@ -93,14 +97,28 @@ def judge_command(prompt: str, model: str) -> list[str]:
 def render(design: Path, image: Path, plugin: Path, env: dict[str, str]) -> None:
     """Draw the check image with the plugin's CLI, the one the agent used."""
     cli = plugin / "bin" / "nichiyou-daiku"
-    result = subprocess.run(
-        [str(cli), "render", str(design), "-o", str(image)],
-        capture_output=True,
-        text=True,
-        env=env,
-    )
-    if result.returncode != 0:
-        raise AgentFailed("render", result.stderr.strip() or "render failed")
+    try:
+        # Its own process group: the launcher runs the CLI under uv
+        process = subprocess.Popen(
+            [str(cli), "render", str(design), "-o", str(image)],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+            text=True,
+            env=env,
+            start_new_session=True,
+        )
+    except OSError as e:
+        raise AgentFailed("render", f"cannot run {cli}: {e}") from None
+    try:
+        _, stderr = process.communicate(timeout=RENDER_TIMEOUT_S)
+    except subprocess.TimeoutExpired:
+        os.killpg(process.pid, signal.SIGKILL)
+        process.communicate()
+        raise AgentFailed(
+            "render", f"render took longer than {RENDER_TIMEOUT_S:g} seconds"
+        ) from None
+    if process.returncode != 0:
+        raise AgentFailed("render", stderr.strip() or "render failed")
 
 
 def read_judgement(result: dict) -> Judgement:
@@ -142,7 +160,13 @@ def judge(
     render(neutral, directory / "render.png", plugin, env)
     command = judge_command(judge_prompt(request, "render.png"), model)
     record = directory / "judge.json"
-    run_claude(command, directory, env, record, timeout_s)
+    try:
+        run_claude(command, directory, env, record, timeout_s)
+    except AgentFailed as e:
+        if e.kind != "timeout":
+            raise
+        # Not the agent's timeout: its design is there and waits to be judged
+        raise AgentFailed("judge", f"the judge gave {e}") from None
     try:
         result = json.loads(record.read_text(encoding="utf-8"))
     except json.JSONDecodeError as e:

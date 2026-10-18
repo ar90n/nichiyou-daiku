@@ -74,6 +74,44 @@ def test_the_judge_sees_the_design_under_a_neutral_name(tmp_path, monkeypatch):
     assert seen["cwd"] == tmp_path / "judge"
 
 
+def _plugin_with_cli(tmp_path, script):
+    plugin = tmp_path / "plugin"
+    (plugin / "bin").mkdir(parents=True)
+    cli = plugin / "bin" / "nichiyou-daiku"
+    cli.write_text("#!/bin/sh\n" + script)
+    cli.chmod(0o755)
+    return plugin
+
+
+def test_a_render_that_hangs_is_a_failed_attempt(tmp_path, monkeypatch):
+    monkeypatch.setattr(judge_module, "RENDER_TIMEOUT_S", 0.5)
+    plugin = _plugin_with_cli(tmp_path, "sleep 30\n")
+    with pytest.raises(AgentFailed) as failed:
+        judge_module.render(tmp_path / "x.nd", tmp_path / "x.png", plugin, {})
+    assert failed.value.kind == "render"
+    assert "longer than" in str(failed.value)
+
+
+def test_a_missing_cli_is_a_failed_attempt(tmp_path):
+    with pytest.raises(AgentFailed) as failed:
+        judge_module.render(tmp_path / "x.nd", tmp_path / "x.png", tmp_path, {})
+    assert failed.value.kind == "render"
+
+
+def test_a_judge_past_its_limit_is_told_from_an_agent_timeout(tmp_path, monkeypatch):
+    def run_claude(command, cwd, env, stdout, timeout_s):
+        raise AgentFailed("timeout", "no result within 40 minutes")
+
+    monkeypatch.setattr(judge_module, "render", lambda *args: None)
+    monkeypatch.setattr(judge_module, "run_claude", run_claude)
+    design = tmp_path / "x.nd"
+    design.write_text("x")
+    with pytest.raises(AgentFailed) as failed:
+        judge(design, "a table", "opus", tmp_path, {}, tmp_path, 60)
+    assert failed.value.kind == "judge"
+    assert "no result within 40 minutes" in str(failed.value)
+
+
 def test_an_answer_without_the_schema_is_a_failed_attempt():
     with pytest.raises(AgentFailed) as failed:
         read_judgement({"result": "I could not open the image"})
