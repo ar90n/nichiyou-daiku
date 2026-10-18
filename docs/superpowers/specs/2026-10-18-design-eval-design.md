@@ -116,7 +116,13 @@ uv run python -m evals.design.run --cases plant-stand,desk --reps 2 --model opus
 - `PATH` の先頭にリポジトリの `.venv/bin` を置き、プラグインの `bin/nichiyou-daiku` が今のコードの CLI を使うようにする。
 - 同時に回すのは 2 回まで（指定できる）。1 回の上限は 40 分で、超えたら打ち切って「時間切れ」とする。
 - 結果は 1 回終わるごとに書く。`--resume` で終わった（依頼, 回）は飛ばす。
-- ユーザーの CLAUDE.md や設定が読まれていないことは、試運転の記録（`system` の `init`）で確かめる。
+- 切り離しは確かめた（2026-10-18、haiku で 1 往復）。`--setting-sources project --strict-mcp-config` で、MCP は 0、
+  プラグインはこのリポジトリのもの（と Claude Code 組み込みのもの）だけ、ユーザーのスキル（`~/.claude/skills`）は
+  読まれず、`memory_paths` は作業ディレクトリの空の自動メモリだけだった。試運転でも `init` の記録で同じことを確かめる。
+- 標準入力は `/dev/null` にする（`claude -p` が標準入力を 3 秒待つ）。
+- Claude Code には組み込みの `design` スキルがあり、このプラグインの `nichiyou-daiku:design` と名前が重なる。
+  「スキルを読んだか」は `Skill` の呼び出しの名前が `nichiyou-daiku:design` かで数える（M3 の評価は名前に design を
+  含むかで数えていたので、取り違えを数えていた可能性がある）。名前の重なりそのものは M5-2 で扱う。
 
 ### 3. 機械の採点
 
@@ -157,8 +163,9 @@ uv run python -m evals.design.run --cases plant-stand,desk --reps 2 --model opus
 `runs/<日時>/` に:
 
 - `results.jsonl`: 1 回 1 行。依頼の名前、何回目、設計したモデル（応答から取る）、機械と LLM の項目ごとの合否と理由、
-  時間、ターン数、使用量（`total_cost_usd` と `usage`）、スキルを読んだか、validate・render の回数、画像を見たか、
-  断られた道具の呼び出しの数、採点のモデルと使用量。
+  時間（`duration_ms`）、ターン数（`num_turns`）、使用量（`total_cost_usd` と `usage`）、スキルを読んだか、
+  validate・render の回数、画像を見たか、断られた道具の呼び出し（`permission_denials`）、採点のモデルと使用量。
+  いずれも `claude -p` の最後の `result` の記録にある（2026-10-18 に確かめた）。
 - `errors.jsonl`: 時間切れ・仕組みのエラー（`claude` が異常終了、採点の失敗など）。種類と使用量。`results.jsonl` には
   入れない（入れると続きから回すときに飛ばされ、仕組みの不調が設計の失敗に数えられる）。
 - 回ごとのディレクトリ: エージェントが書いたファイル、`run.jsonl`（会話の記録）、`render.png`、採点の入出力。
