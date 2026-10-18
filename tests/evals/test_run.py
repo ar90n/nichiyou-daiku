@@ -30,6 +30,7 @@ TRANSCRIPT = Transcript(
     cost_usd=0.5,
     usage={},
     shared_tmp=0,
+    last_checked=None,
 )
 
 
@@ -95,6 +96,11 @@ def fake(monkeypatch, seen, tmp_path_factory):
             )
         if workdir.name == "shoe-rack-1":
             (workdir / "shoe-rack.nd").write_text("not a design")
+        elif workdir.name == "plant-stand-1":
+            # A draft beside the design, which the agent checked last
+            (workdir / "draft.nd").write_text("not a design")
+            shutil.copy(EXAMPLE, workdir / "stand.nd")
+            return TRANSCRIPT.model_copy(update={"last_checked": "stand.nd"})
         else:
             shutil.copy(EXAMPLE, workdir / "design.nd")
         return TRANSCRIPT
@@ -340,6 +346,14 @@ def test_a_failed_judge_is_retried_on_resume_without_the_agent(fake, tmp_path):
     assert row["cost_usd"] == 0.5
     report = (tmp_path / "report.md").read_text()
     assert "no structured answer (graded on a later attempt)" in report
+
+
+def test_the_design_the_agent_checked_last_is_graded(fake, tmp_path):
+    run.main(["--cases", "plant-stand", "--out", str(tmp_path)])
+    [row] = load_jsonl(tmp_path / "results.jsonl")
+    assert row["design"] == "stand.nd"
+    report = (tmp_path / "report.md").read_text()
+    assert "- Design: stand.nd (chosen of 2 .nd files);" in report
 
 
 def test_a_design_that_does_not_assemble_is_not_judged(fake, tmp_path):

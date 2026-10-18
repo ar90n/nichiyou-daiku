@@ -192,12 +192,13 @@ def run_one(
             except AgentFailed as e:
                 record.error(case.name, rep, e)
                 return
-            design = find_design(workdir, case.name)
+            design = find_design(workdir, case.name, transcript.last_checked)
             checks = check_design(design, case)
             row = {
                 "case": case.name,
                 "rep": rep,
                 "design": design.name if design else None,
+                "designs": len(list(workdir.glob("*.nd"))),
                 "checks": {name: check._asdict() for name, check in checks.items()},
                 "judge": None,
                 "judge_model": None,

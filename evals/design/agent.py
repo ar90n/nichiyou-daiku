@@ -36,6 +36,10 @@ _SHARED_TMP = re.compile(r"/tmp/(?!ndk-eval-)")
 _COMMAND = r"nichiyou-daiku(?:\s+-[-\w]+)*\s+{}\b"
 _VALIDATE = re.compile(_COMMAND.format("validate"))
 _RENDER = re.compile(_COMMAND.format("render"))
+# The design a validate or render command reads, after its options
+_CHECKED = re.compile(
+    _COMMAND.format("(?:validate|render)") + r"(?:\s+-[-\w]+)*\s+([^\s;&|]+\.nd)\b"
+)
 
 
 # Set when the evaluation is stopped: running sessions are ended and no new
@@ -87,6 +91,8 @@ class Transcript(BaseModel, frozen=True):
     usage: dict
     shared_tmp: int
     """Tool calls that touched /tmp outside the run's own directories."""
+    last_checked: str | None
+    """The file name of the last design the agent validated or rendered."""
 
 
 def isolated_flags() -> list[str]:
@@ -201,6 +207,7 @@ def read_transcript(lines: Iterable[str]) -> Transcript:
     model = None
     skill_used = False
     validates = renders = images_read = shared_tmp = 0
+    last_checked = None
     result: dict | None = None
     for line in lines:
         if not line.strip():
@@ -223,6 +230,8 @@ def read_transcript(lines: Iterable[str]) -> Transcript:
                     command = args.get("command", "")
                     validates += len(_VALIDATE.findall(command))
                     renders += len(_RENDER.findall(command))
+                    for checked in _CHECKED.findall(command):
+                        last_checked = Path(checked.strip("'\"")).name
                 elif name == "Read" and args.get("file_path", "").endswith(".png"):
                     images_read += 1
         elif event.get("type") == "result":
@@ -247,6 +256,7 @@ def read_transcript(lines: Iterable[str]) -> Transcript:
         cost_usd=result.get("total_cost_usd", 0.0),
         usage=result.get("usage") or {},
         shared_tmp=shared_tmp,
+        last_checked=last_checked,
     )
 
 

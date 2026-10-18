@@ -1,5 +1,6 @@
 """Tests for the machine checks of a design."""
 
+import os
 from pathlib import Path
 
 from evals.design.cases import Fasteners, Legs, Levels, Lumber, Shelf, Size, load_cases
@@ -119,7 +120,7 @@ def test_no_design_fails_every_asked_check(tmp_path):
         "fasteners",
         "steps",
     }
-    assert checks["valid"].detail == "no single .nd file in the working directory"
+    assert checks["valid"].detail == "no .nd file in the working directory"
 
 
 def test_a_design_that_does_not_parse_fails_every_asked_check(tmp_path):
@@ -137,4 +138,13 @@ def test_the_design_named_after_the_case_is_chosen(tmp_path):
     (tmp_path / "side_table.nd").unlink()
     assert find_design(tmp_path, "side-table") == tmp_path / "draft.nd"
     (tmp_path / "other.nd").write_text("")
+    # The agent never sees the case's name: of several, the last one it
+    # checked, else the newest
+    assert find_design(tmp_path, "side-table", "draft.nd") == tmp_path / "draft.nd"
+    os.utime(tmp_path / "draft.nd", (1, 1))
+    assert find_design(tmp_path, "side-table") == tmp_path / "other.nd"
+    assert find_design(tmp_path, "side-table", "gone.nd") == tmp_path / "other.nd"
+
+
+def test_no_nd_file_is_no_design(tmp_path):
     assert find_design(tmp_path, "side-table") is None

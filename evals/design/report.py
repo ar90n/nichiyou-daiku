@@ -85,6 +85,11 @@ def _total_usage(rows: list[dict], errors: list[dict]) -> float:
     return graded + sum(e.get("cost_usd") or 0.0 for e in errors)
 
 
+def _chosen(row: dict) -> str:
+    found = row.get("designs", 1)
+    return f" (chosen of {found} .nd files)" if found > 1 else ""
+
+
 def _mark(passed: bool | None) -> str:
     return {True: "✓", False: "✗", None: "–"}[passed]
 
@@ -154,7 +159,7 @@ def report_markdown(
         lines += [
             f"### {run}",
             "",
-            f"- Design: {row.get('design') or 'none'}; {row['duration_s'] / 60:.1f} min, {row['turns']} turns, "
+            f"- Design: {row.get('design') or 'none'}{_chosen(row)}; {row['duration_s'] / 60:.1f} min, {row['turns']} turns, "
             f"{row['cost_usd']:.2f} USD; skill {'used' if row['skill_used'] else 'NOT used'}, "
             f"validate ×{row['validates']}, render ×{row['renders']}, images read ×{row['images_read']}, "
             f"refused ×{row['denials']}, shared /tmp ×{row.get('shared_tmp', 0)}",

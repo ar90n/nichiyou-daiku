@@ -42,14 +42,22 @@ class Check(NamedTuple):
     detail: str
 
 
-def find_design(directory: Path, case_name: str) -> Path | None:
-    """The design the agent wrote: the .nd named after the case, else the
-    only .nd in ``directory``."""
+def find_design(
+    directory: Path, case_name: str, checked: str | None = None
+) -> Path | None:
+    """The design the agent wrote in ``directory``: the .nd named after the
+    case, else the only one, else the one it last validated or rendered
+    (``checked``), else the newest. The agent never sees the case's name,
+    so a draft beside the design is common."""
     designs = sorted(directory.glob("*.nd"))
     named = [path for path in designs if path.stem.replace("_", "-") == case_name]
     if named:
         return named[0]
-    return designs[0] if len(designs) == 1 else None
+    if len(designs) <= 1:
+        return designs[0] if designs else None
+    if checked and directory / checked in designs:
+        return directory / checked
+    return max(designs, key=lambda path: path.stat().st_mtime)
 
 
 def _assemble(path: Path) -> tuple[Model, Assembly]:
@@ -71,7 +79,7 @@ def check_design(path: Path | None, case: Case) -> dict[str, Check]:
     """Every check of ``CHECKS`` for the design at ``path``."""
     asked = _asked(case)
     if path is None:
-        return _failed(asked, "no single .nd file in the working directory")
+        return _failed(asked, "no .nd file in the working directory")
     try:
         model, assembly = _assemble(path)
     except Exception as e:

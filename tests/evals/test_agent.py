@@ -114,6 +114,20 @@ def test_each_validate_and_render_in_a_command_counts():
     assert (transcript.validates, transcript.renders) == (2, 1)
 
 
+def test_the_last_design_checked_is_kept():
+    transcript = read_transcript(
+        _events(
+            _tool("Bash", command="nichiyou-daiku validate draft.nd"),
+            _tool(
+                "Bash", command="cd /tmp/x && nichiyou-daiku render ./table.nd -o t.png"
+            ),
+            _tool("Bash", command="ls"),
+            RESULT,
+        )
+    )
+    assert transcript.last_checked == "table.nd"
+
+
 def test_files_in_the_shared_tmp_are_counted():
     # Parallel runs share /tmp: a run may read another's scratch file
     transcript = read_transcript(
