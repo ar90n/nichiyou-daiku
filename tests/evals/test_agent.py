@@ -77,7 +77,13 @@ def test_a_run_uses_the_plugin_s_own_cli(monkeypatch):
 def test_the_record_tells_what_the_agent_did():
     transcript = read_transcript(
         _events(
-            {"type": "system", "subtype": "init", "model": "claude-sonnet-5"},
+            {
+                "type": "system",
+                "subtype": "init",
+                "model": "claude-sonnet-5",
+                "claude_code_version": "2.1.0",
+                "apiKeySource": "none",
+            },
             _tool("Skill", skill=SKILL),
             _tool("Bash", command="nichiyou-daiku validate --json stool.nd"),
             _tool("Bash", command="nichiyou-daiku render stool.nd -o stool.png"),
@@ -86,6 +92,12 @@ def test_the_record_tells_what_the_agent_did():
         )
     )
     assert transcript.model == "claude-sonnet-5"
+    # An alias such as sonnet moves to new models, and an API key in the
+    # environment would bill an account instead of the plan
+    assert (transcript.claude_code_version, transcript.api_key_source) == (
+        "2.1.0",
+        "none",
+    )
     assert transcript.skill_used
     assert (transcript.validates, transcript.renders, transcript.images_read) == (
         1,

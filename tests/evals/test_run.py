@@ -31,6 +31,8 @@ TRANSCRIPT = Transcript(
     usage={},
     shared_tmp=0,
     last_checked=None,
+    claude_code_version="2.1.0",
+    api_key_source="none",
 )
 
 
@@ -281,6 +283,42 @@ def test_resuming_with_other_cases_or_models_is_refused(fake, tmp_path, capsys):
     assert run.main(["--resume", str(tmp_path), "--model", "opus"]) == 2
     assert "leave out --cases, --reps, --model" in capsys.readouterr().err
     assert fake == []
+
+
+def test_the_report_says_what_ran_and_sums_up_each_case(fake, tmp_path):
+    run.main(["--cases", "side-table,bench", "--out", str(tmp_path)])
+    report = (tmp_path / "report.md").read_text()
+    assert (
+        "- Agent: claude-sonnet-5 on Claude Code 2.1.0, API key: none; "
+        "judge: claude-opus-5" in report
+    )
+    assert "at API prices" in report
+    assert "| Case | Graded | All checks | Judge | Time | Usage |" in report
+    assert "| side-table | 1 | 1/1 | 1/1 | 5.0 min | 0.50 USD |" in report
+    assert "| bench | 0 | - | - | - | - |" in report
+
+
+def test_a_run_of_changed_code_keeps_the_changes(fake, monkeypatch, tmp_path):
+    monkeypatch.setattr(run, "_commit", lambda: "abc123-dirty")
+    monkeypatch.setattr(run, "_diff", lambda: "--- a/skills/design/SKILL.md\n")
+    run.main(["--cases", "side-table", "--out", str(tmp_path)])
+    assert (tmp_path / "commit.diff").read_text() == "--- a/skills/design/SKILL.md\n"
+    report = (tmp_path / "report.md").read_text()
+    assert "- Commit: abc123-dirty (the changes are in commit.diff)" in report
+
+
+def test_a_bar_in_a_reason_keeps_the_table(tmp_path):
+    row = {
+        "case": "bench",
+        "rep": 1,
+        "design": "bench.nd",
+        "checks": {name: {"passed": True, "detail": "a | b"} for name in CHECKS},
+        "judge": None,
+        "judge_cost_usd": 0.0,
+        **TRANSCRIPT.model_dump(),
+    }
+    report = report_markdown({"cases": ["bench"], "reps": 1}, [row], [])
+    assert "| valid | ✓ | a \\| b |" in report
 
 
 def test_runs_not_graded_yet_are_counted_from_the_conditions():

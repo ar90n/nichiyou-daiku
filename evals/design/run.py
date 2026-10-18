@@ -251,6 +251,12 @@ def _run_safely(
         record.error(case.name, rep, AgentFailed("harness", f"{type(e).__name__}: {e}"))
 
 
+def _diff() -> str:
+    return subprocess.run(
+        ["git", "-C", str(REPO), "diff", "HEAD"], capture_output=True, text=True
+    ).stdout
+
+
 def _commit() -> str:
     result = subprocess.run(
         ["git", "-C", str(REPO), "describe", "--always", "--dirty"],
@@ -375,14 +381,19 @@ def _evaluate(
     out.mkdir(parents=True, exist_ok=True)
     meta_path = out / "meta.json"
     if not meta_path.exists():
+        commit = _commit()
         meta = {
             "started": f"{datetime.now():%Y-%m-%d %H:%M}",
-            "commit": _commit(),
+            "commit": commit,
             "cases": [case.name for case in cases],
             "reps": args.reps,
             "model": args.model,
             "judge_model": args.judge_model,
         }
+        if commit.endswith("-dirty"):
+            # What was measured is the commit and these changes
+            (out / "commit.diff").write_text(_diff(), encoding="utf-8")
+            meta["diff"] = "commit.diff"
         meta_path.write_text(
             json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8"
         )

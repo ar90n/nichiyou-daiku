@@ -93,6 +93,9 @@ class Transcript(BaseModel, frozen=True):
     """Tool calls that touched /tmp outside the run's own directories."""
     last_checked: str | None
     """The file name of the last design the agent validated or rendered."""
+    claude_code_version: str | None
+    api_key_source: str | None
+    """Where claude took its credentials from: "none" is the plan's login."""
 
 
 def isolated_flags() -> list[str]:
@@ -207,7 +210,7 @@ def read_transcript(lines: Iterable[str]) -> Transcript:
     model = None
     skill_used = False
     validates = renders = images_read = shared_tmp = 0
-    last_checked = None
+    last_checked = version = key_source = None
     result: dict | None = None
     for line in lines:
         if not line.strip():
@@ -215,6 +218,8 @@ def read_transcript(lines: Iterable[str]) -> Transcript:
         event = json.loads(line)
         if event.get("type") == "system" and event.get("subtype") == "init":
             model = event.get("model")
+            version = event.get("claude_code_version")
+            key_source = event.get("apiKeySource")
         elif event.get("type") == "assistant":
             for block in event["message"].get("content", []):
                 if block.get("type") != "tool_use":
@@ -257,6 +262,8 @@ def read_transcript(lines: Iterable[str]) -> Transcript:
         usage=result.get("usage") or {},
         shared_tmp=shared_tmp,
         last_checked=last_checked,
+        claude_code_version=version,
+        api_key_source=key_source,
     )
 
 
