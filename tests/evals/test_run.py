@@ -185,6 +185,18 @@ def test_the_report_rates_come_from_the_rows(fake, tmp_path):
     assert "![side-table-1](side-table-1/render.png)" in report
 
 
+def test_the_report_counts_the_usage_of_failed_attempts(fake, tmp_path):
+    # A 40-minute timeout uses allowance too; the spend must not hide it
+    run.main(["--cases", "side-table,bench,desk", "--out", str(tmp_path)])
+    report = (tmp_path / "report.md").read_text()
+    assert (
+        "- Failed attempts: 2, 0.30 USD and 1 without a usage record (timed out or stopped)"
+        in report
+    )
+    # The graded side table's agent and judge, and the failed desk
+    assert "- Total usage: 0.85 USD" in report
+
+
 def test_an_earlier_run_is_compared(fake, tmp_path):
     first, second = tmp_path / "first", tmp_path / "second"
     run.main(["--cases", "side-table", "--out", str(first)])

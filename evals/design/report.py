@@ -72,6 +72,19 @@ def _spread(values: list[float], unit: str) -> str:
     return f"{median(values):.1f} {unit} ({min(values):.1f} – {max(values):.1f})"
 
 
+def _failed_usage(errors: list[dict]) -> str:
+    known = [e["cost_usd"] for e in errors if e.get("cost_usd") is not None]
+    line = f"- Failed attempts: {len(errors)}, {sum(known):.2f} USD"
+    if unknown := len(errors) - len(known):
+        line += f" and {unknown} without a usage record (timed out or stopped)"
+    return line
+
+
+def _total_usage(rows: list[dict], errors: list[dict]) -> float:
+    graded = sum(row["cost_usd"] + row["judge_cost_usd"] for row in rows)
+    return graded + sum(e.get("cost_usd") or 0.0 for e in errors)
+
+
 def _mark(passed: bool | None) -> str:
     return {True: "✓", False: "✗", None: "–"}[passed]
 
@@ -112,6 +125,8 @@ def report_markdown(
         f"- Turns: {_spread([float(row['turns']) for row in rows], '')}",
         f"- Agent usage: {_spread([row['cost_usd'] for row in rows], 'USD')}",
         f"- Judge usage: {_spread([row['judge_cost_usd'] for row in rows if row.get('judge')], 'USD')}",
+        _failed_usage(errors),
+        f"- Total usage: {_total_usage(rows, errors):.2f} USD",
         "",
     ]
     if errors:
