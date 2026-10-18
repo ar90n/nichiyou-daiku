@@ -183,6 +183,10 @@ SELF_CHECKS = {
     ),
     "no-top": ("evals/design/fixtures/no-top.nd", {"furniture": False}),
     "on-its-side": ("evals/design/fixtures/on-its-side.nd", {"orientation": False}),
+    "through-the-top": (
+        "evals/design/fixtures/through-the-top.nd",
+        {"supported": False},
+    ),
 }
 
 

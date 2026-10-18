@@ -7,14 +7,20 @@ import pytest
 
 import evals.design.judge as judge_module
 from evals.design.agent import AgentFailed
+from evals.design.checks import Check, assembles
 from evals.design.judge import (
     CRITERIA,
     SCHEMA,
+    SELF_CHECKS,
+    Judgement,
     judge,
     judge_command,
     judge_prompt,
     read_judgement,
+    self_check,
 )
+
+ROOT = Path(__file__).parents[2]
 
 
 def test_the_prompt_quotes_the_request_as_data():
@@ -110,6 +116,24 @@ def test_a_judge_past_its_limit_is_told_from_an_agent_timeout(tmp_path, monkeypa
         judge(design, "a table", "opus", tmp_path, {}, tmp_path, 60)
     assert failed.value.kind == "judge"
     assert "no result within 40 minutes" in str(failed.value)
+
+
+def test_the_self_check_reports_what_the_judge_got_wrong(tmp_path, monkeypatch):
+    def lenient(design, request, model, plugin, env, workdir, timeout_s):
+        checks = {name: Check(True, "fine") for name in CRITERIA}
+        return Judgement(checks=checks, model=None, cost_usd=0.0, usage={})
+
+    monkeypatch.setattr(judge_module, "judge", lenient)
+    wrong = self_check("a side table", "opus", ROOT, tmp_path, {}, tmp_path, 60)
+    assert wrong == [
+        "no-top: furniture should be fail, judged pass (fine)",
+        "on-its-side: orientation should be fail, judged pass (fine)",
+        "through-the-top: supported should be fail, judged pass (fine)",
+    ]
+
+
+def test_every_self_check_design_can_be_drawn():
+    assert all(assembles(ROOT / design) for design, _ in SELF_CHECKS.values())
 
 
 def test_an_answer_without_the_schema_is_a_failed_attempt():
