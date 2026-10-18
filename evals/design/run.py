@@ -18,7 +18,7 @@ from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
 
-from .agent import STOP, AgentFailed, run_agent, stop_all
+from .agent import STOP, AgentFailed, agent_env, run_agent, stop_all
 from .cases import Case, load_cases
 from .checks import assembles, check_design, find_design
 from .judge import judge, self_check
@@ -26,6 +26,12 @@ from .report import load_jsonl, report_markdown
 
 REPO = Path(__file__).resolve().parents[2]
 RUNS = Path(__file__).parent / "runs"
+# The plugin CLI's environments, one per evaluation: on uv's file system,
+# so that uv links the packages instead of copying them
+ENVIRONMENTS = (
+    Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache")
+    / "nichiyou-daiku-eval"
+)
 # The row of a design the machine graded and the judge could not: --resume
 # judges it again instead of running the agent again
 UNJUDGED = "unjudged.json"
@@ -157,6 +163,7 @@ def run_one(
     out: Path,
     record: Record,
     plugin: Path,
+    env: dict[str, str],
 ) -> None:
     """One design of ``case``: run the agent, then grade what it wrote. A
     run that gives no result goes to errors.jsonl so that --resume retries
@@ -176,7 +183,7 @@ def run_one(
         if row is None:
             try:
                 transcript = run_agent(
-                    case.request, args.model, plugin, REPO, workdir, timeout_s
+                    case.request, args.model, plugin, env, workdir, timeout_s
                 )
             except AgentFailed as e:
                 record.error(case.name, rep, e)
@@ -204,7 +211,7 @@ def run_one(
             shutil.copy2(keep / row["design"], design)
         try:
             judgement = judge(
-                design, case.request, args.judge_model, REPO, workdir, timeout_s
+                design, case.request, args.judge_model, plugin, env, workdir, timeout_s
             )
         except AgentFailed as e:
             record.error(case.name, rep, e)
@@ -263,29 +270,85 @@ def _conditions(args: argparse.Namespace) -> str | None:
     return None
 
 
+def _uv_cache() -> str:
+    if cache := os.environ.get("UV_CACHE_DIR"):
+        return cache
+    try:
+        found = subprocess.run(["uv", "cache", "dir"], capture_output=True, text=True)
+    except FileNotFoundError:
+        return ""
+    return found.stdout.strip()
+
+
+def preflight(plugin: Path, env: dict[str, str], scratch: Path) -> str | None:
+    """What would make every run fail, found before any allowance is spent:
+    claude, and the plugin's CLI validating and drawing the skill's example
+    (which builds its environments once for all the runs)."""
+    if shutil.which("claude", path=env["PATH"]) is None:
+        return "claude is not on PATH; install Claude Code to run the evaluation"
+    example = plugin / "skills" / "design" / "examples" / "side-table.nd"
+    cli = str(plugin / "bin" / "nichiyou-daiku")
+    for command in (
+        ["validate", str(example)],
+        ["render", str(example), "-o", str(scratch / "preflight.png")],
+    ):
+        result = subprocess.run(
+            [cli, *command], env=env, capture_output=True, text=True
+        )
+        if result.returncode != 0:
+            said = (result.stderr.strip().splitlines() or ["no message"])[-1]
+            return (
+                f"the plugin's CLI could not {command[0]} the skill's example "
+                f"({said}); check that bin/nichiyou-daiku runs with uv"
+            )
+    return None
+
+
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     if wrong := _conditions(args):
         print(wrong, file=sys.stderr)
         return 2
-    if args.self_check:
-        request = next(case for case in load_cases("side-table")).request
-        directory = args.out or RUNS / f"self-check-{datetime.now():%Y%m%d-%H%M%S}"
-        with outside_repo(directory) as workdir:
-            wrong = self_check(
-                request, args.judge_model, REPO, workdir, args.timeout_min * 60
-            )
-        print(
-            "\n".join(wrong)
-            if wrong
-            else "The judge passes the example and fails the broken designs"
+    cases: list[Case] = []
+    if not args.self_check:
+        try:
+            cases = load_cases(args.cases)
+        except ValueError as e:
+            print(e, file=sys.stderr)
+            return 2
+    ENVIRONMENTS.mkdir(parents=True, exist_ok=True)
+    with (
+        tempfile.TemporaryDirectory(prefix="ndk-eval-plugin-") as tmp,
+        tempfile.TemporaryDirectory(dir=ENVIRONMENTS) as cache,
+    ):
+        plugin = plugin_copy(REPO, Path(tmp) / "plugin")
+        env = agent_env(plugin, Path(cache), _uv_cache(), REPO / ".venv")
+        if wrong := preflight(plugin, env, Path(tmp)):
+            print(wrong, file=sys.stderr)
+            return 2
+        if args.self_check:
+            return _self_check(args, plugin, env)
+        return _evaluate(args, cases, plugin, env)
+
+
+def _self_check(args: argparse.Namespace, plugin: Path, env: dict[str, str]) -> int:
+    request = next(case for case in load_cases("side-table")).request
+    directory = args.out or RUNS / f"self-check-{datetime.now():%Y%m%d-%H%M%S}"
+    with outside_repo(directory) as workdir:
+        wrong = self_check(
+            request, args.judge_model, REPO, plugin, env, workdir, args.timeout_min * 60
         )
-        return 1 if wrong else 0
-    try:
-        cases = load_cases(args.cases)
-    except ValueError as e:
-        print(e, file=sys.stderr)
-        return 2
+    print(
+        "\n".join(wrong)
+        if wrong
+        else "The judge passes the example and fails the broken designs"
+    )
+    return 1 if wrong else 0
+
+
+def _evaluate(
+    args: argparse.Namespace, cases: list[Case], plugin: Path, env: dict[str, str]
+) -> int:
     out = args.resume or args.out or RUNS / f"{datetime.now():%Y%m%d-%H%M%S}"
     out.mkdir(parents=True, exist_ok=True)
     meta_path = out / "meta.json"
@@ -317,13 +380,9 @@ def main(argv: list[str] | None = None) -> int:
         sig: signal.signal(sig, _stop) for sig in (signal.SIGINT, signal.SIGTERM)
     }
     try:
-        with (
-            tempfile.TemporaryDirectory(prefix="ndk-eval-plugin-") as tmp,
-            ThreadPoolExecutor(max_workers=args.jobs) as pool,
-        ):
-            plugin = plugin_copy(REPO, Path(tmp))
+        with ThreadPoolExecutor(max_workers=args.jobs) as pool:
             futures = [
-                pool.submit(run_one, case, rep, args, out, record, plugin)
+                pool.submit(run_one, case, rep, args, out, record, plugin, env)
                 for case, rep in todo
             ]
             # Wake now and then: a signal handler runs only between waits

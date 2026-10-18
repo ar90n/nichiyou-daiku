@@ -119,7 +119,13 @@ uv run python -m evals.design.run --resume runs/<日時>   # 止まった回の�
   なる（計画のとき）。断られた呼び出しは数を記録する。
 - Claude Code は作業ディレクトリごとに `~/.claude/projects/<パス>` を作る（自動メモリの空のディレクトリ）。1 回ごとに
   作業ディレクトリが違うので、ファイルが 1 つもなければ回し終えたあとに消す。
-- `PATH` の先頭にリポジトリの `.venv/bin` を置き、プラグインの `bin/nichiyou-daiku` が今のコードの CLI を使うようにする。
+- エージェントは、プラグインを入れた人と同じく写しの `bin/nichiyou-daiku` を使う。写しのソースから専用の環境に CLI を
+  作るので、評価の間は固定され、途中でリポジトリを直しても変わらない。開発用の `.venv/bin`（`nichiyou_daiku` を
+  import できる python や開発の道具。`make eval` の `uv run` が PATH に入れる）はエージェントの PATH から外す。環境は
+  uv のキャッシュと同じファイルシステムの `~/.cache/nichiyou-daiku-eval/` に評価ごとに作って消す（/tmp だと uv が
+  リンクできず約 840MB を写す）。回す前に `claude` があるかと、写しの CLI で例を validate・render できるかを確かめ
+  （約 10 秒。環境もここで作る）、だめなら使用量を使う前に止める（実装のとき、最終レビューの Minor。最初は
+  リポジトリの `.venv/bin` を PATH の先頭に置いていた）。
 - 作業ディレクトリはリポジトリの外（一時ディレクトリ）に作り、回し終えたら `runs/<日時>/<名前>-<回>/` に写す。プラグインは
   リポジトリから `evals/`・`docs/superpowers/`・`tests/evals/`・`.claude/`・`CLAUDE.md` を除いた写し（git が管理する・管理しうるファイル）から読む。
   リポジトリの中で動かすと、Claude Code は git のルートをプロジェクトとみなして開発者の CLAUDE.md・設定・自動メモリを

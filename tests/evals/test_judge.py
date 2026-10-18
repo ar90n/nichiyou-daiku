@@ -54,7 +54,7 @@ def test_the_judge_sees_the_design_under_a_neutral_name(tmp_path, monkeypatch):
     # answer away
     seen = {}
 
-    def render(design, image, repo):
+    def render(design, image, plugin, env):
         seen["design"] = design.name
         seen["text"] = design.read_text()
 
@@ -68,7 +68,7 @@ def test_the_judge_sees_the_design_under_a_neutral_name(tmp_path, monkeypatch):
     monkeypatch.setattr(judge_module, "run_claude", run_claude)
     design = tmp_path / "on-its-side.nd"
     design.write_text("the design")
-    judge(design, "a side table", "opus", Path("/repo"), tmp_path, 60)
+    judge(design, "a side table", "opus", Path("/plugin"), {}, tmp_path, 60)
     assert (seen["design"], seen["text"]) == ("design.nd", "the design")
     # Away from the agent's record and files
     assert seen["cwd"] == tmp_path / "judge"

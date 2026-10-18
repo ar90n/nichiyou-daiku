@@ -8,7 +8,7 @@ from pathlib import Path
 
 from pydantic import BaseModel
 
-from .agent import AgentFailed, agent_env, isolated_flags, run_claude
+from .agent import AgentFailed, isolated_flags, run_claude
 from .checks import Check
 
 CRITERIA = {
@@ -90,13 +90,14 @@ def judge_command(prompt: str, model: str) -> list[str]:
     ]
 
 
-def render(design: Path, image: Path, repo: Path) -> None:
-    """Draw the check image with the repository's CLI."""
-    cli = repo / ".venv" / "bin" / "nichiyou-daiku"
+def render(design: Path, image: Path, plugin: Path, env: dict[str, str]) -> None:
+    """Draw the check image with the plugin's CLI, the one the agent used."""
+    cli = plugin / "bin" / "nichiyou-daiku"
     result = subprocess.run(
         [str(cli), "render", str(design), "-o", str(image)],
         capture_output=True,
         text=True,
+        env=env,
     )
     if result.returncode != 0:
         raise AgentFailed("render", result.stderr.strip() or "render failed")
@@ -123,7 +124,13 @@ def read_judgement(result: dict) -> Judgement:
 
 
 def judge(
-    design: Path, request: str, model: str, repo: Path, workdir: Path, timeout_s: float
+    design: Path,
+    request: str,
+    model: str,
+    plugin: Path,
+    env: dict[str, str],
+    workdir: Path,
+    timeout_s: float,
 ) -> Judgement:
     """Render ``design`` and have ``model`` judge it, in ``workdir``/judge:
     apart from the agent's files, and under a neutral name, since the
@@ -132,10 +139,10 @@ def judge(
     directory.mkdir(exist_ok=True)
     neutral = directory / "design.nd"
     shutil.copyfile(design, neutral)
-    render(neutral, directory / "render.png", repo)
+    render(neutral, directory / "render.png", plugin, env)
     command = judge_command(judge_prompt(request, "render.png"), model)
     record = directory / "judge.json"
-    run_claude(command, directory, agent_env(repo), record, timeout_s)
+    run_claude(command, directory, env, record, timeout_s)
     try:
         result = json.loads(record.read_text(encoding="utf-8"))
     except json.JSONDecodeError as e:
@@ -156,15 +163,23 @@ SELF_CHECKS = {
 
 
 def self_check(
-    request: str, model: str, repo: Path, workdir: Path, timeout_s: float
+    request: str,
+    model: str,
+    repo: Path,
+    plugin: Path,
+    env: dict[str, str],
+    workdir: Path,
+    timeout_s: float,
 ) -> list[str]:
-    """Judge the example and the broken fixtures; return what came out
-    differently from ``SELF_CHECKS``."""
+    """Judge the example and the broken fixtures of ``repo``; return what
+    came out differently from ``SELF_CHECKS``."""
     wrong = []
     for name, (design, expected) in SELF_CHECKS.items():
         directory = workdir / name
         directory.mkdir(parents=True, exist_ok=True)
-        verdict = judge(repo / design, request, model, repo, directory, timeout_s)
+        verdict = judge(
+            repo / design, request, model, plugin, env, directory, timeout_s
+        )
         for criterion, passed in expected.items():
             got = verdict.checks[criterion]
             if got.passed != passed:

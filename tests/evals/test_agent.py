@@ -58,8 +58,20 @@ def test_the_command_loads_only_this_plugin_and_no_user_setup():
     assert "WebFetch" in REFUSED
 
 
-def test_the_repositorys_cli_comes_first_on_the_path():
-    assert agent_env(REPO)["PATH"].startswith("/repo/.venv/bin")
+def test_a_run_uses_the_plugin_s_own_cli(monkeypatch):
+    # As for a person who installed the plugin: its launcher builds the CLI
+    # from the plugin's source into an environment of its own, never an
+    # installed CLI or the developer's .venv (python with nichiyou_daiku,
+    # the dev tools), which make eval's uv run puts on PATH
+    monkeypatch.setenv("PATH", "/repo/.venv/bin:/usr/bin")
+    monkeypatch.setenv("VIRTUAL_ENV", "/repo/.venv")
+    env = agent_env(Path("/plugin"), Path("/cache"), "/uv-cache", Path("/repo/.venv"))
+    assert env["PATH"] == "/plugin/bin:/usr/bin"
+    assert "VIRTUAL_ENV" not in env
+    # The launcher runs the plugin's source, not a CLI found on PATH
+    assert env["NICHIYOU_DAIKU_WRAPPED"] == "1"
+    assert env["XDG_CACHE_HOME"] == "/cache"
+    assert env["UV_CACHE_DIR"] == "/uv-cache"
 
 
 def test_the_record_tells_what_the_agent_did():

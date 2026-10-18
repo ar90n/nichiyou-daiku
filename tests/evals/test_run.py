@@ -49,20 +49,21 @@ def seen():
 
 
 @pytest.fixture
-def fake(monkeypatch, seen):
+def fake(monkeypatch, seen, tmp_path_factory):
     """The agent writes the side table example for every case; the bench
     times out once. The judge passes everything."""
     calls = []
     judged = []
     tries: dict[str, int] = {}
 
-    def agent(request, model, plugin, repo, workdir, timeout_s):
+    def agent(request, model, plugin, env, workdir, timeout_s):
         calls.append(workdir.name)
         seen.append(
             {
                 "model": model,
                 "in_git_checkout": in_git_checkout(workdir),
-                "plugin_is_repo": plugin == repo,
+                "plugin_is_repo": plugin == run.REPO,
+                "plugin_cli_first": env["PATH"].startswith(str(plugin / "bin")),
                 "skill": (plugin / "skills" / "design" / "SKILL.md").is_file(),
                 "launcher": os.access(plugin / "bin" / "nichiyou-daiku", os.X_OK),
                 "hidden": [
@@ -97,13 +98,15 @@ def fake(monkeypatch, seen):
             shutil.copy(EXAMPLE, workdir / "design.nd")
         return TRANSCRIPT
 
-    def judge(design, request, model, repo, workdir, timeout_s):
+    def judge(design, request, model, plugin, env, workdir, timeout_s):
         judged.append(workdir.name)
         if workdir.name == "two-tier-shelf-1" and judged.count("two-tier-shelf-1") == 1:
             raise AgentFailed("judge", "no structured answer", cost_usd=0.02)
         checks = {name: Check(True, "looks right") for name in CRITERIA}
         return Judgement(checks=checks, model="claude-opus-5", cost_usd=0.05, usage={})
 
+    monkeypatch.setattr(run, "ENVIRONMENTS", tmp_path_factory.mktemp("envs"))
+    monkeypatch.setattr(run, "preflight", lambda plugin, env, scratch: None)
     monkeypatch.setattr(run, "run_agent", agent)
     monkeypatch.setattr(run, "judge", judge)
     monkeypatch.setattr(run, "_commit", lambda: "abc123")
@@ -161,6 +164,7 @@ def test_the_agent_works_outside_the_repository_on_a_copy_of_the_plugin(
             "model": "sonnet",
             "in_git_checkout": False,
             "plugin_is_repo": False,
+            "plugin_cli_first": True,
             "skill": True,
             "launcher": True,
             "hidden": [],
@@ -168,6 +172,31 @@ def test_the_agent_works_outside_the_repository_on_a_copy_of_the_plugin(
     ]
     # What the agent wrote ends up in the run directory
     assert (out / "side-table-1" / "design.nd").is_file()
+
+
+def test_a_failed_preflight_spends_nothing(fake, monkeypatch, tmp_path, capsys):
+    monkeypatch.setattr(
+        run, "preflight", lambda plugin, env, scratch: "claude is not on PATH"
+    )
+    assert run.main(["--cases", "side-table", "--out", str(tmp_path / "out")]) == 2
+    assert "claude is not on PATH" in capsys.readouterr().err
+    assert fake == []
+
+
+def test_the_preflight_names_what_does_not_work(tmp_path):
+    plugin = tmp_path / "plugin"
+    (plugin / "bin").mkdir(parents=True)
+    cli = plugin / "bin" / "nichiyou-daiku"
+    cli.write_text('#!/bin/sh\necho "build123d is required" >&2\nexit 1\n')
+    cli.chmod(0o755)
+    tools = tmp_path / "tools"
+    tools.mkdir()
+    env = {"PATH": f"{plugin / 'bin'}:{tools}"}
+    assert "claude is not on PATH" in run.preflight(plugin, env, tmp_path)
+    (tools / "claude").write_text("#!/bin/sh\n")
+    (tools / "claude").chmod(0o755)
+    wrong = run.preflight(plugin, env, tmp_path)
+    assert "could not validate" in wrong and "build123d is required" in wrong
 
 
 def test_the_plugin_is_copied_without_git_too(tmp_path):
@@ -193,13 +222,15 @@ def test_the_plugin_is_copied_without_git_too(tmp_path):
 def test_the_self_check_judges_outside_the_repository(monkeypatch, tmp_path):
     places = []
 
-    def self_check(request, model, repo, workdir, timeout_s):
+    def self_check(request, model, repo, plugin, env, workdir, timeout_s):
         workdir.mkdir(parents=True, exist_ok=True)
         places.append(in_git_checkout(workdir))
         (workdir / "judge.json").write_text("{}")
         return []
 
     monkeypatch.setattr(run, "self_check", self_check)
+    monkeypatch.setattr(run, "ENVIRONMENTS", tmp_path / "envs")
+    monkeypatch.setattr(run, "preflight", lambda plugin, env, scratch: None)
     checkout = tmp_path / "checkout"
     subprocess.run(["git", "init", "-q", str(checkout)], check=True)
     assert run.main(["--self-check", "--out", str(checkout / "check")]) == 0

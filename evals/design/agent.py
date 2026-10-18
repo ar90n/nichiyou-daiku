@@ -119,11 +119,27 @@ def agent_command(request: str, model: str, plugin: Path) -> list[str]:
     ]
 
 
-def agent_env(repo: Path) -> dict[str, str]:
-    """The environment of a run: the repository's own CLI comes first on
-    PATH, so the plugin's launcher runs today's code, not an old install."""
+def agent_env(plugin: Path, cache: Path, uv_cache: str, venv: Path) -> dict[str, str]:
+    """The environment of a run, as a person who installed the plugin has
+    it: the plugin's launcher first on PATH, building the CLI from the
+    plugin's source into an environment under ``cache``, so edits to the
+    repository during an evaluation do not reach it. Never an installed CLI
+    or the developer's ``venv`` (python with nichiyou_daiku, the dev tools),
+    which uv run puts on PATH."""
     env = dict(os.environ)
-    env["PATH"] = os.pathsep.join([str(repo / ".venv" / "bin"), env.get("PATH", "")])
+    env.pop("VIRTUAL_ENV", None)
+    kept = [
+        entry
+        for entry in env.get("PATH", "").split(os.pathsep)
+        if entry and Path(entry) != venv / "bin"
+    ]
+    env["PATH"] = os.pathsep.join([str(plugin / "bin"), *kept])
+    # Otherwise the launcher hands over to a CLI it finds on PATH
+    env["NICHIYOU_DAIKU_WRAPPED"] = "1"
+    # The launcher keeps its environments under XDG_CACHE_HOME; uv's own
+    # cache stays where it is
+    env["XDG_CACHE_HOME"] = str(cache)
+    env["UV_CACHE_DIR"] = uv_cache
     return env
 
 
@@ -238,19 +254,15 @@ def run_agent(
     request: str,
     model: str,
     plugin: Path,
-    repo: Path,
+    env: dict[str, str],
     workdir: Path,
     timeout_s: float,
 ) -> Transcript:
     """Have the design skill of ``plugin`` answer ``request`` in ``workdir``,
-    with ``repo``'s CLI."""
+    in ``env`` (see ``agent_env``)."""
     record = workdir / "run.jsonl"
     code = run_claude(
-        agent_command(request, model, plugin),
-        workdir,
-        agent_env(repo),
-        record,
-        timeout_s,
+        agent_command(request, model, plugin), workdir, env, record, timeout_s
     )
     lines = record.read_text(encoding="utf-8").splitlines()
     try:
