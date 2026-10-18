@@ -104,7 +104,11 @@ def render(design: Path, image: Path, repo: Path) -> None:
 def read_judgement(result: dict) -> Judgement:
     answer = result.get("structured_output")
     if not isinstance(answer, dict) or set(answer) != set(CRITERIA):
-        raise AgentFailed("judge", f"no structured answer: {result.get('result')!r}")
+        raise AgentFailed(
+            "judge",
+            f"no structured answer: {result.get('result')!r}",
+            cost_usd=result.get("total_cost_usd"),
+        )
     model_usage = result.get("modelUsage") or {}
     return Judgement(
         checks={

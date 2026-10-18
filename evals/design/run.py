@@ -109,9 +109,16 @@ class Record:
     def result(self, row: dict) -> None:
         self._append(self.results, row)
 
-    def error(self, case: str, rep: int, kind: str, message: str) -> None:
+    def error(self, case: str, rep: int, failed: AgentFailed) -> None:
         self._append(
-            self.errors, {"case": case, "rep": rep, "kind": kind, "message": message}
+            self.errors,
+            {
+                "case": case,
+                "rep": rep,
+                "kind": failed.kind,
+                "message": str(failed),
+                "cost_usd": failed.cost_usd,
+            },
         )
 
     def graded(self) -> set[tuple[str, int]]:
@@ -138,7 +145,7 @@ def run_one(
                 case.request, args.model, plugin, REPO, workdir, timeout_s
             )
         except AgentFailed as e:
-            record.error(case.name, rep, e.kind, str(e))
+            record.error(case.name, rep, e)
             return
         design = find_design(workdir, case.name)
         checks = check_design(design, case)
@@ -149,7 +156,7 @@ def run_one(
                     design, case.request, args.judge_model, REPO, workdir, timeout_s
                 )
             except AgentFailed as e:
-                record.error(case.name, rep, e.kind, str(e))
+                record.error(case.name, rep, e)
     record.result(
         {
             "case": case.name,

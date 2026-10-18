@@ -95,6 +95,17 @@ def test_a_record_without_a_result_is_a_failed_attempt():
     assert failed.value.kind == "no_result"
 
 
+def test_a_result_that_reports_an_error_is_a_failed_attempt():
+    # A usage limit or an API error that outlasts the retries still ends with
+    # a result; it says nothing about the design
+    error = {**RESULT, "is_error": True, "result": "Claude AI usage limit reached"}
+    with pytest.raises(AgentFailed) as failed:
+        read_transcript(_events(_tool("Skill", skill=SKILL), error))
+    assert failed.value.kind == "agent_error"
+    assert "usage limit" in str(failed.value)
+    assert failed.value.cost_usd == 0.42
+
+
 def test_a_run_past_its_limit_is_killed(tmp_path):
     command = [sys.executable, "-c", "import time; time.sleep(30)"]
     with pytest.raises(AgentFailed) as failed:

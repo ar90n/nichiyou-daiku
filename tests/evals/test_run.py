@@ -25,7 +25,6 @@ TRANSCRIPT = Transcript(
     duration_s=300.0,
     cost_usd=0.5,
     usage={},
-    is_error=False,
 )
 
 
@@ -69,6 +68,8 @@ def fake(monkeypatch, seen):
         tries[workdir.name] = tries.get(workdir.name, 0) + 1
         if workdir.name == "bench-1" and tries["bench-1"] == 1:
             raise AgentFailed("timeout", "no result within 40 minutes")
+        if workdir.name == "desk-1":
+            raise AgentFailed("agent_error", "usage limit reached", cost_usd=0.3)
         shutil.copy(EXAMPLE, workdir / "design.nd")
         return TRANSCRIPT
 
@@ -98,6 +99,22 @@ def test_a_run_records_each_graded_design_and_each_failed_attempt(fake, tmp_path
             "rep": 1,
             "kind": "timeout",
             "message": "no result within 40 minutes",
+            "cost_usd": None,
+        }
+    ]
+
+
+def test_a_run_that_claude_ends_in_error_is_a_failed_attempt(fake, tmp_path):
+    # Not a failed design: --resume runs it again
+    run.main(["--cases", "desk", "--out", str(tmp_path)])
+    assert load_jsonl(tmp_path / "results.jsonl") == []
+    assert load_jsonl(tmp_path / "errors.jsonl") == [
+        {
+            "case": "desk",
+            "rep": 1,
+            "kind": "agent_error",
+            "message": "usage limit reached",
+            "cost_usd": 0.3,
         }
     ]
 

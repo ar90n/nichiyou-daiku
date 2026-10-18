@@ -50,3 +50,13 @@ def test_an_answer_without_the_schema_is_a_failed_attempt():
     with pytest.raises(AgentFailed) as failed:
         read_judgement({"result": "I could not open the image"})
     assert failed.value.kind == "judge"
+
+
+def test_a_judge_that_reports_an_error_keeps_its_cost():
+    with pytest.raises(AgentFailed) as failed:
+        read_judgement(
+            {"is_error": True, "result": "API Error: 529", "total_cost_usd": 0.01}
+        )
+    assert failed.value.kind == "judge"
+    assert "529" in str(failed.value)
+    assert failed.value.cost_usd == 0.01

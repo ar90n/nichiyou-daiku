@@ -31,11 +31,13 @@ REFUSED = (
 
 
 class AgentFailed(Exception):
-    """The run produced no usable record: it timed out or ``claude`` failed."""
+    """The run produced no usable record: it timed out or ``claude`` failed.
+    ``cost_usd`` is the usage it reported, None when it reported none."""
 
-    def __init__(self, kind: str, message: str) -> None:
+    def __init__(self, kind: str, message: str, cost_usd: float | None = None) -> None:
         super().__init__(message)
         self.kind = kind
+        self.cost_usd = cost_usd
 
 
 class Transcript(BaseModel, frozen=True):
@@ -51,7 +53,6 @@ class Transcript(BaseModel, frozen=True):
     duration_s: float
     cost_usd: float
     usage: dict
-    is_error: bool
 
 
 def isolated_flags() -> list[str]:
@@ -134,7 +135,8 @@ def forget_project(cwd: Path) -> None:
 
 def read_transcript(lines: Iterable[str]) -> Transcript:
     """Summarize a stream-json record; raise ``AgentFailed`` without a
-    final result."""
+    final result or when the result reports an error (a usage limit, an API
+    error past the retries): those say nothing about the design."""
     model = None
     skill_used = False
     validates = renders = images_read = 0
@@ -162,6 +164,12 @@ def read_transcript(lines: Iterable[str]) -> Transcript:
             result = event
     if result is None:
         raise AgentFailed("no_result", "claude stopped without a final result")
+    if result.get("is_error"):
+        raise AgentFailed(
+            "agent_error",
+            f"claude reported an error: {str(result.get('result', ''))[:300]}",
+            cost_usd=result.get("total_cost_usd"),
+        )
     return Transcript(
         model=model,
         skill_used=skill_used,
@@ -173,7 +181,6 @@ def read_transcript(lines: Iterable[str]) -> Transcript:
         duration_s=result.get("duration_ms", 0) / 1000,
         cost_usd=result.get("total_cost_usd", 0.0),
         usage=result.get("usage") or {},
-        is_error=bool(result.get("is_error")),
     )
 
 
