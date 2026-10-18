@@ -212,3 +212,6 @@ report.md
 # Generated images and SVGs
 *.png
 *.svg
+
+# Design skill evaluation runs (designs, transcripts, reports)
+evals/design/runs/

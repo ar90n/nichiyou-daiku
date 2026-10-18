@@ -1,0 +1,16 @@
+request = "1x8材だけで本棚を作りたい。幅600×奥行184×高さ900mm。棚板は天板と地板を含めて4枚で、等間隔にする。質問はせず、決まっていないところは既定値で進めて。ファイルはカレントディレクトリに書いて。"
+core = true
+tags = ["脚のない箱もの"]
+
+[size]
+width = 600
+depth = 184
+height = 900
+
+[lumber]
+allowed = ["1x8"]
+required = ["1x8"]
+
+[levels]
+count = 4
+equal = true

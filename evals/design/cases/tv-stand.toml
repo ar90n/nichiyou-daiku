@@ -1,0 +1,18 @@
+request = "テレビ台を作りたい。幅1200×奥行350×高さ400mm。天板と中段の棚は2x6、脚は2x4を6本（中央にも2本）。質問はせず、決まっていないところは既定値で進めて。ファイルはカレントディレクトリに書いて。"
+tags = ["脚 6 本"]
+
+[size]
+width = 1200
+depth = 350
+height = 400
+
+[lumber]
+allowed = ["2x4", "2x6"]
+required = ["2x4", "2x6"]
+
+[legs]
+count = 6
+
+[levels]
+count = 2
+top = true

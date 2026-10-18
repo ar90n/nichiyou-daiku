@@ -1,4 +1,4 @@
-.PHONY: help check test lint format ci-local ci-setup clean
+.PHONY: help check test lint format ci-local ci-setup clean eval eval-full
 
 help:  ## Show this help message
 	@echo "Available commands:"
@@ -10,12 +10,18 @@ test:  ## Run tests with coverage (including doctests)
 	uv run pytest src/ tests/ --doctest-modules --cov=nichiyou_daiku --cov-report=term-missing --cov-fail-under=90 -v
 
 lint:  ## Run linting checks
-	uv run ruff format --check src/ tests/
-	uv run ruff check src/ tests/
-	uv run pyright src/nichiyou_daiku
+	uv run ruff format --check src/ tests/ evals/
+	uv run ruff check src/ tests/ evals/
+	uv run pyright src/nichiyou_daiku evals
 
 format:  ## Format code with black
-	uv run ruff format src/ tests/
+	uv run ruff format src/ tests/ evals/
+
+eval:  ## Run the design skill on the 5 core requests once (uses your Claude allowance)
+	uv run python -m evals.design.run --cases core --reps 1
+
+eval-full:  ## Run the design skill on all 10 requests 3 times (uses your Claude allowance)
+	uv run python -m evals.design.run --cases all --reps 3
 
 ci-setup:  ## Install CI dependencies for local CI runs
 	uv sync --group ci --group dev --all-extras

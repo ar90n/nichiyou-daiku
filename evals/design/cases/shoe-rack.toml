@@ -1,0 +1,19 @@
+request = "2x2材で枠を作り、1x4材の板を渡した3段の靴箱を作りたい。幅600×奥行300×高さ500mm、段は等間隔。質問はせず、決まっていないところは既定値で進めて。ファイルはカレントディレクトリに書いて。"
+core = true
+tags = ["すのこの段"]
+
+[size]
+width = 600
+depth = 300
+height = 500
+
+[lumber]
+allowed = ["2x2", "1x4"]
+required = ["2x2", "1x4"]
+
+[legs]
+count = 4
+
+[levels]
+count = 3
+equal = true

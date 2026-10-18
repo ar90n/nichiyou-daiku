@@ -1,0 +1,18 @@
+request = "2x2材で花台を作りたい。幅400×奥行300×高さ700mm。天板は1x4、床から200mmの位置に棚を1段。質問はせず、決まっていないところは既定値で進めて。ファイルはカレントディレクトリに書いて。"
+core = true
+tags = ["例にない材"]
+
+[size]
+width = 400
+depth = 300
+height = 700
+
+[lumber]
+allowed = ["2x2", "1x4"]
+required = ["2x2", "1x4"]
+
+[legs]
+count = 4
+
+[[shelves]]
+at = 200

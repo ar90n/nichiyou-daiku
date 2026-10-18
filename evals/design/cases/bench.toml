@@ -1,0 +1,17 @@
+request = "2x4材と1x4材でベンチを作りたい。座面は幅900×奥行300mm、高さは420mm。脚は2x4を4本、座面は1x4を長手方向に並べる。質問はせず、決まっていないところは既定値で進めて。ファイルはカレントディレクトリに書いて。"
+tags = ["板を並べる"]
+
+[size]
+width = 900
+depth = 300
+height = 420
+
+[lumber]
+allowed = ["2x4", "1x4"]
+required = ["2x4", "1x4"]
+
+[legs]
+count = 4
+
+[levels]
+top = true

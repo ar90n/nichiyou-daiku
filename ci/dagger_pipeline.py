@@ -87,16 +87,18 @@ async def lint_pipeline(
 
     # Run ruff format
     format_check = python.with_exec(
-        ["uv", "run", "ruff", "format", "--check", "src/", "tests/"]
+        ["uv", "run", "ruff", "format", "--check", "src/", "tests/", "evals/"]
     )
 
     # Run ruff
     ruff_check = format_check.with_exec(
-        ["uv", "run", "ruff", "check", "src/", "tests/"]
+        ["uv", "run", "ruff", "check", "src/", "tests/", "evals/"]
     )
 
     # Run pyright
-    pyright_check = ruff_check.with_exec(["uv", "run", "pyright", "src/nichiyou_daiku"])
+    pyright_check = ruff_check.with_exec(
+        ["uv", "run", "pyright", "src/nichiyou_daiku", "evals"]
+    )
 
     return pyright_check
 
@@ -151,6 +153,8 @@ async def main(
                 "*.pyc",
                 ".coverage",
                 "coverage.xml",
+                # Evaluation runs hold designs, transcripts and images
+                "evals/design/runs/",
             ],
         )
 

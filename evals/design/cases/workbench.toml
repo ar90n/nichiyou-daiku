@@ -1,0 +1,21 @@
+request = "Design a workbench from 2x4 lumber: 1200 mm wide, 600 mm deep and 850 mm tall, with a lower shelf 150 mm above the floor. Join the frame with 8x30 dowels and fix the top with screws. Don't ask questions; use defaults for anything unspecified. Write the file in the current directory."
+tags = ["英語", "ダボとビス"]
+
+[size]
+width = 1200
+depth = 600
+height = 850
+
+[lumber]
+allowed = ["2x4"]
+required = ["2x4"]
+
+[legs]
+count = 4
+
+[[shelves]]
+at = 150
+
+[fasteners]
+dowel = true
+screw = true

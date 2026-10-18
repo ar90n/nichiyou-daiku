@@ -1,0 +1,20 @@
+request = "幅1000×奥行500×高さ700mmの机を作りたい。脚は2x4を4本、天板は1x6を幅方向に並べ、天板の下に幕板を付ける。接合はビス。質問はせず、決まっていないところは既定値で進めて。ファイルはカレントディレクトリに書いて。"
+tags = ["ビス"]
+
+[size]
+width = 1000
+depth = 500
+height = 700
+
+[lumber]
+allowed = ["2x4", "1x6"]
+required = ["2x4", "1x6"]
+
+[legs]
+count = 4
+
+[levels]
+top = true
+
+[fasteners]
+screw = true

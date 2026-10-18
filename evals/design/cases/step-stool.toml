@@ -1,0 +1,14 @@
+request = "子どもの踏み台がほしい。高さ300mmくらいで、2x4材で丈夫に作って。質問はせず、決まっていないところは既定値で進めて。ファイルはカレントディレクトリに書いて。"
+core = true
+tags = ["あいまいな依頼"]
+
+[size]
+height = 300
+tolerance = 20
+
+[lumber]
+allowed = ["2x4"]
+required = ["2x4"]
+
+[levels]
+top = true
