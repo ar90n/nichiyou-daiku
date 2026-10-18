@@ -82,6 +82,7 @@ def fake(monkeypatch, seen, tmp_path_factory):
         )
         tries[workdir.name] = tries.get(workdir.name, 0) + 1
         if workdir.name == "bench-1" and tries["bench-1"] == 1:
+            (workdir / "draft.nd").write_text("half a bench")
             raise AgentFailed("timeout", "no result within 40 minutes")
         if workdir.name == "desk-1":
             raise AgentFailed("agent_error", "usage limit reached", cost_usd=0.3)
@@ -251,6 +252,9 @@ def test_resuming_runs_only_what_was_not_graded(fake, tmp_path):
         in report
     )
     assert "failed attempts: 1 (0 not graded yet)" in report
+    # What the first attempt left stays for a look at why it failed
+    assert (tmp_path / "bench-1.attempt-1" / "draft.nd").read_text() == "half a bench"
+    assert (tmp_path / "bench-1" / "design.nd").is_file()
 
 
 def test_resuming_keeps_the_run_s_own_cases_and_models(fake, seen, tmp_path):

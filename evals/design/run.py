@@ -175,9 +175,13 @@ def run_one(
     row = (
         json.loads(unjudged.read_text(encoding="utf-8")) if unjudged.exists() else None
     )
-    if row is None:
-        # An earlier attempt's files would mix into this one's
-        shutil.rmtree(keep, ignore_errors=True)
+    if row is None and keep.exists():
+        # An earlier attempt's files would mix into this one's; keep them
+        # apart for a look at why it failed
+        attempt = 1
+        while keep.with_name(f"{keep.name}.attempt-{attempt}").exists():
+            attempt += 1
+        keep.rename(keep.with_name(f"{keep.name}.attempt-{attempt}"))
     timeout_s = args.timeout_min * 60
     with outside_repo(keep) as workdir:
         if row is None:
