@@ -121,7 +121,7 @@ uv run python -m evals.design.run --resume runs/<日時>   # 止まった回の�
   作業ディレクトリが違うので、ファイルが 1 つもなければ回し終えたあとに消す。
 - `PATH` の先頭にリポジトリの `.venv/bin` を置き、プラグインの `bin/nichiyou-daiku` が今のコードの CLI を使うようにする。
 - 作業ディレクトリはリポジトリの外（一時ディレクトリ）に作り、回し終えたら `runs/<日時>/<名前>-<回>/` に写す。プラグインは
-  リポジトリから `evals/`・`.claude/`・`CLAUDE.md` を除いた写し（git が管理する・管理しうるファイル）から読む。
+  リポジトリから `evals/`・`docs/superpowers/`・`tests/evals/`・`.claude/`・`CLAUDE.md` を除いた写し（git が管理する・管理しうるファイル）から読む。
   リポジトリの中で動かすと、Claude Code は git のルートをプロジェクトとみなして開発者の CLAUDE.md・設定・自動メモリを
   読み（実装のときの試運転で `memory_paths` が開発者のメモリを指していた）、プラグインのルートから採点の要件や前の回の
   設計も読める（実装のとき、DeepSeek のレビューで指摘）。採点（`--self-check` も）も同じくリポジトリの外で動かす。

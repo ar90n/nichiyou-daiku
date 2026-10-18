@@ -67,7 +67,14 @@ def fake(monkeypatch, seen):
                 "launcher": os.access(plugin / "bin" / "nichiyou-daiku", os.X_OK),
                 "hidden": [
                     name
-                    for name in ("evals", ".claude", "CLAUDE.md")
+                    for name in (
+                        "evals",
+                        ".claude",
+                        "CLAUDE.md",
+                        # The spec's requirement table and the tests' cases
+                        "docs/superpowers",
+                        "tests/evals",
+                    )
                     if (plugin / name).exists()
                 ],
             }

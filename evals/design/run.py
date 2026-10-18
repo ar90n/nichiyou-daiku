@@ -31,9 +31,10 @@ RUNS = Path(__file__).parent / "runs"
 UNJUDGED = "unjudged.json"
 # What a run measures, kept in its meta.json; --resume takes them from there
 CONDITIONS = {"cases": "core", "reps": 1, "model": "sonnet", "judge_model": "opus"}
-# Left out of the plugin the agent loads: the requirements and earlier runs,
-# and the developer's Claude Code setup
-HIDDEN = ("evals/", ".claude/", "CLAUDE.md")
+# Left out of the plugin the agent loads: the requirements (the cases, the
+# spec's table, the tests) and earlier runs, and the developer's Claude Code
+# setup
+HIDDEN = ("evals/", "docs/superpowers/", "tests/evals/", ".claude/", "CLAUDE.md")
 
 
 # Never part of the plugin when the repository is copied without git
