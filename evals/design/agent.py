@@ -7,6 +7,7 @@ import re
 import shutil
 import signal
 import subprocess
+import threading
 from collections.abc import Iterable
 from pathlib import Path
 
@@ -28,6 +29,30 @@ REFUSED = (
     "WebFetch",
     "WebSearch",
 )
+
+
+# Set when the evaluation is stopped: running sessions are ended and no new
+# one starts
+STOP = threading.Event()
+# The sessions running now. Reentrant: the stop handler may run on a thread
+# that holds it
+_live: set[subprocess.Popen] = set()
+_stopped: set[int] = set()
+_live_lock = threading.RLock()
+
+
+def stop_all() -> None:
+    """End every running session with everything it started, and start no
+    new one. Sessions run in their own process groups, so a Ctrl-C in the
+    terminal does not reach them."""
+    STOP.set()
+    with _live_lock:
+        for process in _live:
+            _stopped.add(process.pid)
+            try:
+                os.killpg(process.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
 
 
 class AgentFailed(Exception):
@@ -101,7 +126,10 @@ def run_claude(
     with (
         stdout.open("w", encoding="utf-8") as out,
         (cwd / "stderr.log").open("w", encoding="utf-8") as err,
+        _live_lock,
     ):
+        if STOP.is_set():
+            raise AgentFailed("stopped", "the evaluation was stopped")
         process = subprocess.Popen(
             command,
             cwd=cwd,
@@ -111,16 +139,24 @@ def run_claude(
             stderr=err,
             start_new_session=True,
         )
-        try:
-            return process.wait(timeout=timeout_s)
-        except subprocess.TimeoutExpired:
-            os.killpg(process.pid, signal.SIGKILL)
-            process.wait()
-            raise AgentFailed(
-                "timeout", f"no result within {timeout_s / 60:g} minutes"
-            ) from None
-        finally:
-            forget_project(cwd)
+        # A pid of a session stopped earlier may come back
+        _stopped.discard(process.pid)
+        _live.add(process)
+    try:
+        code = process.wait(timeout=timeout_s)
+    except subprocess.TimeoutExpired:
+        os.killpg(process.pid, signal.SIGKILL)
+        process.wait()
+        raise AgentFailed(
+            "timeout", f"no result within {timeout_s / 60:g} minutes"
+        ) from None
+    finally:
+        with _live_lock:
+            _live.discard(process)
+        forget_project(cwd)
+    if process.pid in _stopped:
+        raise AgentFailed("stopped", "the evaluation was stopped")
+    return code
 
 
 def forget_project(cwd: Path) -> None:

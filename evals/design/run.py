@@ -6,17 +6,18 @@ uv run python -m evals.design.run --cases core --reps 1
 import argparse
 import json
 import shutil
+import signal
 import subprocess
 import sys
 import tempfile
 import threading
 from collections.abc import Iterator
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, wait
 from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
 
-from .agent import AgentFailed, run_agent
+from .agent import STOP, AgentFailed, run_agent, stop_all
 from .cases import Case, load_cases
 from .checks import assembles, check_design, find_design
 from .judge import judge, self_check
@@ -143,6 +144,8 @@ def run_one(
     """One design of ``case``: run the agent, then grade what it wrote. A
     run that gives no result goes to errors.jsonl so that --resume retries
     it; so does a failed judge, which --resume retries alone."""
+    if STOP.is_set():
+        return
     keep = out / f"{case.name}-{rep}"
     unjudged = keep / UNJUDGED
     row = (
@@ -209,6 +212,14 @@ def _commit() -> str:
         text=True,
     )
     return result.stdout.strip() or "unknown"
+
+
+def _stop(signum: int, frame: object) -> None:
+    print(
+        "Stopping: ending the running sessions and starting no more",
+        file=sys.stderr,
+    )
+    stop_all()
 
 
 def _conditions(args: argparse.Namespace) -> str | None:
@@ -282,16 +293,28 @@ def main(argv: list[str] | None = None) -> int:
         for rep in range(1, args.reps + 1)
         if (case.name, rep) not in graded
     ]
-    with (
-        tempfile.TemporaryDirectory(prefix="ndk-eval-plugin-") as tmp,
-        ThreadPoolExecutor(max_workers=args.jobs) as pool,
-    ):
-        plugin = plugin_copy(REPO, Path(tmp))
-        for future in [
-            pool.submit(run_one, case, rep, args, out, record, plugin)
-            for case, rep in todo
-        ]:
-            future.result()
+    STOP.clear()
+    handlers = {
+        sig: signal.signal(sig, _stop) for sig in (signal.SIGINT, signal.SIGTERM)
+    }
+    try:
+        with (
+            tempfile.TemporaryDirectory(prefix="ndk-eval-plugin-") as tmp,
+            ThreadPoolExecutor(max_workers=args.jobs) as pool,
+        ):
+            plugin = plugin_copy(REPO, Path(tmp))
+            futures = [
+                pool.submit(run_one, case, rep, args, out, record, plugin)
+                for case, rep in todo
+            ]
+            # Wake now and then: a signal handler runs only between waits
+            while wait(futures, timeout=1).not_done:
+                pass
+            for future in futures:
+                future.result()
+    finally:
+        for sig, handler in handlers.items():
+            signal.signal(sig, handler)
     previous = load_jsonl(args.compare / "results.jsonl") if args.compare else None
     rows, errors = load_jsonl(record.results), load_jsonl(record.errors)
     (out / "report.md").write_text(
@@ -300,6 +323,9 @@ def main(argv: list[str] | None = None) -> int:
     print(
         f"Graded {len(rows)} runs, {len(errors)} failed attempts: {out / 'report.md'}"
     )
+    if STOP.is_set():
+        print(f"Stopped; continue with --resume {out}", file=sys.stderr)
+        return 130
     return 0
 
 

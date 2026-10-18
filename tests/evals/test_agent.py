@@ -1,8 +1,11 @@
 """Tests for running the design skill with claude -p and reading its record."""
 
 import json
+import os
 import re
 import sys
+import threading
+import time
 from pathlib import Path
 
 import pytest
@@ -10,11 +13,13 @@ import pytest
 from evals.design.agent import (
     REFUSED,
     SKILL,
+    STOP,
     AgentFailed,
     agent_command,
     agent_env,
     read_transcript,
     run_claude,
+    stop_all,
 )
 
 REPO = Path("/repo")
@@ -104,6 +109,40 @@ def test_a_result_that_reports_an_error_is_a_failed_attempt():
     assert failed.value.kind == "agent_error"
     assert "usage limit" in str(failed.value)
     assert failed.value.cost_usd == 0.42
+
+
+@pytest.fixture
+def stop():
+    yield stop_all
+    STOP.clear()
+
+
+def test_stopping_ends_a_running_session(tmp_path, stop):
+    command = [sys.executable, "-c", "import time; time.sleep(30)"]
+    failed = []
+
+    def run():
+        try:
+            run_claude(command, tmp_path, dict(os.environ), tmp_path / "out", 60)
+        except AgentFailed as e:
+            failed.append(e.kind)
+
+    thread = threading.Thread(target=run)
+    thread.start()
+    time.sleep(0.5)
+    stop()
+    thread.join(5)
+    assert not thread.is_alive()
+    assert failed == ["stopped"]
+
+
+def test_no_session_starts_after_a_stop(tmp_path, stop):
+    stop()
+    command = [sys.executable, "-c", "open('started', 'w')"]
+    with pytest.raises(AgentFailed) as failed:
+        run_claude(command, tmp_path, dict(os.environ), tmp_path / "out", 60)
+    assert failed.value.kind == "stopped"
+    assert not (tmp_path / "started").exists()
 
 
 def test_a_run_past_its_limit_is_killed(tmp_path):

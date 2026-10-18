@@ -2,11 +2,15 @@
 
 import os
 import shutil
+import signal
 import subprocess
+import sys
+import time
 from pathlib import Path
 
 import pytest
 
+import evals.design.agent as agent_module
 import evals.design.run as run
 from evals.design.agent import AgentFailed, Transcript
 from evals.design.checks import CHECKS, Check
@@ -72,6 +76,13 @@ def fake(monkeypatch, seen):
             raise AgentFailed("timeout", "no result within 40 minutes")
         if workdir.name == "desk-1":
             raise AgentFailed("agent_error", "usage limit reached", cost_usd=0.3)
+        if workdir.name == "step-stool-1":
+            # Ctrl-C while claude works
+            os.kill(os.getpid(), signal.SIGINT)
+            command = [sys.executable, "-c", "import time; time.sleep(30)"]
+            agent_module.run_claude(
+                command, workdir, dict(os.environ), workdir / "out", 60
+            )
         if workdir.name == "shoe-rack-1":
             (workdir / "shoe-rack.nd").write_text("not a design")
         else:
@@ -264,6 +275,22 @@ def test_a_design_that_does_not_assemble_is_not_judged(fake, tmp_path):
     assert row["checks"]["valid"]["passed"] is False
     assert row["judge"] is None
     assert load_jsonl(tmp_path / "errors.jsonl") == []
+
+
+def test_ctrl_c_ends_the_sessions_and_starts_no_more(fake, tmp_path, capsys):
+    started = time.monotonic()
+    code = run.main(
+        ["--cases", "step-stool,tv-stand,workbench", "--jobs", "1"]
+        + ["--out", str(tmp_path)]
+    )
+    assert code == 130
+    assert time.monotonic() - started < 10
+    assert fake == ["step-stool-1"]
+    assert [e["kind"] for e in load_jsonl(tmp_path / "errors.jsonl")] == ["stopped"]
+    assert "(3 not graded yet)" in (tmp_path / "report.md").read_text()
+    assert "--resume" in capsys.readouterr().err
+    # The next run starts again
+    agent_module.STOP.clear()
 
 
 def test_an_earlier_run_is_compared(fake, tmp_path):
