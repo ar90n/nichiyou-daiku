@@ -43,10 +43,17 @@ GLM でも動くことを確かめたい。直し方は、状況を見てから�
    ディレクトリにし、`OPENCODE_DISABLE_CLAUDE_CODE=1` で `~/.claude` のスキルや CLAUDE.md を読ませない。
    確かめた（2026-10-18）: スキルは opencode 組み込みの 1 つとこのスキルだけになり、無料版は認証なしで動いた。
    そうしないと、ユーザーの `~/.claude/skills`（memory など）まで読み、ユーザーの opencode の履歴に評価が混ざる。
+   最終レビューで足した（実装のとき）: 回ごとの `TMPDIR`（opencode はエージェントに `<tmp>/opencode` を作業場所として
+   勧め、そこはユーザーのセッションやほかの回と共有だった。GLM の試運転がそこに書いた）、評価ごとの `XDG_STATE_HOME`
+   （ロックがユーザーの `~/.local/state/opencode` に残っていた）、`OPENCODE_DISABLE_EXTERNAL_SKILLS=1`（`~/.agents/skills`
+   も読まない）と、引き継いだ `OPENCODE_*` の変数を外す。事前の確認の `opencode models` も一時ディレクトリで動かす
+   （リポジトリで動かすと `.git/opencode` を書いた）。
    PATH と CLI は Claude Code の回と同じ（プラグインの写しの `bin/` が先頭、開発用の `.venv` は外す）。
 6. **断る道具は Claude Code の回とそろえる**。opencode は `--auto`（明示的に断ったもの以外は許す）で動かし、
    一時的な設定ファイルの `permission` で、`rm`・`git`・`curl`・`wget`・`ssh`・`sudo`・`uv tool`・`pip` と
-   Web の取得・検索を断る。道具の違いで結果が変わらないようにする。
+   Web の取得・検索を断る。道具の違いで結果が変わらないようにする。サブエージェント（`task`）も断る: Claude Code の回は
+   使えず、opencode の記録にはサブエージェントの動きが出ないので、トークンや validate の数が黙って少なくなる
+   （実装のとき、最終レビューで指摘）。
 7. **採点役はどの LLM の回も opus（`claude -p`）**。採点がそろわないと、LLM どうしを比べられない。
 8. **速く安くの物差しにトークンを足す**。無料版は費用が 0 なので、USD では比べられない。入力と出力のトークン数を、
    どの LLM の回もレポートに出す（Claude Code の回も）。

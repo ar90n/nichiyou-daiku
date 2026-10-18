@@ -356,13 +356,23 @@ def preflight(
     # one, opencode lists the catalog it ships with and fetches the current
     # one for the next call, and the first run starts before its skills are
     # found
-    settings = opencode_env(env, scratch / "opencode")
+    (scratch / "opencode" / "tmp").mkdir(parents=True, exist_ok=True)
+    # In scratch, not the repository: opencode notes its directory as a project
+    settings = {**opencode_env(env, scratch / "opencode"), "PWD": str(scratch)}
     listed = subprocess.run(
-        ["opencode", "models"], env=settings, capture_output=True, text=True
+        ["opencode", "models"],
+        cwd=scratch,
+        env=settings,
+        capture_output=True,
+        text=True,
     )
     if model_id(model) not in listed.stdout.split():
         listed = subprocess.run(
-            ["opencode", "models"], env=settings, capture_output=True, text=True
+            ["opencode", "models"],
+            cwd=scratch,
+            env=settings,
+            capture_output=True,
+            text=True,
         )
     if model_id(model) in listed.stdout.split():
         return None

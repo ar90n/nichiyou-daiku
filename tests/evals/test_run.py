@@ -229,6 +229,7 @@ def test_the_preflight_checks_opencode_and_its_model(tmp_path):
         tools,
         "opencode",
         f'echo "$XDG_CONFIG_HOME" > "{tmp_path}/config_home"\n'
+        f'pwd > "{tmp_path}/models_cwd"\n'
         "echo opencode/glm-5.3-flash-free\n",
     )
     wrong = run.preflight(plugin, env, tmp_path, "deepseek")
@@ -237,6 +238,8 @@ def test_the_preflight_checks_opencode_and_its_model(tmp_path):
     assert (tmp_path / "config_home").read_text().strip() == str(
         tmp_path / "opencode" / "config"
     )
+    # Not in the repository, where opencode would note it as a project
+    assert (tmp_path / "models_cwd").read_text().strip() == str(tmp_path)
     # A Claude model does not need opencode
     assert run.preflight(plugin, env, tmp_path, "sonnet") is None
 

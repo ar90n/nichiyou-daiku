@@ -77,11 +77,23 @@ def test_the_command_runs_the_model_without_asking():
 
 
 def test_opencode_keeps_its_settings_and_records_apart():
-    env = opencode_env({"PATH": "/plugin/bin"}, Path("/run/opencode"))
+    inherited = {
+        "PATH": "/plugin/bin",
+        "XDG_CACHE_HOME": "/cache",
+        "OPENCODE_CONFIG": "/home/me/opencode.json",
+    }
+    env = opencode_env(inherited, Path("/run/opencode"))
     assert env["XDG_CONFIG_HOME"] == "/run/opencode/config"
     assert env["XDG_DATA_HOME"] == "/run/opencode/data"
-    # Not the skills and CLAUDE.md under ~/.claude
+    # opencode tells agents to work in <tmp>/opencode, which the user's own
+    # sessions and every other run share
+    assert env["TMPDIR"] == "/run/opencode/tmp"
+    # Its locks, beside the cache the runs of one evaluation share
+    assert env["XDG_STATE_HOME"] == "/cache/opencode-state"
+    # Not the skills under ~/.claude or ~/.agents, nor the developer's settings
     assert env["OPENCODE_DISABLE_CLAUDE_CODE"] == "1"
+    assert env["OPENCODE_DISABLE_EXTERNAL_SKILLS"] == "1"
+    assert "OPENCODE_CONFIG" not in env
     assert env["PATH"] == "/plugin/bin"
 
 
@@ -93,6 +105,8 @@ def test_the_config_offers_the_plugin_s_skill_and_refuses_what_claude_refuses():
     assert list(bash)[0] == "*" and bash["*"] == "allow"
     assert bash["rm *"] == bash["git *"] == bash["curl *"] == "deny"
     assert config["permission"]["webfetch"] == "deny"
+    # A subagent's work never reaches the record, and claude runs have none
+    assert config["permission"]["task"] == "deny"
     assert config["share"] == "disabled"
 
 
@@ -169,6 +183,7 @@ def test_a_run_reads_the_record_opencode_writes(tmp_path):
         'if [ "$1" = --version ]; then echo 1.18.30; exit 0; fi\n'
         f'echo "$PWD" > "{tmp_path}/cwd"\n'
         f'echo "$XDG_CONFIG_HOME" > "{tmp_path}/config_home"\n'
+        f'[ -d "$TMPDIR" ] && echo "$TMPDIR" > "{tmp_path}/tmpdir"\n'
         f'cat "{tmp_path}/record.jsonl"\n'
     )
     fake.chmod(0o755)
@@ -184,5 +199,8 @@ def test_a_run_reads_the_record_opencode_writes(tmp_path):
     # Settings beside the run's directory, not in it
     home = Path((tmp_path / "config_home").read_text().strip())
     assert home == tmp_path / "opencode" / "config"
+    assert (tmp_path / "tmpdir").read_text().strip() == str(
+        tmp_path / "opencode" / "tmp"
+    )
     config = json.loads((home / "opencode" / "opencode.json").read_text())
     assert config["skills"] == {"paths": ["/plugin/skills"]}

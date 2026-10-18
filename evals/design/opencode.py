@@ -64,18 +64,31 @@ def opencode_config(plugin: Path) -> dict:
             "bash": {"*": "allow", **dict.fromkeys(REFUSED_COMMANDS, "deny")},
             "webfetch": "deny",
             "websearch": "deny",
+            # A subagent's work never reaches the record; claude runs have none
+            "task": "deny",
         },
     }
 
 
 def opencode_env(env: dict[str, str], home: Path) -> dict[str, str]:
-    """``env`` with opencode's settings and records under ``home``, apart
-    from the user's, and without the skills and CLAUDE.md under ~/.claude."""
+    """``env`` without the developer's OPENCODE_* settings, with opencode's
+    settings, records and scratch space under ``home``, its locks beside the
+    cache that one evaluation's runs share, and without the skills under
+    ~/.claude and ~/.agents."""
+    kept = {key: value for key, value in env.items() if not key.startswith("OPENCODE_")}
+    cache = env.get("XDG_CACHE_HOME")
     return {
-        **env,
+        **kept,
         "XDG_CONFIG_HOME": str(home / "config"),
         "XDG_DATA_HOME": str(home / "data"),
+        # opencode tells agents to work in <tmp>/opencode, which the user's
+        # own sessions and every other run share
+        "TMPDIR": str(home / "tmp"),
+        "XDG_STATE_HOME": str(
+            Path(cache) / "opencode-state" if cache else home / "state"
+        ),
         "OPENCODE_DISABLE_CLAUDE_CODE": "1",
+        "OPENCODE_DISABLE_EXTERNAL_SKILLS": "1",
     }
 
 
@@ -157,6 +170,7 @@ def run_opencode(
     home = workdir.parent / "opencode"
     config = home / "config" / "opencode"
     config.mkdir(parents=True, exist_ok=True)
+    (home / "tmp").mkdir(exist_ok=True)
     (config / "opencode.json").write_text(
         json.dumps(opencode_config(plugin), indent=2), encoding="utf-8"
     )
