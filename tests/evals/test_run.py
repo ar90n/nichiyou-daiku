@@ -9,9 +9,9 @@ import pytest
 
 import evals.design.run as run
 from evals.design.agent import AgentFailed, Transcript
-from evals.design.checks import Check
+from evals.design.checks import CHECKS, Check
 from evals.design.judge import CRITERIA, Judgement
-from evals.design.report import load_jsonl, rates, wilson
+from evals.design.report import load_jsonl, rates, report_markdown, wilson
 
 EXAMPLE = Path(__file__).parents[2] / "skills" / "design" / "examples" / "side-table.nd"
 TRANSCRIPT = Transcript(
@@ -55,6 +55,7 @@ def fake(monkeypatch, seen):
         calls.append(workdir.name)
         seen.append(
             {
+                "model": model,
                 "in_git_checkout": in_git_checkout(workdir),
                 "plugin_is_repo": plugin == repo,
                 "skill": (plugin / "skills" / "design" / "SKILL.md").is_file(),
@@ -138,6 +139,7 @@ def test_the_agent_works_outside_the_repository_on_a_copy_of_the_plugin(
     run.main(["--cases", "side-table", "--out", str(out)])
     assert seen == [
         {
+            "model": "sonnet",
             "in_git_checkout": False,
             "plugin_is_repo": False,
             "skill": True,
@@ -169,7 +171,7 @@ def test_the_self_check_judges_outside_the_repository(monkeypatch, tmp_path):
 def test_resuming_runs_only_what_was_not_graded(fake, tmp_path):
     run.main(["--cases", "side-table,bench", "--out", str(tmp_path)])
     fake.clear()
-    run.main(["--cases", "side-table,bench", "--resume", str(tmp_path)])
+    run.main(["--resume", str(tmp_path)])
     assert fake == ["bench-1"]
     assert len(load_jsonl(tmp_path / "results.jsonl")) == 2
     # The first attempt stays on record, marked as graded later
@@ -179,6 +181,41 @@ def test_resuming_runs_only_what_was_not_graded(fake, tmp_path):
         in report
     )
     assert "failed attempts: 1 (0 not graded yet)" in report
+
+
+def test_resuming_keeps_the_run_s_own_cases_and_models(fake, seen, tmp_path):
+    run.main(
+        ["--cases", "side-table,bench", "--reps", "2", "--model", "opus"]
+        + ["--out", str(tmp_path)]
+    )
+    fake.clear()
+    seen.clear()
+    run.main(["--resume", str(tmp_path)])
+    assert fake == ["bench-1"]
+    assert [s["model"] for s in seen] == ["opus"]
+
+
+def test_resuming_with_other_cases_or_models_is_refused(fake, tmp_path, capsys):
+    run.main(["--cases", "side-table", "--out", str(tmp_path)])
+    fake.clear()
+    assert run.main(["--resume", str(tmp_path), "--model", "opus"]) == 2
+    assert "leave out --cases, --reps, --model" in capsys.readouterr().err
+    assert fake == []
+
+
+def test_runs_not_graded_yet_are_counted_from_the_conditions():
+    # A stopped run leaves cases that never started, with no failed attempt
+    meta = {"cases": ["bench", "desk"], "reps": 2}
+    row = {
+        "case": "bench",
+        "rep": 1,
+        "design": None,
+        "checks": {name: {"passed": False, "detail": ""} for name in CHECKS},
+        "judge": None,
+        "judge_cost_usd": 0.0,
+        **TRANSCRIPT.model_dump(),
+    }
+    assert "failed attempts: 0 (3 not graded yet)" in report_markdown(meta, [row], [])
 
 
 def test_the_report_rates_come_from_the_rows(fake, tmp_path):
@@ -210,7 +247,7 @@ def test_a_failed_judge_is_retried_on_resume_without_the_agent(fake, tmp_path):
     assert load_jsonl(tmp_path / "results.jsonl") == []
     assert [e["kind"] for e in load_jsonl(tmp_path / "errors.jsonl")] == ["judge"]
     fake.clear()
-    run.main(["--cases", "two-tier-shelf", "--resume", str(tmp_path)])
+    run.main(["--resume", str(tmp_path)])
     assert fake == []
     [row] = load_jsonl(tmp_path / "results.jsonl")
     assert row["judge"]["furniture"]["passed"] is True

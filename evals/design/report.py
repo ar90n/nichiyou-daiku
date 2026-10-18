@@ -95,7 +95,12 @@ def report_markdown(
     """The report: conditions, pass rates with their 95% intervals, the
     spend, the failed attempts, then each run with its picture."""
     graded = {(row["case"], row["rep"]) for row in rows}
-    pending = len({(e["case"], e["rep"]) for e in errors} - graded)
+    asked = {
+        (case, rep)
+        for case in meta.get("cases", [])
+        for rep in range(1, meta.get("reps", 0) + 1)
+    }
+    pending = len(asked - graded)
     lines = [
         f"# Design skill evaluation {meta.get('started', '')}",
         "",

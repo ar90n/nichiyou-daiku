@@ -107,7 +107,8 @@ tolerance = 5
 ```bash
 make eval                 # ★ の 5 件 × 1 回、設計 sonnet・採点 opus
 make eval-full            # 10 件 × 3 回
-uv run python -m evals.design.run --cases plant-stand,desk --reps 2 --model opus --resume runs/<日時>
+uv run python -m evals.design.run --cases plant-stand,desk --reps 2 --model opus
+uv run python -m evals.design.run --resume runs/<日時>   # 止まった回の続き
 ```
 
 - 1 回（依頼, 何回目）ごとに `runs/<日時>/<名前>-<回>/` を作業ディレクトリにして `claude -p` を動かす:
@@ -125,7 +126,8 @@ uv run python -m evals.design.run --cases plant-stand,desk --reps 2 --model opus
   読み（実装のときの試運転で `memory_paths` が開発者のメモリを指していた）、プラグインのルートから採点の要件や前の回の
   設計も読める（実装のとき、DeepSeek のレビューで指摘）。採点（`--self-check` も）も同じくリポジトリの外で動かす。
 - 同時に回すのは 2 回まで（指定できる）。1 回の上限は 40 分で、超えたら打ち切って「時間切れ」とする。
-- 結果は 1 回終わるごとに書く。`--resume` で終わった（依頼, 回）は飛ばす。
+- 結果は 1 回終わるごとに書く。`--resume` で終わった（依頼, 回）は飛ばす。続きは最初の回の条件（依頼・回数・モデル。
+  `meta.json`）で回し、別の条件を付けたら断る（実装のとき。条件が混ざった結果を防ぐ）。
 - 切り離しは確かめた（2026-10-18、haiku で 1 往復）。`--setting-sources project --strict-mcp-config` で、MCP は 0、
   プラグインはこのリポジトリのもの（と Claude Code 組み込みのもの）だけ、ユーザーのスキル（`~/.claude/skills`）は
   読まれず、`memory_paths` は作業ディレクトリの空の自動メモリだけだった。試運転でも `init` の記録で同じことを確かめる。

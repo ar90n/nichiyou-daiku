@@ -27,6 +27,8 @@ RUNS = Path(__file__).parent / "runs"
 # The row of a design the machine graded and the judge could not: --resume
 # judges it again instead of running the agent again
 UNJUDGED = "unjudged.json"
+# What a run measures, kept in its meta.json; --resume takes them from there
+CONDITIONS = {"cases": "core", "reps": 1, "model": "sonnet", "judge_model": "opus"}
 # Left out of the plugin the agent loads: the requirements and earlier runs,
 # and the developer's Claude Code setup
 HIDDEN = ("evals/", ".claude/", "CLAUDE.md")
@@ -71,12 +73,12 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
         prog="python -m evals.design.run", description=__doc__
     )
     parser.add_argument(
-        "--cases", default="core", help="all, core or names joined by commas"
+        "--cases", help="all, core or names joined by commas (default: core)"
     )
-    parser.add_argument("--reps", type=int, default=1, help="runs of each case")
-    parser.add_argument("--model", default="sonnet", help="model that designs")
+    parser.add_argument("--reps", type=int, help="runs of each case (default: 1)")
+    parser.add_argument("--model", help="model that designs (default: sonnet)")
     parser.add_argument(
-        "--judge-model", default="opus", help="model that judges the pictures"
+        "--judge-model", help="model that judges the pictures (default: opus)"
     )
     parser.add_argument("--jobs", type=int, default=2, help="runs at the same time")
     parser.add_argument(
@@ -86,7 +88,9 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
         "--out", type=Path, help="directory for this run (default: runs/<time>)"
     )
     parser.add_argument(
-        "--resume", type=Path, help="continue a run, skipping graded cases"
+        "--resume",
+        type=Path,
+        help="continue a run with its own cases and models, skipping graded ones",
     )
     parser.add_argument(
         "--compare", type=Path, help="an earlier run to compare pass rates with"
@@ -207,8 +211,35 @@ def _commit() -> str:
     return result.stdout.strip() or "unknown"
 
 
+def _conditions(args: argparse.Namespace) -> str | None:
+    """Fill the run's conditions in ``args``: from the run itself on
+    --resume, else the defaults. Return what is wrong, if anything."""
+    if args.resume is None:
+        for name, default in CONDITIONS.items():
+            if getattr(args, name) is None:
+                setattr(args, name, default)
+        return None
+    meta_path = args.resume / "meta.json"
+    if not meta_path.exists():
+        return f"{args.resume} has no meta.json; give --resume a directory an earlier run wrote"
+    given = [name for name in CONDITIONS if getattr(args, name) is not None]
+    if given:
+        return (
+            f"--resume continues {args.resume} with its own cases, repetitions and "
+            "models; leave out --cases, --reps, --model and --judge-model"
+        )
+    meta = json.loads(meta_path.read_text(encoding="utf-8"))
+    args.cases = ",".join(meta["cases"])
+    for name in ("reps", "model", "judge_model"):
+        setattr(args, name, meta[name])
+    return None
+
+
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
+    if wrong := _conditions(args):
+        print(wrong, file=sys.stderr)
+        return 2
     if args.self_check:
         request = next(case for case in load_cases("side-table")).request
         directory = args.out or RUNS / f"self-check-{datetime.now():%Y%m%d-%H%M%S}"
