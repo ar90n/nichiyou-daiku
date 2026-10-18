@@ -18,12 +18,15 @@ from pathlib import Path
 
 from .agent import AgentFailed, run_agent
 from .cases import Case, load_cases
-from .checks import check_design, find_design
+from .checks import assembles, check_design, find_design
 from .judge import judge, self_check
 from .report import load_jsonl, report_markdown
 
 REPO = Path(__file__).resolve().parents[2]
 RUNS = Path(__file__).parent / "runs"
+# The row of a design the machine graded and the judge could not: --resume
+# judges it again instead of running the agent again
+UNJUDGED = "unjudged.json"
 # Left out of the plugin the agent loads: the requirements and earlier runs,
 # and the developer's Claude Code setup
 HIDDEN = ("evals/", ".claude/", "CLAUDE.md")
@@ -134,44 +137,65 @@ def run_one(
     plugin: Path,
 ) -> None:
     """One design of ``case``: run the agent, then grade what it wrote. A
-    run that gives no result goes to errors.jsonl so that --resume retries it."""
+    run that gives no result goes to errors.jsonl so that --resume retries
+    it; so does a failed judge, which --resume retries alone."""
     keep = out / f"{case.name}-{rep}"
-    # An earlier attempt's files would mix into this one's
-    shutil.rmtree(keep, ignore_errors=True)
+    unjudged = keep / UNJUDGED
+    row = (
+        json.loads(unjudged.read_text(encoding="utf-8")) if unjudged.exists() else None
+    )
+    if row is None:
+        # An earlier attempt's files would mix into this one's
+        shutil.rmtree(keep, ignore_errors=True)
     timeout_s = args.timeout_min * 60
     with outside_repo(keep) as workdir:
-        try:
-            transcript = run_agent(
-                case.request, args.model, plugin, REPO, workdir, timeout_s
-            )
-        except AgentFailed as e:
-            record.error(case.name, rep, e)
-            return
-        design = find_design(workdir, case.name)
-        checks = check_design(design, case)
-        judgement = None
-        if design is not None:
+        if row is None:
             try:
-                judgement = judge(
-                    design, case.request, args.judge_model, REPO, workdir, timeout_s
+                transcript = run_agent(
+                    case.request, args.model, plugin, REPO, workdir, timeout_s
                 )
             except AgentFailed as e:
                 record.error(case.name, rep, e)
-    record.result(
-        {
-            "case": case.name,
-            "rep": rep,
-            "design": design.name if design else None,
-            "checks": {name: check._asdict() for name, check in checks.items()},
-            "judge": {name: check._asdict() for name, check in judgement.checks.items()}
-            if judgement
-            else None,
-            "judge_model": judgement.model if judgement else None,
-            "judge_cost_usd": judgement.cost_usd if judgement else 0.0,
-            "judge_usage": judgement.usage if judgement else {},
-            **transcript.model_dump(),
+                return
+            design = find_design(workdir, case.name)
+            checks = check_design(design, case)
+            row = {
+                "case": case.name,
+                "rep": rep,
+                "design": design.name if design else None,
+                "checks": {name: check._asdict() for name, check in checks.items()},
+                "judge": None,
+                "judge_model": None,
+                "judge_cost_usd": 0.0,
+                "judge_usage": {},
+                **transcript.model_dump(),
+            }
+            # A design that does not assemble cannot be drawn; the machine
+            # checks have failed it already
+            if design is None or not assembles(design):
+                record.result(row)
+                return
+        else:
+            design = workdir / row["design"]
+            shutil.copy2(keep / row["design"], design)
+        try:
+            judgement = judge(
+                design, case.request, args.judge_model, REPO, workdir, timeout_s
+            )
+        except AgentFailed as e:
+            record.error(case.name, rep, e)
+            (workdir / UNJUDGED).write_text(json.dumps(row), encoding="utf-8")
+            return
+        row |= {
+            "judge": {
+                name: check._asdict() for name, check in judgement.checks.items()
+            },
+            "judge_model": judgement.model,
+            "judge_cost_usd": judgement.cost_usd,
+            "judge_usage": judgement.usage,
         }
-    )
+    unjudged.unlink(missing_ok=True)
+    record.result(row)
 
 
 def _commit() -> str:

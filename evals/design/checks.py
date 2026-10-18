@@ -52,14 +52,28 @@ def find_design(directory: Path, case_name: str) -> Path | None:
     return designs[0] if len(designs) == 1 else None
 
 
+def _assemble(path: Path) -> tuple[Model, Assembly]:
+    model = parse_dsl(path.read_text(encoding="utf-8"))
+    return model, Assembly.of(model)
+
+
+def assembles(path: Path) -> bool:
+    """Whether the design at ``path`` parses and assembles, so that it can
+    be drawn."""
+    try:
+        _assemble(path)
+    except Exception:
+        return False
+    return True
+
+
 def check_design(path: Path | None, case: Case) -> dict[str, Check]:
     """Every check of ``CHECKS`` for the design at ``path``."""
     asked = _asked(case)
     if path is None:
         return _failed(asked, "no single .nd file in the working directory")
     try:
-        model = parse_dsl(path.read_text(encoding="utf-8"))
-        assembly = Assembly.of(model)
+        model, assembly = _assemble(path)
     except Exception as e:
         first_line = str(e).splitlines()[0] if str(e) else type(e).__name__
         return _failed(asked, f"{path.name} does not assemble: {first_line}")

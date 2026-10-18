@@ -48,6 +48,7 @@ def fake(monkeypatch, seen):
     """The agent writes the side table example for every case; the bench
     times out once. The judge passes everything."""
     calls = []
+    judged = []
     tries: dict[str, int] = {}
 
     def agent(request, model, plugin, repo, workdir, timeout_s):
@@ -70,10 +71,16 @@ def fake(monkeypatch, seen):
             raise AgentFailed("timeout", "no result within 40 minutes")
         if workdir.name == "desk-1":
             raise AgentFailed("agent_error", "usage limit reached", cost_usd=0.3)
-        shutil.copy(EXAMPLE, workdir / "design.nd")
+        if workdir.name == "shoe-rack-1":
+            (workdir / "shoe-rack.nd").write_text("not a design")
+        else:
+            shutil.copy(EXAMPLE, workdir / "design.nd")
         return TRANSCRIPT
 
     def judge(design, request, model, repo, workdir, timeout_s):
+        judged.append(workdir.name)
+        if workdir.name == "two-tier-shelf-1" and judged.count("two-tier-shelf-1") == 1:
+            raise AgentFailed("judge", "no structured answer", cost_usd=0.02)
         checks = {name: Check(True, "looks right") for name in CRITERIA}
         return Judgement(checks=checks, model="claude-opus-5", cost_usd=0.05, usage={})
 
@@ -195,6 +202,31 @@ def test_the_report_counts_the_usage_of_failed_attempts(fake, tmp_path):
     )
     # The graded side table's agent and judge, and the failed desk
     assert "- Total usage: 0.85 USD" in report
+
+
+def test_a_failed_judge_is_retried_on_resume_without_the_agent(fake, tmp_path):
+    run.main(["--cases", "two-tier-shelf", "--out", str(tmp_path)])
+    # The machine checks are done; the design waits for its judge
+    assert load_jsonl(tmp_path / "results.jsonl") == []
+    assert [e["kind"] for e in load_jsonl(tmp_path / "errors.jsonl")] == ["judge"]
+    fake.clear()
+    run.main(["--cases", "two-tier-shelf", "--resume", str(tmp_path)])
+    assert fake == []
+    [row] = load_jsonl(tmp_path / "results.jsonl")
+    assert row["judge"]["furniture"]["passed"] is True
+    assert row["checks"]["valid"]["passed"] is True
+    assert row["cost_usd"] == 0.5
+    report = (tmp_path / "report.md").read_text()
+    assert "no structured answer (graded on a later attempt)" in report
+
+
+def test_a_design_that_does_not_assemble_is_not_judged(fake, tmp_path):
+    # Its picture cannot be drawn; that is the design's failure, not the judge's
+    run.main(["--cases", "shoe-rack", "--out", str(tmp_path)])
+    [row] = load_jsonl(tmp_path / "results.jsonl")
+    assert row["checks"]["valid"]["passed"] is False
+    assert row["judge"] is None
+    assert load_jsonl(tmp_path / "errors.jsonl") == []
 
 
 def test_an_earlier_run_is_compared(fake, tmp_path):
