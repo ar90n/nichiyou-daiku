@@ -29,6 +29,9 @@ REFUSED = (
     "WebFetch",
     "WebSearch",
 )
+# A path in /tmp outside the run's own directories (ndk-eval-*): parallel
+# runs share it, so a run may read another's scratch file
+_SHARED_TMP = re.compile(r"/tmp/(?!ndk-eval-)")
 
 
 # Set when the evaluation is stopped: running sessions are ended and no new
@@ -78,6 +81,8 @@ class Transcript(BaseModel, frozen=True):
     duration_s: float
     cost_usd: float
     usage: dict
+    shared_tmp: int
+    """Tool calls that touched /tmp outside the run's own directories."""
 
 
 def isolated_flags() -> list[str]:
@@ -175,7 +180,7 @@ def read_transcript(lines: Iterable[str]) -> Transcript:
     error past the retries): those say nothing about the design."""
     model = None
     skill_used = False
-    validates = renders = images_read = 0
+    validates = renders = images_read = shared_tmp = 0
     result: dict | None = None
     for line in lines:
         if not line.strip():
@@ -188,6 +193,10 @@ def read_transcript(lines: Iterable[str]) -> Transcript:
                 if block.get("type") != "tool_use":
                     continue
                 name, args = block.get("name"), block.get("input", {})
+                target = " ".join(
+                    str(args.get(key, "")) for key in ("command", "file_path", "path")
+                )
+                shared_tmp += bool(_SHARED_TMP.search(target))
                 if name == "Skill" and args.get("skill") == SKILL:
                     skill_used = True
                 elif name == "Bash":
@@ -217,6 +226,7 @@ def read_transcript(lines: Iterable[str]) -> Transcript:
         duration_s=result.get("duration_ms", 0) / 1000,
         cost_usd=result.get("total_cost_usd", 0.0),
         usage=result.get("usage") or {},
+        shared_tmp=shared_tmp,
     )
 
 

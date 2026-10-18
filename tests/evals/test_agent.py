@@ -88,6 +88,22 @@ def test_the_record_tells_what_the_agent_did():
     assert transcript.denials == 1
 
 
+def test_files_in_the_shared_tmp_are_counted():
+    # Parallel runs share /tmp: a run may read another's scratch file
+    transcript = read_transcript(
+        _events(
+            _tool(
+                "Bash", command="nichiyou-daiku validate --json x.nd > /tmp/out.json"
+            ),
+            _tool("Read", file_path="/tmp/out.json"),
+            _tool("Read", file_path="/tmp/ndk-eval-plugin-abc/skills/design/SKILL.md"),
+            _tool("Bash", command="cat /tmp/ndk-eval-xyz/bench-1/bench.nd"),
+            RESULT,
+        )
+    )
+    assert transcript.shared_tmp == 2
+
+
 def test_claude_codes_own_design_skill_does_not_count():
     # Claude Code ships a skill named plain "design"
     transcript = read_transcript(_events(_tool("Skill", skill="design"), RESULT))

@@ -287,10 +287,12 @@ def main(argv: list[str] | None = None) -> int:
     meta = json.loads(meta_path.read_text(encoding="utf-8"))
     record = Record(out)
     graded = record.graded()
+    # Rep by rep: the same request's runs would write the same scratch
+    # files in the shared /tmp
     todo = [
         (case, rep)
-        for case in cases
         for rep in range(1, args.reps + 1)
+        for case in cases
         if (case.name, rep) not in graded
     ]
     STOP.clear()

@@ -29,6 +29,7 @@ TRANSCRIPT = Transcript(
     duration_s=300.0,
     cost_usd=0.5,
     usage={},
+    shared_tmp=0,
 )
 
 
@@ -227,6 +228,17 @@ def test_runs_not_graded_yet_are_counted_from_the_conditions():
         **TRANSCRIPT.model_dump(),
     }
     assert "failed attempts: 0 (3 not graded yet)" in report_markdown(meta, [row], [])
+
+
+def test_the_same_request_s_runs_do_not_run_together(fake, tmp_path):
+    # They would write the same scratch files in /tmp
+    run.main(
+        ["--cases", "side-table,tv-stand", "--reps", "2", "--jobs", "1"]
+        + ["--out", str(tmp_path)]
+    )
+    assert fake == ["side-table-1", "tv-stand-1", "side-table-2", "tv-stand-2"]
+    report = (tmp_path / "report.md").read_text()
+    assert "- Runs that used /tmp outside their own directory: 0 of 4" in report
 
 
 def test_the_report_rates_come_from_the_rows(fake, tmp_path):

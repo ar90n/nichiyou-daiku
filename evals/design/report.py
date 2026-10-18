@@ -108,6 +108,8 @@ def report_markdown(
         f"- Repetitions: {meta.get('reps')}; model: {meta.get('model')}; judge: {meta.get('judge_model')}",
         f"- Commit: {meta.get('commit')}",
         f"- Graded runs: {len(rows)}; failed attempts: {len(errors)} ({pending} not graded yet)",
+        f"- Runs that used /tmp outside their own directory: "
+        f"{sum(1 for row in rows if row.get('shared_tmp'))} of {len(rows)}",
         "",
         "## Pass rates",
         "",
@@ -155,7 +157,7 @@ def report_markdown(
             f"- Design: {row.get('design') or 'none'}; {row['duration_s'] / 60:.1f} min, {row['turns']} turns, "
             f"{row['cost_usd']:.2f} USD; skill {'used' if row['skill_used'] else 'NOT used'}, "
             f"validate ×{row['validates']}, render ×{row['renders']}, images read ×{row['images_read']}, "
-            f"refused ×{row['denials']}",
+            f"refused ×{row['denials']}, shared /tmp ×{row.get('shared_tmp', 0)}",
             "",
             "| Check | | Detail |",
             "|---|---|---|",
