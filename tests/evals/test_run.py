@@ -405,9 +405,29 @@ def test_an_earlier_run_is_compared(fake, tmp_path):
     run.main(["--cases", "side-table", "--out", str(first)])
     run.main(["--cases", "side-table", "--out", str(second), "--compare", str(first)])
     assert (
-        "| all checks | 1/1 | 100% | 21–100% | 100% |"
+        "| all checks | 1/1 | 100% | 21–100% | 100% (1/1) | ±0 pt |"
         in (second / "report.md").read_text()
     )
+
+
+def test_only_the_cases_both_runs_have_are_compared(fake, tmp_path):
+    # The earlier run also had a tv stand, which the side table design fails
+    first, second = tmp_path / "first", tmp_path / "second"
+    run.main(["--cases", "side-table,tv-stand", "--out", str(first)])
+    run.main(["--cases", "side-table", "--out", str(second), "--compare", str(first)])
+    report = (second / "report.md").read_text()
+    assert "| all checks | 1/1 | 100% | 21–100% | 100% (1/1) | ±0 pt |" in report
+    assert "on the cases both ran: side-table" in report
+
+
+def test_rows_from_before_a_check_existed_are_not_counted_for_it():
+    row = {
+        "checks": {name: {"passed": True, "detail": ""} for name in CHECKS[:-1]},
+        "judge": {name: {"passed": True, "detail": ""} for name in list(CRITERIA)[:-1]},
+    }
+    counts = rates([row])
+    assert counts[CHECKS[-1]] == (0, 0)
+    assert counts[f"judge: {list(CRITERIA)[-1]}"] == (0, 0)
 
 
 def test_an_unknown_case_stops_before_anything_runs(fake, tmp_path, capsys):

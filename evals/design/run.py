@@ -415,7 +415,13 @@ def _evaluate(
     finally:
         for sig, handler in handlers.items():
             signal.signal(sig, handler)
-    previous = load_jsonl(args.compare / "results.jsonl") if args.compare else None
+    previous = None
+    if args.compare:
+        before = args.compare / "meta.json"
+        previous = (
+            json.loads(before.read_text(encoding="utf-8")) if before.exists() else {},
+            load_jsonl(args.compare / "results.jsonl"),
+        )
     rows, errors = load_jsonl(record.results), load_jsonl(record.errors)
     (out / "report.md").write_text(
         report_markdown(meta, rows, errors, previous), encoding="utf-8"

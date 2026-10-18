@@ -47,17 +47,22 @@ def all_passed(row: dict) -> bool:
 def rates(rows: list[dict]) -> dict[str, tuple[int, int]]:
     """(passed, counted) per metric: all checks first, then each check and
     each judge criterion. A check the case does not ask for is not counted,
-    nor is a judge criterion of a run the judge could not grade."""
+    nor is a judge criterion of a run the judge could not grade, nor what
+    a row from before the check existed lacks."""
     counts = {ALL_CHECKS: (sum(all_passed(row) for row in rows), len(rows))}
     for name in CHECKS:
         asked = [
-            row["checks"][name]["passed"]
+            check["passed"]
             for row in rows
-            if row["checks"][name]["passed"] is not None
+            if (check := row["checks"].get(name)) and check["passed"] is not None
         ]
         counts[name] = (sum(asked), len(asked))
     for name in CRITERIA:
-        judged = [row["judge"][name]["passed"] for row in rows if row.get("judge")]
+        judged = [
+            verdict["passed"]
+            for row in rows
+            if (verdict := (row.get("judge") or {}).get(name))
+        ]
         counts[f"judge: {name}"] = (sum(judged), len(judged))
     return counts
 
@@ -94,11 +99,23 @@ def _mark(passed: bool | None) -> str:
     return {True: "✓", False: "✗", None: "–"}[passed]
 
 
+def _change(now: tuple[int, int], before: tuple[int, int]) -> str:
+    if not now[1] or not before[1]:
+        return "-"
+    points = round(100 * (now[0] / now[1] - before[0] / before[1]))
+    return f"{points:+d} pt" if points else "±0 pt"
+
+
 def report_markdown(
-    meta: dict, rows: list[dict], errors: list[dict], previous: list[dict] | None = None
+    meta: dict,
+    rows: list[dict],
+    errors: list[dict],
+    previous: tuple[dict, list[dict]] | None = None,
 ) -> str:
     """The report: conditions, pass rates with their 95% intervals, the
-    spend, the failed attempts, then each run with its picture."""
+    spend, the failed attempts, then each run with its picture. With
+    ``previous`` (an earlier run's meta and rows), its pass rates on the
+    cases both runs have stand beside."""
     graded = {(row["case"], row["rep"]) for row in rows}
     asked = {
         (case, rep)
@@ -115,19 +132,32 @@ def report_markdown(
         f"- Graded runs: {len(rows)}; failed attempts: {len(errors)} ({pending} not graded yet)",
         f"- Runs that used /tmp outside their own directory: "
         f"{sum(1 for row in rows if row.get('shared_tmp'))} of {len(rows)}",
+    ]
+    earlier = {}
+    if previous is not None:
+        before, before_rows = previous
+        common = sorted(set(meta.get("cases", [])) & set(before.get("cases", [])))
+        earlier = rates([row for row in before_rows if row["case"] in common])
+        lines.append(
+            f"- Compared with the run of {before.get('started', '?')} "
+            f"({before.get('commit', '?')}), on the cases both ran: "
+            + (", ".join(common) or "none")
+        )
+    lines += [
         "",
         "## Pass rates",
         "",
         "| Metric | Passed | Rate | 95% interval |"
-        + (" Previous |" if previous is not None else ""),
-        "|---|---|---|---|" + ("---|" if previous is not None else ""),
+        + (" Previous | Change |" if previous is not None else ""),
+        "|---|---|---|---|" + ("---|---|" if previous is not None else ""),
     ]
-    earlier = rates(previous) if previous is not None else {}
     for name, (passed, total) in rates(rows).items():
         low, high = wilson(passed, total)
         line = f"| {name} | {passed}/{total} | {_percent(passed, total)} | {100 * low:.0f}–{100 * high:.0f}% |"
         if previous is not None:
-            line += f" {_percent(*earlier.get(name, (0, 0)))} |"
+            was = earlier.get(name, (0, 0))
+            shown = f"{_percent(*was)} ({was[0]}/{was[1]})" if was[1] else "-"
+            line += f" {shown} | {_change((passed, total), was)} |"
         lines.append(line)
     lines += [
         "",

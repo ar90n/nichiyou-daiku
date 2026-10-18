@@ -9,7 +9,7 @@ make eval        # the 5 core requests once (sonnet designs, opus judges)
 make eval-full   # all 10 requests 3 times
 uv run python -m evals.design.run --cases plant-stand,desk --reps 2 --model opus
 uv run python -m evals.design.run --resume evals/design/runs/<time>   # continue after a stop, as it started
-uv run python -m evals.design.run --compare evals/design/runs/<earlier>
+uv run python -m evals.design.run --compare evals/design/runs/<earlier>   # its pass rates on the cases both have, and the change
 uv run python -m evals.design.run --self-check   # check the judge on known designs
 ```
 
