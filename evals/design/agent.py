@@ -32,6 +32,10 @@ REFUSED = (
 # A path in /tmp outside the run's own directories (ndk-eval-*): parallel
 # runs share it, so a run may read another's scratch file
 _SHARED_TMP = re.compile(r"/tmp/(?!ndk-eval-)")
+# A CLI command, after any global options (-q, --verbose)
+_COMMAND = r"nichiyou-daiku(?:\s+-[-\w]+)*\s+{}\b"
+_VALIDATE = re.compile(_COMMAND.format("validate"))
+_RENDER = re.compile(_COMMAND.format("render"))
 
 
 # Set when the evaluation is stopped: running sessions are ended and no new
@@ -201,8 +205,8 @@ def read_transcript(lines: Iterable[str]) -> Transcript:
                     skill_used = True
                 elif name == "Bash":
                     command = args.get("command", "")
-                    validates += "nichiyou-daiku validate" in command
-                    renders += "nichiyou-daiku render" in command
+                    validates += len(_VALIDATE.findall(command))
+                    renders += len(_RENDER.findall(command))
                 elif name == "Read" and args.get("file_path", "").endswith(".png"):
                     images_read += 1
         elif event.get("type") == "result":

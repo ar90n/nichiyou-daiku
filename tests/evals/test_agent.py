@@ -88,6 +88,20 @@ def test_the_record_tells_what_the_agent_did():
     assert transcript.denials == 1
 
 
+def test_each_validate_and_render_in_a_command_counts():
+    transcript = read_transcript(
+        _events(
+            _tool(
+                "Bash",
+                command="nichiyou-daiku -q validate a.nd && nichiyou-daiku validate b.nd",
+            ),
+            _tool("Bash", command="nichiyou-daiku --verbose render a.nd -o a.png"),
+            RESULT,
+        )
+    )
+    assert (transcript.validates, transcript.renders) == (2, 1)
+
+
 def test_files_in_the_shared_tmp_are_counted():
     # Parallel runs share /tmp: a run may read another's scratch file
     transcript = read_transcript(
