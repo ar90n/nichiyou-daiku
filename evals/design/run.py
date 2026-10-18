@@ -233,6 +233,23 @@ def run_one(
     record.result(row)
 
 
+def _run_safely(
+    case: Case,
+    rep: int,
+    args: argparse.Namespace,
+    out: Path,
+    record: Record,
+    plugin: Path,
+    env: dict[str, str],
+) -> None:
+    """``run_one``, with a bug of the evaluation itself recorded as a failed
+    attempt: the other runs go on and the report is written."""
+    try:
+        run_one(case, rep, args, out, record, plugin, env)
+    except Exception as e:
+        record.error(case.name, rep, AgentFailed("harness", f"{type(e).__name__}: {e}"))
+
+
 def _commit() -> str:
     result = subprocess.run(
         ["git", "-C", str(REPO), "describe", "--always", "--dirty"],
@@ -386,7 +403,7 @@ def _evaluate(
     try:
         with ThreadPoolExecutor(max_workers=args.jobs) as pool:
             futures = [
-                pool.submit(run_one, case, rep, args, out, record, plugin, env)
+                pool.submit(_run_safely, case, rep, args, out, record, plugin, env)
                 for case, rep in todo
             ]
             # Wake now and then: a signal handler runs only between waits

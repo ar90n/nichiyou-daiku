@@ -367,6 +367,25 @@ def test_ctrl_c_ends_the_sessions_and_starts_no_more(fake, tmp_path, capsys):
     agent_module.STOP.clear()
 
 
+def test_a_bug_while_grading_one_run_spares_the_others(fake, monkeypatch, tmp_path):
+    check_design = run.check_design
+
+    def failing(path, case):
+        if case.name == "tv-stand":
+            raise RuntimeError("boom")
+        return check_design(path, case)
+
+    monkeypatch.setattr(run, "check_design", failing)
+    assert run.main(["--cases", "side-table,tv-stand", "--out", str(tmp_path)]) == 0
+    assert [row["case"] for row in load_jsonl(tmp_path / "results.jsonl")] == [
+        "side-table"
+    ]
+    [error] = load_jsonl(tmp_path / "errors.jsonl")
+    assert (error["case"], error["kind"]) == ("tv-stand", "harness")
+    assert error["message"] == "RuntimeError: boom"
+    assert (tmp_path / "report.md").is_file()
+
+
 def test_an_earlier_run_is_compared(fake, tmp_path):
     first, second = tmp_path / "first", tmp_path / "second"
     run.main(["--cases", "side-table", "--out", str(first)])
