@@ -17,10 +17,10 @@ lint:  ## Run linting checks
 format:  ## Format code with black
 	uv run ruff format src/ tests/ evals/
 
-eval:  ## Run the design skill on the 5 core requests once (uses your Claude allowance)
+eval:  ## Check the design skill on the 5 core requests once, ~15 min (uses your Claude allowance)
 	uv run python -m evals.design.run --cases core --reps 1
 
-eval-full:  ## Run the design skill on all 10 requests 3 times (uses your Claude allowance)
+eval-full:  ## Measure the design skill on all 10 requests 3 times, before merging skill changes (uses your Claude allowance)
 	uv run python -m evals.design.run --cases all --reps 3
 
 ci-setup:  ## Install CI dependencies for local CI runs

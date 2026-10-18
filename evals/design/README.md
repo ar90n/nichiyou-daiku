@@ -2,7 +2,7 @@
 
 Runs the design skill (`skills/design/`) on a fixed set of furniture requests with `claude -p`, grades every design and writes a report, so that a change to the skill or the CLI can be checked against the last run. The decisions behind it are in `docs/superpowers/specs/2026-10-18-design-eval-design.md`.
 
-Each run uses your Claude Code login and allowance: the agent designs for 5 to 30 minutes per request. Run it when a change could affect the designs, not on every commit.
+Each run uses your Claude Code login and allowance: the agent designs for 1 to 30 minutes per request. Run `make eval-full` before merging work that changes the skill or the CLI it uses, and at the end of a milestone. `make eval` only checks that nothing is broken: in the baseline (2026-10-18, about 14 minutes and 4 USD at API prices) all 5 core requests passed every check, so it cannot show a design getting better or worse.
 
 ```bash
 make eval        # the 5 core requests once (sonnet designs, opus judges)
