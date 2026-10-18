@@ -30,9 +30,10 @@ GLM でも動くことを確かめたい。直し方は、状況を見てから�
    名前（`opencode/...`・`opencode-go/...`）で選べる。無料版の名前は opencode の都合で変わるので、短い名前の表は
    評価の仕組みの 1 か所に置く。
 3. **どの LLM も同じスキルを読む**（ユーザー）。スキルを道具ごとに分けたり書き換えたりしない。Claude Code には
-   これまでどおり `--plugin-dir` でプラグインの写しを渡す。opencode には、作業ディレクトリの `.opencode` を
-   プラグインの写しへのリンクにして渡す（opencode は `.opencode/skills/` からスキルを探す。確かめた）。写しを
-   丸ごと渡すので、スキルから見た `../../docs/` に DSL 仕様がある。
+   これまでどおり `--plugin-dir` でプラグインの写しを渡す。opencode には、回ごとの opencode の設定ファイルの
+   `skills.paths` でプラグインの写しの `skills/` を指して渡す（確かめた）。スキルは写しの中にあるので、スキルから
+   見た `../../docs/` に DSL 仕様がある。最初は作業ディレクトリに `.opencode` → 写しのリンクを置く案だったが、
+   それだとエージェントの作業ディレクトリにプラグインの中身が見えるので、設定で渡す形にした（計画のとき）。
 4. **スキルは `${CLAUDE_PLUGIN_ROOT}` を使わない**。Claude Code だけが展開する変数で、opencode では展開されない。
    試しに DeepSeek に読ませると、仕様の場所が分からず `find /` でディスク全体を探した。DSL 仕様は SKILL.md からの
    相対リンク（`../../docs/dsl-specification.md`）で示す。Claude Code はスキルのベースディレクトリを、opencode は
@@ -53,7 +54,14 @@ GLM でも動くことを確かめたい。直し方は、状況を見てから�
    一度出た）。`error` の記録で終わった回は `errors.jsonl` に入れ、`--resume` で回し直す。設計の失敗には数えない。
 10. **出力先のディレクトリ名に LLM の名前を入れる**（`runs/<日時>-<LLM>/`）。3 つを同時に始めると日時が重なる。
 11. **事前の確認に opencode を足す**。opencode の回は、`opencode` があるか、モデルが `opencode models` にあるかを、
-    使用量を使う前に確かめる。
+    使用量を使う前に確かめる。`opencode models` は opencode のキャッシュ（ripgrep とモデルの一覧）も温める。空の
+    キャッシュのまま回すと、最初の回はスキルが見つからないまま始まった。また空のキャッシュでは、1 回目の
+    `opencode models` は opencode に同梱の古い一覧（DeepSeek も GLM もない）を返し、最新の一覧は次から返るので、
+    見つからなければもう一度だけ聞く（どちらも計画のとき確かめた）。
+12. **どのセッションも `PWD` を作業ディレクトリに合わせる**（計画のとき）。opencode は、プロセスの作業ディレクトリでは
+    なく環境変数 `PWD` を作業場所にする（確かめた）。評価を起動した場所（リポジトリ）の `PWD` のまま回すと、試運転で
+    DeepSeek も GLM も設計をリポジトリに書き、`cd` までした。`claude -p` と採点役も同じ関数で起動するので、すべての
+    セッションで合わせる。
 
 ## スコープ外
 
@@ -88,9 +96,10 @@ uv run python -m evals.design.run --model opencode/deepseek-v4.1-flash-free --ca
 opencode run --format json --auto -m <モデル> "<依頼文>"
 ```
 
-- 作業ディレクトリに `.opencode` → プラグインの写し（評価ごとに 1 つ）のリンクを置く。
-- 環境: Claude Code の回の環境（PATH・CLI の環境）に、`XDG_CONFIG_HOME`・`XDG_DATA_HOME`（評価ごとの一時
-  ディレクトリ）と `OPENCODE_DISABLE_CLAUDE_CODE=1` を足す。一時的な設定ファイル（`opencode.json`）に断る道具を書く。
+- 回ごとの opencode の設定ファイル（`opencode.json`）に、`skills.paths`（プラグインの写しの `skills/`）と断る道具を
+  書き、作業ディレクトリの隣（エージェントからは見えない）に置く。
+- 環境: Claude Code の回の環境（PATH・CLI の環境）に、`XDG_CONFIG_HOME`・`XDG_DATA_HOME`（作業ディレクトリの隣の
+  一時ディレクトリ）と `OPENCODE_DISABLE_CLAUDE_CODE=1` を足す。
 - 標準入力は `/dev/null`。時間切れと止め方（Ctrl-C）は Claude Code の回と同じ仕組み。
 
 ### 3. 記録の読み方
@@ -117,6 +126,9 @@ SKILL.md の「`${CLAUDE_PLUGIN_ROOT}/docs/dsl-specification.md`」を、SKILL.m
 
 - 見出しの「Agent」に、指定した LLM と実際に動いたモデル、道具（Claude Code・opencode とその版）を出す。
 - 「Spend per run」に入力・出力のトークン数（中央値と幅）を足す。依頼ごとの表にもトークンを足す。
+- エージェントが答えを終えずに止まった回（opencode の最後のステップの理由が `stop` でないもの。`length` はモデルの
+  出力の上限）は、回の行にその理由を出す。設計がないまま止まっても、仕組みの不調ではなくそのモデルで動くかどうかの
+  結果なので、設計の失敗として数える（計画のとき。GLM の試運転が 4 ターン目に `length` で止まった）。
 - 3 つの LLM を並べるのは、レポートを 3 つ並べて見る（チャットで並べて見せる）。1 つのレポートにまとめる仕組みは
   作らない（決定 1）。
 
@@ -136,7 +148,7 @@ sonnet・`deepseek`・`glm` で、それぞれ `make eval-full`（10 件 × 3 �
 
 - `--model` の振り分け: `sonnet` は Claude Code、`deepseek`・`glm` は opencode の無料版、`opencode/...` は
   そのまま、知らない名前は止まる。
-- opencode のコマンドと環境: 切り離しの環境変数、作業ディレクトリの `.opencode` のリンク、断る道具の設定。
+- opencode のコマンドと環境: 切り離しの環境変数、設定ファイルの `skills.paths` と断る道具。
 - opencode の記録の読み方: スキル・validate・render・画像・トークン・ターン・時間、`error` で終わった回は失敗した試行。
 - 出力先のディレクトリ名に LLM の名前が入る。
 - スキルの中に `${CLAUDE_PLUGIN_ROOT}` がない。SKILL.md の DSL 仕様へのリンクが実在する（今の `tests/test_docs.py`）。
