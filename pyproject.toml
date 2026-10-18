@@ -61,10 +61,15 @@ omit = [
     "src/nichiyou_daiku/cli/commands/view.py",
 ]
 
+[tool.ruff]
+# Agents may leave scripts in their evaluation run directories
+extend-exclude = ["evals/design/runs"]
+
 [tool.pyright]
 exclude = [
     "src/nichiyou_daiku/cli/commands/view.py",
     "tests/utils/projection_utils.py",
+    "evals/design/runs",
 ]
 
 [tool.uv.sources]

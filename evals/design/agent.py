@@ -64,7 +64,7 @@ def isolated_flags() -> list[str]:
     ]
 
 
-def agent_command(request: str, model: str, repo: Path) -> list[str]:
+def agent_command(request: str, model: str, plugin: Path) -> list[str]:
     return [
         "claude",
         "-p",
@@ -72,7 +72,7 @@ def agent_command(request: str, model: str, repo: Path) -> list[str]:
         "--model",
         model,
         "--plugin-dir",
-        str(repo),
+        str(plugin),
         "--output-format",
         "stream-json",
         "--verbose",
@@ -178,12 +178,22 @@ def read_transcript(lines: Iterable[str]) -> Transcript:
 
 
 def run_agent(
-    request: str, model: str, repo: Path, workdir: Path, timeout_s: float
+    request: str,
+    model: str,
+    plugin: Path,
+    repo: Path,
+    workdir: Path,
+    timeout_s: float,
 ) -> Transcript:
-    """Have the design skill answer ``request`` in ``workdir``."""
+    """Have the design skill of ``plugin`` answer ``request`` in ``workdir``,
+    with ``repo``'s CLI."""
     record = workdir / "run.jsonl"
     code = run_claude(
-        agent_command(request, model, repo), workdir, agent_env(repo), record, timeout_s
+        agent_command(request, model, plugin),
+        workdir,
+        agent_env(repo),
+        record,
+        timeout_s,
     )
     lines = record.read_text(encoding="utf-8").splitlines()
     try:
