@@ -5,7 +5,7 @@ description: Design DIY furniture from standard 1x/2x SPF lumber (1x4, 2x4, 2x2,
 
 # Design furniture with nichiyou-daiku
 
-Write the furniture as a `.nd` file (the nichiyou-daiku DSL), check it with the `nichiyou-daiku` CLI and fix it until it is sound. Work in the user's project directory.
+Write the furniture as a `.nd` file (the nichiyou-daiku DSL), check it with the `nichiyou-daiku` CLI and fix it until it is sound. Work in the user's project directory: it is where you start, and `nichiyou-daiku` is on the PATH, so there is nothing to look around for. This skill, the files it links and the CLI's output are all you need: don't search the plugin's other files or its source code, and make only the files the user asks for (the outputs of step 7 only on request).
 
 ## 1. Settle the requirements
 
