@@ -176,6 +176,19 @@ def test_files_in_the_shared_tmp_are_counted():
     assert transcript.shared_tmp == 2
 
 
+def test_a_run_s_own_temporary_directory_is_not_the_shared_tmp():
+    # opencode's TMPDIR lies under the run's directory, and the scratch path
+    # it suggests ends in .../tmp/opencode/...
+    own = "/tmp/ndk-eval-abc/opencode/tmp/opencode/check.json"
+    transcript = read_transcript(
+        _events(
+            _tool("Bash", command=f"nichiyou-daiku validate --json x.nd > {own}"),
+            RESULT,
+        )
+    )
+    assert transcript.shared_tmp == 0
+
+
 def test_claude_codes_own_design_skill_does_not_count():
     # Claude Code ships a skill named plain "design"
     transcript = read_transcript(_events(_tool("Skill", skill="design"), RESULT))

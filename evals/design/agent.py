@@ -33,9 +33,10 @@ REFUSED = (
     "Agent",
     "Task",
 )
-# A path in /tmp outside the run's own directories (ndk-eval-*): parallel
-# runs share it, so a run may read another's scratch file
-_SHARED_TMP = re.compile(r"/tmp/(?!ndk-eval-)")
+# A path that starts in /tmp, outside the run's own directories
+# (ndk-eval-*): parallel runs share it, so a run may read another's scratch
+# file. Not a /tmp/ inside a longer path, as in opencode's own scratch
+_SHARED_TMP = re.compile(r"(?<![\w./-])/tmp/(?!ndk-eval-)")
 # A CLI command, after any global options (-q, --verbose)
 _COMMAND = r"nichiyou-daiku(?:\s+-[-\w]+)*\s+{}\b"
 _VALIDATE = re.compile(_COMMAND.format("validate"))
