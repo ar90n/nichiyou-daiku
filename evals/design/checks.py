@@ -32,6 +32,11 @@ CHECKS = (
 _FLOOR_MM = 0.5
 # Board tops this close are one level; level gaps this close are equal
 _LEVEL_MM = 5.0
+# A level's boards cover at least this share of the plan: a few narrow
+# boards with wide gaps are no shelf. In the 2026-10-19 status check every
+# design the judge passed covered 70% or more at each level, and a tv stand
+# the judge failed 27%
+_LEVEL_COVER = 0.5
 # SKILL.md asks for a steps block for "more than a few pieces"
 _STEPS_FROM = 6
 
@@ -222,29 +227,47 @@ def _holds_up(lower: PiecePosition, upper: PiecePosition) -> bool:
     )
 
 
-def _level_tops(pieces: tuple[PiecePosition, ...]) -> list[float]:
+def _level_tops(
+    pieces: tuple[PiecePosition, ...], plan_area: float | None
+) -> tuple[list[float], list[tuple[float, float]]]:
+    """The tops of the levels, and (top, share of the plan) of the boards
+    that sit at one height but cover too little of the plan to be a level
+    (``plan_area`` None counts every level)."""
     boards = [piece for piece in pieces if _flat_board(piece)]
     # A flat apron or cleat right under a board holds it up; it is not a
     # level of its own
-    tops = sorted(
-        board.max[2]
-        for board in boards
-        if not any(_holds_up(board, other) for other in boards)
+    boards = sorted(
+        (b for b in boards if not any(_holds_up(b, other) for other in boards)),
+        key=lambda board: board.max[2],
     )
-    levels: list[list[float]] = []
-    for top in tops:
-        if levels and top - levels[-1][0] <= _LEVEL_MM:
-            levels[-1].append(top)
+    groups: list[list[PiecePosition]] = []
+    for board in boards:
+        if groups and board.max[2] - groups[-1][0].max[2] <= _LEVEL_MM:
+            groups[-1].append(board)
         else:
-            levels.append([top])
-    return [max(level) for level in levels]
+            groups.append([board])
+    levels: list[float] = []
+    sparse: list[tuple[float, float]] = []
+    for group in groups:
+        top = max(board.max[2] for board in group)
+        covered = sum(
+            (board.max[0] - board.min[0]) * (board.max[1] - board.min[1])
+            for board in group
+        )
+        share = covered / plan_area if plan_area else 1.0
+        if share >= _LEVEL_COVER:
+            levels.append(top)
+        else:
+            sparse.append((top, share))
+    return levels, sparse
 
 
 def _levels(report: ValidationReport, case: Case) -> Check:
     wanted = case.levels
     if wanted is None:
         return Check(None, "not asked")
-    tops = _level_tops(report.pieces)
+    size = report.overall_size
+    tops, sparse = _level_tops(report.pieces, size[0] * size[1] if size else None)
     shown = ", ".join(f"{top:g}" for top in tops) or "none"
     failures = []
     if wanted.count is not None and len(tops) != wanted.count:
@@ -256,6 +279,10 @@ def _levels(report: ValidationReport, case: Case) -> Check:
     if wanted.top and (not tops or height is None or not _close(tops[-1], height, 1)):
         failures.append("the top is not a board")
     detail = f"board tops at {shown}"
+    if sparse:
+        detail += "; too sparse to count: " + ", ".join(
+            f"{top:g} ({share:.0%} of the plan)" for top, share in sparse
+        )
     return Check(
         not failures, f"{detail}; {'; '.join(failures)}" if failures else detail
     )

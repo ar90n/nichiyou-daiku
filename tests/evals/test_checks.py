@@ -4,8 +4,8 @@ import os
 from pathlib import Path
 
 from evals.design.cases import Fasteners, Legs, Levels, Lumber, Shelf, Size, load_cases
-from evals.design.checks import CHECKS, _level_tops, check_design, find_design
-from nichiyou_daiku.shell.diagnostics import PieceFaces, PiecePosition
+from evals.design.checks import CHECKS, _level_tops, _levels, check_design, find_design
+from nichiyou_daiku.shell.diagnostics import PieceFaces, PiecePosition, ValidationReport
 
 ROOT = Path(__file__).parents[2]
 SIDE_TABLE = ROOT / "skills" / "design" / "examples" / "side-table.nd"
@@ -119,10 +119,31 @@ def test_a_flat_board_holding_up_another_is_not_a_level():
     top = _flat("top", "2x6", (0, 0, 362), (1200, 140, 400))
     apron = _flat("apron", "2x4", (0, 20, 324), (1200, 109, 362))
     shelf = _flat("shelf", "2x6", (0, 0, 62), (1200, 140, 100))
-    assert _level_tops((top, apron, shelf)) == [100, 400]
+    assert _level_tops((top, apron, shelf), None)[0] == [100, 400]
     # A board at that height but elsewhere is a level of its own
     aside = _flat("aside", "2x4", (0, 200, 324), (1200, 289, 362))
-    assert _level_tops((top, aside, shelf)) == [100, 362, 400]
+    assert _level_tops((top, aside, shelf), None)[0] == [100, 362, 400]
+
+
+def test_a_level_of_a_few_narrow_boards_is_not_counted():
+    # GLM's tv stand: three 2x6 boards running front to back with wide gaps
+    # made its middle shelf, 27% of the plan. Every design the judge passed
+    # in the 2026-10-19 status check covered 70% or more at each level
+    top_front = _flat("top_f", "2x6", (0, 210, 362), (1200, 350, 400))
+    top_back = _flat("top_b", "2x6", (0, 0, 362), (1200, 140, 400))
+    shelves = [
+        _flat(f"shelf_{x}", "2x6", (x, 38, 150), (x + 140, 312, 188))
+        for x in (0, 556, 1060)
+    ]
+    report = ValidationReport.model_construct(
+        pieces=(top_front, top_back, *shelves), overall_size=(1200.0, 350.0, 400.0)
+    )
+    check = _levels(report, CASES["tv-stand"])
+    assert check.passed is False
+    assert check.detail == (
+        "board tops at 400; too sparse to count: 188 (27% of the plan); "
+        "1 levels, asked 2"
+    )
 
 
 def test_only_the_height_is_checked_when_only_the_height_is_asked():
