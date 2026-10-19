@@ -28,6 +28,10 @@ REFUSED = (
     "Bash(pip *)",
     "WebFetch",
     "WebSearch",
+    # A subagent started in the background outlives claude -p, and its work
+    # would not be in the record
+    "Agent",
+    "Task",
 )
 # A path in /tmp outside the run's own directories (ndk-eval-*): parallel
 # runs share it, so a run may read another's scratch file

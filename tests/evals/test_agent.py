@@ -58,6 +58,14 @@ def test_the_command_loads_only_this_plugin_and_no_user_setup():
     assert "WebFetch" in REFUSED
 
 
+def test_subagents_are_refused():
+    # A subagent started in the background outlives claude -p: sonnet handed
+    # a desk to one, said it was working on it and ended with no design
+    command = agent_command("make a desk", "sonnet", REPO)
+    refused = command[command.index("--disallowedTools") + 1].split()
+    assert {"Agent", "Task"} <= set(refused)
+
+
 def test_a_run_uses_the_plugin_s_own_cli(monkeypatch):
     # As for a person who installed the plugin: its launcher builds the CLI
     # from the plugin's source into an environment of its own, never an
