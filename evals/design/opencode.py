@@ -27,6 +27,9 @@ REFUSED_COMMANDS = (
     "uv tool *",
     "pip *",
 )
+# A working run writes its first event within seconds; a free model's
+# endpoint that stopped answering leaves the record empty
+FIRST_OUTPUT_S = 180.0
 # What opencode answers a tool call that a permission rule refuses
 _DENIED = "rule which prevents"
 
@@ -176,7 +179,14 @@ def run_opencode(
     )
     env = opencode_env(env, home)
     record = workdir / "run.jsonl"
-    code = run_claude(opencode_command(request, model), workdir, env, record, timeout_s)
+    code = run_claude(
+        opencode_command(request, model),
+        workdir,
+        env,
+        record,
+        timeout_s,
+        first_output_s=FIRST_OUTPUT_S,
+    )
     version = subprocess.run(
         ["opencode", "--version"], env=env, capture_output=True, text=True
     ).stdout.strip()

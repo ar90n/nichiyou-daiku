@@ -45,6 +45,11 @@ ENVIRONMENTS = (
 # The row of a design the machine graded and the judge could not: --resume
 # judges it again instead of running the agent again
 UNJUDGED = "unjudged.json"
+# Runs in a row whose model said nothing, after which no more start: its
+# endpoint has stopped answering
+STALLS_TO_STOP = 3
+# Set when that happened, for the message at the end
+ENDPOINT_DOWN = threading.Event()
 # What a run measures, kept in its meta.json; --resume takes them from there
 CONDITIONS = {"cases": "core", "reps": 1, "model": "sonnet", "judge_model": "opus"}
 # Left out of the plugin the agent loads: the requirements (the cases, the
@@ -143,6 +148,18 @@ class Record:
         self.results = directory / "results.jsonl"
         self.errors = directory / "errors.jsonl"
         self._lock = threading.Lock()
+        self._stalls = 0
+
+    def stalled(self) -> bool:
+        """Count a run whose model said nothing; whether enough came in a
+        row to stop."""
+        with self._lock:
+            self._stalls += 1
+            return self._stalls >= STALLS_TO_STOP
+
+    def answered(self) -> None:
+        with self._lock:
+            self._stalls = 0
 
     def _append(self, path: Path, row: dict) -> None:
         with self._lock, path.open("a", encoding="utf-8") as out:
@@ -203,7 +220,11 @@ def run_one(
                 )
             except AgentFailed as e:
                 record.error(case.name, rep, e)
+                if e.kind == "stalled" and record.stalled():
+                    ENDPOINT_DOWN.set()
+                    STOP.set()
                 return
+            record.answered()
             design = find_design(workdir, case.name, transcript.last_checked)
             checks = check_design(design, case)
             row = {
@@ -466,6 +487,7 @@ def _evaluate(
         if (case.name, rep) not in graded
     ]
     STOP.clear()
+    ENDPOINT_DOWN.clear()
     handlers = {
         sig: signal.signal(sig, _stop) for sig in (signal.SIGINT, signal.SIGTERM)
     }
@@ -498,7 +520,13 @@ def _evaluate(
         f"Graded {len(rows)} runs, {len(errors)} failed attempts: {out / 'report.md'}"
     )
     if STOP.is_set():
-        print(f"Stopped; continue with --resume {out}", file=sys.stderr)
+        why = (
+            f"Stopped: the model's endpoint stopped answering ({STALLS_TO_STOP} "
+            "runs in a row said nothing)"
+            if ENDPOINT_DOWN.is_set()
+            else "Stopped"
+        )
+        print(f"{why}; continue with --resume {out}", file=sys.stderr)
         return 130
     return 0
 

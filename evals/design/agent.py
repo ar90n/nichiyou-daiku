@@ -8,6 +8,7 @@ import shutil
 import signal
 import subprocess
 import threading
+import time
 from collections.abc import Iterable
 from pathlib import Path
 
@@ -186,10 +187,16 @@ def agent_env(plugin: Path, cache: Path, uv_cache: str, venv: Path) -> dict[str,
 
 
 def run_claude(
-    command: list[str], cwd: Path, env: dict[str, str], stdout: Path, timeout_s: float
+    command: list[str],
+    cwd: Path,
+    env: dict[str, str],
+    stdout: Path,
+    timeout_s: float,
+    first_output_s: float | None = None,
 ) -> int:
     """Run ``command`` in ``cwd``, writing its output to ``stdout``; kill it
-    with everything it started when it runs past ``timeout_s``."""
+    with everything it started when it runs past ``timeout_s``, or when it
+    has written nothing after ``first_output_s``."""
     with (
         stdout.open("w", encoding="utf-8") as out,
         (cwd / "stderr.log").open("w", encoding="utf-8") as err,
@@ -212,7 +219,20 @@ def run_claude(
         _stopped.discard(process.pid)
         _live.add(process)
     try:
-        code = process.wait(timeout=timeout_s)
+        started = time.monotonic()
+        while first_output_s is not None and process.poll() is None:
+            if stdout.stat().st_size:
+                break
+            if time.monotonic() - started > first_output_s:
+                os.killpg(process.pid, signal.SIGKILL)
+                process.wait()
+                raise AgentFailed(
+                    "stalled",
+                    f"no output within {first_output_s / 60:g} minutes: "
+                    "the model's endpoint did not answer",
+                )
+            time.sleep(0.5)
+        code = process.wait(timeout=max(0.0, timeout_s - (time.monotonic() - started)))
     except subprocess.TimeoutExpired:
         os.killpg(process.pid, signal.SIGKILL)
         process.wait()

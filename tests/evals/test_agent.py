@@ -255,6 +255,31 @@ def test_a_session_s_pwd_is_its_directory(tmp_path):
     assert (tmp_path / "out").read_text().strip() == str(tmp_path)
 
 
+def test_a_session_that_says_nothing_is_cut_short(tmp_path):
+    # A free model's endpoint that stops answering leaves an empty record;
+    # waiting the full limit for each run lost hours
+    command = [sys.executable, "-c", "import time; time.sleep(30)"]
+    started = time.monotonic()
+    with pytest.raises(AgentFailed) as failed:
+        run_claude(
+            command, tmp_path, dict(os.environ), tmp_path / "out", 60, first_output_s=1
+        )
+    assert failed.value.kind == "stalled"
+    assert time.monotonic() - started < 10
+
+
+def test_a_session_that_answers_runs_on_past_the_first_output_limit(tmp_path):
+    command = [
+        sys.executable,
+        "-c",
+        "import time; print('started', flush=True); time.sleep(3); print('done')",
+    ]
+    run_claude(
+        command, tmp_path, dict(os.environ), tmp_path / "out", 60, first_output_s=1
+    )
+    assert (tmp_path / "out").read_text().split() == ["started", "done"]
+
+
 def test_a_run_past_its_limit_is_killed(tmp_path):
     command = [sys.executable, "-c", "import time; time.sleep(30)"]
     with pytest.raises(AgentFailed) as failed:

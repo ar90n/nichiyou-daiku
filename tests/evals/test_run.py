@@ -533,6 +533,27 @@ def test_a_bug_while_grading_one_run_spares_the_others(fake, monkeypatch, tmp_pa
     assert (tmp_path / "report.md").is_file()
 
 
+def test_an_endpoint_that_stops_answering_stops_the_evaluation(
+    fake, monkeypatch, tmp_path, capsys
+):
+    tried = []
+
+    def silent(request, model, plugin, env, workdir, timeout_s):
+        tried.append(workdir.name)
+        raise AgentFailed("stalled", "no output within 3 minutes")
+
+    monkeypatch.setattr(run, "run_opencode", silent)
+    code = run.main(
+        ["--cases", "all", "--model", "deepseek", "--jobs", "1", "--out", str(tmp_path)]
+    )
+    assert code == 130
+    # Three in a row, then no more runs start
+    assert len(tried) == 3
+    assert "stopped answering" in capsys.readouterr().err
+    assert "(10 not graded yet)" in (tmp_path / "report.md").read_text()
+    run.STOP.clear()
+
+
 def test_an_earlier_run_is_compared(fake, tmp_path):
     first, second = tmp_path / "first", tmp_path / "second"
     run.main(["--cases", "side-table", "--out", str(first)])
