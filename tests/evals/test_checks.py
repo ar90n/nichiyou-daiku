@@ -141,9 +141,23 @@ def test_a_level_of_a_few_narrow_boards_is_not_counted():
     check = _levels(report, CASES["tv-stand"])
     assert check.passed is False
     assert check.detail == (
-        "board tops at 400; too sparse to count: 188 (27% of the plan); "
-        "1 levels, asked 2"
+        "board tops at 400; too sparse to count: 188 (boards fill 35% of "
+        "their extent); 1 levels, asked 2"
     )
+
+
+def test_slats_set_between_the_legs_are_a_level():
+    # sonnet's tall rack: six 1x4 slats with 12.6 mm gaps between the legs,
+    # 50% of the plan but 89% of their own extent; the judge passed it
+    slats = [
+        _flat(f"slat_{i}", "1x4", (x, 76, 281), (x + 89, 300, 300))
+        for i, x in enumerate((101.6, 203.1, 304.7, 406.3, 507.9, 609.4))
+    ]
+    levels, sparse = _level_tops(tuple(slats), 800 * 300)
+    assert (levels, sparse) == ([300], [])
+    # A lone flat board is no level either: too little of the plan
+    lone = _flat("lone", "2x4", (0, 0, 461), (800, 89, 500))
+    assert _level_tops((lone,), 800 * 1000)[0] == []
 
 
 def test_only_the_height_is_checked_when_only_the_height_is_asked():

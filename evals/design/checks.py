@@ -32,11 +32,14 @@ CHECKS = (
 _FLOOR_MM = 0.5
 # Board tops this close are one level; level gaps this close are equal
 _LEVEL_MM = 5.0
-# A level's boards cover at least this share of the plan: a few narrow
-# boards with wide gaps are no shelf. In the 2026-10-19 status check every
-# design the judge passed covered 70% or more at each level, and a tv stand
-# the judge failed 27%
-_LEVEL_COVER = 0.5
+# A level's boards fill at least this share of their own extent: a few
+# narrow boards with wide gaps are no shelf (a tv stand the judge failed in
+# the 2026-10-19 status check: 35%), slats set between the legs are (a rack
+# the judge passed: 89%, though only 50% of the plan)
+_LEVEL_FILL = 0.5
+# ... and cover at least this share of the plan, which a lone flat board
+# does not
+_LEVEL_COVER = 0.25
 # SKILL.md asks for a steps block for "more than a few pieces"
 _STEPS_FROM = 6
 
@@ -229,10 +232,10 @@ def _holds_up(lower: PiecePosition, upper: PiecePosition) -> bool:
 
 def _level_tops(
     pieces: tuple[PiecePosition, ...], plan_area: float | None
-) -> tuple[list[float], list[tuple[float, float]]]:
-    """The tops of the levels, and (top, share of the plan) of the boards
-    that sit at one height but cover too little of the plan to be a level
-    (``plan_area`` None counts every level)."""
+) -> tuple[list[float], list[tuple[float, str]]]:
+    """The tops of the levels, and (top, why) of the boards that sit at one
+    height but are too sparse to be a level (``plan_area`` None counts every
+    level that fills its extent)."""
     boards = [piece for piece in pieces if _flat_board(piece)]
     # A flat apron or cleat right under a board holds it up; it is not a
     # level of its own
@@ -247,18 +250,26 @@ def _level_tops(
         else:
             groups.append([board])
     levels: list[float] = []
-    sparse: list[tuple[float, float]] = []
+    sparse: list[tuple[float, str]] = []
     for group in groups:
         top = max(board.max[2] for board in group)
         covered = sum(
             (board.max[0] - board.min[0]) * (board.max[1] - board.min[1])
             for board in group
         )
+        extent = (
+            max(board.max[0] for board in group) - min(board.min[0] for board in group)
+        ) * (
+            max(board.max[1] for board in group) - min(board.min[1] for board in group)
+        )
+        fill = covered / extent
         share = covered / plan_area if plan_area else 1.0
-        if share >= _LEVEL_COVER:
-            levels.append(top)
+        if fill < _LEVEL_FILL:
+            sparse.append((top, f"boards fill {fill:.0%} of their extent"))
+        elif share < _LEVEL_COVER:
+            sparse.append((top, f"boards cover {share:.0%} of the plan"))
         else:
-            sparse.append((top, share))
+            levels.append(top)
     return levels, sparse
 
 
@@ -281,7 +292,7 @@ def _levels(report: ValidationReport, case: Case) -> Check:
     detail = f"board tops at {shown}"
     if sparse:
         detail += "; too sparse to count: " + ", ".join(
-            f"{top:g} ({share:.0%} of the plan)" for top, share in sparse
+            f"{top:g} ({why})" for top, why in sparse
         )
     return Check(
         not failures, f"{detail}; {'; '.join(failures)}" if failures else detail
