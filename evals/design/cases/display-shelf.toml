@@ -1,0 +1,18 @@
+request = "1x6材だけで飾り棚を作りたい。幅450×奥行140×高さ600mm。天板と地板を含めて棚板3枚で、等間隔にする。質問はせず、決まっていないところは既定値で進めて。ファイルはカレントディレクトリに書いて。"
+heldout = true
+tags = ["確かめ専用", "脚のない箱もの"]
+
+[size]
+width = 450
+depth = 140
+height = 600
+# The first piece is a side, whose width (the depth) the library lays along x
+either_way = true
+
+[lumber]
+allowed = ["1x6"]
+required = ["1x6"]
+
+[levels]
+count = 3
+equal = true

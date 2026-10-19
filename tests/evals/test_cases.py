@@ -23,8 +23,17 @@ def test_the_core_set_is_the_five_starred_cases():
     ]
 
 
+def test_held_out_cases_stay_out_of_all_and_core():
+    # They check whether a change to the skill fits only the ten cases it
+    # was tuned on
+    held = load_cases("heldout")
+    assert len(held) == 5 and all(case.heldout for case in held)
+    assert not any(case.heldout for case in load_cases())
+    assert not any(case.heldout for case in load_cases("core"))
+
+
 def test_every_request_says_not_to_ask_and_where_to_write():
-    for case in load_cases():
+    for case in [*load_cases(), *load_cases("heldout")]:
         assert ("質問はせず" in case.request) or (
             "Don't ask questions" in case.request
         ), case.name
@@ -36,7 +45,8 @@ def test_cases_are_picked_by_name():
 
 def test_an_unknown_name_lists_the_known_ones():
     with pytest.raises(
-        ValueError, match="Unknown case dsk; use all, core or names from bench"
+        ValueError,
+        match="Unknown case dsk; use all, core, heldout or names from bench",
     ):
         load_cases("dsk")
 

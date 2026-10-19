@@ -1,0 +1,20 @@
+request = "2x4材と1x4材で収納ラックを作りたい。幅800×奥行300×高さ1200mm。脚は4本、棚は天板を含めて4段で、等間隔にする。質問はせず、決まっていないところは既定値で進めて。ファイルはカレントディレクトリに書いて。"
+heldout = true
+tags = ["確かめ専用", "背の高い棚"]
+
+[size]
+width = 800
+depth = 300
+height = 1200
+
+[lumber]
+allowed = ["2x4", "1x4"]
+required = ["2x4", "1x4"]
+
+[legs]
+count = 4
+
+[levels]
+count = 4
+equal = true
+top = true

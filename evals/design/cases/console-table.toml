@@ -1,0 +1,24 @@
+request = "I'd like a console table, 1000 mm wide, 300 mm deep and 800 mm high: 2x4 legs and frame, a 2x6 top, and a lower shelf 150 mm above the floor. Join it with dowels. Don't ask questions; pick defaults for anything I didn't say. Write the files in the current directory."
+heldout = true
+tags = ["確かめ専用", "英語"]
+
+[size]
+width = 1000
+depth = 300
+height = 800
+
+[lumber]
+allowed = ["2x4", "2x6"]
+required = ["2x4", "2x6"]
+
+[legs]
+count = 4
+
+[[shelves]]
+at = 150
+
+[levels]
+top = true
+
+[fasteners]
+dowel = true

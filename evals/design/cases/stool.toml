@@ -1,0 +1,21 @@
+request = "スツールがほしい。座面は300×300mm、高さ450mm。脚は2x4を4本、座面は1x4を並べて、組み立てはダボで。質問はせず、決まっていないところは既定値で進めて。ファイルはカレントディレクトリに書いて。"
+heldout = true
+tags = ["確かめ専用", "座面"]
+
+[size]
+width = 300
+depth = 300
+height = 450
+
+[lumber]
+allowed = ["2x4", "1x4"]
+required = ["2x4", "1x4"]
+
+[legs]
+count = 4
+
+[levels]
+top = true
+
+[fasteners]
+dowel = true

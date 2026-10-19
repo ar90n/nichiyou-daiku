@@ -60,6 +60,9 @@ class Case(_Requirement):
     name: str
     request: str
     core: bool = False
+    heldout: bool = False
+    """Kept out of "all": it checks that a change to the skill does not fit
+    only the cases it was tuned on."""
     tags: tuple[str, ...] = ()
     size: Size
     lumber: Lumber
@@ -75,18 +78,21 @@ def load_case(path: Path) -> Case:
 
 
 def load_cases(selection: str = "all", directory: Path = CASES_DIR) -> list[Case]:
-    """The cases of ``selection``: ``all``, ``core`` or names joined by
-    commas, in the order of their file names."""
+    """The cases of ``selection``: ``all`` (without the held-out ones),
+    ``core``, ``heldout`` or names joined by commas, in the order of their
+    file names."""
     cases = [load_case(path) for path in sorted(directory.glob("*.toml"))]
     if selection == "all":
-        return cases
+        return [case for case in cases if not case.heldout]
     if selection == "core":
         return [case for case in cases if case.core]
+    if selection == "heldout":
+        return [case for case in cases if case.heldout]
     names = selection.split(",")
     unknown = sorted(set(names) - {case.name for case in cases})
     if unknown:
         raise ValueError(
-            f"Unknown case {', '.join(unknown)}; use all, core or names from "
-            f"{', '.join(case.name for case in cases)}"
+            f"Unknown case {', '.join(unknown)}; use all, core, heldout or names "
+            f"from {', '.join(case.name for case in cases)}"
         )
     return [case for case in cases if case.name in names]

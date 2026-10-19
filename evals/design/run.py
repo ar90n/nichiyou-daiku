@@ -107,7 +107,8 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
         prog="python -m evals.design.run", description=__doc__
     )
     parser.add_argument(
-        "--cases", help="all, core or names joined by commas (default: core)"
+        "--cases",
+        help="all, core, heldout or names joined by commas (default: core)",
     )
     parser.add_argument("--reps", type=int, help="runs of each case (default: 1)")
     parser.add_argument("--model", help="model that designs (default: sonnet)")

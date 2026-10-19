@@ -1,0 +1,24 @@
+request = "ローテーブルを作りたい。幅900×奥行450×高さ400mm。脚は2x4、天板は1x6を並べて、床から100mmの位置に下の棚を付ける。天板はビス留め。質問はせず、決まっていないところは既定値で進めて。ファイルはカレントディレクトリに書いて。"
+heldout = true
+tags = ["確かめ専用", "低い棚"]
+
+[size]
+width = 900
+depth = 450
+height = 400
+
+[lumber]
+allowed = ["2x4", "1x6"]
+required = ["2x4", "1x6"]
+
+[legs]
+count = 4
+
+[[shelves]]
+at = 100
+
+[levels]
+top = true
+
+[fasteners]
+screw = true
