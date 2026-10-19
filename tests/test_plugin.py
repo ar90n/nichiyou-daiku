@@ -284,6 +284,16 @@ def test_skill_frontmatter_names_and_describes_the_skill(path):
     assert 0 < len(fields["description"]) <= 1024
 
 
+def test_the_skill_reads_the_specification_up_to_its_complete_examples():
+    # The examples, CLI, grammar and error sections after that line are not
+    # needed to design, and every line read stays in the agent's context
+    skill = (ROOT / "skills" / "design" / "SKILL.md").read_text()
+    found = re.search(r"its first (\d+) lines", skill)
+    assert found, "SKILL.md names how many lines of the specification to read"
+    spec = (ROOT / "docs" / "dsl-specification.md").read_text().splitlines()
+    assert spec[int(found.group(1))].startswith("## Complete Examples")
+
+
 def test_the_skill_does_not_rely_on_claude_code_s_plugin_root():
     # Only Claude Code substitutes it: opencode and other tools read the same
     # skill, so files are linked relative to the skill instead
