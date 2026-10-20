@@ -21,7 +21,7 @@ Read these together, in one step:
 
 ## 3. Write
 
-Write every file in the working directory, scratch files too. Write a first version soon, adapted from the closest example, rather than working every joint and length out in your head: `validate` finds what is wrong faster than reasoning does, and step 4 fixes it. Create `<name>.nd`. Name the overall sizes as variables and derive lengths and offsets from them; leave a length unknown (`=?`) where the pieces at both ends fix it. Put the overall size in a comment at the top and group the pieces by section. For furniture of more than a few pieces, end with a `steps` block in the order a person would build it: frames first (each frame a step), then the pieces that join them, shelves, and the top last.
+Write every file in the working directory, scratch files too. Create `<name>.nd`. Name the overall sizes as variables and derive lengths and offsets from them; leave a length unknown (`=?`) where the pieces at both ends fix it. Put the overall size in a comment at the top and group the pieces by section. For furniture of more than a few pieces, end with a `steps` block in the order a person would build it: frames first (each frame a step), then the pieces that join them, shelves, and the top last.
 
 ## 4. Check and fix
 
