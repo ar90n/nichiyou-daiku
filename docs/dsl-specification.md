@@ -417,10 +417,11 @@ piece1 -[anchor anchor S(Type:DIAMETERxLENGTH)]- piece2
 
 #### Rules
 
-- The target's contact_face must be `front` or `back` (the screw goes through the target's wide face).
-- Screw length must be greater than the target's thickness (38 for 2x lumber, 19 for 1x lumber).
+- The target's contact_face must be a side face: `front` or `back` (a wide face) or `left` or `right` (a narrow face); never `top` or `down`, which would run the screw along the target.
+- Through a narrow face the target is counterbored: a hole for the screw head, 10mm wide (12mm for screws thicker than 4.5mm), drilled from the target's far face until the target's thickness is left (89 - 38 = 51mm deep on a 2x4). Either way the screw crosses the target's thickness (38 for 2x lumber, 19 for 1x lumber), so the same screws fit both.
+- Screw length must be greater than the target's thickness.
 - Screw length must be shorter than the base's depth along its contact normal (front/back → thickness, left/right → width, top/down → piece length) plus the target's thickness, so the tip stays inside the base.
-- Holes: pilot holes about 65% of the screw diameter, to the nearest 0.5mm and at least 0.5mm (3.3 → 2.0, 3.8 and 4.2 → 2.5mm): through the target, and (length - target thickness) deep in the base. Holes running into each other are judged on the screw's own diameter.
+- Holes: pilot holes about 65% of the screw diameter, to the nearest 0.5mm and at least 0.5mm (3.3 → 2.0, 3.8 and 4.2 → 2.5, 5.2 → 3.5mm): through the target, and (length - the target's thickness) deep in the base; a counterbore is listed with them. Holes running into each other are judged on the screw's own diameter, a counterbore on its own.
 
 #### Choosing a Length
 
@@ -434,6 +435,8 @@ When the base is also contacted on a wide (front/back) face:
 
 A base contacted on its narrow face (as deep as its width) or its end (as deep as its length) allows longer screws.
 
+Through the target's narrow face the counterbore leaves its thickness, so the table holds as it is: a 2x4 rail ending on a 2x4 post's narrow face takes `Slim:3.8x65` too. Use it where a post takes rails from two directions and only one of them can end on its wide faces. Rails meeting a post from two directions at the same height have screws crossing inside the post; `validate` reports it, so set one of them higher or lower.
+
 #### Examples
 
 ```nd
@@ -441,6 +444,7 @@ A base contacted on its narrow face (as deep as its width) or its end (as deep a
 (rail:2x4 =400)
 (rail_low:2x4 =400)
 (cleat:2x4 =400)
+(rail_side:2x4 =400)
 
 // Preset: Slim screw 3.3x50, rail screwed across the post's front face
 post -[FL<300 BT<0 S(Slim:3.3x50)]- rail
@@ -450,6 +454,10 @@ post -[FL<100 BT<0 S(3.5, 50)]- rail_low
 
 // Preset: Coarse thread 3.8x57, cleat screwed face to face behind the post
 post -[BT<0 FT<0 S(Coarse:3.8x57)]- cleat
+
+// Through the post's narrow face, counterbored 51mm, into the end of a rail
+// running off its right side
+rail_side -[DF<0 RF<300 S(Slim:3.8x65)]- post
 ```
 
 ## Assembly Steps
@@ -808,7 +816,7 @@ DSLValidationError: contact_face 'front' and edge_shared_face 'back' must be adj
 DSLValidationError: Offset 50.0mm exceeds piece dimension 38.0mm (piece 'a', edge top/left)
 DSLValidationError: Unknown dowel preset: 9x99
 DSLValidationError: Unknown Slim screw preset: 3.0x100
-DSLValidationError: ScrewConnection target contact_face must be 'front' or 'back', got 'down'
-DSLValidationError: Screw length 35.0mm does not reach base piece (target thickness: 38.0mm)
+DSLValidationError: ScrewConnection target contact_face must be a side face ('front', 'back', 'left' or 'right'), got 'down': the screw would run along the target's length. Make the piece the screw goes through the target, touching the base with a side face
+DSLValidationError: Screw length 35.0mm does not reach base piece (it goes 38.0mm through the target); use a screw longer than 38.0mm
 DSLValidationError: Dowel depth 20.0mm (half of 40.0mm) would go through the base piece (19.0mm); use a dowel shorter than 38.0mm
 ```

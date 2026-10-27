@@ -299,7 +299,7 @@ class Connection(BaseModel, frozen=True):
 | `Connection.of_dowel(base, target, spec)` | Create dowel connection |
 | `Connection.of_screw(base, target, spec)` | Create screw connection |
 
-**Validation** (raises `ValueError`): a piece cannot connect to itself. Dowel: half the dowel length must be shorter than each piece's depth along its contact normal (front/back → thickness, left/right → width, top/down → piece length), so the hole stays blind. Screw: the target's contact face must be `front` or `back`, and target thickness < length < base depth along its contact normal + target thickness.
+**Validation** (raises `ValueError`): a piece cannot connect to itself. Dowel: half the dowel length must be shorter than each piece's depth along its contact normal (front/back → thickness, left/right → width, top/down → piece length), so the hole stays blind. Screw: the target's contact face must be a side face (`front`/`back`, or `left`/`right` with a counterbore down to the thickness), and target thickness < length < base depth along its contact normal + target thickness.
 
 **Example:**
 
@@ -397,7 +397,7 @@ class Assembly(BaseModel, frozen=True):
 0
 ```
 
-**Pilot holes:** a dowel connection adds a hole of the dowel diameter, length/2 deep, to each piece; a screw connection adds pilot holes about 65% of the screw diameter (`pilot_diameter`): a through-hole to the target and a hole (length - target thickness) deep to the base; vanilla connections add none.
+**Pilot holes:** a dowel connection adds a hole of the dowel diameter, length/2 deep, to each piece; a screw connection adds pilot holes about 65% of the screw diameter (`pilot_diameter`): a through-hole to the target and a hole (length - the target's thickness) deep to the base. A screw through the target's narrow face also adds a counterbore to the target (`Fastener.counterbore`): 10mm wide (12mm for screws thicker than 4.5mm, `counterbore_diameter`), from the target's far face down to its thickness; it is in `pilot_holes` with the others and is judged on its own width when holes run into each other. Vanilla connections add none.
 
 **Fasteners:** dowels and screws are laid out inside the rectangle where the two contact faces overlap: across the middle of its short side, and at 1/4 and 3/4 of its long side (one in the middle when the long side is shorter than 4 × diameter). A contact area narrower than 2 × diameter, or pieces that only touch along an edge, give a `LayoutIssue` instead of fasteners; `validate` reports it and other commands warn and carry on. Connections that contradict the placement get no fasteners either: their holes would never meet. When holes of two connections run into each other inside a piece, the later connection gets a `LayoutIssue` and both keep their fasteners. That issue also names the piece (`piece_id`), the earlier connection (`other`) and the two holes (`holes`: this connection's first, each as the `SurfacePoint` where it enters the piece and a `Hole` for the space the fastener takes: its own diameter over the hole's depth). A screw's holes are pilot holes about 65% of its diameter (`pilot_diameter` in `core.assembly.fasteners`); collisions are judged on `Fastener.diameter`.
 
@@ -411,6 +411,7 @@ class Fastener(BaseModel, frozen=True):
     target_position: SurfacePoint  # on the target's contact face
     base_hole: Hole
     target_hole: Hole
+    counterbore: tuple[SurfacePoint, Hole] | None = None  # screw through the target's narrow face
 
 class LayoutIssue(BaseModel, frozen=True):
     base_id: str

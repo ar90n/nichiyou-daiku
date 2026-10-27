@@ -281,36 +281,38 @@ class TestScrewConnectionValidation:
         )
         assert conn.type.length == 38.1
 
-    def test_screw_target_contact_face_must_be_front_or_back(self):
-        """ScrewConnection target contact_face must be front or back."""
+    def test_screw_cannot_run_along_the_targets_length(self):
+        """A screw goes through a side of the target, never along its length."""
         base_bound = create_bound_anchor("base", 1000.0, "front", "top")
+        for face, edge in (("top", "front"), ("down", "front")):
+            target_bound = create_bound_anchor("target", 800.0, face, edge)
+            with pytest.raises(ValueError, match="must be a side face"):
+                Connection.of_screw(
+                    base_bound, target_bound, ScrewSpec(diameter=4.0, length=850.0)
+                )
 
-        # top face should fail
-        target_bound_top = create_bound_anchor("target", 800.0, "top", "front")
-        with pytest.raises(ValueError, match="must be 'front' or 'back'"):
-            Connection.of_screw(
-                base_bound, target_bound_top, ScrewSpec(diameter=4.0, length=850.0)
+    def test_screw_through_the_targets_narrow_face_is_counterbored(self):
+        """Through a narrow face the screw is counterbored so that it crosses
+        the target's thickness (38mm), as through a wide face."""
+        base_bound = create_bound_anchor("base", 1000.0, "top", "front")
+        for face in ("left", "right"):
+            target_bound = create_bound_anchor("target", 800.0, face, "top")
+            conn = Connection.of_screw(
+                base_bound, target_bound, ScrewSpec(diameter=3.8, length=65.0)
             )
+            assert conn.type.length == 65.0
+            with pytest.raises(ValueError, match="does not reach base piece"):
+                Connection.of_screw(
+                    base_bound, target_bound, ScrewSpec(diameter=3.8, length=38.0)
+                )
 
-        # left face should fail
-        target_bound_left = create_bound_anchor("target", 800.0, "left", "top")
-        with pytest.raises(ValueError, match="must be 'front' or 'back'"):
+    def test_counterbored_screw_must_stay_inside_the_base(self):
+        # 38mm left in the target + a 38mm thick base
+        base_bound = create_bound_anchor("base", 1000.0, "front", "top")
+        target_bound = create_bound_anchor("target", 800.0, "left", "top")
+        with pytest.raises(ValueError, match="would go through the base piece"):
             Connection.of_screw(
-                base_bound, target_bound_left, ScrewSpec(diameter=4.0, length=100.0)
-            )
-
-        # down face should fail
-        target_bound_down = create_bound_anchor("target", 800.0, "down", "front")
-        with pytest.raises(ValueError, match="must be 'front' or 'back'"):
-            Connection.of_screw(
-                base_bound, target_bound_down, ScrewSpec(diameter=4.0, length=850.0)
-            )
-
-        # right face should fail
-        target_bound_right = create_bound_anchor("target", 800.0, "right", "top")
-        with pytest.raises(ValueError, match="must be 'front' or 'back'"):
-            Connection.of_screw(
-                base_bound, target_bound_right, ScrewSpec(diameter=4.0, length=100.0)
+                base_bound, target_bound, ScrewSpec(diameter=3.8, length=80.0)
             )
 
     def test_screw_target_contact_face_front_succeeds(self):
@@ -360,7 +362,7 @@ class TestConstructorValidation:
     def test_screw_into_non_front_back_target_is_rejected(self):
         base = create_bound_anchor("base", 1000, "front", "top")
         target = create_bound_anchor("target", 800, "top", "front")
-        with pytest.raises(ValueError, match="must be 'front' or 'back'"):
+        with pytest.raises(ValueError, match="must be a side face"):
             Connection(
                 base=base,
                 target=target,

@@ -44,6 +44,9 @@ class Fastener(BaseModel, frozen=True):
         target_position: Where it enters the target, on the target's contact face
         base_hole: Hole drilled into the base
         target_hole: Hole drilled into the target
+        counterbore: For a screw through the target's narrow face, the wider
+            hole its head sinks into, from the target's far face down to the
+            target's thickness; None otherwise
     """
 
     base_id: str
@@ -54,6 +57,7 @@ class Fastener(BaseModel, frozen=True):
     target_position: SurfacePoint
     base_hole: Hole
     target_hole: Hole
+    counterbore: tuple[SurfacePoint, Hole] | None = None
 
 
 class LayoutIssue(BaseModel, frozen=True):

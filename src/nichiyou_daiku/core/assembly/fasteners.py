@@ -19,7 +19,7 @@ from ..connection import (
     VanillaConnection,
     _get_dimension_for_face,
 )
-from ..geometry import Box, Face, Point3D, SurfacePoint
+from ..geometry import Box, Face, Point3D, SurfacePoint, opposite
 from ..piece import Piece, get_shape
 from ..placement import axis_index, face_normal, relative_pose
 from .models import Fastener, FastenerKind, Hole, LayoutIssue
@@ -37,6 +37,16 @@ def pilot_diameter(screw_diameter: float) -> float:
     [2.0, 2.5, 2.5]
     """
     return max(0.5, round(screw_diameter * 0.65 * 2) / 2)
+
+
+def counterbore_diameter(screw_diameter: float) -> float:
+    """Counterbore for a screw head to sink into: 10mm, or 12mm for screws
+    thicker than 4.5mm.
+
+    >>> [counterbore_diameter(d) for d in (3.8, 4.5, 5.2)]
+    [10.0, 10.0, 12.0]
+    """
+    return 10.0 if screw_diameter <= 4.5 else 12.0
 
 
 def _positions_along(start: float, length: float, diameter: float) -> list[float]:
@@ -62,11 +72,18 @@ def layout_fasteners(
             kind = "dowel"
             diameter = radius * 2
             base_hole = target_hole = Hole(diameter=diameter, depth=length / 2)
+            sunk = 0.0
         case ScrewConnection(diameter=diameter, length=length):
             kind = "screw"
-            target_thickness = _get_dimension_for_face(
-                get_shape(connection.target.piece),
-                connection.target.anchor.contact_face,
+            # Through a narrow face the head sinks into a counterbore, so the
+            # screw crosses the target's thickness either way
+            target_shape = get_shape(connection.target.piece)
+            target_thickness = target_shape.height
+            sunk = (
+                _get_dimension_for_face(
+                    target_shape, connection.target.anchor.contact_face
+                )
+                - target_thickness
             )
             pilot = pilot_diameter(diameter)
             target_hole = Hole(diameter=pilot)
@@ -109,6 +126,9 @@ def layout_fasteners(
 
     base_box = Box(shape=base_shape)
     target_box = Box(shape=get_shape(target.piece))
+    target_size = np.array(
+        [target_box.shape.width, target_box.shape.height, target_box.shape.length]
+    )
     to_target = relative.rotation_matrix().T
     shift = np.array(relative.translation)
     fasteners = []
@@ -117,6 +137,19 @@ def layout_fasteners(
         point[plane_axis] = plane
         point[long_axis] = along
         point[short_axis] = low[short_axis] + short_size / 2
+        target_point = to_target @ (point - shift)
+        counterbore = None
+        if sunk > 0:
+            far = opposite(target.anchor.contact_face)
+            far_axis = axis_index(face_normal(far))
+            far_point = target_point.copy()
+            far_point[far_axis] = (
+                0.0 if face_normal(far)[far_axis] < 0 else target_size[far_axis]
+            )
+            counterbore = (
+                _surface_point(target_box, far, far_point),
+                Hole(diameter=counterbore_diameter(diameter), depth=sunk),
+            )
         fasteners.append(
             Fastener(
                 base_id=base.piece.id,
@@ -125,10 +158,11 @@ def layout_fasteners(
                 diameter=diameter,
                 base_position=_surface_point(base_box, base.anchor.contact_face, point),
                 target_position=_surface_point(
-                    target_box, target.anchor.contact_face, to_target @ (point - shift)
+                    target_box, target.anchor.contact_face, target_point
                 ),
                 base_hole=base_hole,
                 target_hole=target_hole,
+                counterbore=counterbore,
             )
         )
     return tuple(fasteners), None
@@ -186,18 +220,30 @@ def find_hole_collisions(
 
     Reported once on the later of the two connections, in the order of
     ``fasteners``; the fasteners themselves are kept. Holes of one connection
-    never meet, since the layout spaces them at least two diameters apart.
+    are not compared: a screw runs inside its own counterbore, and the layout
+    spaces fasteners at least two diameters apart.
     Judged on the space each fastener takes (its own diameter over the hole's
-    depth): a screw is wider than its pilot hole.
+    depth): a screw is wider than its pilot hole. A counterbore takes its own
+    width.
     """
     bores: dict[str, list[tuple[Fastener, SurfacePoint, Hole, _Bore]]] = {}
     for fastener in fasteners:
-        for piece_id, position, hole in (
-            (fastener.base_id, fastener.base_position, fastener.base_hole),
-            (fastener.target_id, fastener.target_position, fastener.target_hole),
-        ):
+        drilled = [
+            (
+                fastener.base_id,
+                fastener.base_position,
+                Hole(diameter=fastener.diameter, depth=fastener.base_hole.depth),
+            ),
+            (
+                fastener.target_id,
+                fastener.target_position,
+                Hole(diameter=fastener.diameter, depth=fastener.target_hole.depth),
+            ),
+        ]
+        if fastener.counterbore is not None:
+            drilled.append((fastener.target_id, *fastener.counterbore))
+        for piece_id, position, space in drilled:
             box = Box(shape=get_shape(pieces[piece_id]))
-            space = Hole(diameter=fastener.diameter, depth=hole.depth)
             bores.setdefault(piece_id, []).append(
                 (fastener, position, space, _bore(box, position, space))
             )
@@ -210,7 +256,11 @@ def find_hole_collisions(
             later_hole,
             b,
         ) in combinations(drilled, 2):
-            if not _bores_meet(a, b):
+            same = (earlier.base_id, earlier.target_id) == (
+                later.base_id,
+                later.target_id,
+            )
+            if same or not _bores_meet(a, b):
                 continue
             issues.setdefault(
                 (later.base_id, later.target_id, earlier.base_id, earlier.target_id),

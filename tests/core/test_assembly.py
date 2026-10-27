@@ -53,6 +53,18 @@ class TestFastenersAndHoles:
             Hole(diameter=2.0, depth=6.0)
         ] * 2
 
+    def test_a_counterbore_is_drilled_with_the_pilot_holes(self):
+        # The screw goes through the post's narrow face: its head sinks into a
+        # 10mm hole from the post's far face, 89 - 38 = 51mm deep
+        assembly = _assembly(
+            "(post:2x4 =600)\n(rail:2x4 =300)\n"
+            "rail -[DF<0 RF<300 S(Slim:3.8x65)]- post\n"
+        )
+        holes = [(p.face, hole) for p, hole in assembly.pilot_holes["post"]]
+        assert holes.count(("right", Hole(diameter=2.5))) == 2
+        assert holes.count(("left", Hole(diameter=10.0, depth=51.0))) == 2
+        assert len(holes) == 4
+
     def test_fastener_that_does_not_fit_is_reported_not_drilled(self):
         assembly = _assembly(
             "(a:2x4 =500)\n(b:1x4 =300)\na -[FL<100 DF<0 D(5, 30)]- b\n"

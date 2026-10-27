@@ -89,6 +89,8 @@ class Assembly(BaseModel, frozen=True):
             pilot_holes.setdefault(fastener.target_id, []).append(
                 (fastener.target_position, fastener.target_hole)
             )
+            if fastener.counterbore is not None:
+                pilot_holes[fastener.target_id].append(fastener.counterbore)
 
         return cls(
             model=model,

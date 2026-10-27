@@ -188,18 +188,21 @@ def _validate_dowel(
 def _validate_screw(
     base: BoundAnchor, target: BoundAnchor, diameter: float, length: float
 ) -> None:
-    if target.anchor.contact_face not in ("front", "back"):
+    # Through an end the screw would run along the piece. Through a narrow
+    # face it is counterbored down to the thickness, as through a wide face:
+    # a long screw straight through a piece's width is hard to drive.
+    if target.anchor.contact_face in ("top", "down"):
         raise ValueError(
-            f"ScrewConnection target contact_face must be 'front' or 'back', "
-            f"got '{target.anchor.contact_face}'"
+            f"ScrewConnection target contact_face must be a side face ('front', "
+            f"'back', 'left' or 'right'), got '{target.anchor.contact_face}': the "
+            f"screw would run along the target's length. Make the piece the "
+            f"screw goes through the target, touching the base with a side face"
         )
 
     base_depth = _get_dimension_for_face(
         shape_for_checks(base.piece), base.anchor.contact_face
     )
-    target_depth = _get_dimension_for_face(
-        shape_for_checks(target.piece), target.anchor.contact_face
-    )
+    target_depth = shape_for_checks(target.piece).height
     max_length = base_depth + target_depth
     if length >= max_length:
         raise ValueError(
@@ -208,8 +211,9 @@ def _validate_screw(
         )
     if length <= target_depth:
         raise ValueError(
-            f"Screw length {length}mm does not reach base piece "
-            f"(target thickness: {target_depth}mm)"
+            f"Screw length {length}mm does not reach base piece (it goes "
+            f"{target_depth}mm through the target); use a screw longer than "
+            f"{target_depth}mm"
         )
 
     _validate_fastener_diameter(base, target, diameter, "Screw")

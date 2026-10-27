@@ -11,6 +11,7 @@ from nichiyou_daiku.core.assembly.fasteners import (
     _Bore,
     _bores_meet,
     _surface_point,
+    counterbore_diameter,
     find_hole_collisions,
     layout_fasteners,
     pilot_diameter,
@@ -141,6 +142,41 @@ class TestLayoutFasteners:
         assert {f.base_hole for f in fasteners} == {Hole(diameter=2.0, depth=6.0)}
         assert {f.diameter for f in fasteners} == {3.3}
         assert {f.kind for f in fasteners} == {"screw"}
+        # Through a wide face the screw head sits on the surface
+        assert {f.counterbore for f in fasteners} == {None}
+
+    def test_a_screw_through_the_targets_narrow_face_is_counterbored(self):
+        # The post's 89mm is counterbored 51mm from its far face, leaving its
+        # 38mm thickness: 65 - 38 = 27mm into the rail's end
+        connection, fasteners, issue = _layout(
+            "(post:2x4 =600)\n(rail:2x4 =300)\n"
+            "rail -[DF<0 RF<300 S(Slim:3.8x65)]- post\n"
+        )
+        assert issue is None
+        assert len(fasteners) == 2
+        assert {f.target_hole for f in fasteners} == {Hole(diameter=2.5)}
+        assert {f.base_hole for f in fasteners} == {Hole(diameter=2.5, depth=27.0)}
+        post = Box(shape=get_shape(connection.target.piece))
+        for fastener in fasteners:
+            assert fastener.counterbore is not None
+            position, hole = fastener.counterbore
+            assert hole == Hole(diameter=10.0, depth=51.0)
+            # On the far face, across from where the screw comes out
+            assert position.face == "left"
+            entry = _xyz(Point3D.of(post, fastener.target_position))
+            counterbore = _xyz(Point3D.of(post, position))
+            assert entry[0] == 89.0 and counterbore[0] == 0.0
+            assert np.allclose(entry[1:], counterbore[1:])
+
+
+def test_counterbores_take_the_screw_head():
+    assert [counterbore_diameter(d) for d in (3.3, 3.8, 4.2, 4.5, 5.2)] == [
+        10.0,
+        10.0,
+        10.0,
+        10.0,
+        12.0,
+    ]
 
 
 @st.composite
@@ -153,7 +189,7 @@ def fastened_connections(draw) -> Connection:
     base_faces = draw(st.sampled_from(ADJACENT))
     target_faces = draw(
         st.sampled_from(
-            [f for f in ADJACENT if kind == "dowel" or f[0] in ("front", "back")]
+            [f for f in ADJACENT if kind == "dowel" or f[0] not in ("top", "down")]
         )
     )
 
@@ -168,7 +204,8 @@ def fastened_connections(draw) -> Connection:
     if kind == "dowel":
         connection_type = DowelConnection(radius=draw(st.floats(2.0, 5.0)), depth=10.0)
     else:
-        target_thickness = _get_dimension_for_face(get_shape(target), target_faces[0])
+        # Through a narrow face the screw is counterbored down to the thickness
+        target_thickness = get_shape(target).height
         base_depth = _get_dimension_for_face(get_shape(base), base_faces[0])
         connection_type = ScrewConnection(
             diameter=draw(st.floats(2.0, 5.0)),
@@ -268,6 +305,15 @@ POST_AND_FRONT_RAIL = (
 )
 
 
+# A corner post with two rails at the same height: one screwed through the
+# post's wide face, the other through its narrow face (89mm)
+CORNER = (
+    "(post:2x4 =600)\n(rail_a:2x4 =300)\n(rail_b:2x4 =300)\n"
+    "rail_a -[DF>0 BL<300 S(Slim:3.8x65)]- post\n"
+    "rail_b -[DF<0 RF<{height} S(Slim:3.8x65)]- post\n"
+)
+
+
 def _fastener_issues(source: str) -> list[tuple[str, str, str]]:
     assembly = Assembly.of(parse_dsl(source))
     return [(i.base_id, i.target_id, i.message) for i in assembly.fastener_issues]
@@ -287,6 +333,31 @@ class TestHoleCollisions:
                 "other",
                 "dowel hole in 'post' runs into a dowel hole of connection "
                 "post -> front",
+            )
+        ]
+
+    def test_screws_crossing_a_corner_post_from_two_sides_are_reported(self):
+        assert _fastener_issues(CORNER.format(height=300)) == [
+            (
+                "rail_b",
+                "post",
+                "screw hole in 'post' runs into a screw hole of connection "
+                "rail_a -> post",
+            )
+        ]
+
+    def test_screws_crossing_a_corner_post_at_other_heights_are_fine(self):
+        assert _fastener_issues(CORNER.format(height=400)) == []
+
+    def test_a_counterbore_is_judged_on_its_own_width(self):
+        # 5mm apart, the screws (3.8mm) pass each other, but rail_b's 10mm
+        # counterbore reaches rail_a's screw
+        assert _fastener_issues(CORNER.format(height=305)) == [
+            (
+                "rail_b",
+                "post",
+                "screw hole in 'post' runs into a screw hole of connection "
+                "rail_a -> post",
             )
         ]
 

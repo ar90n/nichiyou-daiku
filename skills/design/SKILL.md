@@ -15,7 +15,7 @@ Check the request against [requirements.md](requirements.md). Ask only for what 
 
 Read these together, in one step:
 
-- The DSL specification: [docs/dsl-specification.md](../../docs/dsl-specification.md), in the plugin's root two directories above this skill; its first 479 lines, up to "Complete Examples" (the CLI, grammar and error sections after them are not needed to design). Every rule in it applies: faces and offsets, placement, variables, unknowns, fasteners.
+- The DSL specification: [docs/dsl-specification.md](../../docs/dsl-specification.md), in the plugin's root two directories above this skill; its first 487 lines, up to "Complete Examples" (the CLI, grammar and error sections after them are not needed to design). Every rule in it applies: faces and offsets, placement, variables, unknowns, fasteners.
 - [patterns.md](patterns.md): verified joints and layouts, length formulas, naming and a checklist.
 - The closest of [examples/](examples/), requirements with a matching `.nd` (a side table, a two-tier shelf, a corner joint). Start from it.
 
