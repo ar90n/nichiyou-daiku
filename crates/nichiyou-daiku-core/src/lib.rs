@@ -14,17 +14,28 @@ pub mod pyfmt;
 
 use serde_json::{Value, json};
 
-/// What `nichiyou-daiku validate --json` prints for an .nd source.
-pub fn validate(source: &str) -> Value {
-    let _ = source;
+fn failure(kind: &str, message: &str, line: Option<usize>, column: Option<usize>) -> Value {
     json!({
         "valid": false,
-        "error": {"kind": "unexpected", "message": "not ported yet", "line": null, "column": null},
+        "error": {"kind": kind, "message": message, "line": line, "column": column},
         "overall_size": null,
         "size_reference": null,
         "pieces": [],
         "problems": [],
     })
+}
+
+/// What `nichiyou-daiku validate --json` prints for an .nd source.
+pub fn validate(source: &str) -> Value {
+    match dsl::parser::parse_statements(source) {
+        Err(error) => failure(
+            error.kind.as_str(),
+            &error.to_string(),
+            error.line,
+            error.column,
+        ),
+        Ok(_) => failure("unexpected", "not ported yet", None, None),
+    }
 }
 
 /// Every piece's holes and each connection's fasteners, or None when the
