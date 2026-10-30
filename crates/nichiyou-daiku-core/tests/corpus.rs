@@ -1,7 +1,8 @@
 //! Compare the Rust core with the Python version's golden files.
 //!
-//! `ND_CORPUS_RATCHET=1` adds newly matching cases to `passing.txt`;
-//! `ND_CORPUS_SHOW=<part of a name>` prints how those cases differ.
+//! Every case must match, but for those in known_differences.toml, where the
+//! Rust core is better on purpose. `ND_CORPUS_SHOW=<part of a name>` prints
+//! how those cases differ.
 
 use std::collections::{BTreeMap, BTreeSet, HashMap};
 use std::fs;
@@ -281,16 +282,6 @@ fn check(case: &Case) -> Result<(), String> {
     }
 }
 
-fn read_list(name: &str) -> BTreeSet<String> {
-    fs::read_to_string(Path::new(DIR).join(name))
-        .unwrap_or_default()
-        .lines()
-        .map(str::trim)
-        .filter(|line| !line.is_empty() && !line.starts_with('#'))
-        .map(String::from)
-        .collect()
-}
-
 fn known_differences() -> BTreeSet<String> {
     let text = fs::read_to_string(Path::new(DIR).join("known_differences.toml")).unwrap();
     let table: toml::Table = text.parse().unwrap();
@@ -308,13 +299,13 @@ fn known_differences() -> BTreeSet<String> {
 
 #[test]
 fn corpus_matches_the_python_version() {
-    let passing = read_list("passing.txt");
     let known = known_differences();
     let show = std::env::var("ND_CORPUS_SHOW").ok();
     let mut counts: BTreeMap<String, (usize, usize)> = BTreeMap::new();
-    let (mut regressions, mut newly) = (Vec::new(), Vec::new());
-    for case in cases() {
-        let result = check(&case);
+    let mut failures = Vec::new();
+    let cases = cases();
+    for case in &cases {
+        let result = check(case);
         let entry = counts.entry(category(&case.validate)).or_default();
         entry.1 += 1;
         if result.is_ok() {
@@ -325,33 +316,29 @@ fn corpus_matches_the_python_version() {
         {
             println!("--- {}\n{}\n{error}", case.name, case.source);
         }
-        match result {
-            Ok(()) if !passing.contains(&case.name) => newly.push(case.name.clone()),
-            Err(error) if passing.contains(&case.name) => {
-                regressions.push(format!("{}: {error}", case.name))
-            }
+        match (known.contains(&case.name), result) {
+            (false, Err(error)) => failures.push(format!("{}: {error}", case.name)),
+            (true, Ok(())) => failures.push(format!(
+                "{} matches now; remove it from known_differences.toml",
+                case.name
+            )),
             _ => {}
         }
+    }
+    for name in &known {
+        assert!(
+            cases.iter().any(|case| &case.name == name),
+            "known_differences.toml names {name}, which is not a case"
+        );
     }
     for (kind, (ok, all)) in &counts {
         println!("{kind:12} {ok}/{all}");
     }
-    println!(
-        "newly passing: {}, known differences: {}",
-        newly.len(),
-        known.len()
-    );
-    if std::env::var("ND_CORPUS_RATCHET").is_ok() {
-        let mut all = passing.clone();
-        all.extend(newly);
-        let text: String = all.iter().map(|name| format!("{name}\n")).collect();
-        fs::write(Path::new(DIR).join("passing.txt"), text).unwrap();
-    }
     assert!(
-        regressions.is_empty(),
-        "{} cases stopped matching:\n{}",
-        regressions.len(),
-        regressions.join("\n")
+        failures.is_empty(),
+        "{} cases differ from the Python version:\n{}",
+        failures.len(),
+        failures.join("\n")
     );
 }
 
