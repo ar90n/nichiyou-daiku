@@ -78,6 +78,9 @@ async def lint_pipeline(
                 "git",
                 "libgl1-mesa-dev",
                 "libcairo2-dev",
+                # pyright runs on this Node; the one it downloads by itself
+                # fails when Node's release index lists an alpha version
+                "nodejs",
             ]
         )
         .with_exec(["pip", "install", "--upgrade", "pip"])
