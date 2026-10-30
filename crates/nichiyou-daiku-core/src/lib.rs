@@ -9,6 +9,7 @@ pub mod field;
 pub mod geometry;
 pub mod model;
 pub mod piece;
+pub mod placement;
 pub mod presets;
 pub mod pyfmt;
 
