@@ -4,18 +4,25 @@ help:  ## Show this help message
 	@echo "Available commands:"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
 
-check: lint test  ## Lint and test; run before every commit (~30s)
+check: lint test rust-check  ## Lint and test; run before every commit (~3min)
 
 test:  ## Run tests with coverage (including doctests)
 	uv run pytest src/ tests/ --doctest-modules --cov=nichiyou_daiku --cov-report=term-missing --cov-fail-under=90 -v
 
 lint:  ## Run linting checks
-	uv run ruff format --check src/ tests/ evals/
-	uv run ruff check src/ tests/ evals/
+	uv run ruff format --check src/ tests/ evals/ tools/
+	uv run ruff check src/ tests/ evals/ tools/
 	uv run pyright src/nichiyou_daiku evals
 
-format:  ## Format code with black
-	uv run ruff format src/ tests/ evals/
+rust-check:  ## Rust: format, lint, test, and build the core for WebAssembly
+	cargo fmt --all --check
+	cargo clippy --all-targets -- -D warnings
+	cargo test
+	cargo build -p nichiyou-daiku-core --target wasm32-unknown-unknown
+
+format:  ## Format code
+	uv run ruff format src/ tests/ evals/ tools/
+	cargo fmt --all
 
 # The LLM that designs: sonnet, opus or haiku through Claude Code, deepseek or
 # glm (free) or an opencode/... name through opencode

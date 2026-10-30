@@ -103,6 +103,31 @@ async def lint_pipeline(
     return pyright_check
 
 
+async def rust_pipeline(client: dagger.Client, source_dir: Directory) -> Container:
+    """Check, test and build the Rust crates (the next generation)."""
+    return (
+        client.container()
+        .from_("rust:1.99-slim")
+        .with_mounted_directory("/src", source_dir)
+        .with_workdir("/src")
+        .with_exec(["rustup", "component", "add", "rustfmt", "clippy"])
+        .with_exec(["rustup", "target", "add", "wasm32-unknown-unknown"])
+        .with_exec(["cargo", "fmt", "--all", "--check"])
+        .with_exec(["cargo", "clippy", "--all-targets", "--", "-D", "warnings"])
+        .with_exec(["cargo", "test"])
+        .with_exec(
+            [
+                "cargo",
+                "build",
+                "-p",
+                "nichiyou-daiku-core",
+                "--target",
+                "wasm32-unknown-unknown",
+            ]
+        )
+    )
+
+
 async def build_pipeline(
     client: dagger.Client,
     source_dir: Directory,
@@ -155,6 +180,8 @@ async def main(
                 "coverage.xml",
                 # Evaluation runs hold designs, transcripts and images
                 "evals/design/runs/",
+                # Rust build output
+                "target/",
             ],
         )
 
@@ -182,10 +209,20 @@ async def main(
             build_result = await build_pipeline(client, source, py_version)
             build_results.append(build_result)
 
+        print("\n🦀 Checking the Rust crates...")
+        rust_result = await rust_pipeline(client, source)
+
         # Execute all pipelines
         print("\n🚀 Executing all pipelines...")
 
         has_failures = False
+
+        print("\n🦀 Rust results:")
+        try:
+            await rust_result.stdout()
+        except Exception as e:
+            print(f"❌ Rust checks failed: {e}")
+            has_failures = True
 
         # Execute test results
         for i, (py_version, test_result) in enumerate(
