@@ -27,7 +27,7 @@ fn failure(kind: &str, message: &str, line: Option<usize>, column: Option<usize>
 
 /// What `nichiyou-daiku validate --json` prints for an .nd source.
 pub fn validate(source: &str) -> Value {
-    match dsl::parser::parse_statements(source) {
+    match dsl::parse(source) {
         Err(error) => failure(
             error.kind.as_str(),
             &error.to_string(),
