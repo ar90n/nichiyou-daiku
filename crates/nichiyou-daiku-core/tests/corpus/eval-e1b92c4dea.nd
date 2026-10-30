@@ -1,0 +1,54 @@
+// Bookshelf
+// Overall: 600mm (W) x 184mm (D) x 900mm (H)
+// Material: 1x8 only
+// Joints: Slim screws 3.3x45 (shelf ends into the side panels)
+//
+// Structure:
+// - Two 1x8 side panels, full height (the 184mm face is the depth)
+// - 4 shelf boards including the top and the bottom, evenly spaced
+// - Top shelf flush with the panel tops, bottom shelf on the floor
+
+WIDTH = 600
+DEPTH = 184
+HEIGHT = 900
+THICK = 19                                      // 1x8 thickness
+SHELF_COUNT = 4
+SHELF_LENGTH = WIDTH - 2 * THICK                // 562
+GAP = (HEIGHT - SHELF_COUNT * THICK) / (SHELF_COUNT - 1)   // 274.667 equal openings
+SPACING = GAP + THICK                           // 293.667 from one shelf to the next
+
+// ============================================
+// Side panels (upright; the 184mm width is the depth)
+// ============================================
+(side_l:1x8 =HEIGHT)
+(side_r:1x8 =HEIGHT)
+
+// ============================================
+// Shelf boards (across the width; the 184mm width is the depth)
+// ============================================
+(shelf_1:1x8 =SHELF_LENGTH)
+(shelf_2:1x8 =SHELF_LENGTH)
+(shelf_3:1x8 =SHELF_LENGTH)
+(shelf_4:1x8 =SHELF_LENGTH)
+
+// ============================================
+// Shelf ends into the left panel (undersides at 0, SPACING, 2*SPACING, 3*SPACING)
+// ============================================
+shelf_1 -[DL<0 BL<0 S(Slim:3.3x45)]- side_l
+shelf_2 -[DL<0 BL<SPACING S(Slim:3.3x45)]- side_l
+shelf_3 -[DL<0 BL<(2 * SPACING) S(Slim:3.3x45)]- side_l
+shelf_4 -[DL<0 BL<(3 * SPACING) S(Slim:3.3x45)]- side_l
+
+// ============================================
+// Shelf ends into the right panel
+// ============================================
+shelf_1 -[TL<0 FL<0 S(Slim:3.3x45)]- side_r
+shelf_2 -[TL<0 FL<SPACING S(Slim:3.3x45)]- side_r
+shelf_3 -[TL<0 FL<(2 * SPACING) S(Slim:3.3x45)]- side_r
+shelf_4 -[TL<0 FL<(3 * SPACING) S(Slim:3.3x45)]- side_r
+
+steps {
+  "Left panel": side_l
+  "Shelf boards": shelf_1, shelf_2, shelf_3, shelf_4
+  "Right panel": side_r
+}

@@ -1,0 +1,1 @@
+{"valid": true, "error": null, "overall_size": [89.0, 38.0, 1000.0], "size_reference": "af15f54a-a508-4cd6-8e3c-2c0c785cbf61", "pieces": [{"id": "af15f54a-a508-4cd6-8e3c-2c0c785cbf61", "type": "2x4", "length": 1000.0, "group": 0, "min": [0.0, 0.0, 0.0], "max": [89.0, 38.0, 1000.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}], "problems": []}

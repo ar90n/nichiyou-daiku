@@ -1,0 +1,81 @@
+// 1x8 Bookshelf
+// Overall: 600mm (W) x 184mm (D) x 900mm (H)
+// Material: 1x8 only
+// Joints: 8x30 dowels
+//
+// Structure:
+// - Two 1x8 side panels, 900mm tall, 184mm deep
+// - Four 1x8 shelves (top, bottom, two middle), 562mm long
+// - Shelves equally spaced: 274.7mm clear opening, 19mm boards
+// - A 1x8 back stiffener between the bottom and second shelves
+
+WIDTH = 600
+DEPTH = 184
+HEIGHT = 900
+THICK = 19
+BOARD_WIDTH = 184
+
+SHELF_LEN = WIDTH - 2 * THICK
+CLEAR_GAP = (HEIGHT - 4 * THICK) / 3
+
+// Shelf top surfaces measured from the floor
+FLOOR_TOP = THICK
+SHELF2_TOP = FLOOR_TOP + CLEAR_GAP + THICK
+SHELF3_TOP = SHELF2_TOP + CLEAR_GAP + THICK
+TOP_TOP = HEIGHT
+
+SHELF_CENTER = SHELF_LEN / 2
+BRACE_CENTER = BOARD_WIDTH / 2
+
+// ============================================
+// Back stiffener (first piece: sets the axes)
+// Fits between the floor and second shelves at the back edge.
+// ============================================
+(back_brace:1x8 =CLEAR_GAP)
+
+// ============================================
+// Side panels
+// ============================================
+(side_left:1x8 =HEIGHT)
+(side_right:1x8 =HEIGHT)
+
+// ============================================
+// Shelves: top and bottom included, equal spacing
+// ============================================
+(shelf_1:1x8 =SHELF_LEN)
+(shelf_2:1x8 =SHELF_LEN)
+(shelf_3:1x8 =SHELF_LEN)
+(shelf_4:1x8 =SHELF_LEN)
+
+// ============================================
+// Back stiffener to the floor shelf and second shelf
+// ============================================
+shelf_1 -[FL<SHELF_CENTER DB<BRACE_CENTER D(:8x30)]- back_brace
+shelf_2 -[BL<SHELF_CENTER TB<BRACE_CENTER D(:8x30)]- back_brace
+
+// ============================================
+// Shelves to the side panels (dowels at the front edge)
+// ============================================
+shelf_1 -[DR>0 FL<FLOOR_TOP D(:8x30)]- side_left
+shelf_1 -[TR>0 BL<FLOOR_TOP D(:8x30)]- side_right
+
+shelf_2 -[DR>0 FL<SHELF2_TOP D(:8x30)]- side_left
+shelf_2 -[TR>0 BL<SHELF2_TOP D(:8x30)]- side_right
+
+shelf_3 -[DR>0 FL<SHELF3_TOP D(:8x30)]- side_left
+shelf_3 -[TR>0 BL<SHELF3_TOP D(:8x30)]- side_right
+
+shelf_4 -[DR>0 FL<TOP_TOP D(:8x30)]- side_left
+shelf_4 -[TR>0 BL<TOP_TOP D(:8x30)]- side_right
+
+// ============================================
+// Assembly
+// ============================================
+steps {
+  "Bottom shelf and back stiffener": shelf_1, back_brace
+  "Second shelf":                    shelf_2
+  "Left side":                       side_left
+  "Right side":                      side_right
+  "Third shelf":                     shelf_3
+  "Top shelf":                       shelf_4
+}

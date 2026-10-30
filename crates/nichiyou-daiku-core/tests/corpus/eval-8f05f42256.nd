@@ -1,0 +1,54 @@
+// Child's Step Stool
+// Dimensions: 300mm (W) x 280mm (D) x 300mm (H)
+// Material: 2x4 throughout, frame and top joined with 8x30 dowels
+
+W = 300        // overall width
+DEPTH = 280    // overall depth
+H = 300        // overall height (standing surface)
+WIDE = 89      // 2x4 width
+THICK = 38     // 2x4 thickness
+
+// Legs: overall height minus the 2x4 top boards' thickness
+LEG = H - THICK
+
+(leg_fl:2x4 =LEG)  // front-left
+(leg_fr:2x4 =LEG)  // front-right
+(leg_bl:2x4 =LEG)  // back-left
+(leg_br:2x4 =LEG)  // back-right
+
+// Aprons, flush with the leg tops, just under the top boards
+// Front/back run between the legs' 89mm sides, side aprons between their 38mm sides
+(apron_front:2x4 =W - 2 * WIDE)
+(apron_back:2x4 =W - 2 * WIDE)
+(apron_left:2x4 =DEPTH - 2 * THICK)
+(apron_right:2x4 =DEPTH - 2 * THICK)
+
+// Top boards (2x4, running front to back): 3 boards, 3*89=267 over W=300,
+// gap (300 - 267) / 2 = 16.5mm on each side
+(top_1:2x4 =DEPTH)
+(top_2:2x4 =DEPTH)
+(top_3:2x4 =DEPTH)
+
+// Front/back aprons: end into the legs' narrow faces, flush with the legs' front faces
+leg_fl -[LB>0 DB>0 D(:8x30)]- apron_front
+leg_fr -[RF>0 TF>0 D(:8x30)]- apron_front
+leg_bl -[LB>0 DB>0 D(:8x30)]- apron_back
+leg_br -[RF>0 TF>0 D(:8x30)]- apron_back
+
+// Side aprons: end into the legs' wide faces, flush with the legs' outer sides
+leg_fl -[BR>0 DB>0 D(:8x30)]- apron_left
+leg_bl -[FR>0 TB>0 D(:8x30)]- apron_left
+leg_fr -[BL>0 DF>0 D(:8x30)]- apron_right
+leg_br -[FL>0 TF>0 D(:8x30)]- apron_right
+
+// Top boards: outer boards rest on the front/back legs, middle board on apron_front
+top_1 -[BD<0 TF<0 D(:8x30)]- leg_fl
+apron_front -[RF<16.5 BT<0 D(:8x30)]- top_2
+top_3 -[BD<0 TF<0 D(:8x30)]- leg_fr
+
+steps {
+  "Left frame":  leg_fl, leg_bl, apron_left
+  "Right frame": leg_fr, leg_br, apron_right
+  "Join":        apron_front, apron_back
+  "Top":         top_1, top_2, top_3
+}

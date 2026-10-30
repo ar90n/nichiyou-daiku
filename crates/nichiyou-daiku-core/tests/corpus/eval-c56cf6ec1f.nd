@@ -1,0 +1,5 @@
+(side_l:1x6 {"length": 600, "rotation": [0, 0, 90]})
+(side_r:1x6 =600)
+(top:1x6 =450)
+top -[BD<0 TF<0 S(Slim:3.3x45)]- side_l
+top -[BT<0 TF<0 S(Slim:3.3x45)]- side_r

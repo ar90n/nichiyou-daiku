@@ -1,0 +1,42 @@
+WIDTH = 1000
+DEPTH = 500
+HEIGHT = 700
+TOP_THICK = 19
+LEG = HEIGHT - TOP_THICK
+BOARD_W = 140
+BOARD_N = 7
+GAP = (WIDTH - BOARD_N * BOARD_W) / (BOARD_N - 1)
+
+(leg_fl:2x4 =LEG)
+(leg_fr:2x4 =LEG)
+(leg_bl:2x4 =LEG)
+(leg_br:2x4 =LEG)
+(apron_front:2x4 =WIDTH)
+(apron_back:2x4 =WIDTH)
+(top_1:1x6 =DEPTH)
+(top_2:1x6 =DEPTH)
+(top_3:1x6 =DEPTH)
+(top_4:1x6 =DEPTH)
+(top_5:1x6 =DEPTH)
+(top_6:1x6 =DEPTH)
+(top_7:1x6 =DEPTH)
+
+apron_front -[BT<38 FL>38 S(Coarse:3.8x57)]- leg_fl
+apron_front -[BD<38 FR>38 S(Coarse:3.8x57)]- leg_fr
+apron_back -[FT<38 BL>38 S(Coarse:3.8x57)]- leg_bl
+apron_back -[FD<38 BR>38 S(Coarse:3.8x57)]- leg_br
+
+apron_front -[BR<(6 * (BOARD_W + GAP)) BT<0 S(Slim:3.3x45)]- top_1
+apron_back -[BL<(6 * (BOARD_W + GAP)) BD<0 S(Slim:3.3x45)]- top_1
+apron_front -[BR<(5 * (BOARD_W + GAP)) BT<0 S(Slim:3.3x45)]- top_2
+apron_back -[BL<(5 * (BOARD_W + GAP)) BD<0 S(Slim:3.3x45)]- top_2
+apron_front -[BR<(4 * (BOARD_W + GAP)) BT<0 S(Slim:3.3x45)]- top_3
+apron_back -[BL<(4 * (BOARD_W + GAP)) BD<0 S(Slim:3.3x45)]- top_3
+apron_front -[BR<(3 * (BOARD_W + GAP)) BT<0 S(Slim:3.3x45)]- top_4
+apron_back -[BL<(3 * (BOARD_W + GAP)) BD<0 S(Slim:3.3x45)]- top_4
+apron_front -[BR<(2 * (BOARD_W + GAP)) BT<0 S(Slim:3.3x45)]- top_5
+apron_back -[BL<(2 * (BOARD_W + GAP)) BD<0 S(Slim:3.3x45)]- top_5
+apron_front -[BR<(1 * (BOARD_W + GAP)) BT<0 S(Slim:3.3x45)]- top_6
+apron_back -[BL<(1 * (BOARD_W + GAP)) BD<0 S(Slim:3.3x45)]- top_6
+apron_front -[BR<0 BT<0 S(Slim:3.3x45)]- top_7
+apron_back -[BL<0 BD<0 S(Slim:3.3x45)]- top_7

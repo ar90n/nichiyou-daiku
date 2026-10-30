@@ -1,0 +1,10 @@
+
+(leg_1:2x4 =450)
+(leg_2:2x4 =450)
+(apron:2x4 =400)
+(top_1:1x4 =500)
+(top_2:1x4 =500)
+leg_1 -[LB>0 DB>0]- apron
+leg_2 -[RF>0 TF>0]- apron
+leg_1 -[TF<0 BD<0]- top_1
+leg_1 -[TF<0 BD<89]- top_2

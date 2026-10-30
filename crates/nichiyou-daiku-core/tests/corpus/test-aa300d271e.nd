@@ -1,0 +1,8 @@
+
+        (base:2x4 =600)
+        (leg1:2x4 =300)
+        (leg2:2x4 =300)
+
+        base -[FD<0 BT<0 S(Slim:3.3x50)]- leg1
+        base -[FD<50 BT<0 S(5.0, 60.0)]- leg2
+        

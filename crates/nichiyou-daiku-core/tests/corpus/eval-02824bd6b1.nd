@@ -1,0 +1,3 @@
+(leg_fl:2x4 =681)
+(apron_front:2x4 =924)
+apron_front -[DF<0 BL<592 S(Coarse:4.2x75)]- leg_fl

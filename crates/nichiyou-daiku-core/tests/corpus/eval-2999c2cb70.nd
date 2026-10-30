@@ -1,0 +1,83 @@
+// Side Table
+// Dimensions: 500mm (W) x 400mm (D) x 600mm (H)
+// Material: 2x4
+// Joint: Dowel 8x30
+// Top boards run in the depth direction; aprons flush with the leg tops.
+
+WIDTH = 500
+DEPTH = 400
+HEIGHT = 600
+LEG_WIDTH = 89
+LEG_THICK = 38
+TOP_THICK = 38
+APRON_HEIGHT = 89
+TOP_COUNT = 5
+TOP_GAP = (WIDTH - TOP_COUNT * LEG_WIDTH) / (TOP_COUNT - 1)
+LEG_LENGTH = HEIGHT - TOP_THICK
+APRON_FRONT_LENGTH = WIDTH - 2 * LEG_WIDTH
+APRON_SIDE_LENGTH = DEPTH - 2 * LEG_THICK
+SIDE_APRON_DROP = LEG_LENGTH - APRON_HEIGHT
+
+// ============================================
+// Legs (4x)
+// ============================================
+(leg_fl:2x4 =LEG_LENGTH)
+(leg_fr:2x4 =LEG_LENGTH)
+(leg_bl:2x4 =LEG_LENGTH)
+(leg_br:2x4 =LEG_LENGTH)
+
+// ============================================
+// Aprons (flush with the leg tops)
+// Front/back: WIDTH - 2 x 89
+// Left/right: DEPTH - 2 x 38
+// ============================================
+(apron_front:2x4 =APRON_FRONT_LENGTH)
+(apron_back:2x4 =APRON_FRONT_LENGTH)
+(apron_left:2x4 =APRON_SIDE_LENGTH)
+(apron_right:2x4 =APRON_SIDE_LENGTH)
+
+// ============================================
+// Top boards (2x4, running front to back)
+// 5 x 89 = 445mm, 4 gaps of (500 - 445) / 4 = 13.75mm
+// ============================================
+(top_1:2x4 =DEPTH)
+(top_2:2x4 =DEPTH)
+(top_3:2x4 =DEPTH)
+(top_4:2x4 =DEPTH)
+(top_5:2x4 =DEPTH)
+
+// ============================================
+// Front/back aprons: into the legs' narrow faces,
+// apron top flush with the leg top
+// ============================================
+leg_fl -[LB>0 DB>0 D(:8x30)]- apron_front
+leg_fr -[RF>0 TF>0 D(:8x30)]- apron_front
+leg_bl -[LB>0 DB>0 D(:8x30)]- apron_back
+leg_br -[RF>0 TF>0 D(:8x30)]- apron_back
+
+// ============================================
+// Side aprons: into the legs' wide faces,
+// apron top flush with the leg top
+// ============================================
+leg_fl -[BR<SIDE_APRON_DROP DB<0 D(:8x30)]- apron_left
+leg_bl -[FR<SIDE_APRON_DROP TB<0 D(:8x30)]- apron_left
+leg_fr -[BL<SIDE_APRON_DROP DF<0 D(:8x30)]- apron_right
+leg_br -[FL<SIDE_APRON_DROP TF<0 D(:8x30)]- apron_right
+
+// ============================================
+// Top boards: outer boards on the legs,
+// middle boards on the front apron
+// ============================================
+top_1 -[BD<0 TF<0 D(:8x30)]- leg_fl
+apron_front -[RF<TOP_GAP BT<0 D(:8x30)]- top_2
+apron_front -[RF<(TOP_GAP * 2 + LEG_WIDTH) BT<0 D(:8x30)]- top_3
+apron_front -[RF<(TOP_GAP * 3 + 2 * LEG_WIDTH) BT<0 D(:8x30)]- top_4
+top_5 -[BD<0 TF<0 D(:8x30)]- leg_fr
+
+// Assembly: the side frames, the aprons joining them, the top
+steps {
+  "Left frame":  leg_fl, leg_bl, apron_left
+  "Right frame": leg_fr, leg_br, apron_right
+  "Join":        apron_front, apron_back
+  "Top":         top_1, top_2, top_3, top_4, top_5
+}

@@ -1,0 +1,70 @@
+// Bookshelf
+// Overall: 600mm W x 184mm D x 900mm H
+// Material: 1x8 only (184 x 19mm)
+// Shelves: 4 boards including the top and bottom, equally spaced
+// Joints: 8x30 dowels
+
+WIDTH = 600
+DEPTH = 184
+HEIGHT = 900
+THICKNESS = 19
+SHELF_COUNT = 4
+BOTTOM_RISE = 100
+
+// Two full-height side panels; the shelves fit between them.
+// Width: shelf lengths + 2 x side thickness = 600
+SHELF_LENGTH = WIDTH - 2 * THICKNESS
+
+// Equal clear openings: 4 boards + 3 gaps fill HEIGHT - BOTTOM_RISE
+GAP = (HEIGHT - BOTTOM_RISE - SHELF_COUNT * THICKNESS) / (SHELF_COUNT - 1)
+
+SHELF_BOTTOM_UNDERSIDE = BOTTOM_RISE
+SHELF_MID_LOWER_UNDERSIDE = BOTTOM_RISE + THICKNESS + GAP
+SHELF_MID_UPPER_UNDERSIDE = BOTTOM_RISE + 2 * (THICKNESS + GAP)
+SHELF_TOP_UNDERSIDE = HEIGHT - THICKNESS
+
+// ============================================
+// Side panels (full depth and full height)
+// ============================================
+(side_left:1x8 =HEIGHT)
+(side_right:1x8 =HEIGHT)
+
+// ============================================
+// Shelf boards (full depth, run across the width)
+// ============================================
+(shelf_bottom:1x8 =SHELF_LENGTH)
+(shelf_mid_lower:1x8 =SHELF_LENGTH)
+(shelf_mid_upper:1x8 =SHELF_LENGTH)
+(shelf_top:1x8 =SHELF_LENGTH)
+
+// ============================================
+// Bottom shelf, underside 100mm above the floor
+// ============================================
+shelf_bottom -[DL<0 BL<SHELF_BOTTOM_UNDERSIDE D(:8x30)]- side_left
+shelf_bottom -[TL<0 FL<SHELF_BOTTOM_UNDERSIDE D(:8x30)]- side_right
+
+// ============================================
+// Lower middle shelf
+// ============================================
+shelf_mid_lower -[DL<0 BL<SHELF_MID_LOWER_UNDERSIDE D(:8x30)]- side_left
+shelf_mid_lower -[TL<0 FL<SHELF_MID_LOWER_UNDERSIDE D(:8x30)]- side_right
+
+// ============================================
+// Upper middle shelf
+// ============================================
+shelf_mid_upper -[DL<0 BL<SHELF_MID_UPPER_UNDERSIDE D(:8x30)]- side_left
+shelf_mid_upper -[TL<0 FL<SHELF_MID_UPPER_UNDERSIDE D(:8x30)]- side_right
+
+// ============================================
+// Top shelf, flush with the side panel tops
+// ============================================
+shelf_top -[DL<0 BL<SHELF_TOP_UNDERSIDE D(:8x30)]- side_left
+shelf_top -[TL<0 FL<SHELF_TOP_UNDERSIDE D(:8x30)]- side_right
+
+// ============================================
+// Assembly: fit the shelves to one side, then close the other side
+// ============================================
+steps {
+  "First side and shelves": side_left, shelf_bottom, shelf_mid_lower, shelf_mid_upper, shelf_top
+  "Second side": side_right
+}

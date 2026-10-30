@@ -1,0 +1,53 @@
+// Bookshelf (本棚)
+// Width: 600mm x Depth: 184mm x Height: 900mm
+// Material: 1x8 only (side panels and shelves)
+// Joints: screws (Slim 3.3x30)
+//
+// Structure:
+// - 2 side panels (1x8, standing on edge, full height, 184mm wide face = depth)
+// - 4 shelves (1x8), including the bottom (地板) and top (天板), equally spaced
+
+WIDTH = 600
+DEPTH = 184
+HEIGHT = 900
+THICKNESS = 19          // 1x8 thickness
+
+// Side panels: 184mm wide face is the depth, 19mm thickness faces left/right
+(side_l:1x8 =HEIGHT)
+(side_r:1x8 =HEIGHT)
+
+// Shelves run between the side panels' inner faces: 600 - 2x19 = 562
+SHELF_LEN = WIDTH - 2 * THICKNESS
+(shelf_1:1x8 =SHELF_LEN)   // bottom shelf (地板)
+(shelf_2:1x8 =SHELF_LEN)
+(shelf_3:1x8 =SHELF_LEN)
+(shelf_4:1x8 =SHELF_LEN)   // top shelf (天板)
+
+// Equal spacing between the 4 shelves' undersides, from the floor up to
+// height - thickness, so the top shelf is flush with the side panel tops
+GAP = (HEIGHT - THICKNESS) / 3
+H1 = 0
+H2 = GAP
+H3 = 2 * GAP
+H4 = 3 * GAP
+
+// Shelf 1 (bottom, 地板): underside at the floor
+shelf_1 -[DL<0 BL<H1 S(Slim:3.3x30)]- side_l
+shelf_1 -[TL<0 FL<H1 S(Slim:3.3x30)]- side_r
+
+// Shelf 2
+shelf_2 -[DL<0 BL<H2 S(Slim:3.3x30)]- side_l
+shelf_2 -[TL<0 FL<H2 S(Slim:3.3x30)]- side_r
+
+// Shelf 3
+shelf_3 -[DL<0 BL<H3 S(Slim:3.3x30)]- side_l
+shelf_3 -[TL<0 FL<H3 S(Slim:3.3x30)]- side_r
+
+// Shelf 4 (top, 天板): flush with the side panel tops
+shelf_4 -[DL<0 BL<H4 S(Slim:3.3x30)]- side_l
+shelf_4 -[TL<0 FL<H4 S(Slim:3.3x30)]- side_r
+
+steps {
+  "Left side and shelves": side_l, shelf_1, shelf_2, shelf_3, shelf_4
+  "Right side":            side_r
+}

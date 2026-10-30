@@ -1,0 +1,1 @@
+{"valid": false, "error": {"kind": "validation", "message": "line 5, column 1: Screw length 20.0mm does not reach base piece (it goes 38.0mm through the target); use a screw longer than 38.0mm", "line": 5, "column": 1}, "overall_size": null, "size_reference": null, "pieces": [], "problems": []}

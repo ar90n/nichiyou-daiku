@@ -1,0 +1,80 @@
+// Bench
+// Dimensions: 900mm (W) x 300mm (D) x 420mm (H)
+// Material: 2x4 frame, 1x4 seat boards
+// Joints: 8x30 dowels in the frame, Slim 3.3x45 screws for the seat
+//
+// Layout:
+// - 4 upright 2x4 legs, seat boards run along the 900mm width
+// - Front/back and side aprons flush with the leg tops
+// - 3 x 1x4 seat boards across the depth, screwed down to the aprons
+
+WIDTH = 900
+DEPTH = 300
+HEIGHT = 420
+SEAT_T = 19
+LEG_L = HEIGHT - SEAT_T
+APRON_FB = WIDTH - 2 * 89
+APRON_LR = DEPTH - 2 * 38
+
+// Seat boards: 3 x 89 = 267, gap = (300 - 267) / 2 = 16.5
+SEAT_GAP = (DEPTH - 3 * 89) / 2
+HALF_BOARD = 89 / 2
+// Middle board's screw line on the side aprons
+O2 = (DEPTH - 38) - (89 + SEAT_GAP + HALF_BOARD)
+// Outer boards join the front/back aprons; keep the anchors on the aprons
+APRON_ANCHOR_FB = 3 * APRON_FB / 4
+BOARD_ANCHOR_FB = 89 + APRON_FB / 4
+
+// ============================================
+// Legs (4x): 420 - 19 (seat) = 401
+// ============================================
+(leg_fl:2x4 =LEG_L)
+(leg_fr:2x4 =LEG_L)
+(leg_bl:2x4 =LEG_L)
+(leg_br:2x4 =LEG_L)
+
+// ============================================
+// Aprons: front/back 900 - 2*89 = 722, sides 300 - 2*38 = 224
+// ============================================
+(apron_front:2x4 =APRON_FB)
+(apron_back:2x4 =APRON_FB)
+(apron_left:2x4 =APRON_LR)
+(apron_right:2x4 =APRON_LR)
+
+// ============================================
+// Seat boards (1x4, run along the width)
+// ============================================
+(seat_1:1x4 =WIDTH)
+(seat_2:1x4 =WIDTH)
+(seat_3:1x4 =WIDTH)
+
+// ============================================
+// Frame joints (dowels 8x30), aprons flush with the leg tops
+// ============================================
+leg_fl -[LB>0 DB>0 D(:8x30)]- apron_front
+leg_fr -[RF>0 TF>0 D(:8x30)]- apron_front
+leg_bl -[LB>0 DB>0 D(:8x30)]- apron_back
+leg_br -[RF>0 TF>0 D(:8x30)]- apron_back
+leg_fl -[BR<(LEG_L - 89) DB<0 D(:8x30)]- apron_left
+leg_bl -[FR<(LEG_L - 89) TB<0 D(:8x30)]- apron_left
+leg_fr -[BL<(LEG_L - 89) DF<0 D(:8x30)]- apron_right
+leg_br -[FL<(LEG_L - 89) TF<0 D(:8x30)]- apron_right
+
+// ============================================
+// Seat boards: outer boards to the front/back aprons,
+// middle board to both side aprons
+// ============================================
+apron_back -[RB<APRON_ANCHOR_FB BL<BOARD_ANCHOR_FB S(Slim:3.3x45)]- seat_1
+apron_front -[RF<APRON_ANCHOR_FB BR<BOARD_ANCHOR_FB S(Slim:3.3x45)]- seat_3
+apron_right -[RF<O2 BD<HALF_BOARD S(Slim:3.3x45)]- seat_2
+apron_left -[RB<O2 BT<HALF_BOARD S(Slim:3.3x45)]- seat_2
+
+// ============================================
+// Assembly: side frames, front/back aprons, seat
+// ============================================
+steps {
+  "Left frame":  leg_fl, leg_bl, apron_left
+  "Right frame": leg_fr, leg_br, apron_right
+  "Join":        apron_front, apron_back
+  "Seat":        seat_1, seat_2, seat_3
+}

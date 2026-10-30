@@ -1,0 +1,5 @@
+(post_l:2x4 =600)
+(post_r:2x4 =600)
+(rung:2x2 =400)
+post_l -[RF<300 DF<0 D(:8x30)]- rung
+post_r -[LF<300 TF<0 D(:8x30)]- rung

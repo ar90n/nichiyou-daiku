@@ -1,0 +1,101 @@
+// Child's Step Stool
+// Dimensions: 400mm (W) x 300mm (D) x 300mm (H)
+// Material: 2x4 frame, 2x4 platform boards
+// Joints: 8x30 dowels (frame), Slim 3.8x65 screws (platform)
+
+WIDTH = 400                     // overall width
+DEPTH = 300                     // overall depth
+HEIGHT = 300                    // overall height
+TOP_T = 38                      // 2x4 board thickness
+LEG_LEN = HEIGHT - TOP_T        // 300 - 38 = 262
+STRETCH_H = 80                  // lower stretcher bottom edge above the floor
+GAP = (WIDTH - 4 * 89) / 3      // gaps between the 4 platform boards
+O2 = GAP                        // 2nd platform board offset
+O3 = 2 * (89 + GAP) - 89        // 3rd platform board offset
+
+// ============================================
+// Legs (4x)
+// leg_fl: front-left, leg_fr: front-right
+// leg_bl: back-left,  leg_br: back-right
+// ============================================
+(leg_fl:2x4 =LEG_LEN)
+(leg_fr:2x4 =LEG_LEN)
+(leg_bl:2x4 =LEG_LEN)
+(leg_br:2x4 =LEG_LEN)
+
+// ============================================
+// Upper aprons (flush with the platform top)
+// Front/back run between the legs' 89mm sides: WIDTH - 2*89
+// Left/right run between the legs' 38mm sides: DEPTH - 2*38
+// ============================================
+(apron_upper_front:2x4 =WIDTH - 2 * 89)
+(apron_upper_back:2x4 =WIDTH - 2 * 89)
+(apron_upper_left:2x4 =DEPTH - 2 * 38)
+(apron_upper_right:2x4 =DEPTH - 2 * 38)
+
+// ============================================
+// Lower stretchers (bottom edge STRETCH_H above the floor)
+// ============================================
+(apron_lower_front:2x4 =WIDTH - 2 * 89)
+(apron_lower_back:2x4 =WIDTH - 2 * 89)
+(apron_lower_left:2x4 =DEPTH - 2 * 38)
+(apron_lower_right:2x4 =DEPTH - 2 * 38)
+
+// ============================================
+// Platform boards (2x4, depth direction)
+// 4 boards: 4*89 = 356mm, gaps (WIDTH - 356) / 3
+// ============================================
+(top_1:2x4 =DEPTH)
+(top_2:2x4 =DEPTH)
+(top_3:2x4 =DEPTH)
+(top_4:2x4 =DEPTH)
+
+// ============================================
+// Upper apron connections (flush with the platform)
+// ============================================
+leg_fl -[LB>0 DB>0 D(:8x30)]- apron_upper_front
+leg_fr -[RF>0 TF>0 D(:8x30)]- apron_upper_front
+
+leg_bl -[LB>0 DB>0 D(:8x30)]- apron_upper_back
+leg_br -[RF>0 TF>0 D(:8x30)]- apron_upper_back
+
+// Left/right, 89mm below the leg top (LEG_LEN - 89)
+leg_fl -[BR<(LEG_LEN - 89) DB<0 D(:8x30)]- apron_upper_left
+leg_bl -[FR<(LEG_LEN - 89) TB<0 D(:8x30)]- apron_upper_left
+
+leg_fr -[BL<(LEG_LEN - 89) DF<0 D(:8x30)]- apron_upper_right
+leg_br -[FL<(LEG_LEN - 89) TF<0 D(:8x30)]- apron_upper_right
+
+// ============================================
+// Lower stretcher connections
+// Front/back measured from the leg top: LEG_LEN - STRETCH_H - 89
+// Left/right measured from the leg bottom: STRETCH_H
+// ============================================
+leg_fl -[LB>(LEG_LEN - STRETCH_H - 89) DB>0 D(:8x30)]- apron_lower_front
+leg_fr -[RF>(LEG_LEN - STRETCH_H - 89) TF>0 D(:8x30)]- apron_lower_front
+
+leg_bl -[LB>(LEG_LEN - STRETCH_H - 89) DB>0 D(:8x30)]- apron_lower_back
+leg_br -[RF>(LEG_LEN - STRETCH_H - 89) TF>0 D(:8x30)]- apron_lower_back
+
+leg_fl -[BR<STRETCH_H DB<0 D(:8x30)]- apron_lower_left
+leg_bl -[FR<STRETCH_H TB<0 D(:8x30)]- apron_lower_left
+
+leg_fr -[BL<STRETCH_H DF<0 D(:8x30)]- apron_lower_right
+leg_br -[FL<STRETCH_H TF<0 D(:8x30)]- apron_lower_right
+
+// ============================================
+// Platform connections
+// End boards sit on the front legs; inner boards on the upper front apron
+// ============================================
+leg_fl -[TF<0 BD<0 S(Slim:3.8x65)]- top_1
+apron_upper_front -[RF<O2 BT<0 S(Slim:3.8x65)]- top_2
+apron_upper_front -[RF<O3 BT<0 S(Slim:3.8x65)]- top_3
+leg_fr -[TF<0 BD<0 S(Slim:3.8x65)]- top_4
+
+// Assembly: side frames, the aprons joining them, the platform
+steps {
+  "Left frame":  leg_fl, leg_bl, apron_upper_left, apron_lower_left
+  "Right frame": leg_fr, leg_br, apron_upper_right, apron_lower_right
+  "Join":        apron_upper_front, apron_upper_back, apron_lower_front, apron_lower_back
+  "Platform":    top_1, top_2, top_3, top_4
+}

@@ -1,0 +1,62 @@
+// 1x8 Bookshelf
+// Overall: 600mm (W) x 184mm (D) x 900mm (H)
+// Material: 1x8 only
+// Joints: 8x30 dowels (two per shelf end)
+//
+// Note on axes: this model is built with the depth along x and the width
+// along y, because the first declared piece (a 1x8 side panel) always has
+// its 184mm width along x in nichiyou-daiku.
+
+WIDTH = 600
+DEPTH = 184
+HEIGHT = 900
+SHELF_COUNT = 4
+THICKNESS = 19
+SHELF_LENGTH = WIDTH - 2 * THICKNESS
+GAP = (HEIGHT - SHELF_COUNT * THICKNESS) / (SHELF_COUNT - 1)
+PITCH = THICKNESS + GAP
+Z1 = 0
+Z2 = PITCH
+Z3 = 2 * PITCH
+Z4 = 3 * PITCH
+
+// ============================================
+// Side panels (2x) - 184mm deep, 900mm high
+// ============================================
+(side_left:1x8 =HEIGHT)
+(side_right:1x8 =HEIGHT)
+
+// ============================================
+// Shelves (4x, including top and bottom)
+// Span between the side panels: 600 - 2x19 = 562mm
+// Clear openings: (900 - 4x19) / 3 = 274.67mm
+// ============================================
+(shelf_bottom:1x8 =SHELF_LENGTH)
+(shelf_lower:1x8 =SHELF_LENGTH)
+(shelf_upper:1x8 =SHELF_LENGTH)
+(shelf_top:1x8 =SHELF_LENGTH)
+
+// ============================================
+// Left side: shelf ends doweled to the panel's inner face
+// ============================================
+side_left -[FL<Z1 DL>0 D(:8x30)]- shelf_bottom
+side_left -[FL<Z2 DL>0 D(:8x30)]- shelf_lower
+side_left -[FL<Z3 DL>0 D(:8x30)]- shelf_upper
+side_left -[FL<Z4 DL>0 D(:8x30)]- shelf_top
+
+// ============================================
+// Right side: the other shelf ends doweled to the panel
+// ============================================
+shelf_bottom -[TL>0 BL<Z1 D(:8x30)]- side_right
+shelf_lower -[TL>0 BL<Z2 D(:8x30)]- side_right
+shelf_upper -[TL>0 BL<Z3 D(:8x30)]- side_right
+shelf_top -[TL>0 BL<Z4 D(:8x30)]- side_right
+
+// ============================================
+// Assembly: left panel, shelves, right panel
+// ============================================
+steps {
+  "Left side": side_left
+  "Shelves":    shelf_bottom, shelf_lower, shelf_upper, shelf_top
+  "Right side": side_right
+}

@@ -1,0 +1,61 @@
+// Kids Step Stool (踏み台)
+// Width: 300mm, Depth: 250mm, Height: 300mm
+// All 2x4 frame, 8x30 dowels for the frame, Slim 3.8x65 screws for the top boards
+
+WIDTH = 300
+DEPTH = 250
+HEIGHT = 300
+TOP_THICKNESS = 38          // 2x4 thickness, top boards lie flat
+
+// Legs: height - top thickness
+LEG_LENGTH = HEIGHT - TOP_THICKNESS
+
+// Front/back aprons: WIDTH - 2 x 89 (leg width)
+APRON_FRONT_LEN = WIDTH - 2 * 89
+APRON_BACK_LEN = WIDTH - 2 * 89
+// Side aprons: DEPTH - 2 x 38 (leg thickness)
+APRON_SIDE_LEN = DEPTH - 2 * 38
+
+// Top boards (2x4, run front to back, length = DEPTH): 3 x 89 = 267 <= 300
+TOP_GAP = (WIDTH - 3 * 89) / 2
+
+// Legs: leg_fl front-left, leg_fr front-right, leg_bl back-left, leg_br back-right
+(leg_fl:2x4 =LEG_LENGTH)
+(leg_fr:2x4 =LEG_LENGTH)
+(leg_bl:2x4 =LEG_LENGTH)
+(leg_br:2x4 =LEG_LENGTH)
+
+// Aprons
+(apron_front:2x4 =APRON_FRONT_LEN)
+(apron_back:2x4 =APRON_BACK_LEN)
+(apron_left:2x4 =APRON_SIDE_LEN)
+(apron_right:2x4 =APRON_SIDE_LEN)
+
+// Top boards: top_1 and top_3 rest on the legs, top_2 (inner) rests on apron_front
+(top_1:2x4 =DEPTH)
+(top_2:2x4 =DEPTH)
+(top_3:2x4 =DEPTH)
+
+// Front/back aprons: end into the legs' narrow faces, flush with the legs' front faces
+leg_fl -[LB>0 DB>0 D(:8x30)]- apron_front
+leg_fr -[RF>0 TF>0 D(:8x30)]- apron_front
+leg_bl -[LB>0 DB>0 D(:8x30)]- apron_back
+leg_br -[RF>0 TF>0 D(:8x30)]- apron_back
+
+// Side aprons: end into the legs' wide faces, flush with the legs' outer sides
+leg_fl -[BR>0 DB>0 D(:8x30)]- apron_left
+leg_bl -[FR>0 TB>0 D(:8x30)]- apron_left
+leg_fr -[BL>0 DF>0 D(:8x30)]- apron_right
+leg_br -[FL>0 TF>0 D(:8x30)]- apron_right
+
+// Top boards (screwed down through the board into the frame)
+leg_fl -[TF<0 BD<0 S(Slim:3.8x65)]- top_1
+apron_front -[RF<TOP_GAP BT<0 S(Slim:3.8x65)]- top_2
+leg_fr -[TF<0 BD<0 S(Slim:3.8x65)]- top_3
+
+steps {
+  "Front frame": leg_fl, leg_fr, apron_front
+  "Back frame": leg_bl, leg_br, apron_back
+  "Side aprons": apron_left, apron_right
+  "Top boards": top_1, top_2, top_3
+}

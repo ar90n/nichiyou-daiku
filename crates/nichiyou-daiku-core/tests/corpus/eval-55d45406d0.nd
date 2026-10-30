@@ -1,0 +1,68 @@
+// 1x8 Bookshelf
+// Overall: 600mm wide x 184mm deep x 900mm high
+// Material: 1x8 only (all six pieces)
+// Joints: 8x30 dowels
+//
+// Structure:
+// - Two 1x8 side panels, full height and full depth
+// - Four 1x8 shelf boards between the sides
+// - Top shelf flush with the side tops, bottom shelf at the floor
+// - The three clear openings are equal
+
+// ============================================
+// Overall sizes and spacing
+// ============================================
+WIDTH = 600
+DEPTH = 184
+HEIGHT = 900
+THICK = 19                 // 1x8 thickness
+BOARD = 19                 // shelf board thickness
+SHELVES = 4
+SHELF_LENGTH = WIDTH - 2 * THICK
+
+// Equal clear gaps: 4 boards + 3 gaps fill the height
+GAP = (HEIGHT - SHELVES * BOARD) / (SHELVES - 1)
+
+// Underside heights of the four shelves
+H1 = 0
+H2 = BOARD + GAP
+H3 = 2 * BOARD + 2 * GAP
+H4 = 3 * BOARD + 3 * GAP
+
+// ============================================
+// Side panels (1x8, 184mm deep, 900mm high)
+// ============================================
+(side_left:1x8 =HEIGHT)
+(side_right:1x8 =HEIGHT)
+
+// ============================================
+// Shelf boards (1x8, fixed between the sides)
+// ============================================
+(shelf_1:1x8 =SHELF_LENGTH)
+(shelf_2:1x8 =SHELF_LENGTH)
+(shelf_3:1x8 =SHELF_LENGTH)
+(shelf_4:1x8 =SHELF_LENGTH)
+
+// ============================================
+// Shelf connections: 8x30 dowels into both sides
+// The shelf undersides sit at H1..H4 above the floor
+// ============================================
+side_left -[BL<H1 DL<0 D(:8x30)]- shelf_1
+side_right -[FL<H1 TL<0 D(:8x30)]- shelf_1
+
+side_left -[BL<H2 DL<0 D(:8x30)]- shelf_2
+side_right -[FL<H2 TL<0 D(:8x30)]- shelf_2
+
+side_left -[BL<H3 DL<0 D(:8x30)]- shelf_3
+side_right -[FL<H3 TL<0 D(:8x30)]- shelf_3
+
+side_left -[BL<H4 DL<0 D(:8x30)]- shelf_4
+side_right -[FL<H4 TL<0 D(:8x30)]- shelf_4
+
+// ============================================
+// Assembly: shelves onto the left side, then the right side
+// ============================================
+steps {
+  "Left side and shelves": side_left, shelf_1, shelf_2, shelf_3, shelf_4
+  "Right side": side_right
+}

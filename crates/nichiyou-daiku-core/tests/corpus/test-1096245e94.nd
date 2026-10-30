@@ -1,0 +1,79 @@
+(shelf_board_00:1x4 =300)
+(shelf_board_01:1x4 =300)
+(shelf_board_02:1x4 =300)
+(shelf_board_03:1x4 =300)
+(shelf_board_04:1x4 =300)
+(shelf_board_05:1x4 =300)
+(shelf_board_06:1x4 =300)
+(shelf_board_07:1x4 =300)
+(shelf_board_08:1x4 =300)
+(shelf_board_09:1x4 =300)
+(shelf_board_10:1x4 =300)
+(shelf_board_11:1x4 =300)
+(shelf_board_12:1x4 =300)
+(shelf_board_13:1x4 =300)
+(shelf_board_14:1x4 =300)
+(shelf_board_15:1x4 =300)
+(shelf_board_16:1x4 =300)
+(shelf_board_17:1x4 =300)
+(shelf_board_18:1x4 =300)
+(shelf_board_19:1x4 =300)
+(shelf_board_20:1x4 =300)
+(shelf_board_21:1x4 =300)
+(shelf_board_22:1x4 =300)
+(shelf_board_23:1x4 =300)
+(shelf_board_24:1x4 =300)
+(shelf_board_25:1x4 =300)
+(shelf_board_26:1x4 =300)
+(shelf_board_27:1x4 =300)
+(shelf_board_28:1x4 =300)
+(shelf_board_29:1x4 =300)
+(shelf_board_30:1x4 =300)
+(shelf_board_31:1x4 =300)
+(shelf_board_32:1x4 =300)
+(shelf_board_33:1x4 =300)
+(shelf_board_34:1x4 =300)
+(shelf_board_35:1x4 =300)
+(shelf_board_36:1x4 =300)
+(shelf_board_37:1x4 =300)
+(shelf_board_38:1x4 =300)
+(shelf_board_39:1x4 =300)
+shelf_board_00 -[FL<0 BL<0]- shelf_board_01
+shelf_board_01 -[FL<0 BL<0]- shelf_board_02
+shelf_board_02 -[FL<0 BL<0]- shelf_board_03
+shelf_board_03 -[FL<0 BL<0]- shelf_board_04
+shelf_board_04 -[FL<0 BL<0]- shelf_board_05
+shelf_board_05 -[FL<0 BL<0]- shelf_board_06
+shelf_board_06 -[FL<0 BL<0]- shelf_board_07
+shelf_board_07 -[FL<0 BL<0]- shelf_board_08
+shelf_board_08 -[FL<0 BL<0]- shelf_board_09
+shelf_board_09 -[FL<0 BL<0]- shelf_board_10
+shelf_board_10 -[FL<0 BL<0]- shelf_board_11
+shelf_board_11 -[FL<0 BL<0]- shelf_board_12
+shelf_board_12 -[FL<0 BL<0]- shelf_board_13
+shelf_board_13 -[FL<0 BL<0]- shelf_board_14
+shelf_board_14 -[FL<0 BL<0]- shelf_board_15
+shelf_board_15 -[FL<0 BL<0]- shelf_board_16
+shelf_board_16 -[FL<0 BL<0]- shelf_board_17
+shelf_board_17 -[FL<0 BL<0]- shelf_board_18
+shelf_board_18 -[FL<0 BL<0]- shelf_board_19
+shelf_board_19 -[FL<0 BL<0]- shelf_board_20
+shelf_board_20 -[FL<0 BL<0]- shelf_board_21
+shelf_board_21 -[FL<0 BL<0]- shelf_board_22
+shelf_board_22 -[FL<0 BL<0]- shelf_board_23
+shelf_board_23 -[FL<0 BL<0]- shelf_board_24
+shelf_board_24 -[FL<0 BL<0]- shelf_board_25
+shelf_board_25 -[FL<0 BL<0]- shelf_board_26
+shelf_board_26 -[FL<0 BL<0]- shelf_board_27
+shelf_board_27 -[FL<0 BL<0]- shelf_board_28
+shelf_board_28 -[FL<0 BL<0]- shelf_board_29
+shelf_board_29 -[FL<0 BL<0]- shelf_board_30
+shelf_board_30 -[FL<0 BL<0]- shelf_board_31
+shelf_board_31 -[FL<0 BL<0]- shelf_board_32
+shelf_board_32 -[FL<0 BL<0]- shelf_board_33
+shelf_board_33 -[FL<0 BL<0]- shelf_board_34
+shelf_board_34 -[FL<0 BL<0]- shelf_board_35
+shelf_board_35 -[FL<0 BL<0]- shelf_board_36
+shelf_board_36 -[FL<0 BL<0]- shelf_board_37
+shelf_board_37 -[FL<0 BL<0]- shelf_board_38
+shelf_board_38 -[FL<0 BL<0]- shelf_board_39

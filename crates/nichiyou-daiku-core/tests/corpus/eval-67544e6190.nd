@@ -1,0 +1,82 @@
+// Display Shelf
+// Overall: 450mm (W) x 140mm (D) x 600mm (H)
+// Material: 1x6 only (140mm x 19mm)
+// Joints: 8x30 dowels (back spacer), Slim 3.3x45 screws (shelves to sides)
+//
+// Structure:
+// - Two full-depth side panels (1x6, 140 deep x 600 high)
+// - Three shelf boards (top, middle, bottom), equally spaced
+// - One back spacer between the bottom and middle shelves, centred
+
+WIDTH = 450
+DEPTH = 140
+HEIGHT = 600
+THICK = 19
+BOARD_WIDTH = 140
+
+// Shelves fit between the side panels: 450 - 2 x 19 = 412
+SHELF_LENGTH = WIDTH - 2 * THICK
+
+// Three boards give two equal clear openings:
+// (600 - 3 x 19) / 2 = 271.5
+SHELF_GAP = (HEIGHT - 3 * THICK) / 2
+
+// Shelf underside heights: 0, 290.5, 581
+MIDDLE_Z = THICK + SHELF_GAP
+TOP_Z = HEIGHT - THICK
+
+// The back spacer fills the lower opening; it is centred on the shelves
+SPACER_LENGTH = SHELF_GAP
+SPACER_OFFSET = (SHELF_LENGTH - BOARD_WIDTH) / 2
+
+// ============================================
+// Back spacer (declared first: it sets the axes)
+// ============================================
+(back_spacer:1x6 =SPACER_LENGTH)
+
+// ============================================
+// Side panels
+// ============================================
+(side_l:1x6 =HEIGHT)
+(side_r:1x6 =HEIGHT)
+
+// ============================================
+// Shelves (between the side panels)
+// ============================================
+(shelf_bottom:1x6 =SHELF_LENGTH)
+(shelf_middle:1x6 =SHELF_LENGTH)
+(shelf_top:1x6 =SHELF_LENGTH)
+
+// ============================================
+// Back spacer: doweled between the lower shelves
+// The spacer sits at the back, centred along the width.
+// ============================================
+back_spacer -[DB<0 FL<SPACER_OFFSET D(:8x30)]- shelf_bottom
+back_spacer -[TB<0 BL<SPACER_OFFSET D(:8x30)]- shelf_middle
+
+// ============================================
+// Shelves to the left panel
+// Right edge of each shelf flush with the panel front side.
+// The target offset is the shelf's underside height.
+// ============================================
+shelf_bottom -[DR<0 FL<0 S(Slim:3.3x45)]- side_l
+shelf_middle -[DR<0 FL<MIDDLE_Z S(Slim:3.3x45)]- side_l
+shelf_top -[DR<0 FL<TOP_Z S(Slim:3.3x45)]- side_l
+
+// ============================================
+// Shelves to the right panel
+// Left edge of each shelf flush with the panel back side.
+// ============================================
+shelf_bottom -[TL<0 BR<0 S(Slim:3.3x45)]- side_r
+shelf_middle -[TL<0 BR<MIDDLE_Z S(Slim:3.3x45)]- side_r
+shelf_top -[TL<0 BR<TOP_Z S(Slim:3.3x45)]- side_r
+
+// ============================================
+// Assembly order
+// ============================================
+steps {
+  "Back spacer and lower shelves": back_spacer, shelf_bottom, shelf_middle
+  "Left side": side_l
+  "Right side": side_r
+  "Top shelf": shelf_top
+}

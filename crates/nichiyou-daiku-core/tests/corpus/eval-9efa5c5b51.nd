@@ -1,0 +1,63 @@
+// Display Shelf
+// Overall: 450mm (W) x 140mm (D) x 600mm (H)
+// Material: 1x6 only
+// Joints: shelves screwed through the side panels with Slim 3.3x45
+//
+// Structure:
+// - Two 1x6 side panels, full depth and full height
+// - Three 1x6 shelf boards between them (top, middle, bottom)
+// - Shelf top surfaces equally spaced: 19, 309.5 and 600mm above the floor
+// - Bottom board sits on the floor; top board is flush with the side tops
+
+OVERALL_WIDTH = 450
+OVERALL_DEPTH = 140
+OVERALL_HEIGHT = 600
+SIDE_THICKNESS = 19
+SHELF_THICKNESS = 19
+SHELF_LENGTH = OVERALL_WIDTH - 2 * SIDE_THICKNESS
+BOTTOM_SHELF_TOP = SHELF_THICKNESS
+MIDDLE_SHELF_TOP = (BOTTOM_SHELF_TOP + OVERALL_HEIGHT) / 2
+MIDDLE_SHELF_UNDERSIDE = MIDDLE_SHELF_TOP - SHELF_THICKNESS
+
+// ============================================
+// Side panels (2x) - full height 600mm
+// Their 140mm width runs front to back; their 19mm thickness is the shelf width
+// ============================================
+(side_left:1x6 =OVERALL_HEIGHT)
+(side_right:1x6 =OVERALL_HEIGHT)
+
+// ============================================
+// Shelves (3x) - span between the side panels
+// 450 - 2 x 19 = 412mm long, 140mm deep
+// ============================================
+(shelf_bottom:1x6 =SHELF_LENGTH)
+(shelf_middle:1x6 =SHELF_LENGTH)
+(shelf_top:1x6 =SHELF_LENGTH)
+
+// ============================================
+// Bottom shelf - flush with the floor (underside 0)
+// ============================================
+shelf_bottom -[DL<0 BL<0 S(Slim:3.3x45)]- side_left
+shelf_bottom -[TL<0 FL<0 S(Slim:3.3x45)]- side_right
+
+// ============================================
+// Middle shelf - underside 290.5mm above the floor
+// ============================================
+shelf_middle -[DL<0 BL<MIDDLE_SHELF_UNDERSIDE S(Slim:3.3x45)]- side_left
+shelf_middle -[TL<0 FL<MIDDLE_SHELF_UNDERSIDE S(Slim:3.3x45)]- side_right
+
+// ============================================
+// Top shelf - flush with the side tops (underside 581mm)
+// ============================================
+shelf_top -[DL<0 BL>SHELF_THICKNESS S(Slim:3.3x45)]- side_left
+shelf_top -[TL<0 FL>SHELF_THICKNESS S(Slim:3.3x45)]- side_right
+
+// ============================================
+// Assembly: one side with the bottom shelf, the other shelves, then the second side
+// ============================================
+steps {
+  "Left side and bottom shelf": side_left, shelf_bottom
+  "Middle shelf": shelf_middle
+  "Top shelf": shelf_top
+  "Right side": side_right
+}

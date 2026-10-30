@@ -1,0 +1,73 @@
+// Bench
+// Width: 900mm, Depth: 300mm, Height: 420mm
+// Legs: 2x4, 4 legs with 8x30 dowel frame
+// Seat: 1x4 boards laid with their length along the width (long direction)
+
+WIDTH = 900
+DEPTH = 300
+HEIGHT = 420
+SEAT_THICK = 19   // 1x4 thickness
+
+// ============================================
+// Legs (4x) - height minus the 1x4 seat thickness
+// leg_fl: front-left, leg_fr: front-right
+// leg_bl: back-left, leg_br: back-right
+// ============================================
+LEG_LEN = HEIGHT - SEAT_THICK
+(leg_fl:2x4 =LEG_LEN)
+(leg_fr:2x4 =LEG_LEN)
+(leg_bl:2x4 =LEG_LEN)
+(leg_br:2x4 =LEG_LEN)
+
+// ============================================
+// Aprons
+// Front/back run between the legs' 89mm sides: WIDTH - 2x89
+// Left/right run between the legs' 38mm sides: DEPTH - 2x38
+// ============================================
+APRON_FB_LEN = WIDTH - 2 * 89
+APRON_LR_LEN = DEPTH - 2 * 38
+(apron_front:2x4 =APRON_FB_LEN)
+(apron_back:2x4 =APRON_FB_LEN)
+(apron_left:2x4 =APRON_LR_LEN)
+(apron_right:2x4 =APRON_LR_LEN)
+
+// ============================================
+// Seat boards - 1x4, length = WIDTH, laid side by side across DEPTH
+// 3 boards: 3x89 = 267mm, 2 gaps of (300 - 267) / 2 = 16.5mm
+// seat_1 (front) rests on leg_fl, seat_3 (back) rests on leg_bl
+// seat_2 (middle) rests on apron_left (connection added after inspecting it)
+// ============================================
+(seat_1:1x4 =WIDTH)
+(seat_2:1x4 =WIDTH)
+(seat_3:1x4 =WIDTH)
+
+// ============================================
+// Front/back aprons: end into the legs' narrow faces, flush with the legs' front faces
+// ============================================
+leg_fl -[LB>0 DB>0 D(:8x30)]- apron_front
+leg_fr -[RF>0 TF>0 D(:8x30)]- apron_front
+leg_bl -[LB>0 DB>0 D(:8x30)]- apron_back
+leg_br -[RF>0 TF>0 D(:8x30)]- apron_back
+
+// ============================================
+// Side aprons: end into the legs' wide faces, flush with the leg tops
+// ============================================
+leg_fl -[BR>0 DB>0 D(:8x30)]- apron_left
+leg_bl -[FR>0 TB>0 D(:8x30)]- apron_left
+leg_fr -[BL>0 DF>0 D(:8x30)]- apron_right
+leg_br -[FL>0 TF>0 D(:8x30)]- apron_right
+
+// ============================================
+// Seat boards: front and back boards screwed onto the front-left / back-left legs
+// ============================================
+leg_fl -[TR>0 BD<0 S(Slim:3.3x45)]- seat_1
+leg_bl -[TR<0 BD>0 S(Slim:3.3x45)]- seat_3
+apron_left -[RB>156.5 BD<0 S(Slim:3.3x45)]- seat_2
+
+steps {
+  "Left frame":  leg_fl, leg_bl, apron_left
+  "Right frame": leg_fr, leg_br, apron_right
+  "Join":        apron_front, apron_back
+  "Seat ends":   seat_1, seat_3
+  "Seat middle": seat_2
+}

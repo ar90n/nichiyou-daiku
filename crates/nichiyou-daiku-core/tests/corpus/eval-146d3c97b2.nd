@@ -1,0 +1,12 @@
+(side_l:1x6 =600)
+(side_r:1x6 =600)
+(shelf_1:1x6 =412)
+(shelf_2:1x6 =412)
+(shelf_3:1x6 =412)
+
+shelf_1 -[DL<0 BL<0 S(Slim:3.3x30)]- side_l
+shelf_1 -[TL<0 FL<0 S(Slim:3.3x30)]- side_r
+shelf_2 -[DL<0 BL<290.5 S(Slim:3.3x30)]- side_l
+shelf_2 -[TL<0 FL<290.5 S(Slim:3.3x30)]- side_r
+shelf_3 -[DL<0 BL<581 S(Slim:3.3x30)]- side_l
+shelf_3 -[TL<0 FL<581 S(Slim:3.3x30)]- side_r

@@ -1,0 +1,78 @@
+// Bookshelf
+// Overall: 600mm (W) x 184mm (D) x 900mm (H)
+// Material: 1x8 only (184 x 19mm boards)
+// Joints: 8x30 dowels
+//
+// Structure:
+// - Two full-height 1x8 side panels, 900mm long, 184mm deep
+// - Four 1x8 shelves including the top and bottom boards,
+//   fitting between the side panels: 600 - 2 x 19 = 562mm
+// - Equal clear openings between the four shelves:
+//   (900 - 4 x 19) / 3 = 274.67mm
+// - One short 1x8 back cleat under the top shelf for stiffness
+
+WIDTH = 600
+DEPTH = 184
+HEIGHT = 900
+THICKNESS = 19
+SHELF_COUNT = 4
+CLEAR = (HEIGHT - SHELF_COUNT * THICKNESS) / (SHELF_COUNT - 1)
+SHELF_LENGTH = WIDTH - 2 * THICKNESS
+SHELF_2_H = THICKNESS + CLEAR
+SHELF_3_H = SHELF_2_H + THICKNESS + CLEAR
+SHELF_4_H = HEIGHT - THICKNESS
+
+// Back cleat under the top shelf
+BRACE_LENGTH = 50
+BRACE_X = (WIDTH - DEPTH) / 2
+BRACE_FROM_LEFT = DEPTH / 2
+
+// ============================================
+// Back cleat (1x8, 184mm wide x 50mm long),
+// centered at the rear under the top shelf
+// ============================================
+(back_cleat:1x8 =BRACE_LENGTH)
+
+// ============================================
+// Side panels (1x8, 184mm wide x 900mm long)
+// ============================================
+(side_l:1x8 =HEIGHT)
+(side_r:1x8 =HEIGHT)
+
+// ============================================
+// Shelves (1x8), bottom, two middle, top
+// ============================================
+(shelf_1:1x8 =SHELF_LENGTH)
+(shelf_2:1x8 =SHELF_LENGTH)
+(shelf_3:1x8 =SHELF_LENGTH)
+(shelf_4:1x8 =SHELF_LENGTH)
+
+// ============================================
+// Back cleat to the top shelf
+// ============================================
+back_cleat -[TB<BRACE_FROM_LEFT BL<(BRACE_X + BRACE_FROM_LEFT - THICKNESS) D(:8x30)]- shelf_4
+
+// ============================================
+// Shelves to side panels
+// Side offsets are each shelf's underside height.
+// ============================================
+side_l -[FL<SHELF_4_H DR<0 D(:8x30)]- shelf_4
+shelf_4 -[TR<0 FR<SHELF_4_H D(:8x30)]- side_r
+
+side_l -[FL<0 DR<0 D(:8x30)]- shelf_1
+side_l -[FL<SHELF_2_H DR<0 D(:8x30)]- shelf_2
+side_l -[FL<SHELF_3_H DR<0 D(:8x30)]- shelf_3
+
+side_r -[FR<0 TR<0 D(:8x30)]- shelf_1
+side_r -[FR<SHELF_2_H TR<0 D(:8x30)]- shelf_2
+side_r -[FR<SHELF_3_H TR<0 D(:8x30)]- shelf_3
+
+// ============================================
+// Assembly: top shelf with cleat, sides, lower shelves
+// ============================================
+steps {
+  "Top and cleat":  back_cleat, shelf_4
+  "Left side":      side_l
+  "Right side":     side_r
+  "Lower shelves":  shelf_1, shelf_2, shelf_3
+}

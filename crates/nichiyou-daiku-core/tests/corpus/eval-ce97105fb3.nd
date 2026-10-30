@@ -1,0 +1,124 @@
+// Children's step stool (2x4, sturdy)
+// Overall: 400 (W) x 300 (D) x 300 (H) mm
+// Top platform at 300mm, lower step at 150mm
+// Frame doweled (8x30), boards screwed (Slim 3.8x55)
+
+// ============================================
+// Dimensions and derived lengths
+// ============================================
+BOARD_W = 89                                // 2x4 width
+BOARD_T = 38                                // 2x4 thickness
+HEIGHT = 300                                // top of the platform
+WIDTH = 400
+DEPTH = 300
+STEP = 150                                  // top of the lower step
+
+LEG = HEIGHT - BOARD_T                      // 262
+APRON_FB = WIDTH - 2 * BOARD_W              // 222, top/lower front-back aprons
+APRON_LR = DEPTH - 2 * BOARD_T              // 224, top/lower left-right aprons
+LOW_FB_ANCHOR = HEIGHT - STEP               // 150, lower front/back aprons on the legs
+LOW_SIDE_ANCHOR = STEP - BOARD_T - BOARD_W       // 23, lower side apron bottom above the floor
+
+TOP_N = 4
+TOP_GAP = (WIDTH - TOP_N * BOARD_W) / (TOP_N - 1)     // 14.667
+TOP_O2 = 2 * TOP_GAP + BOARD_W                        // 118.333
+SHELF_N = 2
+SHELF_GAP = (APRON_FB - SHELF_N * BOARD_W) / (SHELF_N + 1)   // 14.667
+SHELF_O2 = 2 * SHELF_GAP + BOARD_W                    // 118.333
+
+// ============================================
+// Legs (4x) - wide faces to the front
+// leg_fl: front-left, leg_fr: front-right
+// leg_bl: back-left, leg_br: back-right
+// ============================================
+(leg_fl:2x4 =LEG)
+(leg_fr:2x4 =LEG)
+(leg_bl:2x4 =LEG)
+(leg_br:2x4 =LEG)
+
+// ============================================
+// Aprons (flush with the leg tops on top,
+// lower aprons 23..112mm: carry the lower step)
+// ============================================
+(apron_front:2x4 =APRON_FB)
+(apron_back:2x4 =APRON_FB)
+(apron_left:2x4 =APRON_LR)
+(apron_right:2x4 =APRON_LR)
+(apron_lower_front:2x4 =APRON_FB)
+(apron_lower_back:2x4 =APRON_FB)
+(apron_lower_left:2x4 =APRON_LR)
+(apron_lower_right:2x4 =APRON_LR)
+
+// ============================================
+// Top boards (4x 2x4, front-to-back)
+// ============================================
+(top_1:2x4 =DEPTH)
+(top_2:2x4 =DEPTH)
+(top_3:2x4 =DEPTH)
+(top_4:2x4 =DEPTH)
+
+// ============================================
+// Lower-step boards (2x 2x4, front-to-back)
+// ============================================
+(shelf_1:2x4 =DEPTH)
+(shelf_2:2x4 =DEPTH)
+
+// ============================================
+// Upper front/back aprons to the legs (flush)
+// ============================================
+leg_fl -[LB>0 DB>0 D(:8x30)]- apron_front
+leg_fr -[RF>0 TF>0 D(:8x30)]- apron_front
+leg_bl -[LB>0 DB>0 D(:8x30)]- apron_back
+leg_br -[RF>0 TF>0 D(:8x30)]- apron_back
+
+// ============================================
+// Upper left/right aprons to the legs (flush)
+// ============================================
+leg_fl -[BR<(LEG - BOARD_W) DB<0 D(:8x30)]- apron_left
+leg_bl -[FR<(LEG - BOARD_W) TB<0 D(:8x30)]- apron_left
+leg_fr -[BL<(LEG - BOARD_W) DF<0 D(:8x30)]- apron_right
+leg_br -[FL<(LEG - BOARD_W) TF<0 D(:8x30)]- apron_right
+
+// ============================================
+// Lower front/back aprons to the legs
+// ============================================
+leg_fl -[LB>LOW_FB_ANCHOR DB>0 D(:8x30)]- apron_lower_front
+leg_fr -[RF>LOW_FB_ANCHOR TF>0 D(:8x30)]- apron_lower_front
+leg_bl -[LB>LOW_FB_ANCHOR DB>0 D(:8x30)]- apron_lower_back
+leg_br -[RF>LOW_FB_ANCHOR TF>0 D(:8x30)]- apron_lower_back
+
+// ============================================
+// Lower left/right aprons to the legs
+// ============================================
+leg_fl -[BR<LOW_SIDE_ANCHOR DB<0 D(:8x30)]- apron_lower_left
+leg_bl -[FR<LOW_SIDE_ANCHOR TB<0 D(:8x30)]- apron_lower_left
+leg_fr -[BL<LOW_SIDE_ANCHOR DF<0 D(:8x30)]- apron_lower_right
+leg_br -[FL<LOW_SIDE_ANCHOR TF<0 D(:8x30)]- apron_lower_right
+
+// ============================================
+// Top boards: outer boards screwed to the leg
+// tops, inner boards screwed to the front apron
+// (the boards rest on the back aprons, unconnected)
+// ============================================
+leg_fl -[TF<0 BD<0 S(Slim:3.8x55)]- top_1
+apron_front -[RF<TOP_GAP BT<0 S(Slim:3.8x55)]- top_2
+apron_front -[RF<TOP_O2 BT<0 S(Slim:3.8x55)]- top_3
+leg_fr -[TF<0 BD<0 S(Slim:3.8x55)]- top_4
+
+// ============================================
+// Lower-step boards: screwed to the front
+// apron (they rest on the back apron)
+// ============================================
+apron_lower_front -[RF<SHELF_GAP BT<0 S(Slim:3.8x55)]- shelf_1
+apron_lower_front -[RF<SHELF_O2 BT<0 S(Slim:3.8x55)]- shelf_2
+
+// ============================================
+// Assembly: side frames, aprons, step, top
+// ============================================
+steps {
+  "Left frame":  leg_fl, leg_bl, apron_left, apron_lower_left
+  "Right frame": leg_fr, leg_br, apron_right, apron_lower_right
+  "Join frames": apron_front, apron_back, apron_lower_front, apron_lower_back
+  "Lower step":  shelf_1, shelf_2
+  "Top":         top_1, top_2, top_3, top_4
+}

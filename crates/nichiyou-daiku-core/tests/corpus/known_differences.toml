@@ -1,0 +1,6 @@
+# Cases where the Rust core differs from the Python version on purpose,
+# because the Rust result is better. Each needs a reason.
+#
+# [[difference]]
+# case = "test-0123456789"
+# reason = "..."

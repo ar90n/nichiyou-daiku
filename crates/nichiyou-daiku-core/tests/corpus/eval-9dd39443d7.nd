@@ -1,0 +1,3 @@
+(leg:2x4 =681)
+(apron_front:2x4 =1000)
+leg -[FD<0 BB<0 S(Slim:3.8x65)]- apron_front

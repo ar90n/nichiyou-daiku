@@ -1,0 +1,47 @@
+// Define the four legs of the table
+// Each leg is 720mm tall
+(leg_1:2x4 =720)  // Front left leg
+(leg_2:2x4 =720)  // Front right leg
+(leg_3:2x4 =720)  // Back left leg
+(leg_4:2x4 =720)  // Back right leg
+
+// Define the aprons that connect the legs
+// These provide structural support
+(apron_front:2x4 =622)  // Front apron
+(apron_back:2x4 =622)   // Back apron
+(apron_left:2x4 =524)   // Left side apron
+(apron_right:2x4 =524)  // Right side apron
+
+// Define the table top
+(table_top_1:2x4 =600)
+(table_top_2:2x4 =600)
+(table_top_3:2x4 =600)
+(table_top_4:2x4 =600)
+(table_top_5:2x4 =600)
+(table_top_6:2x4 =600)
+(table_top_7:2x4 =600)
+(table_top_8:2x4 =600)
+
+// Front apron connections
+leg_1 -[LB>0 DB>0]- apron_front
+leg_2 -[RF>0 TF>0]- apron_front
+
+// Back apron connections
+leg_3 -[LB>0 DB>0]- apron_back
+leg_4 -[RF>0 TF>0]- apron_back
+
+// Side apron connections
+leg_1 -[BR<100 DB<0]- apron_left
+leg_3 -[FR<100 TB<0]- apron_left
+leg_2 -[BL<100 DF<0]- apron_right
+leg_4 -[FL<100 TF<0]- apron_right
+
+// Table top connections
+table_top_1 -[BD<0 TF<0]- leg_1
+apron_front -[RF<12.571 BT<0]- table_top_2
+apron_front -[RF<114.142 BT<0]- table_top_3
+apron_front -[RF<215.713 BT<0]- table_top_4
+apron_front -[RF<317.284 BT<0]- table_top_5
+apron_front -[RF<418.855 BT<0]- table_top_6
+apron_front -[RF<520.426 BT<0]- table_top_7
+table_top_8 -[BD<0 TF<0]- leg_2

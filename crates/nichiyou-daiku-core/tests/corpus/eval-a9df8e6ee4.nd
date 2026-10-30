@@ -1,0 +1,100 @@
+// Desk
+// Overall: 1000mm (W) x 500mm (D) x 700mm (H)
+// Material: 2x4 legs and aprons, 1x6 top boards (7 boards, run front-to-back)
+// Joints: screws only (Coarse 3.8x57 frame, Slim 3.3x45 top)
+
+WIDTH = 1000
+DEPTH = 500
+HEIGHT = 700
+
+TOP_T = 19
+APRON_H = 89
+APRON_T = 38
+LEG_T = 38
+LEG_H = HEIGHT - TOP_T
+
+// Side aprons sit between the front and back legs, in from both overlay aprons
+SIDE_LEN = DEPTH - 2 * APRON_T - 2 * LEG_T
+
+// Top: 1x6 boards laid across the width, flush at both outer edges
+TOP_W = 140
+TOP_N = 7
+TOP_GAP = (WIDTH - TOP_N * TOP_W) / (TOP_N - 1)
+
+// Screw offsets along the front apron, measured from its down end (x = WIDTH)
+SCREW_1 = WIDTH - (1 * TOP_W)
+SCREW_2 = WIDTH - (2 * TOP_W + 1 * TOP_GAP)
+SCREW_3 = WIDTH - (3 * TOP_W + 2 * TOP_GAP)
+SCREW_4 = WIDTH - (4 * TOP_W + 3 * TOP_GAP)
+SCREW_5 = WIDTH - (5 * TOP_W + 4 * TOP_GAP)
+SCREW_6 = WIDTH - (6 * TOP_W + 5 * TOP_GAP)
+SCREW_7 = WIDTH - (7 * TOP_W + 6 * TOP_GAP)
+
+APRON_MID = APRON_H / 2
+LEG_SCREW_Z = LEG_H - APRON_MID
+
+// ============================================
+// Legs (4x), 681mm tall under the 19mm top
+// ============================================
+(leg_fl:2x4 =LEG_H)
+(leg_fr:2x4 =LEG_H)
+(leg_bl:2x4 =LEG_H)
+(leg_br:2x4 =LEG_H)
+
+// ============================================
+// Aprons, top edges flush with the leg tops
+// Front/back are full width and overlay the legs
+// ============================================
+(apron_front:2x4 =WIDTH)
+(apron_back:2x4 =WIDTH)
+(apron_left:2x4 =SIDE_LEN)
+(apron_right:2x4 =SIDE_LEN)
+
+// ============================================
+// Top boards, 1x6, running front to back
+// ============================================
+(top_1:1x6 =DEPTH)
+(top_2:1x6 =DEPTH)
+(top_3:1x6 =DEPTH)
+(top_4:1x6 =DEPTH)
+(top_5:1x6 =DEPTH)
+(top_6:1x6 =DEPTH)
+(top_7:1x6 =DEPTH)
+
+// ============================================
+// Front/back aprons screwed through the legs
+// (heads on the inside faces of the legs)
+// ============================================
+apron_front -[BT<APRON_MID FL<LEG_SCREW_Z S(Coarse:3.8x57)]- leg_fl
+apron_front -[BD<APRON_MID FR<LEG_SCREW_Z S(Coarse:3.8x57)]- leg_fr
+apron_back -[FT<APRON_MID BL<LEG_SCREW_Z S(Coarse:3.8x57)]- leg_bl
+apron_back -[FD<APRON_MID BR<LEG_SCREW_Z S(Coarse:3.8x57)]- leg_br
+
+// ============================================
+// Side aprons screwed through the legs
+// ============================================
+apron_left -[DB<APRON_MID BL<LEG_SCREW_Z S(Coarse:3.8x57)]- leg_fl
+apron_left -[TB<APRON_MID FL<LEG_SCREW_Z S(Coarse:3.8x57)]- leg_bl
+apron_right -[DF<APRON_MID BR<LEG_SCREW_Z S(Coarse:3.8x57)]- leg_fr
+apron_right -[TF<APRON_MID FR<LEG_SCREW_Z S(Coarse:3.8x57)]- leg_br
+
+// ============================================
+// Top boards screwed down through the front apron
+// ============================================
+apron_front -[RF<SCREW_1 BT<0 S(Slim:3.3x45)]- top_1
+apron_front -[RF<SCREW_2 BT<0 S(Slim:3.3x45)]- top_2
+apron_front -[RF<SCREW_3 BT<0 S(Slim:3.3x45)]- top_3
+apron_front -[RF<SCREW_4 BT<0 S(Slim:3.3x45)]- top_4
+apron_front -[RF<SCREW_5 BT<0 S(Slim:3.3x45)]- top_5
+apron_front -[RF<SCREW_6 BT<0 S(Slim:3.3x45)]- top_6
+apron_front -[RF<SCREW_7 BT<0 S(Slim:3.3x45)]- top_7
+
+// ============================================
+// Assembly: side frames, the aprons joining them, the top
+// ============================================
+steps {
+  "Left side":  leg_fl, leg_bl, apron_left
+  "Right side": leg_fr, leg_br, apron_right
+  "Join":       apron_front, apron_back
+  "Top":        top_1, top_2, top_3, top_4, top_5, top_6, top_7
+}

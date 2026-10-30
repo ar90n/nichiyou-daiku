@@ -1,0 +1,11 @@
+
+        // Project: Simple Table
+        // Author: Test
+        // Date: 2024-01-01
+        
+        (leg1:2x4 =720)
+        (leg2:2x4 =720)
+        
+        // Define connection
+        leg1 -[TF<0 BD<0]- leg2
+        

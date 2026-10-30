@@ -1,0 +1,62 @@
+// Bookshelf (all 1x8 lumber)
+// Overall: 600mm (width) x 184mm (depth) x 900mm (height)
+// 1x8 sides and shelves, 8x30 dowels
+//
+// Structure:
+// - Two full-height side panels (1x8), their 184mm face giving the depth
+// - Four shelves (top, bottom and two middle) between the panels, evenly spaced
+// - Top shelf flush with the panel tops, bottom shelf flush with the floor
+
+WIDTH = 600                    // overall width
+DEPTH = 184                    // overall depth (= 1x8 width)
+HEIGHT = 900                   // overall height
+THICK = 19                     // 1x8 thickness
+BOARD = 184                    // 1x8 width (used as the depth)
+SHELF_LEN = WIDTH - 2 * THICK  // 600 - 2x19 = 562 (between the panels)
+
+// Four shelves: three equal clear openings (HEIGHT - 4 boards) / 3
+SHELF_GAP = (HEIGHT - 4 * THICK) / 3   // 274.67
+H1 = 0                                  // bottom shelf underside (floor)
+H2 = THICK + SHELF_GAP                  // 2nd shelf underside
+H3 = 2 * (THICK + SHELF_GAP)            // 3rd shelf underside
+H4 = HEIGHT - THICK                     // top shelf underside (flush with panel tops)
+
+// ============================================
+// Sides (2x) - full height
+// ============================================
+(side_left:1x8 =HEIGHT)
+(side_right:1x8 =HEIGHT)
+
+// ============================================
+// Shelves (4x) - between the panels
+// ============================================
+(shelf_1:1x8 =SHELF_LEN)
+(shelf_2:1x8 =SHELF_LEN)
+(shelf_3:1x8 =SHELF_LEN)
+(shelf_4:1x8 =SHELF_LEN)
+
+// ============================================
+// Shelf-to-side connections
+// Each shelf end butts against a panel's wide face;
+// the offset is the shelf underside above the floor.
+// ============================================
+shelf_1 -[DL<0 BL<H1 D(:8x30)]- side_left
+shelf_1 -[TL<0 FL<H1 D(:8x30)]- side_right
+
+shelf_2 -[DL<0 BL<H2 D(:8x30)]- side_left
+shelf_2 -[TL<0 FL<H2 D(:8x30)]- side_right
+
+shelf_3 -[DL<0 BL<H3 D(:8x30)]- side_left
+shelf_3 -[TL<0 FL<H3 D(:8x30)]- side_right
+
+shelf_4 -[DL<0 BL<H4 D(:8x30)]- side_left
+shelf_4 -[TL<0 FL<H4 D(:8x30)]- side_right
+
+// ============================================
+// Assembly: left panel first with the bottom shelf, then the rest, then the right panel
+// ============================================
+steps {
+  "Left panel and bottom shelf": side_left, shelf_1
+  "Middle and top shelves":      shelf_2, shelf_3, shelf_4
+  "Right panel":                 side_right
+}

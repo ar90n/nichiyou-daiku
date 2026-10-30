@@ -1,0 +1,12 @@
+
+        (p1:2x4 {"length": 500})
+        (p2:2x4 {"length": 500})
+        (p3:2x4 {"length": 500})
+        (p4:2x4 {"length": 500})
+        (p5:2x4 {"length": 500})
+        (p6:2x4 {"length": 500})
+        
+        p1 -[TL<10 DR>20]- p2
+        p3 -[FD<30 LT>35]- p4
+        p5 -[RD<25 BD>60]- p6
+        

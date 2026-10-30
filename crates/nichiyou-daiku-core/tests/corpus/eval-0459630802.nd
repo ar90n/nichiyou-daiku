@@ -1,0 +1,23 @@
+// probe correct frame + top_4
+WIDTH = 1200
+LEG_W = 89
+LEG_L = 362
+SEG = (WIDTH - 3*LEG_W) / 2
+PITCH = (WIDTH - 8*140) / 7 + 140
+
+(leg_fl:2x4 =LEG_L)
+(leg_fm:2x4 =LEG_L)
+(leg_fr:2x4 =LEG_L)
+(apron_uf_l:2x4 =SEG)
+(apron_uf_r:2x4 =SEG)
+
+leg_fl -[RF>0 TF>0 D(:8x30)]- apron_uf_l
+leg_fm -[LB>0 DB>0 D(:8x30)]- apron_uf_l
+leg_fr -[LB>0 DB>0 D(:8x30)]- apron_uf_r
+leg_fm -[RF>0 TF>0 D(:8x30)]- apron_uf_r
+
+(top_2:2x6 =350)
+(top_4:2x6 =350)
+
+apron_uf_l -[RF<(555.5 - (PITCH + 140)) BT<0 D(:8x30)]- top_2
+apron_uf_l -[RF<101.2 BT>0 D(:8x30)]- top_4

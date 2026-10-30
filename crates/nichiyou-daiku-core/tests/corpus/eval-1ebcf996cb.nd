@@ -1,0 +1,60 @@
+// Bench
+// Width: 900mm, Depth: 300mm, Height: 420mm
+// 2x4 frame (4 legs) with 8x30 dowels, 1x4 seat boards (3, running the 900mm length)
+// screwed down with Slim 3.3x45
+
+WIDTH = 900
+DEPTH = 300
+HEIGHT = 420
+
+// Legs: height - seat board thickness (19mm for 1x4)
+LEG_LEN = HEIGHT - 19
+
+// End aprons (span the depth, between the two legs at one end): 300 - 2x89
+END_APRON_LEN = DEPTH - 2 * 89
+// Side stretchers (span the width, between the two legs at one side): 900 - 2x38
+STRETCHER_LEN = WIDTH - 2 * 38
+
+// Seat boards: 3 x 89 = 267, gap (300 - 267) / 2 = 16.5
+SEAT_GAP = (DEPTH - 3 * 89) / 2
+
+// Legs: lf/lb = left end, front/back; rf/rb = right end, front/back
+(leg_lf:2x4 =LEG_LEN)
+(leg_lb:2x4 =LEG_LEN)
+(leg_rf:2x4 =LEG_LEN)
+(leg_rb:2x4 =LEG_LEN)
+
+// End aprons (left end, right end) and side stretchers (front side, back side)
+(apron_end_l:2x4 =END_APRON_LEN)
+(apron_end_r:2x4 =END_APRON_LEN)
+(stretcher_front:2x4 =STRETCHER_LEN)
+(stretcher_back:2x4 =STRETCHER_LEN)
+
+// Seat boards, running the full 900mm width
+(seat_1:1x4 =WIDTH)
+(seat_2:1x4 =WIDTH)
+(seat_3:1x4 =WIDTH)
+
+// Leg to end-apron connections (left end, right end)
+leg_lf -[LB>0 DB>0 D(:8x30)]- apron_end_l
+leg_lb -[RF>0 TF>0 D(:8x30)]- apron_end_l
+leg_rf -[LB>0 DB>0 D(:8x30)]- apron_end_r
+leg_rb -[RF>0 TF>0 D(:8x30)]- apron_end_r
+
+// Leg to side-stretcher connections (front side, back side)
+leg_lf -[BR>0 DB>0 D(:8x30)]- stretcher_front
+leg_rf -[FR>0 TB>0 D(:8x30)]- stretcher_front
+leg_lb -[BL>0 DF>0 D(:8x30)]- stretcher_back
+leg_rb -[FL>0 TF>0 D(:8x30)]- stretcher_back
+
+// Seat boards: outer boards rest on the left-end legs, middle board on apron_end_l
+leg_lf -[TF<0 BD<0 S(Slim:3.3x45)]- seat_1
+apron_end_l -[RF<SEAT_GAP BT<0 S(Slim:3.3x45)]- seat_2
+leg_lb -[TF<0 BD<0 S(Slim:3.3x45)]- seat_3
+
+steps {
+  "Left end frame": leg_lf, leg_lb, apron_end_l
+  "Right end frame": leg_rf, leg_rb, apron_end_r
+  "Side stretchers": stretcher_front, stretcher_back
+  "Seat boards": seat_1, seat_2, seat_3
+}

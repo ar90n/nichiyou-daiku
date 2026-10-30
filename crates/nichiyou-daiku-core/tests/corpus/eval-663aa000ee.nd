@@ -1,0 +1,88 @@
+// サイドテーブル
+// 幅500 × 奥行400 × 高さ600mm
+// 2x4材、脚4本、幕板は脚の上端にそろえる
+// 天板は2x4を奥行方向に並べる
+// 接合: 8x30ダボ
+
+// ============================================
+// 全体寸法
+// ============================================
+WIDTH = 500
+DEPTH = 400
+HEIGHT = 600
+BOARD_WIDTH = 89
+BOARD_THICKNESS = 38
+TOP_BOARDS = 5
+TOP_GAP = (WIDTH - TOP_BOARDS * BOARD_WIDTH) / (TOP_BOARDS - 1)
+
+// ============================================
+// 脚 (4本)
+// 高さ600 - 天板厚38 = 562
+// ============================================
+LEG_LENGTH = HEIGHT - BOARD_THICKNESS
+(leg_fl:2x4 =LEG_LENGTH)
+(leg_fr:2x4 =LEG_LENGTH)
+(leg_bl:2x4 =LEG_LENGTH)
+(leg_br:2x4 =LEG_LENGTH)
+
+// ============================================
+// 幕板
+// 前後: 幅500 - 脚の幅89×2 = 322
+// 左右: 奥行400 - 脚の厚み38×2 = 324
+// 脚の上端にそろえる (上端から89mm下がった位置)
+// ============================================
+APRON_FRONT_LENGTH = WIDTH - 2 * BOARD_WIDTH
+APRON_SIDE_LENGTH = DEPTH - 2 * BOARD_THICKNESS
+APRON_OFFSET = LEG_LENGTH - BOARD_WIDTH
+
+(apron_front:2x4 =APRON_FRONT_LENGTH)
+(apron_back:2x4 =APRON_FRONT_LENGTH)
+(apron_left:2x4 =APRON_SIDE_LENGTH)
+(apron_right:2x4 =APRON_SIDE_LENGTH)
+
+// ============================================
+// 天板 (奥行方向、5枚)
+// 5 × 89 = 445、隙間 (500 - 445) / 4 = 13.75
+// ============================================
+(top_1:2x4 =DEPTH)
+(top_2:2x4 =DEPTH)
+(top_3:2x4 =DEPTH)
+(top_4:2x4 =DEPTH)
+(top_5:2x4 =DEPTH)
+
+// ============================================
+// 前後の幕板を脚に接合 (上端そろえ)
+// ============================================
+leg_fl -[LB>0 DB>0 D(:8x30)]- apron_front
+leg_fr -[RF>0 TF>0 D(:8x30)]- apron_front
+leg_bl -[LB>0 DB>0 D(:8x30)]- apron_back
+leg_br -[RF>0 TF>0 D(:8x30)]- apron_back
+
+// ============================================
+// 左右の幕板を脚に接合 (上端そろえ)
+// ============================================
+leg_fl -[BR<APRON_OFFSET DB<0 D(:8x30)]- apron_left
+leg_bl -[FR<APRON_OFFSET TB<0 D(:8x30)]- apron_left
+leg_fr -[BL<APRON_OFFSET DF<0 D(:8x30)]- apron_right
+leg_br -[FL<APRON_OFFSET TF<0 D(:8x30)]- apron_right
+
+// ============================================
+// 天板を枠に接合
+// 両端の板は脚の上、内側の板は前幕板の上
+// 内側板の位置: 13.75, 116.5, 219.25
+// ============================================
+top_1 -[BD<0 TF<0 D(:8x30)]- leg_fl
+apron_front -[RF<(TOP_GAP) BT<0 D(:8x30)]- top_2
+apron_front -[RF<(2 * TOP_GAP + BOARD_WIDTH) BT<0 D(:8x30)]- top_3
+apron_front -[RF<(3 * TOP_GAP + 2 * BOARD_WIDTH) BT<0 D(:8x30)]- top_4
+top_5 -[BD<0 TF<0 D(:8x30)]- leg_fr
+
+// ============================================
+// 組み立て順
+// ============================================
+steps {
+  "左側の脚と幕板": leg_fl, leg_bl, apron_left
+  "右側の脚と幕板": leg_fr, leg_br, apron_right
+  "前後の幕板で結合": apron_front, apron_back
+  "天板": top_1, top_2, top_3, top_4, top_5
+}

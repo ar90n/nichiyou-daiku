@@ -1,0 +1,85 @@
+// Desk
+// Dimensions: 1000mm (W) x 500mm (D) x 700mm (H)
+// Legs: 4x 2x4, top: 1x6 boards in the width direction, aprons: 2x4
+// Joints: screws (Slim 3.3x45 for the 1x6 top, 8x30 dowels for the frame)
+
+WIDTH = 1000
+DEPTH = 500
+HEIGHT = 700
+TOP_THICKNESS = 19
+LEG_WIDTH = 89
+LEG_THICKNESS = 38
+BOARD_WIDTH = 140
+N_BOARDS = 7
+BOARD_GAP = (WIDTH - N_BOARDS * BOARD_WIDTH) / (N_BOARDS - 1)
+TOP_PITCH = BOARD_WIDTH + BOARD_GAP
+
+// ============================================
+// Legs (4x) - 700mm height minus the 19mm top boards
+// leg_fl: front-left, leg_fr: front-right
+// leg_bl: back-left, leg_br: back-right
+// ============================================
+(leg_fl:2x4 =HEIGHT - TOP_THICKNESS)
+(leg_fr:2x4 =HEIGHT - TOP_THICKNESS)
+(leg_bl:2x4 =HEIGHT - TOP_THICKNESS)
+(leg_br:2x4 =HEIGHT - TOP_THICKNESS)
+
+// ============================================
+// Aprons
+// Front/back run between the legs' 89mm faces: 1000 - 2*89 = 822mm
+// Left/right run between the legs' 38mm faces: 500 - 2*38 = 424mm
+// ============================================
+(apron_front:2x4 =WIDTH - 2 * LEG_WIDTH)
+(apron_back:2x4 =WIDTH - 2 * LEG_WIDTH)
+(apron_left:2x4 =DEPTH - 2 * LEG_THICKNESS)
+(apron_right:2x4 =DEPTH - 2 * LEG_THICKNESS)
+
+// ============================================
+// Top boards - 1x6, running front to back (length = D)
+// 7 boards: 7*140 = 980mm, 6 gaps of (1000 - 980) / 6 = 3.33mm
+// ============================================
+(top_1:1x6 =DEPTH)
+(top_2:1x6 =DEPTH)
+(top_3:1x6 =DEPTH)
+(top_4:1x6 =DEPTH)
+(top_5:1x6 =DEPTH)
+(top_6:1x6 =DEPTH)
+(top_7:1x6 =DEPTH)
+
+// ============================================
+// Front/back aprons to legs (flush with top)
+// ============================================
+leg_fl -[LB>0 DB>0 D(:8x30)]- apron_front
+leg_fr -[RF>0 TF>0 D(:8x30)]- apron_front
+leg_bl -[LB>0 DB>0 D(:8x30)]- apron_back
+leg_br -[RF>0 TF>0 D(:8x30)]- apron_back
+
+// ============================================
+// Side aprons to legs (flush with top)
+// ============================================
+leg_fl -[BR>0 DB>0 D(:8x30)]- apron_left
+leg_bl -[FR>0 TB>0 D(:8x30)]- apron_left
+leg_fr -[BL>0 DF>0 D(:8x30)]- apron_right
+leg_br -[FL>0 TF>0 D(:8x30)]- apron_right
+
+// ============================================
+// Top boards to frame
+// End boards sit on the front legs, middle boards on apron_front
+// Inner board offsets measured from the apron end at leg_fl:
+// o_k = (k-1) * TOP_PITCH - LEG_WIDTH
+// ============================================
+leg_fl -[TF>0 BD>0 S(Slim:3.3x45)]- top_1
+apron_front -[RF<(TOP_PITCH - LEG_WIDTH) BT<0 S(Slim:3.3x45)]- top_2
+apron_front -[RF<(2 * TOP_PITCH - LEG_WIDTH) BT<0 S(Slim:3.3x45)]- top_3
+apron_front -[RF<(3 * TOP_PITCH - LEG_WIDTH) BT<0 S(Slim:3.3x45)]- top_4
+apron_front -[RF<(4 * TOP_PITCH - LEG_WIDTH) BT<0 S(Slim:3.3x45)]- top_5
+apron_front -[RF<(5 * TOP_PITCH - LEG_WIDTH) BT<0 S(Slim:3.3x45)]- top_6
+leg_fr -[TF<0 BD<0 S(Slim:3.3x45)]- top_7
+
+// Assembly: side frames, the front/back aprons joining them, the top
+steps {
+  "Left frame":  leg_fl, leg_bl, apron_left
+  "Right frame": leg_fr, leg_br, apron_right
+  "Join":        apron_front, apron_back
+  "Top":         top_1, top_2, top_3, top_4, top_5, top_6, top_7
+}

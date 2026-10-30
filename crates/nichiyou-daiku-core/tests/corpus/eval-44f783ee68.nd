@@ -1,0 +1,182 @@
+// Storage Rack: 800 (W) x 300 (D) x 1200 (H)
+// 2x4 frame (4 legs, 4 apron levels) with 8x30 dowels
+// 1x4 shelf boards (4 levels incl. top) screwed down with Slim 3.3x45
+// Shelves are recessed between the legs (622 x 224mm each) and equally
+// spaced: top surfaces at 300, 600, 900 and 1200mm above the floor.
+
+WIDTH = 800
+DEPTH = 300
+HEIGHT = 1200
+TOP_THICK = 19                         // 1x4 shelf board thickness
+
+// Legs run the full height minus the top shelf board, so its top
+// surface lands exactly at HEIGHT once it rests on the top frame.
+LEG_LEN = HEIGHT - TOP_THICK
+
+// Apron (2x4 on edge, 89mm tall) lengths between the legs
+APRON_FB_LEN = WIDTH - 2 * 89
+APRON_SIDE_LEN = DEPTH - 2 * 38
+
+// Shelf board length: recessed between front and back aprons
+BOARD_LEN = DEPTH - 2 * 38
+
+// Leg offsets (measured down from the leg top) for the 3 lower apron
+// frames; HEIGHT - target_top gives the leg-side ">offset" for a frame
+// whose boards finish flush at target_top. The top frame uses plain ">0".
+LVL1_OFF = HEIGHT - HEIGHT / 4          // shelf 1 top surface at 300mm
+LVL2_OFF = HEIGHT - HEIGHT / 2          // shelf 2 top surface at 600mm
+LVL3_OFF = HEIGHT - 3 * HEIGHT / 4      // shelf 3 top surface at 900mm
+
+// Shelf board offsets along the front apron (6 boards, 89mm each)
+BOARD_GAP = (APRON_FB_LEN - 6 * 89) / 7
+BOARD_OFF_1 = BOARD_GAP
+BOARD_OFF_2 = BOARD_OFF_1 + 89 + BOARD_GAP
+BOARD_OFF_3 = BOARD_OFF_2 + 89 + BOARD_GAP
+BOARD_OFF_4 = BOARD_OFF_3 + 89 + BOARD_GAP
+BOARD_OFF_5 = BOARD_OFF_4 + 89 + BOARD_GAP
+BOARD_OFF_6 = BOARD_OFF_5 + 89 + BOARD_GAP
+
+// Legs: fl = front-left, fr = front-right, bl = back-left, br = back-right
+(leg_fl:2x4 =LEG_LEN)
+(leg_fr:2x4 =LEG_LEN)
+(leg_bl:2x4 =LEG_LEN)
+(leg_br:2x4 =LEG_LEN)
+
+// Level 1 (bottom) apron frame
+(apron_front_1:2x4 =APRON_FB_LEN)
+(apron_back_1:2x4 =APRON_FB_LEN)
+(apron_left_1:2x4 =APRON_SIDE_LEN)
+(apron_right_1:2x4 =APRON_SIDE_LEN)
+
+// Level 2 apron frame
+(apron_front_2:2x4 =APRON_FB_LEN)
+(apron_back_2:2x4 =APRON_FB_LEN)
+(apron_left_2:2x4 =APRON_SIDE_LEN)
+(apron_right_2:2x4 =APRON_SIDE_LEN)
+
+// Level 3 apron frame
+(apron_front_3:2x4 =APRON_FB_LEN)
+(apron_back_3:2x4 =APRON_FB_LEN)
+(apron_left_3:2x4 =APRON_SIDE_LEN)
+(apron_right_3:2x4 =APRON_SIDE_LEN)
+
+// Level 4 (top) apron frame
+(apron_front_4:2x4 =APRON_FB_LEN)
+(apron_back_4:2x4 =APRON_FB_LEN)
+(apron_left_4:2x4 =APRON_SIDE_LEN)
+(apron_right_4:2x4 =APRON_SIDE_LEN)
+
+// Shelf boards, level 1
+(shelf1_1:1x4 =BOARD_LEN)
+(shelf1_2:1x4 =BOARD_LEN)
+(shelf1_3:1x4 =BOARD_LEN)
+(shelf1_4:1x4 =BOARD_LEN)
+(shelf1_5:1x4 =BOARD_LEN)
+(shelf1_6:1x4 =BOARD_LEN)
+
+// Shelf boards, level 2
+(shelf2_1:1x4 =BOARD_LEN)
+(shelf2_2:1x4 =BOARD_LEN)
+(shelf2_3:1x4 =BOARD_LEN)
+(shelf2_4:1x4 =BOARD_LEN)
+(shelf2_5:1x4 =BOARD_LEN)
+(shelf2_6:1x4 =BOARD_LEN)
+
+// Shelf boards, level 3
+(shelf3_1:1x4 =BOARD_LEN)
+(shelf3_2:1x4 =BOARD_LEN)
+(shelf3_3:1x4 =BOARD_LEN)
+(shelf3_4:1x4 =BOARD_LEN)
+(shelf3_5:1x4 =BOARD_LEN)
+(shelf3_6:1x4 =BOARD_LEN)
+
+// Shelf boards, level 4 (top surface)
+(shelf4_1:1x4 =BOARD_LEN)
+(shelf4_2:1x4 =BOARD_LEN)
+(shelf4_3:1x4 =BOARD_LEN)
+(shelf4_4:1x4 =BOARD_LEN)
+(shelf4_5:1x4 =BOARD_LEN)
+(shelf4_6:1x4 =BOARD_LEN)
+
+// Level 1 apron frame to legs
+leg_fl -[LB>LVL1_OFF DB>0 D(:8x30)]- apron_front_1
+leg_fr -[RF>LVL1_OFF TF>0 D(:8x30)]- apron_front_1
+leg_bl -[LB>LVL1_OFF DB>0 D(:8x30)]- apron_back_1
+leg_br -[RF>LVL1_OFF TF>0 D(:8x30)]- apron_back_1
+leg_fl -[BR>LVL1_OFF DB>0 D(:8x30)]- apron_left_1
+leg_bl -[FR>LVL1_OFF TB>0 D(:8x30)]- apron_left_1
+leg_fr -[BL>LVL1_OFF DF>0 D(:8x30)]- apron_right_1
+leg_br -[FL>LVL1_OFF TF>0 D(:8x30)]- apron_right_1
+
+// Level 2 apron frame to legs
+leg_fl -[LB>LVL2_OFF DB>0 D(:8x30)]- apron_front_2
+leg_fr -[RF>LVL2_OFF TF>0 D(:8x30)]- apron_front_2
+leg_bl -[LB>LVL2_OFF DB>0 D(:8x30)]- apron_back_2
+leg_br -[RF>LVL2_OFF TF>0 D(:8x30)]- apron_back_2
+leg_fl -[BR>LVL2_OFF DB>0 D(:8x30)]- apron_left_2
+leg_bl -[FR>LVL2_OFF TB>0 D(:8x30)]- apron_left_2
+leg_fr -[BL>LVL2_OFF DF>0 D(:8x30)]- apron_right_2
+leg_br -[FL>LVL2_OFF TF>0 D(:8x30)]- apron_right_2
+
+// Level 3 apron frame to legs
+leg_fl -[LB>LVL3_OFF DB>0 D(:8x30)]- apron_front_3
+leg_fr -[RF>LVL3_OFF TF>0 D(:8x30)]- apron_front_3
+leg_bl -[LB>LVL3_OFF DB>0 D(:8x30)]- apron_back_3
+leg_br -[RF>LVL3_OFF TF>0 D(:8x30)]- apron_back_3
+leg_fl -[BR>LVL3_OFF DB>0 D(:8x30)]- apron_left_3
+leg_bl -[FR>LVL3_OFF TB>0 D(:8x30)]- apron_left_3
+leg_fr -[BL>LVL3_OFF DF>0 D(:8x30)]- apron_right_3
+leg_br -[FL>LVL3_OFF TF>0 D(:8x30)]- apron_right_3
+
+// Level 4 (top) apron frame to legs, flush with leg tops
+leg_fl -[LB>0 DB>0 D(:8x30)]- apron_front_4
+leg_fr -[RF>0 TF>0 D(:8x30)]- apron_front_4
+leg_bl -[LB>0 DB>0 D(:8x30)]- apron_back_4
+leg_br -[RF>0 TF>0 D(:8x30)]- apron_back_4
+leg_fl -[BR>0 DB>0 D(:8x30)]- apron_left_4
+leg_bl -[FR>0 TB>0 D(:8x30)]- apron_left_4
+leg_fr -[BL>0 DF>0 D(:8x30)]- apron_right_4
+leg_br -[FL>0 TF>0 D(:8x30)]- apron_right_4
+
+// Shelf boards resting on the front apron, level 1
+apron_front_1 -[RF<BOARD_OFF_1 BT<0 S(Slim:3.3x45)]- shelf1_1
+apron_front_1 -[RF<BOARD_OFF_2 BT<0 S(Slim:3.3x45)]- shelf1_2
+apron_front_1 -[RF<BOARD_OFF_3 BT<0 S(Slim:3.3x45)]- shelf1_3
+apron_front_1 -[RF<BOARD_OFF_4 BT<0 S(Slim:3.3x45)]- shelf1_4
+apron_front_1 -[RF<BOARD_OFF_5 BT<0 S(Slim:3.3x45)]- shelf1_5
+apron_front_1 -[RF<BOARD_OFF_6 BT<0 S(Slim:3.3x45)]- shelf1_6
+
+// Shelf boards resting on the front apron, level 2
+apron_front_2 -[RF<BOARD_OFF_1 BT<0 S(Slim:3.3x45)]- shelf2_1
+apron_front_2 -[RF<BOARD_OFF_2 BT<0 S(Slim:3.3x45)]- shelf2_2
+apron_front_2 -[RF<BOARD_OFF_3 BT<0 S(Slim:3.3x45)]- shelf2_3
+apron_front_2 -[RF<BOARD_OFF_4 BT<0 S(Slim:3.3x45)]- shelf2_4
+apron_front_2 -[RF<BOARD_OFF_5 BT<0 S(Slim:3.3x45)]- shelf2_5
+apron_front_2 -[RF<BOARD_OFF_6 BT<0 S(Slim:3.3x45)]- shelf2_6
+
+// Shelf boards resting on the front apron, level 3
+apron_front_3 -[RF<BOARD_OFF_1 BT<0 S(Slim:3.3x45)]- shelf3_1
+apron_front_3 -[RF<BOARD_OFF_2 BT<0 S(Slim:3.3x45)]- shelf3_2
+apron_front_3 -[RF<BOARD_OFF_3 BT<0 S(Slim:3.3x45)]- shelf3_3
+apron_front_3 -[RF<BOARD_OFF_4 BT<0 S(Slim:3.3x45)]- shelf3_4
+apron_front_3 -[RF<BOARD_OFF_5 BT<0 S(Slim:3.3x45)]- shelf3_5
+apron_front_3 -[RF<BOARD_OFF_6 BT<0 S(Slim:3.3x45)]- shelf3_6
+
+// Shelf boards resting on the front apron, level 4 (top surface)
+apron_front_4 -[RF<BOARD_OFF_1 BT<0 S(Slim:3.3x45)]- shelf4_1
+apron_front_4 -[RF<BOARD_OFF_2 BT<0 S(Slim:3.3x45)]- shelf4_2
+apron_front_4 -[RF<BOARD_OFF_3 BT<0 S(Slim:3.3x45)]- shelf4_3
+apron_front_4 -[RF<BOARD_OFF_4 BT<0 S(Slim:3.3x45)]- shelf4_4
+apron_front_4 -[RF<BOARD_OFF_5 BT<0 S(Slim:3.3x45)]- shelf4_5
+apron_front_4 -[RF<BOARD_OFF_6 BT<0 S(Slim:3.3x45)]- shelf4_6
+
+steps {
+  "Bottom frame": leg_fl, leg_fr, leg_bl, leg_br, apron_front_1, apron_back_1, apron_left_1, apron_right_1
+  "Shelf 1 boards": shelf1_1, shelf1_2, shelf1_3, shelf1_4, shelf1_5, shelf1_6
+  "Level 2 frame": apron_front_2, apron_back_2, apron_left_2, apron_right_2
+  "Shelf 2 boards": shelf2_1, shelf2_2, shelf2_3, shelf2_4, shelf2_5, shelf2_6
+  "Level 3 frame": apron_front_3, apron_back_3, apron_left_3, apron_right_3
+  "Shelf 3 boards": shelf3_1, shelf3_2, shelf3_3, shelf3_4, shelf3_5, shelf3_6
+  "Top frame": apron_front_4, apron_back_4, apron_left_4, apron_right_4
+  "Top shelf boards": shelf4_1, shelf4_2, shelf4_3, shelf4_4, shelf4_5, shelf4_6
+}

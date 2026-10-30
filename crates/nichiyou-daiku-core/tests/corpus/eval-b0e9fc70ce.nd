@@ -1,0 +1,158 @@
+// TV Stand
+// Dimensions: 1200mm (W) x 350mm (D) x 400mm (H)
+// Material: 2x6 for the top and the middle shelf, 2x4 for the legs (6 legs: left, center, right pairs)
+// Joint: Dowel 8x30
+
+WIDTH = 1200
+DEPTH = 350
+HEIGHT = 400
+
+// Legs: height minus the 38mm top thickness (2x6)
+LEG_LEN = HEIGHT - 38
+
+// Width position of the center leg pair (left leg pair sits at offset 0)
+CENTER_OFFSET = WIDTH / 2 - 89 / 2
+
+// Front-to-back braces tying each leg pair together: depth minus the legs' 38mm sides
+BRACE_LEN = DEPTH - 2 * 38
+
+// Braces flush with the leg tops
+BRACE_TOP_OFFSET = LEG_LEN - 89
+
+// Middle shelf: underside 150mm above the floor (default)
+SHELF_HEIGHT = 150
+BRACE_SHELF_OFFSET = LEG_LEN - SHELF_HEIGHT - 89
+
+// Top boards: one per bay, each spanning leg-left-edge to leg-left-edge
+// (both bays are the same length since the center leg is exactly centered)
+TOP_SEG = CENTER_OFFSET
+
+// Shelf support aprons span one bay (left leg to center leg, or center leg to
+// right leg): bay width minus the two legs' 89mm sides
+BAY = CENTER_OFFSET - 89
+
+// 3 shelf boards (2x6, 140mm wide) per bay, evenly gapped between the legs
+SHELF_GAP = (BAY - 3 * 140) / 4
+SHELF_OFF1 = SHELF_GAP
+SHELF_OFF2 = 140 + 2 * SHELF_GAP
+SHELF_OFF3 = 280 + 3 * SHELF_GAP
+
+// ============================================
+// Legs (6x): fl/fc/fr front row, bl/bc/br back row
+// ============================================
+(leg_fl:2x4 =LEG_LEN)
+(leg_fc:2x4 =LEG_LEN)
+(leg_fr:2x4 =LEG_LEN)
+(leg_bl:2x4 =LEG_LEN)
+(leg_bc:2x4 =LEG_LEN)
+(leg_br:2x4 =LEG_LEN)
+
+// ============================================
+// Top boards (2x6), one per bay, resting on the leg tops; butted together
+// over the center legs for a continuous 1200mm top
+// ============================================
+(top_front_l:2x6 =TOP_SEG)
+(top_front_r:2x6 =TOP_SEG)
+(top_back_l:2x6 =TOP_SEG)
+(top_back_r:2x6 =TOP_SEG)
+
+// ============================================
+// Middle shelf: support aprons (2x4) between each leg pair, flush at
+// SHELF_HEIGHT above the floor, and shelf boards (2x6) resting on the front
+// aprons, 3 per bay (left bay and right bay)
+// ============================================
+(apron_shelf_front_l:2x4 =BAY)
+(apron_shelf_front_r:2x4 =BAY)
+(apron_shelf_back_l:2x4 =BAY)
+(apron_shelf_back_r:2x4 =BAY)
+
+(shelf_l1:2x6 =DEPTH)
+(shelf_l2:2x6 =DEPTH)
+(shelf_l3:2x6 =DEPTH)
+(shelf_r1:2x6 =DEPTH)
+(shelf_r2:2x6 =DEPTH)
+(shelf_r3:2x6 =DEPTH)
+
+// ============================================
+// Braces tying each front/back leg pair together (left, center, right)
+// ============================================
+(brace_top_left:2x4 =BRACE_LEN)
+(brace_top_center:2x4 =BRACE_LEN)
+(brace_top_right:2x4 =BRACE_LEN)
+(brace_shelf_left:2x4 =BRACE_LEN)
+(brace_shelf_center:2x4 =BRACE_LEN)
+(brace_shelf_right:2x4 =BRACE_LEN)
+
+// ============================================
+// Top boards to legs (legs' top end against the board's underside)
+// ============================================
+// The far end of each segment is flush with the next leg's edge (zero
+// contact area there, so no dowel fits); only the near end is dowelled.
+top_front_l -[BR<0 TF<0 D(:8x30)]- leg_fl
+top_front_l -[BR<TOP_SEG TF<0 V]- leg_fc
+top_front_r -[BR<0 TF<0 D(:8x30)]- leg_fc
+top_front_r -[BR<TOP_SEG TF<0 V]- leg_fr
+
+top_back_l -[BL<0 TB<0 D(:8x30)]- leg_bl
+top_back_l -[BL<TOP_SEG TB<0 V]- leg_bc
+top_back_r -[BL<0 TB<0 D(:8x30)]- leg_bc
+top_back_r -[BL<TOP_SEG TB<0 V]- leg_br
+
+// ============================================
+// Shelf support aprons to legs (flush at SHELF_HEIGHT above the floor)
+// ============================================
+leg_fl -[RB>BRACE_SHELF_OFFSET DB>0 D(:8x30)]- apron_shelf_front_l
+leg_fc -[LF>BRACE_SHELF_OFFSET TF>0 D(:8x30)]- apron_shelf_front_l
+leg_fc -[RB>BRACE_SHELF_OFFSET DB>0 D(:8x30)]- apron_shelf_front_r
+leg_fr -[LF>BRACE_SHELF_OFFSET TF>0 D(:8x30)]- apron_shelf_front_r
+
+leg_bl -[RB>BRACE_SHELF_OFFSET DB>0 D(:8x30)]- apron_shelf_back_l
+leg_bc -[LF>BRACE_SHELF_OFFSET TF>0 D(:8x30)]- apron_shelf_back_l
+leg_bc -[RB>BRACE_SHELF_OFFSET DB>0 D(:8x30)]- apron_shelf_back_r
+leg_br -[LF>BRACE_SHELF_OFFSET TF>0 D(:8x30)]- apron_shelf_back_r
+
+// ============================================
+// Shelf boards resting on the front shelf aprons, 3 per bay
+// ============================================
+apron_shelf_front_l -[RF<SHELF_OFF1 BT<0 D(:8x30)]- shelf_l1
+apron_shelf_front_l -[RF<SHELF_OFF2 BT<0 D(:8x30)]- shelf_l2
+apron_shelf_front_l -[RF<SHELF_OFF3 BT<0 D(:8x30)]- shelf_l3
+apron_shelf_front_r -[RF<SHELF_OFF1 BT<0 D(:8x30)]- shelf_r1
+apron_shelf_front_r -[RF<SHELF_OFF2 BT<0 D(:8x30)]- shelf_r2
+apron_shelf_front_r -[RF<SHELF_OFF3 BT<0 D(:8x30)]- shelf_r3
+
+// ============================================
+// Braces, top level (flush with the leg tops)
+// ============================================
+leg_fl -[BR<BRACE_TOP_OFFSET DB<0 D(:8x30)]- brace_top_left
+leg_bl -[FR<BRACE_TOP_OFFSET TB<0 D(:8x30)]- brace_top_left
+
+leg_fc -[BR<BRACE_TOP_OFFSET DB<0 D(:8x30)]- brace_top_center
+leg_bc -[FR<BRACE_TOP_OFFSET TB<0 D(:8x30)]- brace_top_center
+
+leg_fr -[BR<BRACE_TOP_OFFSET DB<0 D(:8x30)]- brace_top_right
+leg_br -[FR<BRACE_TOP_OFFSET TB<0 D(:8x30)]- brace_top_right
+
+// ============================================
+// Braces, shelf level
+// ============================================
+leg_fl -[BR<BRACE_SHELF_OFFSET DB<0 D(:8x30)]- brace_shelf_left
+leg_bl -[FR<BRACE_SHELF_OFFSET TB<0 D(:8x30)]- brace_shelf_left
+
+leg_fc -[BR<BRACE_SHELF_OFFSET DB<0 D(:8x30)]- brace_shelf_center
+leg_bc -[FR<BRACE_SHELF_OFFSET TB<0 D(:8x30)]- brace_shelf_center
+
+leg_fr -[BR<BRACE_SHELF_OFFSET DB<0 D(:8x30)]- brace_shelf_right
+leg_br -[FR<BRACE_SHELF_OFFSET TB<0 D(:8x30)]- brace_shelf_right
+
+// ============================================
+// Assembly: three leg frames, the shelf joining them, the top
+// ============================================
+steps {
+  "Left frame":   leg_fl, leg_bl, brace_top_left, brace_shelf_left
+  "Center frame": leg_fc, leg_bc, brace_top_center, brace_shelf_center
+  "Right frame":  leg_fr, leg_br, brace_top_right, brace_shelf_right
+  "Shelf aprons": apron_shelf_front_l, apron_shelf_front_r, apron_shelf_back_l, apron_shelf_back_r
+  "Shelf boards": shelf_l1, shelf_l2, shelf_l3, shelf_r1, shelf_r2, shelf_r3
+  "Top":          top_front_l, top_front_r, top_back_l, top_back_r
+}

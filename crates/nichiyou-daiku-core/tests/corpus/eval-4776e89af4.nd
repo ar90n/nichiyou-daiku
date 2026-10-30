@@ -1,0 +1,48 @@
+// Bookshelf: 1x8 only
+// Overall: 600mm (W) x 184mm (D) x 900mm (H)
+// Shelves: 4 boards including top and bottom, evenly spaced
+// Joints: 8x30 dowels
+//
+// Defaults chosen:
+// - Two 1x8 side panels (19mm thick) flank the shelves; shelf ends butt
+//   against the panels' inner wide faces
+// - Bottom and top shelves flush with the side panel ends
+// - No back panel, no feet
+//
+// Shelf spacing (even):
+// gap = (900 - 4 x 19) / 3 = 274.67mm
+// undersides at 0 / 293.67 / 587.33 / 881 (top shelf flush with the panels' tops)
+
+// Overall sizes
+WIDTH = 600
+HEIGHT = 900
+THICK = 19                          // 1x thickness
+SHELF_COUNT = 4                     // boards incl. top and bottom
+GAP = (HEIGHT - SHELF_COUNT * THICK) / (SHELF_COUNT - 1)
+SHELF_LEN = WIDTH - 2 * THICK       // 562
+
+// Side panels: 900 tall, 184mm deep, wide faces facing the shelves
+(side_l:1x8 =HEIGHT)
+(side_r:1x8 =HEIGHT)
+
+// Shelf boards
+(shelf_1:1x8 =SHELF_LEN)            // bottom
+(shelf_2:1x8 =SHELF_LEN)            // shelf 2 from bottom
+(shelf_3:1x8 =SHELF_LEN)            // shelf 3 from bottom
+(shelf_4:1x8 =SHELF_LEN)            // top
+
+// Shelf ends on the panels' wide faces, underside at its height above the floor
+shelf_1 -[DL<0 BL<0 D(:8x30)]- side_l
+shelf_1 -[TL<0 FL<0 D(:8x30)]- side_r
+shelf_2 -[DL<0 BL<(THICK + GAP) D(:8x30)]- side_l
+shelf_2 -[TL<0 FL<(THICK + GAP) D(:8x30)]- side_r
+shelf_3 -[DL<0 BL<(2 * THICK + 2 * GAP) D(:8x30)]- side_l
+shelf_3 -[TL<0 FL<(2 * THICK + 2 * GAP) D(:8x30)]- side_r
+// Top shelf flush with the panel tops: underside THICK below them
+shelf_4 -[DL<0 BL>THICK D(:8x30)]- side_l
+shelf_4 -[TL<0 FL>THICK D(:8x30)]- side_r
+
+steps {
+  "Left side and shelves": side_l, shelf_1, shelf_2, shelf_3, shelf_4
+  "Right side": side_r
+}

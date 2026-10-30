@@ -1,0 +1,227 @@
+// 収納ラック
+// 幅800 x 奥行300 x 高さ1200mm
+// 2x4材の脚・枠、1x4材の棚板・天板
+// 接合: 8x30mm 木ダボ
+//
+// 棚は天板を含めて4段。棚板上面の高さを
+// 150 / 500 / 850 / 1200mm とし、350mm等間隔にする。
+// 最下段の棚板上面は床から150mm（既定値）。
+
+WIDTH = 800
+DEPTH = 300
+HEIGHT = 1200
+BOARD_THICKNESS = 19
+LEG_WIDTH = 89
+LEG_THICKNESS = 38
+APRON_HEIGHT = 89
+
+LEG_LENGTH = HEIGHT - BOARD_THICKNESS
+FRONT_APRON_LENGTH = WIDTH - 2 * LEG_WIDTH
+SIDE_APRON_LENGTH = DEPTH - 2 * LEG_THICKNESS
+BOARD_LENGTH = DEPTH
+
+SHELF_COUNT = 4
+BOTTOM_SHELF_SURFACE = 150
+SHELF_INTERVAL = (HEIGHT - BOTTOM_SHELF_SURFACE) / (SHELF_COUNT - 1)
+SHELF_SURFACE_1 = BOTTOM_SHELF_SURFACE
+SHELF_SURFACE_2 = BOTTOM_SHELF_SURFACE + SHELF_INTERVAL
+SHELF_SURFACE_3 = BOTTOM_SHELF_SURFACE + 2 * SHELF_INTERVAL
+
+// 前後の棚受け: 脚天端から測ったオフセット
+FRONT_OFFSET_1 = HEIGHT - SHELF_SURFACE_1
+FRONT_OFFSET_2 = HEIGHT - SHELF_SURFACE_2
+FRONT_OFFSET_3 = HEIGHT - SHELF_SURFACE_3
+
+// 左右の棚受け: 下端の床からの高さ
+SIDE_BOTTOM_1 = SHELF_SURFACE_1 - BOARD_THICKNESS - APRON_HEIGHT
+SIDE_BOTTOM_2 = SHELF_SURFACE_2 - BOARD_THICKNESS - APRON_HEIGHT
+SIDE_BOTTOM_3 = SHELF_SURFACE_3 - BOARD_THICKNESS - APRON_HEIGHT
+SIDE_BOTTOM_TOP = LEG_LENGTH - APRON_HEIGHT
+
+// 下段棚板: 内寸622mmに6枚、7か所の隙間を等分
+LOWER_BOARD_COUNT = 6
+LOWER_GAP = (FRONT_APRON_LENGTH - LOWER_BOARD_COUNT * LEG_WIDTH) / (LOWER_BOARD_COUNT + 1)
+LOWER_STEP = LEG_WIDTH + LOWER_GAP
+LOWER_OFFSET_1 = LOWER_GAP
+LOWER_OFFSET_2 = LOWER_GAP + LOWER_STEP
+LOWER_OFFSET_3 = LOWER_GAP + 2 * LOWER_STEP
+LOWER_OFFSET_4 = LOWER_GAP + 3 * LOWER_STEP
+LOWER_OFFSET_5 = LOWER_GAP + 4 * LOWER_STEP
+LOWER_OFFSET_6 = LOWER_GAP + 5 * LOWER_STEP
+
+// 天板: 幅800mmに8枚、7か所の隙間を等分
+TOP_BOARD_COUNT = 8
+TOP_GAP = (WIDTH - TOP_BOARD_COUNT * LEG_WIDTH) / (TOP_BOARD_COUNT - 1)
+TOP_STEP = LEG_WIDTH + TOP_GAP
+TOP_OFFSET_2 = TOP_GAP
+TOP_OFFSET_3 = TOP_GAP + TOP_STEP
+TOP_OFFSET_4 = TOP_GAP + 2 * TOP_STEP
+TOP_OFFSET_5 = TOP_GAP + 3 * TOP_STEP
+TOP_OFFSET_6 = TOP_GAP + 4 * TOP_STEP
+TOP_OFFSET_7 = TOP_GAP + 5 * TOP_STEP
+
+// ============================================
+// 脚（4本）
+// ============================================
+(leg_fl:2x4 =LEG_LENGTH)
+(leg_fr:2x4 =LEG_LENGTH)
+(leg_bl:2x4 =LEG_LENGTH)
+(leg_br:2x4 =LEG_LENGTH)
+
+// ============================================
+// 棚受け（各段の前後・左右、天板段を含む4段）
+// ============================================
+(apron_front_1:2x4 =FRONT_APRON_LENGTH)
+(apron_back_1:2x4 =FRONT_APRON_LENGTH)
+(apron_left_1:2x4 =SIDE_APRON_LENGTH)
+(apron_right_1:2x4 =SIDE_APRON_LENGTH)
+
+(apron_front_2:2x4 =FRONT_APRON_LENGTH)
+(apron_back_2:2x4 =FRONT_APRON_LENGTH)
+(apron_left_2:2x4 =SIDE_APRON_LENGTH)
+(apron_right_2:2x4 =SIDE_APRON_LENGTH)
+
+(apron_front_3:2x4 =FRONT_APRON_LENGTH)
+(apron_back_3:2x4 =FRONT_APRON_LENGTH)
+(apron_left_3:2x4 =SIDE_APRON_LENGTH)
+(apron_right_3:2x4 =SIDE_APRON_LENGTH)
+
+(apron_front_top:2x4 =FRONT_APRON_LENGTH)
+(apron_back_top:2x4 =FRONT_APRON_LENGTH)
+(apron_left_top:2x4 =SIDE_APRON_LENGTH)
+(apron_right_top:2x4 =SIDE_APRON_LENGTH)
+
+// ============================================
+// 下段の棚板（1x4、奥行方向、各段6枚）
+// ============================================
+(shelf_1_1:1x4 =BOARD_LENGTH)
+(shelf_1_2:1x4 =BOARD_LENGTH)
+(shelf_1_3:1x4 =BOARD_LENGTH)
+(shelf_1_4:1x4 =BOARD_LENGTH)
+(shelf_1_5:1x4 =BOARD_LENGTH)
+(shelf_1_6:1x4 =BOARD_LENGTH)
+
+(shelf_2_1:1x4 =BOARD_LENGTH)
+(shelf_2_2:1x4 =BOARD_LENGTH)
+(shelf_2_3:1x4 =BOARD_LENGTH)
+(shelf_2_4:1x4 =BOARD_LENGTH)
+(shelf_2_5:1x4 =BOARD_LENGTH)
+(shelf_2_6:1x4 =BOARD_LENGTH)
+
+(shelf_3_1:1x4 =BOARD_LENGTH)
+(shelf_3_2:1x4 =BOARD_LENGTH)
+(shelf_3_3:1x4 =BOARD_LENGTH)
+(shelf_3_4:1x4 =BOARD_LENGTH)
+(shelf_3_5:1x4 =BOARD_LENGTH)
+(shelf_3_6:1x4 =BOARD_LENGTH)
+
+// ============================================
+// 天板（1x4、奥行方向、8枚）
+// ============================================
+(top_1:1x4 =BOARD_LENGTH)
+(top_2:1x4 =BOARD_LENGTH)
+(top_3:1x4 =BOARD_LENGTH)
+(top_4:1x4 =BOARD_LENGTH)
+(top_5:1x4 =BOARD_LENGTH)
+(top_6:1x4 =BOARD_LENGTH)
+(top_7:1x4 =BOARD_LENGTH)
+(top_8:1x4 =BOARD_LENGTH)
+
+// ============================================
+// 最下段の棚受け
+// ============================================
+leg_fl -[LB>FRONT_OFFSET_1 DB>0 D(:8x30)]- apron_front_1
+leg_fr -[RF>FRONT_OFFSET_1 TF>0 D(:8x30)]- apron_front_1
+leg_bl -[LB>FRONT_OFFSET_1 DB>0 D(:8x30)]- apron_back_1
+leg_br -[RF>FRONT_OFFSET_1 TF>0 D(:8x30)]- apron_back_1
+
+leg_fl -[BR<SIDE_BOTTOM_1 DB<0 D(:8x30)]- apron_left_1
+leg_bl -[FR<SIDE_BOTTOM_1 TB<0 D(:8x30)]- apron_left_1
+leg_fr -[BL<SIDE_BOTTOM_1 DF<0 D(:8x30)]- apron_right_1
+leg_br -[FL<SIDE_BOTTOM_1 TF<0 D(:8x30)]- apron_right_1
+
+// ============================================
+// 2段目の棚受け
+// ============================================
+leg_fl -[LB>FRONT_OFFSET_2 DB>0 D(:8x30)]- apron_front_2
+leg_fr -[RF>FRONT_OFFSET_2 TF>0 D(:8x30)]- apron_front_2
+leg_bl -[LB>FRONT_OFFSET_2 DB>0 D(:8x30)]- apron_back_2
+leg_br -[RF>FRONT_OFFSET_2 TF>0 D(:8x30)]- apron_back_2
+
+leg_fl -[BR<SIDE_BOTTOM_2 DB<0 D(:8x30)]- apron_left_2
+leg_bl -[FR<SIDE_BOTTOM_2 TB<0 D(:8x30)]- apron_left_2
+leg_fr -[BL<SIDE_BOTTOM_2 DF<0 D(:8x30)]- apron_right_2
+leg_br -[FL<SIDE_BOTTOM_2 TF<0 D(:8x30)]- apron_right_2
+
+// ============================================
+// 3段目の棚受け
+// ============================================
+leg_fl -[LB>FRONT_OFFSET_3 DB>0 D(:8x30)]- apron_front_3
+leg_fr -[RF>FRONT_OFFSET_3 TF>0 D(:8x30)]- apron_front_3
+leg_bl -[LB>FRONT_OFFSET_3 DB>0 D(:8x30)]- apron_back_3
+leg_br -[RF>FRONT_OFFSET_3 TF>0 D(:8x30)]- apron_back_3
+
+leg_fl -[BR<SIDE_BOTTOM_3 DB<0 D(:8x30)]- apron_left_3
+leg_bl -[FR<SIDE_BOTTOM_3 TB<0 D(:8x30)]- apron_left_3
+leg_fr -[BL<SIDE_BOTTOM_3 DF<0 D(:8x30)]- apron_right_3
+leg_br -[FL<SIDE_BOTTOM_3 TF<0 D(:8x30)]- apron_right_3
+
+// ============================================
+// 天板段の棚受け（脚天端と面一）
+// ============================================
+leg_fl -[LB>0 DB>0 D(:8x30)]- apron_front_top
+leg_fr -[RF>0 TF>0 D(:8x30)]- apron_front_top
+leg_bl -[LB>0 DB>0 D(:8x30)]- apron_back_top
+leg_br -[RF>0 TF>0 D(:8x30)]- apron_back_top
+
+leg_fl -[BR<SIDE_BOTTOM_TOP DB<0 D(:8x30)]- apron_left_top
+leg_bl -[FR<SIDE_BOTTOM_TOP TB<0 D(:8x30)]- apron_left_top
+leg_fr -[BL<SIDE_BOTTOM_TOP DF<0 D(:8x30)]- apron_right_top
+leg_br -[FL<SIDE_BOTTOM_TOP TF<0 D(:8x30)]- apron_right_top
+
+// ============================================
+// 下段棚板（前受けにダボ留め、後受けに載せる）
+// ============================================
+apron_front_1 -[RF<LOWER_OFFSET_1 BT<0 D(:8x30)]- shelf_1_1
+apron_front_1 -[RF<LOWER_OFFSET_2 BT<0 D(:8x30)]- shelf_1_2
+apron_front_1 -[RF<LOWER_OFFSET_3 BT<0 D(:8x30)]- shelf_1_3
+apron_front_1 -[RF<LOWER_OFFSET_4 BT<0 D(:8x30)]- shelf_1_4
+apron_front_1 -[RF<LOWER_OFFSET_5 BT<0 D(:8x30)]- shelf_1_5
+apron_front_1 -[RF<LOWER_OFFSET_6 BT<0 D(:8x30)]- shelf_1_6
+
+apron_front_2 -[RF<LOWER_OFFSET_1 BT<0 D(:8x30)]- shelf_2_1
+apron_front_2 -[RF<LOWER_OFFSET_2 BT<0 D(:8x30)]- shelf_2_2
+apron_front_2 -[RF<LOWER_OFFSET_3 BT<0 D(:8x30)]- shelf_2_3
+apron_front_2 -[RF<LOWER_OFFSET_4 BT<0 D(:8x30)]- shelf_2_4
+apron_front_2 -[RF<LOWER_OFFSET_5 BT<0 D(:8x30)]- shelf_2_5
+apron_front_2 -[RF<LOWER_OFFSET_6 BT<0 D(:8x30)]- shelf_2_6
+
+apron_front_3 -[RF<LOWER_OFFSET_1 BT<0 D(:8x30)]- shelf_3_1
+apron_front_3 -[RF<LOWER_OFFSET_2 BT<0 D(:8x30)]- shelf_3_2
+apron_front_3 -[RF<LOWER_OFFSET_3 BT<0 D(:8x30)]- shelf_3_3
+apron_front_3 -[RF<LOWER_OFFSET_4 BT<0 D(:8x30)]- shelf_3_4
+apron_front_3 -[RF<LOWER_OFFSET_5 BT<0 D(:8x30)]- shelf_3_5
+apron_front_3 -[RF<LOWER_OFFSET_6 BT<0 D(:8x30)]- shelf_3_6
+
+// ============================================
+// 天板（両端は脚、中間は前受けにダボ留め）
+// ============================================
+top_1 -[BD<0 TF<0 D(:8x30)]- leg_fl
+apron_front_top -[RF<TOP_OFFSET_2 BT<0 D(:8x30)]- top_2
+apron_front_top -[RF<TOP_OFFSET_3 BT<0 D(:8x30)]- top_3
+apron_front_top -[RF<TOP_OFFSET_4 BT<0 D(:8x30)]- top_4
+apron_front_top -[RF<TOP_OFFSET_5 BT<0 D(:8x30)]- top_5
+apron_front_top -[RF<TOP_OFFSET_6 BT<0 D(:8x30)]- top_6
+apron_front_top -[RF<TOP_OFFSET_7 BT<0 D(:8x30)]- top_7
+top_8 -[BD<0 TF<0 D(:8x30)]- leg_fr
+
+// ============================================
+// 組立手順
+// ============================================
+steps {
+  "左側フレーム": leg_fl, leg_bl, apron_left_1, apron_left_2, apron_left_3, apron_left_top
+  "右側フレーム": leg_fr, leg_br, apron_right_1, apron_right_2, apron_right_3, apron_right_top
+  "前後の棚受けで連結": apron_front_1, apron_back_1, apron_front_2, apron_back_2, apron_front_3, apron_back_3, apron_front_top, apron_back_top
+  "下段の棚板": shelf_1_1, shelf_1_2, shelf_1_3, shelf_1_4, shelf_1_5, shelf_1_6, shelf_2_1, shelf_2_2, shelf_2_3, shelf_2_4, shelf_2_5, shelf_2_6, shelf_3_1, shelf_3_2, shelf_3_3, shelf_3_4, shelf_3_5, shelf_3_6
+  "天板": top_1, top_2, top_3, top_4, top_5, top_6, top_7, top_8
+}

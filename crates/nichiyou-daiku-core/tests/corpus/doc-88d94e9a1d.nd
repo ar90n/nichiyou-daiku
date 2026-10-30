@@ -1,0 +1,8 @@
+// Shelf with dowel connections: 676 (W) x 89 (D) x 800 (H)
+(left_side:2x4 =800)
+(right_side:2x4 =800)
+(shelf:2x4 =600)
+
+// Shelf ends on the sides' wide faces, shelf underside 300mm above the floor
+left_side -[BL<300 DL<0 D(:8x30)]- shelf
+right_side -[FL<300 TL<0 D(:8x30)]- shelf

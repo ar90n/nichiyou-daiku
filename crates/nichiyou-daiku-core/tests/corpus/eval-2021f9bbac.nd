@@ -1,0 +1,111 @@
+// Low Coffee Table
+// Width: 900mm, Depth: 450mm, Height: 400mm
+// Legs/aprons: 2x4, dowel joints (8x30). Top & shelf boards: 1x6, screwed (Slim 3.3x45).
+// Lower shelf sits on a lower apron frame, underside 100mm above the floor.
+
+WIDTH = 900
+DEPTH = 450
+HEIGHT = 400
+TOP_THICKNESS = 19               // 1x6 board thickness
+SHELF_HEIGHT = 100                // lower shelf underside, above the floor
+
+LEG_LENGTH = HEIGHT - TOP_THICKNESS      // 381: top boards sit flush with leg tops
+APRON_FB = WIDTH - 2 * 89                // 722: front/back aprons between the legs
+APRON_LR = DEPTH - 2 * 38                 // 374: side aprons between the legs
+LOWER_OFFSET = LEG_LENGTH - SHELF_HEIGHT - 89   // 192: leg anchor for the lower apron frame
+
+// Top boards: 6 x 1x6 (140 wide) across WIDTH=900, outer boards on the legs
+GAP_TOP = (WIDTH - 6 * 140) / 5
+TOP_OFF_2 = 1 * (140 + GAP_TOP) - 89
+TOP_OFF_3 = 2 * (140 + GAP_TOP) - 89
+TOP_OFF_4 = 3 * (140 + GAP_TOP) - 89
+TOP_OFF_5 = 4 * (140 + GAP_TOP) - 89
+
+// Shelf boards: 5 x 1x6 (140 wide), fit between the legs on APRON_FB=722
+GAP_SHELF = (APRON_FB - 5 * 140) / 6
+SHELF_OFF_1 = GAP_SHELF
+SHELF_OFF_2 = GAP_SHELF + 1 * (140 + GAP_SHELF)
+SHELF_OFF_3 = GAP_SHELF + 2 * (140 + GAP_SHELF)
+SHELF_OFF_4 = GAP_SHELF + 3 * (140 + GAP_SHELF)
+SHELF_OFF_5 = GAP_SHELF + 4 * (140 + GAP_SHELF)
+
+// Legs: leg_fl front-left, leg_fr front-right, leg_bl back-left, leg_br back-right
+(leg_fl:2x4 =LEG_LENGTH)
+(leg_fr:2x4 =LEG_LENGTH)
+(leg_bl:2x4 =LEG_LENGTH)
+(leg_br:2x4 =LEG_LENGTH)
+
+// Upper aprons (flush with the leg tops, under the top boards)
+(apron_front:2x4 =APRON_FB)
+(apron_back:2x4 =APRON_FB)
+(apron_left:2x4 =APRON_LR)
+(apron_right:2x4 =APRON_LR)
+
+// Lower aprons (carry the shelf, underside 100mm above the floor)
+(lower_front:2x4 =APRON_FB)
+(lower_back:2x4 =APRON_FB)
+(lower_left:2x4 =APRON_LR)
+(lower_right:2x4 =APRON_LR)
+
+// Top boards (1x6, run front to back)
+(top_1:1x6 =DEPTH)
+(top_2:1x6 =DEPTH)
+(top_3:1x6 =DEPTH)
+(top_4:1x6 =DEPTH)
+(top_5:1x6 =DEPTH)
+(top_6:1x6 =DEPTH)
+
+// Shelf boards (1x6, run front to back)
+(shelf_1:1x6 =DEPTH)
+(shelf_2:1x6 =DEPTH)
+(shelf_3:1x6 =DEPTH)
+(shelf_4:1x6 =DEPTH)
+(shelf_5:1x6 =DEPTH)
+
+// Leg to front/back upper apron connections
+leg_fl -[LB>0 DB>0 D(:8x30)]- apron_front
+leg_fr -[RF>0 TF>0 D(:8x30)]- apron_front
+leg_bl -[LB>0 DB>0 D(:8x30)]- apron_back
+leg_br -[RF>0 TF>0 D(:8x30)]- apron_back
+
+// Leg to side upper apron connections
+leg_fl -[BR>0 DB>0 D(:8x30)]- apron_left
+leg_bl -[FR>0 TB>0 D(:8x30)]- apron_left
+leg_fr -[BL>0 DF>0 D(:8x30)]- apron_right
+leg_br -[FL>0 TF>0 D(:8x30)]- apron_right
+
+// Leg to front/back lower apron connections
+leg_fl -[LB>LOWER_OFFSET DB>0 D(:8x30)]- lower_front
+leg_fr -[RF>LOWER_OFFSET TF>0 D(:8x30)]- lower_front
+leg_bl -[LB>LOWER_OFFSET DB>0 D(:8x30)]- lower_back
+leg_br -[RF>LOWER_OFFSET TF>0 D(:8x30)]- lower_back
+
+// Leg to side lower apron connections
+leg_fl -[BR>LOWER_OFFSET DB>0 D(:8x30)]- lower_left
+leg_bl -[FR>LOWER_OFFSET TB>0 D(:8x30)]- lower_left
+leg_fr -[BL>LOWER_OFFSET DF>0 D(:8x30)]- lower_right
+leg_br -[FL>LOWER_OFFSET TF>0 D(:8x30)]- lower_right
+
+// Top boards: outer boards screwed to the legs, inner boards to apron_front
+leg_fl -[TF>0 BD>0 S(Slim:3.3x45)]- top_1
+apron_front -[RF<TOP_OFF_2 BT<0 S(Slim:3.3x45)]- top_2
+apron_front -[RF<TOP_OFF_3 BT<0 S(Slim:3.3x45)]- top_3
+apron_front -[RF<TOP_OFF_4 BT<0 S(Slim:3.3x45)]- top_4
+apron_front -[RF<TOP_OFF_5 BT<0 S(Slim:3.3x45)]- top_5
+leg_fr -[TF<0 BD<0 S(Slim:3.3x45)]- top_6
+
+// Shelf boards: screwed to lower_front, between the legs
+lower_front -[RF<SHELF_OFF_1 BT<0 S(Slim:3.3x45)]- shelf_1
+lower_front -[RF<SHELF_OFF_2 BT<0 S(Slim:3.3x45)]- shelf_2
+lower_front -[RF<SHELF_OFF_3 BT<0 S(Slim:3.3x45)]- shelf_3
+lower_front -[RF<SHELF_OFF_4 BT<0 S(Slim:3.3x45)]- shelf_4
+lower_front -[RF<SHELF_OFF_5 BT<0 S(Slim:3.3x45)]- shelf_5
+
+steps {
+  "Front frame": leg_fl, leg_fr, apron_front
+  "Back frame": leg_bl, leg_br, apron_back
+  "Join sides": apron_left, apron_right
+  "Lower aprons": lower_front, lower_back, lower_left, lower_right
+  "Top boards": top_1, top_2, top_3, top_4, top_5, top_6
+  "Shelf boards": shelf_1, shelf_2, shelf_3, shelf_4, shelf_5
+}

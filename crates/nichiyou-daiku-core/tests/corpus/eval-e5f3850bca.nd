@@ -1,0 +1,250 @@
+// Storage Rack
+// Dimensions: 800mm (W) x 300mm (D) x 1200mm (H)
+// Material: 2x4 (legs and aprons), 1x4 (top and shelves)
+// Joints: 8x30 dowels for the 2x4 frame, Slim 3.3x45 screws for the 1x4 boards
+//
+// Structure:
+// - 4 legs at the corners
+// - 4 tiers including the top, spaced 300mm apart (300, 600, 900, 1200)
+// - Top: 8 boards over the full width, resting on the legs and top front apron
+// - Lower shelves: 6 boards between the legs, resting on front/back support aprons
+
+// ============================================
+// Overall sizes and derived dimensions
+// ============================================
+WIDTH = 800
+DEPTH = 300
+HEIGHT = 1200
+BOARD_THK = 19
+FRAME_W = 89
+FRAME_T = 38
+
+LEG_LEN = HEIGHT - BOARD_THK          // 1181
+INNER_W = WIDTH - 2 * FRAME_W         // 622
+INNER_D = DEPTH - 2 * FRAME_T         // 224
+TIER = HEIGHT / 4                     // 300
+
+LEVEL_1 = TIER                        // 300
+LEVEL_2 = 2 * TIER                    // 600
+LEVEL_3 = 3 * TIER                    // 900
+
+// Front/back support apron: offset down from the leg top
+FB_OFF_1 = HEIGHT - LEVEL_1           // 900
+FB_OFF_2 = HEIGHT - LEVEL_2           // 600
+FB_OFF_3 = HEIGHT - LEVEL_3           // 300
+
+// Side apron: offset up from the floor to its bottom edge
+SIDE_OFF_1 = LEVEL_1 - BOARD_THK - FRAME_W   // 192
+SIDE_OFF_2 = LEVEL_2 - BOARD_THK - FRAME_W   // 492
+SIDE_OFF_3 = LEVEL_3 - BOARD_THK - FRAME_W   // 792
+SIDE_OFF_TOP = LEG_LEN - FRAME_W             // 1092
+
+// ============================================
+// Board layout
+// Top: 8 boards of 89mm over 800mm, gaps (800 - 8*89) / 7 = 12.571mm
+// ============================================
+TOP_N = 8
+TOP_GAP = (WIDTH - TOP_N * FRAME_W) / (TOP_N - 1)
+
+TOP_OFF_2 = TOP_GAP
+TOP_OFF_3 = TOP_OFF_2 + FRAME_W + TOP_GAP
+TOP_OFF_4 = TOP_OFF_3 + FRAME_W + TOP_GAP
+TOP_OFF_5 = TOP_OFF_4 + FRAME_W + TOP_GAP
+TOP_OFF_6 = TOP_OFF_5 + FRAME_W + TOP_GAP
+TOP_OFF_7 = TOP_OFF_6 + FRAME_W + TOP_GAP
+
+// Shelves: 6 boards of 89mm between the legs (622mm),
+// gaps (622 - 6*89) / 7 = 12.571mm
+// ============================================
+SHELF_N = 6
+SHELF_GAP = (INNER_W - SHELF_N * FRAME_W) / (SHELF_N + 1)
+
+SHELF_OFF_1 = SHELF_GAP
+SHELF_OFF_2 = SHELF_OFF_1 + FRAME_W + SHELF_GAP
+SHELF_OFF_3 = SHELF_OFF_2 + FRAME_W + SHELF_GAP
+SHELF_OFF_4 = SHELF_OFF_3 + FRAME_W + SHELF_GAP
+SHELF_OFF_5 = SHELF_OFF_4 + FRAME_W + SHELF_GAP
+SHELF_OFF_6 = SHELF_OFF_5 + FRAME_W + SHELF_GAP
+
+// ============================================
+// Legs (4x), 1200mm height minus the 19mm top boards
+// leg_fl: front-left, leg_fr: front-right
+// leg_bl: back-left, leg_br: back-right
+// ============================================
+(leg_fl:2x4 =LEG_LEN)
+(leg_fr:2x4 =LEG_LEN)
+(leg_bl:2x4 =LEG_LEN)
+(leg_br:2x4 =LEG_LEN)
+
+// ============================================
+// Top aprons, flush with the leg tops
+// Front/back run between the legs' 89mm sides: 800 - 2*89 = 622mm
+// Left/right run between the legs' 38mm sides: 300 - 2*38 = 224mm
+// ============================================
+(apron_top_front:2x4 =INNER_W)
+(apron_top_back:2x4 =INNER_W)
+(apron_top_left:2x4 =INNER_D)
+(apron_top_right:2x4 =INNER_D)
+
+// ============================================
+// Shelf support aprons at 300mm, 600mm and 900mm
+// Apron top edge sits at shelf height minus the 19mm board
+// ============================================
+(apron_l1_front:2x4 =INNER_W)
+(apron_l1_back:2x4 =INNER_W)
+(apron_l1_left:2x4 =INNER_D)
+(apron_l1_right:2x4 =INNER_D)
+
+(apron_l2_front:2x4 =INNER_W)
+(apron_l2_back:2x4 =INNER_W)
+(apron_l2_left:2x4 =INNER_D)
+(apron_l2_right:2x4 =INNER_D)
+
+(apron_l3_front:2x4 =INNER_W)
+(apron_l3_back:2x4 =INNER_W)
+(apron_l3_left:2x4 =INNER_D)
+(apron_l3_right:2x4 =INNER_D)
+
+// ============================================
+// Top boards (1x4, depth direction), 8 boards
+// ============================================
+(top_1:1x4 =DEPTH)
+(top_2:1x4 =DEPTH)
+(top_3:1x4 =DEPTH)
+(top_4:1x4 =DEPTH)
+(top_5:1x4 =DEPTH)
+(top_6:1x4 =DEPTH)
+(top_7:1x4 =DEPTH)
+(top_8:1x4 =DEPTH)
+
+// ============================================
+// Shelf boards (1x4, depth direction), 6 boards per tier
+// ============================================
+(shelf_l1_1:1x4 =DEPTH)
+(shelf_l1_2:1x4 =DEPTH)
+(shelf_l1_3:1x4 =DEPTH)
+(shelf_l1_4:1x4 =DEPTH)
+(shelf_l1_5:1x4 =DEPTH)
+(shelf_l1_6:1x4 =DEPTH)
+
+(shelf_l2_1:1x4 =DEPTH)
+(shelf_l2_2:1x4 =DEPTH)
+(shelf_l2_3:1x4 =DEPTH)
+(shelf_l2_4:1x4 =DEPTH)
+(shelf_l2_5:1x4 =DEPTH)
+(shelf_l2_6:1x4 =DEPTH)
+
+(shelf_l3_1:1x4 =DEPTH)
+(shelf_l3_2:1x4 =DEPTH)
+(shelf_l3_3:1x4 =DEPTH)
+(shelf_l3_4:1x4 =DEPTH)
+(shelf_l3_5:1x4 =DEPTH)
+(shelf_l3_6:1x4 =DEPTH)
+
+// ============================================
+// Top frame connections (dowels)
+// ============================================
+leg_fl -[LB>0 DB>0 D(:8x30)]- apron_top_front
+leg_fr -[RF>0 TF>0 D(:8x30)]- apron_top_front
+leg_bl -[LB>0 DB>0 D(:8x30)]- apron_top_back
+leg_br -[RF>0 TF>0 D(:8x30)]- apron_top_back
+
+leg_fl -[BR<SIDE_OFF_TOP DB<0 D(:8x30)]- apron_top_left
+leg_bl -[FR<SIDE_OFF_TOP TB<0 D(:8x30)]- apron_top_left
+leg_fr -[BL<SIDE_OFF_TOP DF<0 D(:8x30)]- apron_top_right
+leg_br -[FL<SIDE_OFF_TOP TF<0 D(:8x30)]- apron_top_right
+
+// ============================================
+// Level 1 (300mm) frame connections (dowels)
+// ============================================
+leg_fl -[LB>FB_OFF_1 DB>0 D(:8x30)]- apron_l1_front
+leg_fr -[RF>FB_OFF_1 TF>0 D(:8x30)]- apron_l1_front
+leg_bl -[LB>FB_OFF_1 DB>0 D(:8x30)]- apron_l1_back
+leg_br -[RF>FB_OFF_1 TF>0 D(:8x30)]- apron_l1_back
+
+leg_fl -[BR<SIDE_OFF_1 DB<0 D(:8x30)]- apron_l1_left
+leg_bl -[FR<SIDE_OFF_1 TB<0 D(:8x30)]- apron_l1_left
+leg_fr -[BL<SIDE_OFF_1 DF<0 D(:8x30)]- apron_l1_right
+leg_br -[FL<SIDE_OFF_1 TF<0 D(:8x30)]- apron_l1_right
+
+// ============================================
+// Level 2 (600mm) frame connections (dowels)
+// ============================================
+leg_fl -[LB>FB_OFF_2 DB>0 D(:8x30)]- apron_l2_front
+leg_fr -[RF>FB_OFF_2 TF>0 D(:8x30)]- apron_l2_front
+leg_bl -[LB>FB_OFF_2 DB>0 D(:8x30)]- apron_l2_back
+leg_br -[RF>FB_OFF_2 TF>0 D(:8x30)]- apron_l2_back
+
+leg_fl -[BR<SIDE_OFF_2 DB<0 D(:8x30)]- apron_l2_left
+leg_bl -[FR<SIDE_OFF_2 TB<0 D(:8x30)]- apron_l2_left
+leg_fr -[BL<SIDE_OFF_2 DF<0 D(:8x30)]- apron_l2_right
+leg_br -[FL<SIDE_OFF_2 TF<0 D(:8x30)]- apron_l2_right
+
+// ============================================
+// Level 3 (900mm) frame connections (dowels)
+// ============================================
+leg_fl -[LB>FB_OFF_3 DB>0 D(:8x30)]- apron_l3_front
+leg_fr -[RF>FB_OFF_3 TF>0 D(:8x30)]- apron_l3_front
+leg_bl -[LB>FB_OFF_3 DB>0 D(:8x30)]- apron_l3_back
+leg_br -[RF>FB_OFF_3 TF>0 D(:8x30)]- apron_l3_back
+
+leg_fl -[BR<SIDE_OFF_3 DB<0 D(:8x30)]- apron_l3_left
+leg_bl -[FR<SIDE_OFF_3 TB<0 D(:8x30)]- apron_l3_left
+leg_fr -[BL<SIDE_OFF_3 DF<0 D(:8x30)]- apron_l3_right
+leg_br -[FL<SIDE_OFF_3 TF<0 D(:8x30)]- apron_l3_right
+
+// ============================================
+// Top surface (screws through the board into the frame)
+// Outer boards sit on the front legs, middle boards on the top front apron
+// ============================================
+leg_fl -[TF<0 BD<0 S(Slim:3.3x45)]- top_1
+apron_top_front -[RF<TOP_OFF_2 BT<0 S(Slim:3.3x45)]- top_2
+apron_top_front -[RF<TOP_OFF_3 BT<0 S(Slim:3.3x45)]- top_3
+apron_top_front -[RF<TOP_OFF_4 BT<0 S(Slim:3.3x45)]- top_4
+apron_top_front -[RF<TOP_OFF_5 BT<0 S(Slim:3.3x45)]- top_5
+apron_top_front -[RF<TOP_OFF_6 BT<0 S(Slim:3.3x45)]- top_6
+apron_top_front -[RF<TOP_OFF_7 BT<0 S(Slim:3.3x45)]- top_7
+leg_fr -[TF<0 BD<0 S(Slim:3.3x45)]- top_8
+
+// ============================================
+// Level 1 shelf boards (300mm, screwed to the front apron)
+// ============================================
+apron_l1_front -[RF<SHELF_OFF_1 BT<0 S(Slim:3.3x45)]- shelf_l1_1
+apron_l1_front -[RF<SHELF_OFF_2 BT<0 S(Slim:3.3x45)]- shelf_l1_2
+apron_l1_front -[RF<SHELF_OFF_3 BT<0 S(Slim:3.3x45)]- shelf_l1_3
+apron_l1_front -[RF<SHELF_OFF_4 BT<0 S(Slim:3.3x45)]- shelf_l1_4
+apron_l1_front -[RF<SHELF_OFF_5 BT<0 S(Slim:3.3x45)]- shelf_l1_5
+apron_l1_front -[RF<SHELF_OFF_6 BT<0 S(Slim:3.3x45)]- shelf_l1_6
+
+// ============================================
+// Level 2 shelf boards (600mm, screwed to the front apron)
+// ============================================
+apron_l2_front -[RF<SHELF_OFF_1 BT<0 S(Slim:3.3x45)]- shelf_l2_1
+apron_l2_front -[RF<SHELF_OFF_2 BT<0 S(Slim:3.3x45)]- shelf_l2_2
+apron_l2_front -[RF<SHELF_OFF_3 BT<0 S(Slim:3.3x45)]- shelf_l2_3
+apron_l2_front -[RF<SHELF_OFF_4 BT<0 S(Slim:3.3x45)]- shelf_l2_4
+apron_l2_front -[RF<SHELF_OFF_5 BT<0 S(Slim:3.3x45)]- shelf_l2_5
+apron_l2_front -[RF<SHELF_OFF_6 BT<0 S(Slim:3.3x45)]- shelf_l2_6
+
+// ============================================
+// Level 3 shelf boards (900mm, screwed to the front apron)
+// ============================================
+apron_l3_front -[RF<SHELF_OFF_1 BT<0 S(Slim:3.3x45)]- shelf_l3_1
+apron_l3_front -[RF<SHELF_OFF_2 BT<0 S(Slim:3.3x45)]- shelf_l3_2
+apron_l3_front -[RF<SHELF_OFF_3 BT<0 S(Slim:3.3x45)]- shelf_l3_3
+apron_l3_front -[RF<SHELF_OFF_4 BT<0 S(Slim:3.3x45)]- shelf_l3_4
+apron_l3_front -[RF<SHELF_OFF_5 BT<0 S(Slim:3.3x45)]- shelf_l3_5
+apron_l3_front -[RF<SHELF_OFF_6 BT<0 S(Slim:3.3x45)]- shelf_l3_6
+
+// ============================================
+// Assembly: side frames, frame joining, shelves, top
+// ============================================
+steps {
+  "Left frame":   leg_fl, leg_bl, apron_top_left, apron_l1_left, apron_l2_left, apron_l3_left
+  "Right frame":  leg_fr, leg_br, apron_top_right, apron_l1_right, apron_l2_right, apron_l3_right
+  "Join frames":  apron_top_front, apron_top_back, apron_l1_front, apron_l1_back, apron_l2_front, apron_l2_back, apron_l3_front, apron_l3_back
+  "Shelf 300":    shelf_l1_1, shelf_l1_2, shelf_l1_3, shelf_l1_4, shelf_l1_5, shelf_l1_6
+  "Shelf 600":    shelf_l2_1, shelf_l2_2, shelf_l2_3, shelf_l2_4, shelf_l2_5, shelf_l2_6
+  "Shelf 900":    shelf_l3_1, shelf_l3_2, shelf_l3_3, shelf_l3_4, shelf_l3_5, shelf_l3_6
+  "Top":          top_1, top_2, top_3, top_4, top_5, top_6, top_7, top_8
+}

@@ -1,0 +1,124 @@
+// Child's Step Stool
+// Dimensions: 445mm (W) x 300mm (D) x 300mm (H)
+// Material: 2x4 throughout
+// Joints: 8x30 dowels
+//
+// Structure:
+// - 4 legs, upper aprons flush with the top
+// - lower aprons near the floor as stretchers for stiffness
+// - solid 2x4 top at 300mm (5 boards edge to edge)
+
+// ============================================
+// Overall sizes
+// ============================================
+WIDTH = 445
+DEPTH = 300
+HEIGHT = 300
+TOP_THICKNESS = 38
+APRON_HEIGHT = 89
+LEG_THICKNESS = 38
+
+// Legs: 300 - 38 (2x4 top boards) = 262
+LEG_LENGTH = HEIGHT - TOP_THICKNESS
+
+// Lower apron: bottom edge 20 above the floor
+LOWER_APRON_BOTTOM = 20
+LOWER_APRON_TOP = LOWER_APRON_BOTTOM + APRON_HEIGHT
+
+// Upper side aprons flush with the leg tops: 262 - 89 = 173 up the leg
+UPPER_SIDE_OFFSET = LEG_LENGTH - APRON_HEIGHT
+// Lower front/back aprons measured down from the leg top: 262 - 20 - 89 = 153
+LOWER_FRONT_OFFSET = LEG_LENGTH - LOWER_APRON_BOTTOM - APRON_HEIGHT
+
+// Top: 5 boards x 89 = 445, a solid surface with no gaps
+TOP_GAP = (WIDTH - 5 * 89) / 4
+TOP_OFFSET_1 = TOP_GAP
+TOP_OFFSET_2 = TOP_GAP * 2 + 89
+TOP_OFFSET_3 = TOP_GAP * 3 + 89 * 2
+
+// ============================================
+// Legs (4x)
+// leg_fl: front-left, leg_fr: front-right
+// leg_bl: back-left, leg_br: back-right
+// ============================================
+(leg_fl:2x4 =LEG_LENGTH)
+(leg_fr:2x4 =LEG_LENGTH)
+(leg_bl:2x4 =LEG_LENGTH)
+(leg_br:2x4 =LEG_LENGTH)
+
+// ============================================
+// Upper aprons (flush with the legs' tops)
+// Front/back between the legs' 89mm faces: 445 - 2*89 = 267
+// Left/right between the legs' 38mm faces: 300 - 2*38 = 224
+// ============================================
+(apron_upper_front:2x4 =WIDTH - 2 * 89)
+(apron_upper_back:2x4 =WIDTH - 2 * 89)
+(apron_upper_left:2x4 =DEPTH - 2 * LEG_THICKNESS)
+(apron_upper_right:2x4 =DEPTH - 2 * LEG_THICKNESS)
+
+// ============================================
+// Lower aprons (near the floor, for stiffness and the lower step)
+// ============================================
+(apron_lower_front:2x4 =WIDTH - 2 * 89)
+(apron_lower_back:2x4 =WIDTH - 2 * 89)
+(apron_lower_left:2x4 =DEPTH - 2 * LEG_THICKNESS)
+(apron_lower_right:2x4 =DEPTH - 2 * LEG_THICKNESS)
+
+// ============================================
+// Top surface (2x4, depth direction)
+// ============================================
+(top_1:2x4 =DEPTH)
+(top_2:2x4 =DEPTH)
+(top_3:2x4 =DEPTH)
+(top_4:2x4 =DEPTH)
+(top_5:2x4 =DEPTH)
+
+// ============================================
+// Upper apron connections
+// ============================================
+leg_fl -[LB>0 DB>0 D(:8x30)]- apron_upper_front
+leg_fr -[RF>0 TF>0 D(:8x30)]- apron_upper_front
+
+leg_bl -[LB>0 DB>0 D(:8x30)]- apron_upper_back
+leg_br -[RF>0 TF>0 D(:8x30)]- apron_upper_back
+
+leg_fl -[BR<UPPER_SIDE_OFFSET DB<0 D(:8x30)]- apron_upper_left
+leg_bl -[FR<UPPER_SIDE_OFFSET TB<0 D(:8x30)]- apron_upper_left
+
+leg_fr -[BL<UPPER_SIDE_OFFSET DF<0 D(:8x30)]- apron_upper_right
+leg_br -[FL<UPPER_SIDE_OFFSET TF<0 D(:8x30)]- apron_upper_right
+
+// ============================================
+// Lower apron connections
+// ============================================
+leg_fl -[LB>LOWER_FRONT_OFFSET DB>0 D(:8x30)]- apron_lower_front
+leg_fr -[RF>LOWER_FRONT_OFFSET TF>0 D(:8x30)]- apron_lower_front
+
+leg_bl -[LB>LOWER_FRONT_OFFSET DB>0 D(:8x30)]- apron_lower_back
+leg_br -[RF>LOWER_FRONT_OFFSET TF>0 D(:8x30)]- apron_lower_back
+
+leg_fl -[BR<LOWER_APRON_BOTTOM DB<0 D(:8x30)]- apron_lower_left
+leg_bl -[FR<LOWER_APRON_BOTTOM TB<0 D(:8x30)]- apron_lower_left
+
+leg_fr -[BL<LOWER_APRON_BOTTOM DF<0 D(:8x30)]- apron_lower_right
+leg_br -[FL<LOWER_APRON_BOTTOM TF<0 D(:8x30)]- apron_lower_right
+
+// ============================================
+// Top board connections
+// Outer boards sit on the front legs, inner boards on the upper front apron
+// ============================================
+top_1 -[BD<0 TF<0 D(:8x30)]- leg_fl
+apron_upper_front -[RF<TOP_OFFSET_1 BT<0 D(:8x30)]- top_2
+apron_upper_front -[RF<TOP_OFFSET_2 BT<0 D(:8x30)]- top_3
+apron_upper_front -[RF<TOP_OFFSET_3 BT<0 D(:8x30)]- top_4
+top_5 -[BD<0 TF<0 D(:8x30)]- leg_fr
+
+// ============================================
+// Assembly steps
+// ============================================
+steps {
+  "Left frame":  leg_fl, leg_bl, apron_upper_left, apron_lower_left
+  "Right frame": leg_fr, leg_br, apron_upper_right, apron_lower_right
+  "Join frames": apron_upper_front, apron_upper_back, apron_lower_front, apron_lower_back
+  "Top":         top_1, top_2, top_3, top_4, top_5
+}

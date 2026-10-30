@@ -1,0 +1,18 @@
+(post:2x4 =600)
+(rail:2x4 =400)
+(rail_low:2x4 =400)
+(cleat:2x4 =400)
+(rail_side:2x4 =400)
+
+// Preset: Slim screw 3.3x50, rail screwed across the post's front face
+post -[FL<300 BT<0 S(Slim:3.3x50)]- rail
+
+// Numeric: 3.5mm diameter, 50mm length
+post -[FL<100 BT<0 S(3.5, 50)]- rail_low
+
+// Preset: Coarse thread 3.8x57, cleat screwed face to face behind the post
+post -[BT<0 FT<0 S(Coarse:3.8x57)]- cleat
+
+// Through the post's narrow face, counterbored 51mm, into the end of a rail
+// running off its right side
+rail_side -[DF<0 RF<300 S(Slim:3.8x65)]- post

@@ -1,0 +1,10 @@
+(post_a:2x4 =400)
+(post_b:2x4 =400)
+(rail:2x4 =224)
+(block:2x4 =100)
+post_a -[BR<150 DB<0]- rail
+post_b -[FR<150 TB<0]- rail
+rail -[RF<50 BT<0]- block
+steps {
+  "Frame": post_a, rial, post_b, block
+}

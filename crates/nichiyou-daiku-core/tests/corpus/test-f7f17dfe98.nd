@@ -1,0 +1,8 @@
+(side_l:2x4 =800)
+(side_r:2x4 =800)
+(shelf_bottom:2x4 =600)
+(shelf_top:2x4 =600)
+side_l -[BL<100 DL<0 D(:8x30)]- shelf_bottom
+side_r -[FL<100 TL<0 D(:8x30)]- shelf_bottom
+shelf_top -[DL<0 BL>38 S(Slim:3.8x65)]- side_l
+shelf_top -[TL<0 FL>38 S(Slim:3.8x65)]- side_r

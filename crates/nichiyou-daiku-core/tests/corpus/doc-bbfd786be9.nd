@@ -1,0 +1,12 @@
+(leg_1:2x4 =720)
+(apron_front:2x4 =600)
+(apron_left:2x4 =400)
+
+// leg_1's left face, left/back edge at the leg's top (>0);
+// apron_front's down end, down/back edge at its right side (>0):
+// apron_front runs out of leg_1's left face, flush with the leg top
+leg_1 -[LB>0 DB>0]- apron_front
+
+// leg_1's back face, back/right edge 100mm above its down end;
+// apron_left's down end, down/back edge at its left side (<0)
+leg_1 -[BR<100 DB<0]- apron_left

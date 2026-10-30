@@ -1,0 +1,16 @@
+(leg_1:2x4 =681)
+(leg_2:2x4 =681)
+(leg_3:2x4 =681)
+(leg_4:2x4 =681)
+(apron_front:2x4 =822)
+(apron_back:2x4 =822)
+(apron_left:2x4 =424)
+(apron_right:2x4 =424)
+leg_1 -[LB>0 DB>0]- apron_front
+leg_2 -[RF>0 TF>0]- apron_front
+leg_3 -[LB>0 DB>0]- apron_back
+leg_4 -[RF>0 TF>0]- apron_back
+leg_1 -[BR>0 DB>0]- apron_left
+leg_3 -[FR>0 TB>0]- apron_left
+leg_2 -[BL>0 DF>0]- apron_right
+leg_4 -[FL>0 TF>0]- apron_right

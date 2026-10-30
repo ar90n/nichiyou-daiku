@@ -1,0 +1,94 @@
+// Shoe Rack: Width 600mm x Depth 300mm x Height 500mm
+// Frame: 2x2 posts + 2x2 side rails (dowel 8x30), 3 shelves equally spaced
+// Shelf boards: 1x4, 2 boards per shelf, screwed onto the side rails (Slim 3.3x45)
+
+WIDTH = 600
+DEPTH = 300
+HEIGHT = 500
+POST = 38          // 2x2 cross-section
+BOARD_T = 19        // 1x4 thickness
+BOARD_W = 89        // 1x4 width
+
+// Shelf levels divide the height into 4 equal gaps: floor-shelf1-shelf2-shelf3-top
+LEVEL_GAP = HEIGHT / 4
+SHELF1_TOP = LEVEL_GAP
+SHELF2_TOP = LEVEL_GAP * 2
+SHELF3_TOP = LEVEL_GAP * 3
+
+// Side rails run front-to-back between the posts
+RAIL_LEN = DEPTH - 2 * POST
+
+// Rail "flush with leg top" offset so the rail's top face sits at (SHELF_TOP - BOARD_T)
+OFFSET1 = HEIGHT - SHELF1_TOP + BOARD_T
+OFFSET2 = HEIGHT - SHELF2_TOP + BOARD_T
+OFFSET3 = HEIGHT - SHELF3_TOP + BOARD_T
+
+// Shelf boards span the full width, resting on the two side rails
+BOARD_LEN = WIDTH
+
+// Two boards per shelf, spaced evenly along the rail (between the posts)
+BOARD_GAP = (RAIL_LEN - 2 * BOARD_W) / 3
+BOFF_1 = BOARD_GAP
+BOFF_2 = 2 * BOARD_GAP + BOARD_W
+
+// Posts (4 corners, full height)
+(leg_fl:2x2 =HEIGHT)
+(leg_fr:2x2 =HEIGHT)
+(leg_bl:2x2 =HEIGHT)
+(leg_br:2x2 =HEIGHT)
+
+// Side rails: 3 levels x left/right
+(rail_left_1:2x2 =RAIL_LEN)
+(rail_left_2:2x2 =RAIL_LEN)
+(rail_left_3:2x2 =RAIL_LEN)
+(rail_right_1:2x2 =RAIL_LEN)
+(rail_right_2:2x2 =RAIL_LEN)
+(rail_right_3:2x2 =RAIL_LEN)
+
+// Shelf boards: 3 levels x 2 boards
+(board_1_1:1x4 =BOARD_LEN)
+(board_1_2:1x4 =BOARD_LEN)
+(board_2_1:1x4 =BOARD_LEN)
+(board_2_2:1x4 =BOARD_LEN)
+(board_3_1:1x4 =BOARD_LEN)
+(board_3_2:1x4 =BOARD_LEN)
+
+// Frame: posts to side rails (dowels)
+leg_fl -[BR>OFFSET1 DB>0 D(:8x30)]- rail_left_1
+leg_bl -[FR>OFFSET1 TB>0 D(:8x30)]- rail_left_1
+leg_fr -[BL>OFFSET1 DF>0 D(:8x30)]- rail_right_1
+leg_br -[FL>OFFSET1 TF>0 D(:8x30)]- rail_right_1
+
+leg_fl -[BR>OFFSET2 DB>0 D(:8x30)]- rail_left_2
+leg_bl -[FR>OFFSET2 TB>0 D(:8x30)]- rail_left_2
+leg_fr -[BL>OFFSET2 DF>0 D(:8x30)]- rail_right_2
+leg_br -[FL>OFFSET2 TF>0 D(:8x30)]- rail_right_2
+
+leg_fl -[BR>OFFSET3 DB>0 D(:8x30)]- rail_left_3
+leg_bl -[FR>OFFSET3 TB>0 D(:8x30)]- rail_left_3
+leg_fr -[BL>OFFSET3 DF>0 D(:8x30)]- rail_right_3
+leg_br -[FL>OFFSET3 TF>0 D(:8x30)]- rail_right_3
+
+// Shelf boards resting on top of the side rails (screws)
+rail_left_1 -[RF<BOFF_1 BT<0 S(Slim:3.3x45)]- board_1_1
+rail_right_1 -[RF>BOFF_1 BD<0 S(Slim:3.3x45)]- board_1_1
+rail_left_1 -[RF<BOFF_2 BT<0 S(Slim:3.3x45)]- board_1_2
+rail_right_1 -[RF>BOFF_2 BD<0 S(Slim:3.3x45)]- board_1_2
+
+rail_left_2 -[RF<BOFF_1 BT<0 S(Slim:3.3x45)]- board_2_1
+rail_right_2 -[RF>BOFF_1 BD<0 S(Slim:3.3x45)]- board_2_1
+rail_left_2 -[RF<BOFF_2 BT<0 S(Slim:3.3x45)]- board_2_2
+rail_right_2 -[RF>BOFF_2 BD<0 S(Slim:3.3x45)]- board_2_2
+
+rail_left_3 -[RF<BOFF_1 BT<0 S(Slim:3.3x45)]- board_3_1
+rail_right_3 -[RF>BOFF_1 BD<0 S(Slim:3.3x45)]- board_3_1
+rail_left_3 -[RF<BOFF_2 BT<0 S(Slim:3.3x45)]- board_3_2
+rail_right_3 -[RF>BOFF_2 BD<0 S(Slim:3.3x45)]- board_3_2
+
+steps {
+  "Left frame": leg_fl, leg_bl, rail_left_1, rail_left_2, rail_left_3
+  "Right frame": leg_fr, leg_br, rail_right_1, rail_right_2, rail_right_3
+  "Bottom shelf boards": board_1_1, board_1_2
+  "Middle shelf boards": board_2_1, board_2_2
+  "Top shelf boards": board_3_1, board_3_2
+}

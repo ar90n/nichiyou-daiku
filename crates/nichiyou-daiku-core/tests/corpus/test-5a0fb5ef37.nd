@@ -1,0 +1,21 @@
+
+        // Table design with 4 legs and 2 aprons
+        
+        // Define legs
+        (leg1:2x4 =720)  // Front left
+        (leg2:2x4 =720)  // Front right
+        (leg3:2x4 =720)  // Back left
+        (leg4:2x4 =720)  // Back right
+        
+        // Define aprons
+        (apron_front:2x4 =600)
+        (apron_back:2x4 =600)
+        
+        // Connect legs to aprons
+        leg1 -[LB>0 DB>0]- apron_front  // Left side
+        leg2 -[RF>0 TF>0]- apron_front  // Right side
+        
+        // Back connections
+        leg3 -[LB>0 DB>0]- apron_back
+        leg4 -[RF>0 TF>0]- apron_back
+        

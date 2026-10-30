@@ -1,0 +1,16 @@
+// 1x8 bookshelf: 600 (W) x 184 (D) x 900 (H), four equal levels
+(left_side:1x8 =900)
+(right_side:1x8 =900)
+(bottom:1x8 =562)
+(shelf_1:1x8 =562)
+(shelf_2:1x8 =562)
+(top:1x8 =562)
+
+left_side -[BL<0 DL<0 D(:8x30)]- bottom
+right_side -[FL<0 TL<0 D(:8x30)]- bottom
+left_side -[BL<294 DL<0 D(:8x30)]- shelf_1
+right_side -[FL<294 TL<0 D(:8x30)]- shelf_1
+left_side -[BL<587 DL<0 D(:8x30)]- shelf_2
+right_side -[FL<587 TL<0 D(:8x30)]- shelf_2
+left_side -[BL<881 DL<0 D(:8x30)]- top
+right_side -[FL<881 TL<0 D(:8x30)]- top

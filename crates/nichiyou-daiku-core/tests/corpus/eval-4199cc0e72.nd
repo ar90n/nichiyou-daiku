@@ -1,0 +1,10 @@
+(leg_fl:2x4 =681)
+(leg_fr:2x4 =681)
+(leg_bl:2x4 =681)
+(leg_br:2x4 =681)
+(apron_left:2x4 =500)
+(apron_right:2x4 =500)
+leg_fl -[LT<0 BR>424 S(Slim:3.8x65)]- apron_left
+leg_bl -[LT<0 BR>38 S(Slim:3.8x65)]- apron_left
+leg_fr -[RT<0 FR>424 S(Slim:3.8x65)]- apron_right
+leg_br -[RT<0 FR>38 S(Slim:3.8x65)]- apron_right

@@ -1,0 +1,12 @@
+
+        (frame1:2x4 {"length": 1000})
+        (frame2:2x4 {"length": 1000})
+        (panel1:1x4 {"length": 500})
+        (panel2:1x4 {"length": 500})
+        
+        frame1 -[{"contact_face": "right", "edge_shared_face": "top", "offset": FromMin(30)}
+                {"contact_face": "left", "edge_shared_face": "top", "offset": FromMin(30)}]- frame2
+                
+        frame1 -[{"contact_face": "front", "edge_shared_face": "down", "offset": FromMin(50)}
+                {"contact_face": "back", "edge_shared_face": "left", "offset": FromMin(0)}]- panel1
+        

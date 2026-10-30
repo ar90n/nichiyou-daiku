@@ -1,0 +1,128 @@
+// Plant Stand
+// Overall: 400mm (W) x 300mm (D) x 700mm (H)
+// Material: 2x2 frame, 1x4 top and shelf
+// Joints: 8x30 dowels in the 2x2 frame, Slim 3.3x45 screws for the boards
+
+WIDTH = 400
+DEPTH = 300
+HEIGHT = 700
+STOCK = 38
+TOP_T = 19
+SHELF_H = 200
+BOARD_W = 89
+
+// Legs: height minus the 19mm top boards
+LEG_H = HEIGHT - TOP_T
+
+// Upper and lower rails run between the legs
+RAIL_FB = WIDTH - 2 * STOCK
+RAIL_LR = DEPTH - 2 * STOCK
+
+// Lower rails: their top edge is the shelf underside
+LOWER_RAIL_TOP = SHELF_H - TOP_T
+LOWER_RAIL_BOTTOM = LOWER_RAIL_TOP - STOCK
+LOWER_OFFSET = LEG_H - LOWER_RAIL_TOP
+SIDE_LOWER_OFFSET = LOWER_RAIL_BOTTOM - 19
+SIDE_UPPER_OFFSET = LEG_H - STOCK - 19
+
+// Top boards: 4 x 89 = 356, 3 gaps
+TOP_GAP = (WIDTH - 4 * BOARD_W) / 3
+INNER_1 = BOARD_W + TOP_GAP - STOCK
+INNER_2 = 2 * (BOARD_W + TOP_GAP) - STOCK
+
+// Shelf boards: 3 x 89 = 267 between the legs, 4 gaps
+SHELF_GAP = (RAIL_FB - 3 * BOARD_W) / 4
+SHELF_1 = SHELF_GAP
+SHELF_2 = SHELF_GAP + BOARD_W + SHELF_GAP
+SHELF_3 = 2 * (BOARD_W + SHELF_GAP) + SHELF_GAP
+
+// ============================================
+// Legs (4x)
+// ============================================
+(leg_fl:2x2 =LEG_H)
+(leg_fr:2x2 =LEG_H)
+(leg_bl:2x2 =LEG_H)
+(leg_br:2x2 =LEG_H)
+
+// ============================================
+// Upper rails (flush with the leg tops)
+// ============================================
+(rail_upper_front:2x2 =RAIL_FB)
+(rail_upper_back:2x2 =RAIL_FB)
+(rail_upper_left:2x2 =RAIL_LR)
+(rail_upper_right:2x2 =RAIL_LR)
+
+// ============================================
+// Lower rails (shelf underside at 181mm)
+// ============================================
+(rail_lower_front:2x2 =RAIL_FB)
+(rail_lower_back:2x2 =RAIL_FB)
+(rail_lower_left:2x2 =RAIL_LR)
+(rail_lower_right:2x2 =RAIL_LR)
+
+// ============================================
+// Top boards (1x4, front to back)
+// ============================================
+(top_1:1x4 =DEPTH)
+(top_2:1x4 =DEPTH)
+(top_3:1x4 =DEPTH)
+(top_4:1x4 =DEPTH)
+
+// ============================================
+// Shelf boards (1x4, front to back)
+// ============================================
+(shelf_1:1x4 =DEPTH)
+(shelf_2:1x4 =DEPTH)
+(shelf_3:1x4 =DEPTH)
+
+// ============================================
+// Upper rail connections
+// ============================================
+leg_fl -[LB>0 DB>0 D(:8x30)]- rail_upper_front
+leg_fr -[RF>0 TF>0 D(:8x30)]- rail_upper_front
+leg_bl -[LB>0 DB>0 D(:8x30)]- rail_upper_back
+leg_br -[RF>0 TF>0 D(:8x30)]- rail_upper_back
+
+leg_fl -[BR<SIDE_UPPER_OFFSET DB<0 D(:8x30)]- rail_upper_left
+leg_bl -[FR<SIDE_UPPER_OFFSET TB<0 D(:8x30)]- rail_upper_left
+leg_fr -[BL<SIDE_UPPER_OFFSET DF<0 D(:8x30)]- rail_upper_right
+leg_br -[FL<SIDE_UPPER_OFFSET TF<0 D(:8x30)]- rail_upper_right
+
+// ============================================
+// Lower rail connections
+// ============================================
+leg_fl -[LB>LOWER_OFFSET DB>0 D(:8x30)]- rail_lower_front
+leg_fr -[RF>LOWER_OFFSET TF>0 D(:8x30)]- rail_lower_front
+leg_bl -[LB>LOWER_OFFSET DB>0 D(:8x30)]- rail_lower_back
+leg_br -[RF>LOWER_OFFSET TF>0 D(:8x30)]- rail_lower_back
+
+leg_fl -[BR<SIDE_LOWER_OFFSET DB<0 D(:8x30)]- rail_lower_left
+leg_bl -[FR<SIDE_LOWER_OFFSET TB<0 D(:8x30)]- rail_lower_left
+leg_fr -[BL<SIDE_LOWER_OFFSET DF<0 D(:8x30)]- rail_lower_right
+leg_br -[FL<SIDE_LOWER_OFFSET TF<0 D(:8x30)]- rail_lower_right
+
+// ============================================
+// Top boards
+// ============================================
+leg_fl -[TF<19 BD<70 S(Slim:3.3x45)]- top_1
+rail_upper_front -[RF<INNER_1 BT<0 S(Slim:3.3x45)]- top_2
+rail_upper_front -[RF<INNER_2 BT<0 S(Slim:3.3x45)]- top_3
+leg_fr -[TF<19 BD<19 S(Slim:3.3x45)]- top_4
+
+// ============================================
+// Shelf boards (screwed down to the front lower rail)
+// ============================================
+rail_lower_front -[RF<SHELF_1 BT<0 S(Slim:3.3x45)]- shelf_1
+rail_lower_front -[RF<SHELF_2 BT<0 S(Slim:3.3x45)]- shelf_2
+rail_lower_front -[RF<SHELF_3 BT<0 S(Slim:3.3x45)]- shelf_3
+
+// ============================================
+// Assembly
+// ============================================
+steps {
+  "Left frame":  leg_fl, leg_bl, rail_upper_left, rail_lower_left
+  "Right frame": leg_fr, leg_br, rail_upper_right, rail_lower_right
+  "Join":        rail_upper_front, rail_upper_back, rail_lower_front, rail_lower_back
+  "Shelf":       shelf_1, shelf_2, shelf_3
+  "Top":         top_1, top_2, top_3, top_4
+}

@@ -1,0 +1,7 @@
+// test
+(side_l:1x6 =600)
+(side_r:1x6 =600)
+(shelf:1x6 =412)
+
+// shelf between side panels, bottom
+side_l -[FL<0 DL<0 S(Slim:3.3x30)]- shelf

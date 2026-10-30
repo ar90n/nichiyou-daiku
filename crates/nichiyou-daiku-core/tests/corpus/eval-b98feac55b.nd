@@ -1,0 +1,17 @@
+WIDTH = 600
+DEPTH = 184
+HEIGHT = 900
+THICK = 19
+BOARD = 184
+SPACING = (HEIGHT - THICK) / 3
+SHELF_LEN = WIDTH - 2 * THICK
+STIFF_LEN = SPACING - THICK
+
+(back_stiffener:1x8 =STIFF_LEN)
+(shelf_1:1x8 =SHELF_LEN)
+(side_l:1x8 =HEIGHT)
+(side_r:1x8 =HEIGHT)
+
+shelf_1 -[FT<0 DR<0 D(:8x30)]- back_stiffener
+shelf_1 -[DL<0 FL<0 S(Coarse:3.8x40)]- side_l
+shelf_1 -[TL<0 BL<0 S(Coarse:3.8x40)]- side_r

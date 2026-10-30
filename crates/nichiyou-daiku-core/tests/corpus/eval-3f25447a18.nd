@@ -1,0 +1,5 @@
+(leg:2x2 =681)
+(apron:2x2 =324)
+(board:1x4 =300)
+leg -[LB>0 DB>0 D(:8x30)]- apron
+board -[BD<0 TF<0 D(:8x30)]- leg

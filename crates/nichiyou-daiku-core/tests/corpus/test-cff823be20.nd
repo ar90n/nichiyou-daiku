@@ -1,0 +1,5 @@
+
+        (base:2x4 =600)
+        (target:2x4 =300)
+        base -[FD<0 BT<0 S(Slim:9.9x999)]- target
+        

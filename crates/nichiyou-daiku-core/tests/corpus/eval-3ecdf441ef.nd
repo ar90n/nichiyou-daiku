@@ -1,0 +1,29 @@
+WIDTH = 600
+DEPTH = 184
+HEIGHT = 900
+THICK = 19
+BOARD = 184
+SPACING = (HEIGHT - THICK) / 3
+SHELF_LEN = WIDTH - 2 * THICK
+STIFF_LEN = SPACING - THICK
+H2 = SPACING
+H3 = 2 * SPACING
+H4 = 3 * SPACING
+
+(back_stiffener:1x8 =STIFF_LEN)
+(shelf_1:1x8 =SHELF_LEN)
+(shelf_2:1x8 =SHELF_LEN)
+(shelf_3:1x8 =SHELF_LEN)
+(shelf_4:1x8 =SHELF_LEN)
+(side_l:1x8 =HEIGHT)
+(side_r:1x8 =HEIGHT)
+
+shelf_1 -[FT<0 DR<0 D(:8x30)]- back_stiffener
+shelf_1 -[DL<0 FL>0 S(Coarse:3.8x40)]- side_l
+shelf_1 -[TL<0 BL>0 S(Coarse:3.8x40)]- side_r
+shelf_2 -[DL<0 FL>H2 S(Coarse:3.8x40)]- side_l
+shelf_2 -[TL<0 BL>H2 S(Coarse:3.8x40)]- side_r
+shelf_3 -[DL<0 FL>H3 S(Coarse:3.8x40)]- side_l
+shelf_3 -[TL<0 BL>H3 S(Coarse:3.8x40)]- side_r
+shelf_4 -[DL<0 FL>H4 S(Coarse:3.8x40)]- side_l
+shelf_4 -[TL<0 BL>H4 S(Coarse:3.8x40)]- side_r

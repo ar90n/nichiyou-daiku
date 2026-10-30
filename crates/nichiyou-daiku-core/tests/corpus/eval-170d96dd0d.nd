@@ -1,0 +1,64 @@
+// Bookshelf from 1x8 lumber only
+// Overall: 600mm (W) x 184mm (D) x 900mm (H)
+// Four shelf boards including the top and bottom, with equal clear openings
+// Joints: 8x25 dowels (two per shelf end)
+
+// ============================================
+// Dimensions
+// ============================================
+WIDTH = 600
+DEPTH = 184
+HEIGHT = 900
+BOARD_THICK = 19
+
+// Shelves fit between the two 19mm side panels
+SHELF_LENGTH = WIDTH - 2 * BOARD_THICK
+
+// Four shelves leave three equal openings:
+// (900 - 4 x 19) / 3 = 274.67mm
+OPENING = (HEIGHT - 4 * BOARD_THICK) / 3
+
+// Underside height of each shelf
+SHELF_1_Z = 0
+SHELF_2_Z = SHELF_1_Z + BOARD_THICK + OPENING
+SHELF_3_Z = SHELF_2_Z + BOARD_THICK + OPENING
+SHELF_4_Z = SHELF_3_Z + BOARD_THICK + OPENING
+
+// ============================================
+// Side panels (1x8, 184mm deep x 900mm tall)
+// ============================================
+(side_l:1x8 =HEIGHT)
+(side_r:1x8 =HEIGHT)
+
+// ============================================
+// Shelves (1x8, 184mm deep, between the sides)
+// shelf_1 is the bottom board, shelf_4 the top board
+// ============================================
+(shelf_1:1x8 =SHELF_LENGTH)
+(shelf_2:1x8 =SHELF_LENGTH)
+(shelf_3:1x8 =SHELF_LENGTH)
+(shelf_4:1x8 =SHELF_LENGTH)
+
+// ============================================
+// Shelf joints: ends doweled into the side panels
+// The shelf underside sits at each calculated height
+// ============================================
+side_l -[BL<SHELF_1_Z DL<0 D(:8x25)]- shelf_1
+side_r -[FL<SHELF_1_Z TL<0 D(:8x25)]- shelf_1
+
+side_l -[BL<SHELF_2_Z DL<0 D(:8x25)]- shelf_2
+side_r -[FL<SHELF_2_Z TL<0 D(:8x25)]- shelf_2
+
+side_l -[BL<SHELF_3_Z DL<0 D(:8x25)]- shelf_3
+side_r -[FL<SHELF_3_Z TL<0 D(:8x25)]- shelf_3
+
+side_l -[BL<SHELF_4_Z DL<0 D(:8x25)]- shelf_4
+side_r -[FL<SHELF_4_Z TL<0 D(:8x25)]- shelf_4
+
+// ============================================
+// Assembly: left side and shelves first, then the right side
+// ============================================
+steps {
+  "Left side and shelves": side_l, shelf_1, shelf_2, shelf_3, shelf_4
+  "Right side": side_r
+}

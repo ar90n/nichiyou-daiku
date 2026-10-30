@@ -1,0 +1,7 @@
+
+(leg1:2x4 {"length": 720})
+(leg2:2x4 {"length": 720})
+(apron:1x4 {"length": 600})
+
+leg1 -[{"contact_face": "front", "edge_shared_face": "right", "offset": FromMax(100)}
+       {"contact_face": "left", "edge_shared_face": "down", "offset": FromMin(0)}]- apron

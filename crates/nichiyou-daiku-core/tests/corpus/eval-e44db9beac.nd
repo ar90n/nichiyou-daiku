@@ -1,0 +1,85 @@
+// Desk
+// Width: 1000mm (X), Depth: 500mm (Y), Height: 700mm (Z)
+// 2x4 legs/aprons, 1x6 top boards running depth-wise (side by side across the width)
+// Joints: screws
+
+WIDTH = 1000
+DEPTH = 500
+HEIGHT = 700
+TOP_THICKNESS = 19               // 1x6 top board thickness
+LEG_LENGTH = HEIGHT - TOP_THICKNESS
+
+// ============================================
+// Legs (4x)
+// ============================================
+(leg_fl:2x4 =LEG_LENGTH)
+(leg_fr:2x4 =LEG_LENGTH)
+(leg_bl:2x4 =LEG_LENGTH)
+(leg_br:2x4 =LEG_LENGTH)
+
+// ============================================
+// Aprons (flush with top)
+// Front/back run between the legs' 89mm sides: WIDTH - 2*89
+// Left/right run between the legs' 38mm sides: DEPTH - 2*38
+// ============================================
+FB_APRON_LEN = WIDTH - 2 * 89
+SIDE_APRON_LEN = DEPTH - 2 * 38
+(apron_front:2x4 =FB_APRON_LEN)
+(apron_back:2x4 =FB_APRON_LEN)
+(apron_left:2x4 =SIDE_APRON_LEN)
+(apron_right:2x4 =SIDE_APRON_LEN)
+
+// ============================================
+// Top boards (1x6, depth direction, side by side across the width)
+// 7 boards: 7*140 = 980mm, leaving 6 gaps of (1000 - 980) / 6 = 3.33mm
+// ============================================
+TOP_BOARD_WIDTH = 140
+(top_1:1x6 =DEPTH)
+(top_2:1x6 =DEPTH)
+(top_3:1x6 =DEPTH)
+(top_4:1x6 =DEPTH)
+(top_5:1x6 =DEPTH)
+(top_6:1x6 =DEPTH)
+(top_7:1x6 =DEPTH)
+
+// ============================================
+// Frame joints (screw)
+// Front/back aprons butt end-grain into the legs' narrow faces: a screw
+// cannot be driven straight through that joint, so it uses a dowel instead
+// (the DSL rejects a screw here: target contact face would be an end face).
+// ============================================
+leg_fl -[LB>0 DB>0 D(:8x30)]- apron_front
+leg_fr -[RF>0 TF>0 D(:8x30)]- apron_front
+leg_bl -[LB>0 DB>0 D(:8x30)]- apron_back
+leg_br -[RF>0 TF>0 D(:8x30)]- apron_back
+
+// Side aprons sit 40mm below the leg tops, under the top boards, to keep
+// their screw holes clear of the top boards' screw holes inside the legs
+APRON_DROP = 40
+apron_left -[DB>0 BR>APRON_DROP S(Coarse:3.8x57)]- leg_fl
+apron_left -[TB>0 FR>APRON_DROP S(Coarse:3.8x57)]- leg_bl
+apron_right -[DF>0 BL>APRON_DROP S(Coarse:3.8x57)]- leg_fr
+apron_right -[TF>0 FL>APRON_DROP S(Coarse:3.8x57)]- leg_br
+
+// ============================================
+// Top boards
+// End boards sit on the front legs
+// Middle boards sit on the front apron
+// ============================================
+// offset_k = (k - 1) * (TOP_BOARD_WIDTH + GAP) - 89, measured from the
+// apron_front end at leg_fl (89 = the leg's width, not the board's)
+GAP = (WIDTH - 7 * TOP_BOARD_WIDTH) / 6
+leg_fl -[TF>0 BD>0 S(Slim:3.3x45)]- top_1
+apron_front -[RF<(1*(TOP_BOARD_WIDTH+GAP)-89) BT<0 S(Slim:3.3x45)]- top_2
+apron_front -[RF<(2*(TOP_BOARD_WIDTH+GAP)-89) BT<0 S(Slim:3.3x45)]- top_3
+apron_front -[RF<(3*(TOP_BOARD_WIDTH+GAP)-89) BT<0 S(Slim:3.3x45)]- top_4
+apron_front -[RF<(4*(TOP_BOARD_WIDTH+GAP)-89) BT<0 S(Slim:3.3x45)]- top_5
+apron_front -[RF<(5*(TOP_BOARD_WIDTH+GAP)-89) BT<0 S(Slim:3.3x45)]- top_6
+leg_fr -[TF<0 BD<0 S(Slim:3.3x45)]- top_7
+
+steps {
+  "Left frame":  leg_fl, leg_bl, apron_left
+  "Right frame": leg_fr, leg_br, apron_right
+  "Join":        apron_front, apron_back
+  "Top":         top_1, top_2, top_3, top_4, top_5, top_6, top_7
+}

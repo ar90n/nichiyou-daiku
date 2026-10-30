@@ -1,0 +1,78 @@
+// Child's Step Stool
+// Dimensions: 300mm (W) x 300mm (D) x 300mm (H)
+// Material: 2x4 frame, 2x4 top boards (laid flat) for a sturdy build
+// Joints: Dowel 8x30 for the frame, Slim 3.8x65 screws for the top boards
+
+WIDTH = 300
+DEPTH = 300
+HEIGHT = 300
+TOP_THICKNESS = 38   // 2x4 laid flat
+
+// ============================================
+// Legs (4x) - height minus the 38mm top boards
+// leg_fl: front-left, leg_fr: front-right
+// leg_bl: back-left, leg_br: back-right
+// ============================================
+(leg_fl:2x4 =HEIGHT - TOP_THICKNESS)
+(leg_fr:2x4 =HEIGHT - TOP_THICKNESS)
+(leg_bl:2x4 =HEIGHT - TOP_THICKNESS)
+(leg_br:2x4 =HEIGHT - TOP_THICKNESS)
+
+// ============================================
+// Aprons
+// Front/back run between the legs' 89mm sides: 300 - 2*89 = 122mm
+// Left/right run between the legs' 38mm sides: 300 - 2*38 = 224mm
+// ============================================
+(apron_front:2x4 =WIDTH - 2 * 89)
+(apron_back:2x4 =WIDTH - 2 * 89)
+(apron_left:2x4 =DEPTH - 2 * 38)
+(apron_right:2x4 =DEPTH - 2 * 38)
+
+// ============================================
+// Top boards (2x4, laid flat) - 300mm in the depth direction
+// 3 boards: 3*89 = 267mm, leaving 2 gaps of (300 - 267) / 2 = 16.5mm
+// ============================================
+(top_1:2x4 =DEPTH)
+(top_2:2x4 =DEPTH)
+(top_3:2x4 =DEPTH)
+
+// ============================================
+// Front apron to legs (flush with top)
+// ============================================
+leg_fl -[LB>0 DB>0 D(:8x30)]- apron_front
+leg_fr -[RF>0 TF>0 D(:8x30)]- apron_front
+
+// ============================================
+// Back apron to legs
+// ============================================
+leg_bl -[LB>0 DB>0 D(:8x30)]- apron_back
+leg_br -[RF>0 TF>0 D(:8x30)]- apron_back
+
+// ============================================
+// Left apron to legs (flush with top)
+// ============================================
+leg_fl -[BR>0 DB>0 D(:8x30)]- apron_left
+leg_bl -[FR>0 TB>0 D(:8x30)]- apron_left
+
+// ============================================
+// Right apron to legs
+// ============================================
+leg_fr -[BL>0 DF>0 D(:8x30)]- apron_right
+leg_br -[FL>0 TF>0 D(:8x30)]- apron_right
+
+// ============================================
+// Top boards to frame
+// Outer boards sit on the front/back legs; the middle board sits on
+// apron_front, offset by the gap: (300 - 267) / 2 = 16.5mm
+// ============================================
+leg_fl -[TF<0 BD<0 S(Slim:3.8x65)]- top_1
+apron_front -[RF<16.5 BT<0 S(Slim:3.8x65)]- top_2
+leg_fr -[TF<0 BD<0 S(Slim:3.8x65)]- top_3
+
+// Assembly: front frame, back frame, join with side aprons, then the top
+steps {
+  "Front frame": leg_fl, leg_fr, apron_front
+  "Back frame":  leg_bl, leg_br, apron_back
+  "Join":        apron_left, apron_right
+  "Top":         top_1, top_2, top_3
+}

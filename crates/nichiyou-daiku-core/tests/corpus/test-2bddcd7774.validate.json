@@ -1,0 +1,1 @@
+{"valid": false, "error": {"kind": "syntax", "message": "Syntax error at line 3, column 3: Unexpected token '-'. Expected one of: '-[', '='", "line": 3, "column": 3}, "overall_size": null, "size_reference": null, "pieces": [], "problems": []}

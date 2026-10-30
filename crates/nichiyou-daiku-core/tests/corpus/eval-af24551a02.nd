@@ -1,0 +1,32 @@
+WIDTH = 450
+DEPTH = 140
+HEIGHT = 600
+THICK = 19
+SHELF_LENGTH = WIDTH - 2 * THICK
+OPENING = (HEIGHT - 3 * THICK) / 2
+MIDDLE_H = THICK + OPENING
+TOP_H = HEIGHT - THICK
+BRACE_OFFSET = (SHELF_LENGTH - 140) / 2
+BRACE_SHIFT = 20
+
+(back_lower:1x6 =OPENING)
+(back_upper:1x6 =OPENING)
+
+(shelf_bottom:1x6 =SHELF_LENGTH)
+(shelf_middle:1x6 =SHELF_LENGTH)
+(shelf_top:1x6 =SHELF_LENGTH)
+(side_l:1x6 =HEIGHT)
+(side_r:1x6 =HEIGHT)
+
+back_lower -[DB<0 FL<(BRACE_OFFSET - BRACE_SHIFT) D(:8x30)]- shelf_bottom
+back_lower -[TB<0 BL<(BRACE_OFFSET - BRACE_SHIFT) D(:8x30)]- shelf_middle
+
+shelf_bottom -[DL<0 BL<0 S(Slim:3.3x30)]- side_l
+shelf_bottom -[TL<0 FL<0 S(Slim:3.3x30)]- side_r
+shelf_middle -[DL<0 BL<MIDDLE_H S(Slim:3.3x30)]- side_l
+shelf_middle -[TL<0 FL<MIDDLE_H S(Slim:3.3x30)]- side_r
+shelf_top -[DL<0 BL<TOP_H S(Slim:3.3x30)]- side_l
+shelf_top -[TL<0 FL<TOP_H S(Slim:3.3x30)]- side_r
+
+back_upper -[DB<0 FL<(BRACE_OFFSET + BRACE_SHIFT) D(:8x30)]- shelf_middle
+back_upper -[TB<0 BL<(BRACE_OFFSET + BRACE_SHIFT) D(:8x30)]- shelf_top

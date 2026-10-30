@@ -1,0 +1,22 @@
+(leg_fl:2x4 =701)
+(leg_fr:2x4 =701)
+(leg_bl:2x4 =701)
+(leg_br:2x4 =701)
+(apron_front:2x4 =622)
+(apron_back:2x4 =622)
+(apron_left:2x4 =424)
+(apron_right:2x4 =424)
+(top_1:1x4 =500)
+(top_2:1x4 =500)
+(top_8:1x4 =500)
+leg_fl -[LB>0 DB>0 D(:8x30)]- apron_front
+leg_fr -[RF>0 TF>0 D(:8x30)]- apron_front
+leg_bl -[LB>0 DB>0 D(:8x30)]- apron_back
+leg_br -[RF>0 TF>0 D(:8x30)]- apron_back
+leg_fl -[BR>0 DB>0 D(:8x30)]- apron_left
+leg_bl -[FR>0 TB>0 D(:8x30)]- apron_left
+leg_fr -[BL>0 DF>0 D(:8x30)]- apron_right
+leg_br -[FL>0 TF>0 D(:8x30)]- apron_right
+leg_fl -[TF<0 BD<0 S(Slim:3.3x45)]- top_1
+apron_front -[RF<12.6 BT<0 S(Slim:3.3x45)]- top_2
+leg_fr -[TF<0 BD<0 S(Slim:3.3x45)]- top_8

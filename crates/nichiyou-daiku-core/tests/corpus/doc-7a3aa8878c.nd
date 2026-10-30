@@ -1,0 +1,9 @@
+W = 800                        // overall width
+GAP = (W - 8 * 89) / 7         // may use earlier variables
+
+(leg:2x4 =720)
+(apron:2x4 =W - 2 * 89)        // a length takes any expression
+(top:2x4 {"length": 600})
+
+leg -[LB>0 DB>0 D(4, 2 * 15)]- apron   // so do numeric dowel and screw sizes
+apron -[RF<GAP BT<0]- top               // compact offset: a number, a variable or (expression)

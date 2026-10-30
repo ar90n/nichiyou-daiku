@@ -1,0 +1,163 @@
+// TV Stand
+// Dimensions: 1200mm (W) x 350mm (D) x 400mm (H)
+// Material: 2x4 legs (6x: front-left/center/right, back-left/center/right)
+//           2x6 top boards and middle shelf boards
+// Joints: frame = dowel 8x30, boards = screw Slim 3.8x65
+
+WIDTH = 1200
+DEPTH = 350
+HEIGHT = 400
+
+// Legs: height = overall height minus the 2x6 top thickness (38mm)
+LEG_LEN = HEIGHT - 38
+
+// Front/back aprons run between adjacent legs' 89mm sides, split in two by the center leg
+APRON_SPAN = (WIDTH - 3 * 89) / 2
+// Side aprons run between a front and back leg's 38mm sides
+SIDE_APRON = DEPTH - 2 * 38
+
+// Middle shelf: bottom edge of its aprons sits this high above the floor
+MID_HEIGHT = 120
+// Front/back lower-apron leg offset (measured from the leg top)
+LOWER_OFFSET = LEG_LEN - MID_HEIGHT - 89
+
+// Top board layout: 8 x 2x6 (140mm) boards across the width
+TOP_GAP = (WIDTH - 8 * 140) / 7
+TOP_STEP = 140 + TOP_GAP
+
+// Shelf board layout: 3 x 2x6 (140mm) boards within each apron_lower_front span
+SHELF_GAP = (APRON_SPAN - 3 * 140) / 4
+SHELF_STEP = 140 + SHELF_GAP
+
+// ============================================
+// Legs (6x): fl/fc/fr = front row, bl/bc/br = back row
+// ============================================
+(leg_fl:2x4 =LEG_LEN)
+(leg_fc:2x4 =LEG_LEN)
+(leg_fr:2x4 =LEG_LEN)
+(leg_bl:2x4 =LEG_LEN)
+(leg_bc:2x4 =LEG_LEN)
+(leg_br:2x4 =LEG_LEN)
+
+// ============================================
+// Upper aprons (flush with leg tops, support the top boards)
+// ============================================
+(apron_front_left:2x4 =APRON_SPAN)
+(apron_front_right:2x4 =APRON_SPAN)
+(apron_back_left:2x4 =APRON_SPAN)
+(apron_back_right:2x4 =APRON_SPAN)
+(apron_side_left:2x4 =SIDE_APRON)
+(apron_side_center:2x4 =SIDE_APRON)
+(apron_side_right:2x4 =SIDE_APRON)
+
+// ============================================
+// Lower aprons (bottom edge MID_HEIGHT above the floor, support the middle shelf)
+// ============================================
+(apron_lower_front_left:2x4 =APRON_SPAN)
+(apron_lower_front_right:2x4 =APRON_SPAN)
+(apron_lower_back_left:2x4 =APRON_SPAN)
+(apron_lower_back_right:2x4 =APRON_SPAN)
+(apron_lower_side_left:2x4 =SIDE_APRON)
+(apron_lower_side_center:2x4 =SIDE_APRON)
+(apron_lower_side_right:2x4 =SIDE_APRON)
+
+// ============================================
+// Top boards (2x6, length = DEPTH, 8 boards across the width)
+// ============================================
+(top_1:2x6 =DEPTH)
+(top_2:2x6 =DEPTH)
+(top_3:2x6 =DEPTH)
+(top_4:2x6 =DEPTH)
+(top_5:2x6 =DEPTH)
+(top_6:2x6 =DEPTH)
+(top_7:2x6 =DEPTH)
+(top_8:2x6 =DEPTH)
+
+// ============================================
+// Middle shelf boards (2x6, length = DEPTH, 3 per apron_lower_front span)
+// ============================================
+(shelf_1:2x6 =DEPTH)
+(shelf_2:2x6 =DEPTH)
+(shelf_3:2x6 =DEPTH)
+(shelf_4:2x6 =DEPTH)
+(shelf_5:2x6 =DEPTH)
+(shelf_6:2x6 =DEPTH)
+
+// ============================================
+// Upper front apron connections (flush with leg tops)
+// ============================================
+leg_fl -[LB>0 DB>0 D(:8x30)]- apron_front_left
+leg_fc -[RF>0 TF>0 D(:8x30)]- apron_front_left
+leg_fc -[LB>0 DB>0 D(:8x30)]- apron_front_right
+leg_fr -[RF>0 TF>0 D(:8x30)]- apron_front_right
+
+// Upper back apron connections
+leg_bl -[LB>0 DB>0 D(:8x30)]- apron_back_left
+leg_bc -[RF>0 TF>0 D(:8x30)]- apron_back_left
+leg_bc -[LB>0 DB>0 D(:8x30)]- apron_back_right
+leg_br -[RF>0 TF>0 D(:8x30)]- apron_back_right
+
+// Upper side apron connections
+leg_fl -[BR>0 DB>0 D(:8x30)]- apron_side_left
+leg_bl -[FR>0 TB>0 D(:8x30)]- apron_side_left
+leg_fc -[BR>0 DB>0 D(:8x30)]- apron_side_center
+leg_bc -[FR>0 TB>0 D(:8x30)]- apron_side_center
+leg_fr -[BL>0 DF>0 D(:8x30)]- apron_side_right
+leg_br -[FL>0 TF>0 D(:8x30)]- apron_side_right
+
+// ============================================
+// Lower front apron connections (bottom edge MID_HEIGHT above the floor)
+// ============================================
+leg_fl -[LB>LOWER_OFFSET DB>0 D(:8x30)]- apron_lower_front_left
+leg_fc -[RF>LOWER_OFFSET TF>0 D(:8x30)]- apron_lower_front_left
+leg_fc -[LB>LOWER_OFFSET DB>0 D(:8x30)]- apron_lower_front_right
+leg_fr -[RF>LOWER_OFFSET TF>0 D(:8x30)]- apron_lower_front_right
+
+// Lower back apron connections
+leg_bl -[LB>LOWER_OFFSET DB>0 D(:8x30)]- apron_lower_back_left
+leg_bc -[RF>LOWER_OFFSET TF>0 D(:8x30)]- apron_lower_back_left
+leg_bc -[LB>LOWER_OFFSET DB>0 D(:8x30)]- apron_lower_back_right
+leg_br -[RF>LOWER_OFFSET TF>0 D(:8x30)]- apron_lower_back_right
+
+// Lower side apron connections
+leg_fl -[BR<MID_HEIGHT DB<0 D(:8x30)]- apron_lower_side_left
+leg_bl -[FR<MID_HEIGHT TB<0 D(:8x30)]- apron_lower_side_left
+leg_fc -[BR<MID_HEIGHT DB<0 D(:8x30)]- apron_lower_side_center
+leg_bc -[FR<MID_HEIGHT TB<0 D(:8x30)]- apron_lower_side_center
+leg_fr -[BL<MID_HEIGHT DF<0 D(:8x30)]- apron_lower_side_right
+leg_br -[FL<MID_HEIGHT TF<0 D(:8x30)]- apron_lower_side_right
+
+// ============================================
+// Top board connections: outer boards on the corner legs,
+// inner boards on the front aprons (3 per side, mirrored)
+// ============================================
+leg_fl -[TF>0 BD>0 S(Slim:3.8x65)]- top_1
+apron_front_left -[RF<(TOP_STEP - 89) BT<0 S(Slim:3.8x65)]- top_2
+apron_front_left -[RF<(2 * TOP_STEP - 89) BT<0 S(Slim:3.8x65)]- top_3
+apron_front_left -[RF<(3 * TOP_STEP - 89) BT<0 S(Slim:3.8x65)]- top_4
+apron_front_right -[RF>(3 * TOP_STEP - 89) BT>0 S(Slim:3.8x65)]- top_5
+apron_front_right -[RF>(2 * TOP_STEP - 89) BT>0 S(Slim:3.8x65)]- top_6
+apron_front_right -[RF>(TOP_STEP - 89) BT>0 S(Slim:3.8x65)]- top_7
+leg_fr -[TF<0 BD<0 S(Slim:3.8x65)]- top_8
+
+// ============================================
+// Middle shelf connections: 3 boards resting on each lower front apron
+// ============================================
+apron_lower_front_left -[RF<SHELF_GAP BT<0 S(Slim:3.8x65)]- shelf_1
+apron_lower_front_left -[RF<SHELF_STEP BT<0 S(Slim:3.8x65)]- shelf_2
+apron_lower_front_left -[RF<(2 * SHELF_STEP) BT<0 S(Slim:3.8x65)]- shelf_3
+apron_lower_front_right -[RF<SHELF_GAP BT<0 S(Slim:3.8x65)]- shelf_4
+apron_lower_front_right -[RF<SHELF_STEP BT<0 S(Slim:3.8x65)]- shelf_5
+apron_lower_front_right -[RF<(2 * SHELF_STEP) BT<0 S(Slim:3.8x65)]- shelf_6
+
+// ============================================
+// Assembly: three leg frames, join with aprons, then shelf, then top
+// ============================================
+steps {
+  "Left frame":   leg_fl, leg_bl, apron_side_left, apron_lower_side_left
+  "Center frame": leg_fc, leg_bc, apron_side_center, apron_lower_side_center
+  "Right frame":  leg_fr, leg_br, apron_side_right, apron_lower_side_right
+  "Join":         apron_front_left, apron_front_right, apron_back_left, apron_back_right, apron_lower_front_left, apron_lower_front_right, apron_lower_back_left, apron_lower_back_right
+  "Shelf":        shelf_1, shelf_2, shelf_3, shelf_4, shelf_5, shelf_6
+  "Top":          top_1, top_2, top_3, top_4, top_5, top_6, top_7, top_8
+}

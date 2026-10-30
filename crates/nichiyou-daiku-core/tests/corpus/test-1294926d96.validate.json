@@ -1,0 +1,1 @@
+{"valid": true, "error": null, "overall_size": [38.0, 38.0, 50.0], "size_reference": "block", "pieces": [{"id": "block", "type": "2x2", "length": 50.0, "group": 0, "min": [0.0, 0.0, 0.0], "max": [38.0, 38.0, 50.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}], "problems": []}

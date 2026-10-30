@@ -1,0 +1,51 @@
+// Bookshelf: Width 600mm x Depth 184mm x Height 900mm
+// Material: 1x8 only (184 x 19mm). 4 shelf boards including top and bottom, equally spaced.
+// Side panels stand full height; shelves span between them and are screwed through
+// the sides' wide (front/back) faces into the shelf ends.
+
+WIDTH = 600
+DEPTH = 184
+HEIGHT = 900
+BOARD_T = 19                                        // 1x8 thickness
+SHELF_COUNT = 4
+GAP = (HEIGHT - SHELF_COUNT * BOARD_T) / (SHELF_COUNT - 1)   // equal open space between shelves
+
+// Sides: full height, left and right
+(side_l:1x8 =HEIGHT)
+(side_r:1x8 =HEIGHT)
+
+// Shelves: span between the sides; length = WIDTH - 2 x side thickness
+(shelf_1:1x8 =WIDTH - 2 * BOARD_T)   // bottom (地板)
+(shelf_2:1x8 =WIDTH - 2 * BOARD_T)
+(shelf_3:1x8 =WIDTH - 2 * BOARD_T)
+(shelf_4:1x8 =WIDTH - 2 * BOARD_T)   // top (天板)
+
+// Shelf underside heights above the floor: bottom flush with the floor, top flush
+// with the side tops, two middle shelves spaced so the three open gaps are equal
+H1 = 0
+H2 = BOARD_T + GAP
+H3 = 2 * (BOARD_T + GAP)
+H4 = HEIGHT - BOARD_T
+
+// Bottom shelf
+shelf_1 -[DL<0 BL<H1 S(Coarse:3.8x45)]- side_l
+shelf_1 -[TL<0 FL<H1 S(Coarse:3.8x45)]- side_r
+
+// Second shelf
+shelf_2 -[DL<0 BL<H2 S(Coarse:3.8x45)]- side_l
+shelf_2 -[TL<0 FL<H2 S(Coarse:3.8x45)]- side_r
+
+// Third shelf
+shelf_3 -[DL<0 BL<H3 S(Coarse:3.8x45)]- side_l
+shelf_3 -[TL<0 FL<H3 S(Coarse:3.8x45)]- side_r
+
+// Top shelf
+shelf_4 -[DL<0 BL<H4 S(Coarse:3.8x45)]- side_l
+shelf_4 -[TL<0 FL<H4 S(Coarse:3.8x45)]- side_r
+
+steps {
+  "Bottom shelf": side_l, side_r, shelf_1
+  "Second shelf": shelf_2
+  "Third shelf": shelf_3
+  "Top shelf": shelf_4
+}

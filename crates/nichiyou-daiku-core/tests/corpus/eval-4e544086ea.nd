@@ -1,0 +1,89 @@
+// Side Table
+// Overall: 500mm (W) x 400mm (D) x 600mm (H)
+// Material: 2x4
+// Joints: 8x30 dowels
+//
+// Legs stand with their 89mm faces toward the front/back, so the front and
+// back aprons run between the legs' narrow (38mm) sides and the side aprons
+// between their wide (89mm) sides.
+//
+// The aprons are flush with the leg tops; the 2x4 top boards lie on them and
+// run in the depth direction.
+
+WIDTH = 500
+DEPTH = 400
+HEIGHT = 600
+
+BOARD_WIDTH = 89       // 2x4 width
+BOARD_THICKNESS = 38   // 2x4 thickness
+
+TOP_COUNT = 5
+TOP_GAP = (WIDTH - TOP_COUNT * BOARD_WIDTH) / (TOP_COUNT - 1)   // 13.75
+
+// ============================================
+// Legs (4x): 600 - 38 (top boards) = 562
+// leg_fl: front-left, leg_fr: front-right
+// leg_bl: back-left, leg_br: back-right
+// ============================================
+LEG_LENGTH = HEIGHT - BOARD_THICKNESS
+(leg_fl:2x4 =LEG_LENGTH)
+(leg_fr:2x4 =LEG_LENGTH)
+(leg_bl:2x4 =LEG_LENGTH)
+(leg_br:2x4 =LEG_LENGTH)
+
+// ============================================
+// Aprons, flush with the leg tops
+// Front/back: 500 - 2*89 = 322
+// Left/right: 400 - 2*38 = 324
+// ============================================
+(apron_front:2x4 =WIDTH - 2 * BOARD_WIDTH)
+(apron_back:2x4 =WIDTH - 2 * BOARD_WIDTH)
+(apron_left:2x4 =DEPTH - 2 * BOARD_THICKNESS)
+(apron_right:2x4 =DEPTH - 2 * BOARD_THICKNESS)
+
+// ============================================
+// Top boards: 2x4 laid in the depth direction
+// 5 boards: 5*89 = 445, gaps (500 - 445) / 4 = 13.75
+// ============================================
+(top_1:2x4 =DEPTH)
+(top_2:2x4 =DEPTH)
+(top_3:2x4 =DEPTH)
+(top_4:2x4 =DEPTH)
+(top_5:2x4 =DEPTH)
+
+// ============================================
+// Front/back aprons into the legs' narrow faces,
+// flush with the leg tops
+// ============================================
+leg_fl -[LB>0 DB>0 D(:8x30)]- apron_front
+leg_fr -[RF>0 TF>0 D(:8x30)]- apron_front
+leg_bl -[LB>0 DB>0 D(:8x30)]- apron_back
+leg_br -[RF>0 TF>0 D(:8x30)]- apron_back
+
+// ============================================
+// Side aprons into the legs' wide faces, flush with
+// the leg tops: 562 - 89 = 473 above the leg bottom
+// ============================================
+leg_fl -[BR<(LEG_LENGTH - BOARD_WIDTH) DB<0 D(:8x30)]- apron_left
+leg_bl -[FR<(LEG_LENGTH - BOARD_WIDTH) TB<0 D(:8x30)]- apron_left
+leg_fr -[BL<(LEG_LENGTH - BOARD_WIDTH) DF<0 D(:8x30)]- apron_right
+leg_br -[FL<(LEG_LENGTH - BOARD_WIDTH) TF<0 D(:8x30)]- apron_right
+
+// ============================================
+// Top boards: the outer boards sit on the legs,
+// the inner boards on the front apron
+// offsets: 13.75, 116.5, 219.25
+// ============================================
+top_1 -[BD<0 TF<0 D(:8x30)]- leg_fl
+apron_front -[RF<TOP_GAP BT<0 D(:8x30)]- top_2
+apron_front -[RF<(2 * TOP_GAP + BOARD_WIDTH) BT<0 D(:8x30)]- top_3
+apron_front -[RF<(3 * TOP_GAP + 2 * BOARD_WIDTH) BT<0 D(:8x30)]- top_4
+top_5 -[BD<0 TF<0 D(:8x30)]- leg_fr
+
+// Assembly order
+steps {
+  "Left frame":  leg_fl, leg_bl, apron_left
+  "Right frame": leg_fr, leg_br, apron_right
+  "Join":        apron_front, apron_back
+  "Top":         top_1, top_2, top_3, top_4, top_5
+}

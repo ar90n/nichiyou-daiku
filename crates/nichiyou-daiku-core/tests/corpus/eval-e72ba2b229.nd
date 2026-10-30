@@ -1,0 +1,29 @@
+// Desk draft 3: front/back aprons into side aprons (dowel frame for geometry check)
+WIDTH = 1000
+DEPTH = 500
+HEIGHT = 700
+TOP_THICK = 19
+WIDE = 89
+THICK = 38
+LEG = HEIGHT - TOP_THICK
+
+(leg_fl:2x4 =LEG)
+(leg_fr:2x4 =LEG)
+(leg_bl:2x4 =LEG)
+(leg_br:2x4 =LEG)
+
+(apron_front:2x4 =WIDTH - 2 * THICK)
+(apron_back:2x4 =WIDTH - 2 * THICK)
+(apron_left:2x4 =DEPTH - 2 * THICK)
+(apron_right:2x4 =DEPTH - 2 * THICK)
+
+RAIL = LEG - WIDE
+leg_fl -[BR<RAIL DB<0 D(:8x30)]- apron_left
+leg_bl -[FR<RAIL TB<0 D(:8x30)]- apron_left
+leg_fr -[BL<RAIL DF<0 D(:8x30)]- apron_right
+leg_br -[FL<RAIL TF<0 D(:8x30)]- apron_right
+
+apron_front -[DR>0 FR<0 D(:8x30)]- apron_left
+apron_back -[DR>0 FR<0 D(:8x30)]- apron_left
+apron_front -[DL>0 FL<0 D(:8x30)]- apron_right
+apron_back -[DL>0 FL<0 D(:8x30)]- apron_right

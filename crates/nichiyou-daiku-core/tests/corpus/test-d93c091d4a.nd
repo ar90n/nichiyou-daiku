@@ -1,0 +1,5 @@
+
+        (base:2x4 =600)
+        (target:1x4 =300)
+        base -[DF<0 BT<0 S(Coarse:3.8x40)]- target
+        

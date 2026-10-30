@@ -1,0 +1,63 @@
+// Bookshelf (1x8 only)
+// Width: 600mm, Depth: 184mm, Height: 900mm
+// Material: 1x8 only (width 184mm = depth, thickness 19mm)
+// Joints: screws (Slim:3.3x30)
+//
+// Structure:
+// - 2 side panels (1x8, standing, full height 900mm)
+// - 4 shelf boards (1x8, top and bottom included), equally spaced
+//   so the 3 openings between them are equal height
+
+WIDTH = 600
+HEIGHT = 900
+THICK = 19                      // 1x8 thickness (also the shelf thickness)
+
+SHELF_LEN = WIDTH - 2 * THICK   // shelf spans between the two side panels
+GAP = (HEIGHT - 4 * THICK) / 3  // equal opening height between shelves
+H2 = THICK + GAP                // shelf_2 underside height above the floor
+H3 = 2 * THICK + 2 * GAP        // shelf_3 underside height above the floor
+
+// ============================================
+// Side panels (1x8, full height; depth = 1x8 width = 184mm)
+// ============================================
+(side_l:1x8 =HEIGHT)
+(side_r:1x8 =HEIGHT)
+
+// ============================================
+// Shelf boards (1x8, width = depth = 184mm)
+// shelf_1: bottom, shelf_4: top, shelf_2/3: equally spaced between
+// ============================================
+(shelf_1:1x8 =SHELF_LEN)
+(shelf_2:1x8 =SHELF_LEN)
+(shelf_3:1x8 =SHELF_LEN)
+(shelf_4:1x8 =SHELF_LEN)
+
+// ============================================
+// Shelf connections (screwed through the side panels into the shelf ends)
+// ============================================
+
+// Bottom shelf: underside flush with the floor (0mm)
+shelf_1 -[DL<0 BL<0 S(Slim:3.3x30)]- side_l
+shelf_1 -[TL<0 FL<0 S(Slim:3.3x30)]- side_r
+
+// Lower-middle shelf
+shelf_2 -[DL<0 BL<H2 S(Slim:3.3x30)]- side_l
+shelf_2 -[TL<0 FL<H2 S(Slim:3.3x30)]- side_r
+
+// Upper-middle shelf
+shelf_3 -[DL<0 BL<H3 S(Slim:3.3x30)]- side_l
+shelf_3 -[TL<0 FL<H3 S(Slim:3.3x30)]- side_r
+
+// Top shelf: flush with the top of the side panels
+shelf_4 -[DL<0 BL>THICK S(Slim:3.3x30)]- side_l
+shelf_4 -[TL<0 FL>THICK S(Slim:3.3x30)]- side_r
+
+// ============================================
+// Assembly order
+// ============================================
+steps {
+  "Bottom shelf":        side_l, side_r, shelf_1
+  "Lower-middle shelf":  shelf_2
+  "Upper-middle shelf":  shelf_3
+  "Top shelf":           shelf_4
+}

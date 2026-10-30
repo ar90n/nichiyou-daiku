@@ -1,0 +1,65 @@
+// Bookshelf (1x8 only)
+// Dimensions: 600mm (W) x 184mm (D) x 900mm (H)
+// Material: 1x8 only (side panels and shelves)
+// Joints: Screw Slim 3.3x30
+//
+// Structure:
+// - 2 side panels (1x8, full height), their 184mm-wide face forms the depth
+// - 4 shelves (1x8) including top and bottom, equally spaced (equal clear gaps)
+//   bottom shelf rests on the floor, top shelf flush with the side tops
+
+WIDTH = 600
+HEIGHT = 900
+THICK = 19               // 1x8 thickness
+SHELF_LEN = WIDTH - 2 * THICK   // 562: clear span between the sides
+
+// 3 equal gaps between the 4 shelves: (900 - 4*19) / 3 = 274.6667
+GAP = (HEIGHT - 4 * THICK) / 3
+U2 = THICK + GAP                 // shelf_2 underside height
+U3 = 2 * THICK + 2 * GAP         // shelf_3 underside height
+
+// ============================================
+// Side panels (2x) - full height, 184mm wide face = depth
+// ============================================
+(side_l:1x8 =HEIGHT)
+(side_r:1x8 =HEIGHT)
+
+// ============================================
+// Shelves (4x) - bottom, two middle, top
+// ============================================
+(shelf_1:1x8 =SHELF_LEN)   // bottom, underside at the floor
+(shelf_2:1x8 =SHELF_LEN)
+(shelf_3:1x8 =SHELF_LEN)
+(shelf_4:1x8 =SHELF_LEN)   // top, flush with the side tops
+
+// ============================================
+// Bottom shelf: underside on the floor
+// ============================================
+shelf_1 -[DL<0 BL<0 S(Slim:3.3x30)]- side_l
+shelf_1 -[TL<0 FL<0 S(Slim:3.3x30)]- side_r
+
+// ============================================
+// Middle shelves: equally spaced (equal clear gaps)
+// ============================================
+shelf_2 -[DL<0 BL<U2 S(Slim:3.3x30)]- side_l
+shelf_2 -[TL<0 FL<U2 S(Slim:3.3x30)]- side_r
+
+shelf_3 -[DL<0 BL<U3 S(Slim:3.3x30)]- side_l
+shelf_3 -[TL<0 FL<U3 S(Slim:3.3x30)]- side_r
+
+// ============================================
+// Top shelf: flush with the side tops (t = shelf thickness)
+// ============================================
+shelf_4 -[DL<0 BL>THICK S(Slim:3.3x30)]- side_l
+shelf_4 -[TL<0 FL>THICK S(Slim:3.3x30)]- side_r
+
+// ============================================
+// Assembly: sides with the bottom shelf, then the rest bottom to top
+// ============================================
+steps {
+  "Left side and bottom shelf": side_l, shelf_1
+  "Right side": side_r
+  "Second shelf": shelf_2
+  "Third shelf": shelf_3
+  "Top shelf": shelf_4
+}

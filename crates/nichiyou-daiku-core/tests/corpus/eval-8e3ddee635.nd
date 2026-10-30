@@ -1,0 +1,73 @@
+// Desk 1000 x 500 x 700 (W x D x H)
+// Legs and aprons: 2x4.  Top: seven 1x6 boards, laid across the width
+// (each board runs front to back, length = depth).  All joints are screws.
+//
+// Chosen defaults (not specified by the request):
+//   - The front and back aprons sit on the outside of the legs, flush with the
+//     table edge; the side aprons sit between the legs.  This is what the
+//     screw joint needs: every screw goes through a wide (front/back) face.
+//   - Frame screws Slim 3.8x65, top-board screws Slim 3.3x45.
+//   - 7 boards leave a 3.33 mm gap between them (1000 - 7*140 over 6 gaps).
+
+W = 1000                // overall width
+D = 500                 // overall depth
+H = 700                 // overall height
+LEG_W = 89              // 2x4 width
+LEG_T = 38              // 2x4 thickness
+APRON_H = 89            // apron height (2x4 on edge)
+TOP_T = 19              // 1x6 thickness
+LEG = H - TOP_T         // leg length, top flush with the leg
+SIDE = D - 4 * LEG_T    // side apron length, between the legs
+BOARDS = 7              // number of 1x6 boards in the top
+BOARD_W = 140           // 1x6 width
+GAP = (W - BOARDS * BOARD_W) / (BOARDS - 1)
+
+(leg_fl:2x4 =LEG)
+(leg_fr:2x4 =LEG)
+(leg_bl:2x4 =LEG)
+(leg_br:2x4 =LEG)
+(apron_front:2x4 =W)
+(apron_back:2x4 =W)
+(apron_left:2x4 =SIDE)
+(apron_right:2x4 =SIDE)
+(top_1:1x6 =D)
+(top_2:1x6 =D)
+(top_3:1x6 =D)
+(top_4:1x6 =D)
+(top_5:1x6 =D)
+(top_6:1x6 =D)
+(top_7:1x6 =D)
+
+// Frame: front and back aprons over the legs, side aprons between the legs.
+leg_fl -[FT<0 BL<0 S(Slim:3.8x65)]- apron_front
+leg_fr -[FT<0 BL<(W - LEG_W) S(Slim:3.8x65)]- apron_front
+apron_left -[DF<0 BL<(LEG - APRON_H) S(Slim:3.8x65)]- leg_fl
+apron_left -[TF<0 FL<(LEG - APRON_H) S(Slim:3.8x65)]- leg_bl
+leg_bl -[BT<0 FL<0 S(Slim:3.8x65)]- apron_back
+leg_br -[BT<0 FL<(W - LEG_W) S(Slim:3.8x65)]- apron_back
+apron_right -[DB<0 BR<(LEG - APRON_H) S(Slim:3.8x65)]- leg_fr
+apron_right -[TB<0 FR<(LEG - APRON_H) S(Slim:3.8x65)]- leg_br
+
+// Top: each board screwed to the front apron (fixed offset) and the back apron
+// (sliding, so its offset does not have to be worked out again).
+apron_front -[LF<(1 * BOARD_W + 0 * GAP) BT<0 S(Slim:3.3x45)]- top_1
+apron_front -[LF<(2 * BOARD_W + 1 * GAP) BT<0 S(Slim:3.3x45)]- top_2
+apron_front -[LF<(3 * BOARD_W + 2 * GAP) BT<0 S(Slim:3.3x45)]- top_3
+apron_front -[LF<(4 * BOARD_W + 3 * GAP) BT<0 S(Slim:3.3x45)]- top_4
+apron_front -[LF<(5 * BOARD_W + 4 * GAP) BT<0 S(Slim:3.3x45)]- top_5
+apron_front -[LF<(6 * BOARD_W + 5 * GAP) BT<0 S(Slim:3.3x45)]- top_6
+apron_front -[LF<(7 * BOARD_W + 6 * GAP) BT<0 S(Slim:3.3x45)]- top_7
+apron_back -[LB? BD? S(Slim:3.3x45)]- top_1
+apron_back -[LB? BD? S(Slim:3.3x45)]- top_2
+apron_back -[LB? BD? S(Slim:3.3x45)]- top_3
+apron_back -[LB? BD? S(Slim:3.3x45)]- top_4
+apron_back -[LB? BD? S(Slim:3.3x45)]- top_5
+apron_back -[LB? BD? S(Slim:3.3x45)]- top_6
+apron_back -[LB? BD? S(Slim:3.3x45)]- top_7
+
+steps {
+  "Left frame": leg_fl, apron_left, leg_bl
+  "Right frame": leg_fr, apron_right, leg_br
+  "Front and back aprons": apron_front, apron_back
+  "Board top": top_1, top_2, top_3, top_4, top_5, top_6, top_7
+}

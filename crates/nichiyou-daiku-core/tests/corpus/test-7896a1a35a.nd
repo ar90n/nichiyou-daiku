@@ -1,0 +1,2 @@
+W = 600 / 2 // half the width
+(a:2x4 =W)

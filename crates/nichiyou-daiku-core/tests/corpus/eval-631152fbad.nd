@@ -1,0 +1,171 @@
+// Three-Tier Shoe Rack
+// Overall: 600mm (W) x 300mm (D) x 500mm (H)
+// Frame: 2x2 lumber, shelves: 1x4 boards laid front-to-back
+// Joints: 8x30 dowels
+//
+// Structure:
+// - 4 corner legs (2x2) carrying the frame
+// - 3 tiers, equally spaced: shelf surfaces 100 / 300 / 500mm above the floor
+// - Each tier: front/back rails (carry the boards) and left/right rails
+// - 5 x 1x4 boards per tier run front-to-back, between the legs,
+//   doweled to the front rail and resting on the back rail
+//
+// Note: a 2x2 leg is only 38mm square, so a front-rail dowel and a
+// side-rail dowel in the same corner would meet inside the leg. The side
+// rails are therefore set 12mm lower than the front/back rails
+// (SIDE_DROP), which separates the two dowels.
+
+WIDTH  = 600                 // overall width
+DEPTH  = 300                 // overall depth
+HEIGHT = 500                 // overall height
+TOP_T  = 19                  // 1x4 board thickness
+FRAME  = 38                  // 2x2 lumber (square section)
+BOARD_W = 89                 // 1x4 board width
+BOARDS = 5                   // boards per tier
+SIDE_DROP = 12               // side rails sit this much below the front/back rails
+
+LEG = HEIGHT - TOP_T         // 481: legs stop under the top boards
+
+// Shelf surface heights (equally spaced 200mm apart)
+SURF_TOP = HEIGHT            // 500
+SURF_MID = 300
+SURF_BOT = 100
+
+// Front/back rail placement (offset from the leg top)
+OFF_FB_TOP = 0
+OFF_FB_MID = LEG - (SURF_MID - TOP_T)   // 200
+OFF_FB_BOT = LEG - (SURF_BOT - TOP_T)   // 400
+
+// Left/right rail placement (offset from the floor, = rail bottom)
+OFF_LR_TOP = SURF_TOP - TOP_T - FRAME - SIDE_DROP   // 431
+OFF_LR_MID = SURF_MID - TOP_T - FRAME - SIDE_DROP   // 231
+OFF_LR_BOT = SURF_BOT - TOP_T - FRAME - SIDE_DROP   // 31
+
+// Rail lengths: front/back butt against the legs' 38mm sides
+RAIL_FB = WIDTH - 2 * FRAME    // 524
+RAIL_LR = DEPTH - 2 * FRAME    // 224
+
+// Board layout inside the frame
+BAY  = RAIL_FB
+GAP  = (BAY - BOARDS * BOARD_W) / (BOARDS - 1)   // (524 - 445) / 4 = 19.75
+STEP = BOARD_W + GAP                              // 108.75
+
+// ============================================
+// Legs (4x): leg_fl front-left, leg_fr front-right
+// leg_bl back-left, leg_br back-right
+// ============================================
+(leg_fl:2x2 =LEG)
+(leg_fr:2x2 =LEG)
+(leg_bl:2x2 =LEG)
+(leg_br:2x2 =LEG)
+
+// ============================================
+// Rails (2x2) - a frame per tier
+// ============================================
+(rail_top_front:2x2 =RAIL_FB)
+(rail_top_back:2x2 =RAIL_FB)
+(rail_top_left:2x2 =RAIL_LR)
+(rail_top_right:2x2 =RAIL_LR)
+
+(rail_mid_front:2x2 =RAIL_FB)
+(rail_mid_back:2x2 =RAIL_FB)
+(rail_mid_left:2x2 =RAIL_LR)
+(rail_mid_right:2x2 =RAIL_LR)
+
+(rail_bot_front:2x2 =RAIL_FB)
+(rail_bot_back:2x2 =RAIL_FB)
+(rail_bot_left:2x2 =RAIL_LR)
+(rail_bot_right:2x2 =RAIL_LR)
+
+// ============================================
+// Shelf boards (1x4, front-to-back) - 5 per tier
+// ============================================
+(board_top_1:1x4 =DEPTH)
+(board_top_2:1x4 =DEPTH)
+(board_top_3:1x4 =DEPTH)
+(board_top_4:1x4 =DEPTH)
+(board_top_5:1x4 =DEPTH)
+
+(board_mid_1:1x4 =DEPTH)
+(board_mid_2:1x4 =DEPTH)
+(board_mid_3:1x4 =DEPTH)
+(board_mid_4:1x4 =DEPTH)
+(board_mid_5:1x4 =DEPTH)
+
+(board_bot_1:1x4 =DEPTH)
+(board_bot_2:1x4 =DEPTH)
+(board_bot_3:1x4 =DEPTH)
+(board_bot_4:1x4 =DEPTH)
+(board_bot_5:1x4 =DEPTH)
+
+// ============================================
+// Top tier rails (front/back flush with the leg tops, sides 12 lower)
+// ============================================
+leg_fl -[LB>OFF_FB_TOP DB>0 D(:8x30)]- rail_top_front
+leg_fr -[RF>OFF_FB_TOP TF>0 D(:8x30)]- rail_top_front
+leg_bl -[LB>OFF_FB_TOP DB>0 D(:8x30)]- rail_top_back
+leg_br -[RF>OFF_FB_TOP TF>0 D(:8x30)]- rail_top_back
+
+leg_fl -[BR<OFF_LR_TOP DB<0 D(:8x30)]- rail_top_left
+leg_bl -[FR<OFF_LR_TOP TB<0 D(:8x30)]- rail_top_left
+leg_fr -[BL<OFF_LR_TOP DF<0 D(:8x30)]- rail_top_right
+leg_br -[FL<OFF_LR_TOP TF<0 D(:8x30)]- rail_top_right
+
+// ============================================
+// Middle tier rails (shelf surface at 300)
+// ============================================
+leg_fl -[LB>OFF_FB_MID DB>0 D(:8x30)]- rail_mid_front
+leg_fr -[RF>OFF_FB_MID TF>0 D(:8x30)]- rail_mid_front
+leg_bl -[LB>OFF_FB_MID DB>0 D(:8x30)]- rail_mid_back
+leg_br -[RF>OFF_FB_MID TF>0 D(:8x30)]- rail_mid_back
+
+leg_fl -[BR<OFF_LR_MID DB<0 D(:8x30)]- rail_mid_left
+leg_bl -[FR<OFF_LR_MID TB<0 D(:8x30)]- rail_mid_left
+leg_fr -[BL<OFF_LR_MID DF<0 D(:8x30)]- rail_mid_right
+leg_br -[FL<OFF_LR_MID TF<0 D(:8x30)]- rail_mid_right
+
+// ============================================
+// Bottom tier rails (shelf surface at 100)
+// ============================================
+leg_fl -[LB>OFF_FB_BOT DB>0 D(:8x30)]- rail_bot_front
+leg_fr -[RF>OFF_FB_BOT TF>0 D(:8x30)]- rail_bot_front
+leg_bl -[LB>OFF_FB_BOT DB>0 D(:8x30)]- rail_bot_back
+leg_br -[RF>OFF_FB_BOT TF>0 D(:8x30)]- rail_bot_back
+
+leg_fl -[BR<OFF_LR_BOT DB<0 D(:8x30)]- rail_bot_left
+leg_bl -[FR<OFF_LR_BOT TB<0 D(:8x30)]- rail_bot_left
+leg_fr -[BL<OFF_LR_BOT DF<0 D(:8x30)]- rail_bot_right
+leg_br -[FL<OFF_LR_BOT TF<0 D(:8x30)]- rail_bot_right
+
+// ============================================
+// Shelf boards: doweled to the front rail of each tier,
+// resting on the back rail, one board + one gap apart
+// ============================================
+rail_top_front -[RF<0 BT<0 D(:8x30)]- board_top_1
+rail_top_front -[RF<STEP BT<0 D(:8x30)]- board_top_2
+rail_top_front -[RF<(2 * STEP) BT<0 D(:8x30)]- board_top_3
+rail_top_front -[RF<(3 * STEP) BT<0 D(:8x30)]- board_top_4
+rail_top_front -[RF<(4 * STEP) BT<0 D(:8x30)]- board_top_5
+
+rail_mid_front -[RF<0 BT<0 D(:8x30)]- board_mid_1
+rail_mid_front -[RF<STEP BT<0 D(:8x30)]- board_mid_2
+rail_mid_front -[RF<(2 * STEP) BT<0 D(:8x30)]- board_mid_3
+rail_mid_front -[RF<(3 * STEP) BT<0 D(:8x30)]- board_mid_4
+rail_mid_front -[RF<(4 * STEP) BT<0 D(:8x30)]- board_mid_5
+
+rail_bot_front -[RF<0 BT<0 D(:8x30)]- board_bot_1
+rail_bot_front -[RF<STEP BT<0 D(:8x30)]- board_bot_2
+rail_bot_front -[RF<(2 * STEP) BT<0 D(:8x30)]- board_bot_3
+rail_bot_front -[RF<(3 * STEP) BT<0 D(:8x30)]- board_bot_4
+rail_bot_front -[RF<(4 * STEP) BT<0 D(:8x30)]- board_bot_5
+
+// ============================================
+// Assembly: the side frames, the front/back rails joining them,
+// then the shelf boards
+// ============================================
+steps {
+  "Left frame":  leg_fl, leg_bl, rail_top_left, rail_mid_left, rail_bot_left
+  "Right frame": leg_fr, leg_br, rail_top_right, rail_mid_right, rail_bot_right
+  "Join":        rail_top_front, rail_top_back, rail_mid_front, rail_mid_back, rail_bot_front, rail_bot_back
+  "Shelves":     board_top_1, board_top_2, board_top_3, board_top_4, board_top_5, board_mid_1, board_mid_2, board_mid_3, board_mid_4, board_mid_5, board_bot_1, board_bot_2, board_bot_3, board_bot_4, board_bot_5
+}

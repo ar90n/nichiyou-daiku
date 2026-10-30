@@ -1,0 +1,6 @@
+L = 400
+N = 11
+STEP = L / N
+(rail:2x4 =L)
+(post:2x4 =500)
+rail -[FL<(N * STEP) DF<0]- post

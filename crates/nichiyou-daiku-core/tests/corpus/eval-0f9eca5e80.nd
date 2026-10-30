@@ -1,0 +1,24 @@
+WIDTH = 1000
+DEPTH = 500
+HEIGHT = 700
+TOP_THICK = 19
+LEG = HEIGHT - TOP_THICK
+BOARD_W = 140
+BOARD_N = 7
+GAP = (WIDTH - BOARD_N * BOARD_W) / (BOARD_N - 1)
+
+(leg_fl:2x4 =LEG)
+(leg_fr:2x4 =LEG)
+(leg_bl:2x4 =LEG)
+(leg_br:2x4 =LEG)
+(apron_front:2x4 =WIDTH)
+(apron_back:2x4 =WIDTH)
+(top_1:1x6 =DEPTH)
+
+apron_front -[BT<38 FL>38 S(Coarse:3.8x57)]- leg_fl
+apron_front -[BD<38 FR>38 S(Coarse:3.8x57)]- leg_fr
+apron_back -[FT<38 BL>38 S(Coarse:3.8x57)]- leg_bl
+apron_back -[FD<38 BR>38 S(Coarse:3.8x57)]- leg_br
+
+apron_front -[RB<500 BD<0 S(Slim:3.3x45)]- top_1
+apron_back -[RB<500 BT<0 S(Slim:3.3x45)]- top_1

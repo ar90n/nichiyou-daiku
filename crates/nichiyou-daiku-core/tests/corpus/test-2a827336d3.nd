@@ -1,0 +1,25 @@
+(rail:2x4 =1200)
+(slat_with_a_long_name_00:2x2 =300)
+rail -[RF<0 BT<0 D(:8x30)]- slat_with_a_long_name_00
+(slat_with_a_long_name_01:2x2 =300)
+rail -[RF<90 BT<0 D(:8x30)]- slat_with_a_long_name_01
+(slat_with_a_long_name_02:2x2 =300)
+rail -[RF<180 BT<0 D(:8x30)]- slat_with_a_long_name_02
+(slat_with_a_long_name_03:2x2 =300)
+rail -[RF<270 BT<0 D(:8x30)]- slat_with_a_long_name_03
+(slat_with_a_long_name_04:2x2 =300)
+rail -[RF<360 BT<0 D(:8x30)]- slat_with_a_long_name_04
+(slat_with_a_long_name_05:2x2 =300)
+rail -[RF<450 BT<0 D(:8x30)]- slat_with_a_long_name_05
+(slat_with_a_long_name_06:2x2 =300)
+rail -[RF<540 BT<0 D(:8x30)]- slat_with_a_long_name_06
+(slat_with_a_long_name_07:2x2 =300)
+rail -[RF<630 BT<0 D(:8x30)]- slat_with_a_long_name_07
+(slat_with_a_long_name_08:2x2 =300)
+rail -[RF<720 BT<0 D(:8x30)]- slat_with_a_long_name_08
+(slat_with_a_long_name_09:2x2 =300)
+rail -[RF<810 BT<0 D(:8x30)]- slat_with_a_long_name_09
+(slat_with_a_long_name_10:2x2 =300)
+rail -[RF<900 BT<0 D(:8x30)]- slat_with_a_long_name_10
+(slat_with_a_long_name_11:2x2 =300)
+rail -[RF<990 BT<0 D(:8x30)]- slat_with_a_long_name_11

@@ -1,0 +1,20 @@
+WIDTH = 1000
+DEPTH = 500
+HEIGHT = 700
+TOP_THICK = 19
+LEG = HEIGHT - TOP_THICK
+
+(leg_fl:2x4 =LEG)
+(leg_fr:2x4 =LEG)
+(leg_bl:2x4 =LEG)
+(leg_br:2x4 =LEG)
+(apron_front:2x4 =WIDTH)
+(apron_back:2x4 =WIDTH)
+(top_1:1x6 =DEPTH)
+
+apron_front -[BT<51 FL>38 S(Coarse:3.8x57)]- leg_fl
+apron_front -[BD<51 FR>38 S(Coarse:3.8x57)]- leg_fr
+apron_back -[FT<38 BL>38 S(Coarse:3.8x57)]- leg_bl
+apron_back -[FD<38 BR>38 S(Coarse:3.8x57)]- leg_br
+apron_front -[RF<500 BT<0 S(Slim:3.3x45)]- top_1
+apron_back -[RF<500 BD<0 S(Slim:3.3x45)]- top_1

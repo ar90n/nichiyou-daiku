@@ -1,0 +1,45 @@
+// Bookshelf (1x8 only)
+// Width: 600mm, Depth: 184mm, Height: 900mm
+// 2 side panels + 4 shelves (bottom and top included), evenly spaced, screwed with Slim 3.3x45
+
+WIDTH = 600
+DEPTH = 184
+HEIGHT = 900
+THICK = 19                     // 1x8 thickness
+SHELF_LEN = WIDTH - 2 * THICK   // shelf spans between the two side panels
+USABLE = HEIGHT - THICK         // top shelf's underside height (flush with the side tops)
+STEP = USABLE / 3               // even spacing between the 4 shelves' undersides
+
+// Side panels: stand vertically, their 184mm (1x8 width) faces front/back -> depth = 184mm
+(side_l:1x8 =HEIGHT)
+(side_r:1x8 =HEIGHT)
+
+// Shelves: span the width between the side panels (bottom, 2 middle, top)
+(shelf_1:1x8 =SHELF_LEN)
+(shelf_2:1x8 =SHELF_LEN)
+(shelf_3:1x8 =SHELF_LEN)
+(shelf_4:1x8 =SHELF_LEN)
+
+// Shelf 1 (bottom / 地板): underside on the floor
+shelf_1 -[DL<0 BL<0 S(Slim:3.3x45)]- side_l
+shelf_1 -[TL<0 FL<0 S(Slim:3.3x45)]- side_r
+
+// Shelf 2
+shelf_2 -[DL<0 BL<STEP S(Slim:3.3x45)]- side_l
+shelf_2 -[TL<0 FL<STEP S(Slim:3.3x45)]- side_r
+
+// Shelf 3
+shelf_3 -[DL<0 BL<(2 * STEP) S(Slim:3.3x45)]- side_l
+shelf_3 -[TL<0 FL<(2 * STEP) S(Slim:3.3x45)]- side_r
+
+// Shelf 4 (top / 天板): flush with the side panel tops
+shelf_4 -[DL<0 BL<USABLE S(Slim:3.3x45)]- side_l
+shelf_4 -[TL<0 FL<USABLE S(Slim:3.3x45)]- side_r
+
+steps {
+  "Bottom shelf on the left side": side_l, shelf_1
+  "Right side": side_r
+  "Second shelf": shelf_2
+  "Third shelf": shelf_3
+  "Top shelf": shelf_4
+}

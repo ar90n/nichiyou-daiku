@@ -1,0 +1,4 @@
+
+        (beam1:2x4 {"length": 1000})  // This is a beam
+        (beam2:2x4 =800)  // Using compact notation
+        

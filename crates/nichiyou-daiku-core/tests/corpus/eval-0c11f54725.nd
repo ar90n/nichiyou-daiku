@@ -1,0 +1,87 @@
+// Garden Bench
+// Overall: 900mm (W) x 300mm (D) x 420mm (H)
+// Frame: 2x4 legs and aprons, 8x30 dowels
+// Seat: 3 x 1x4 boards running along the length, Slim 3.3x45 screws
+
+WIDTH = 900
+DEPTH = 300
+HEIGHT = 420
+TOP_THICK = 19
+
+// Legs: height minus the 19mm seat boards
+LEG_LEN = HEIGHT - TOP_THICK
+
+// Seat boards run along the width and are spaced across the depth
+BOARD_COUNT = 3
+BOARD_WIDTH = 89
+SEAT_GAP = (DEPTH - BOARD_COUNT * BOARD_WIDTH) / (BOARD_COUNT - 1)
+BOARD_CENTER_2 = BOARD_WIDTH + SEAT_GAP + BOARD_WIDTH / 2
+
+// Side aprons span between the legs, 38mm in from each end of the depth
+APRON_INSET = 38
+SEAT_ANCHOR_2 = BOARD_CENTER_2 - APRON_INSET
+
+// Screw down the outer boards at mid-span, clear of the leg dowels
+SCREW_X = WIDTH / 2
+APRON_SCREW_OFFSET = SCREW_X - 89
+BOARD_SCREW_OFFSET = SCREW_X
+
+// Front/back aprons run along the width; side aprons run along the depth
+APRON_FRONT_LEN = WIDTH - 2 * 89
+APRON_SIDE_LEN = DEPTH - 2 * 38
+
+// ============================================
+// Legs
+// ============================================
+(leg_fl:2x4 =LEG_LEN)
+(leg_fr:2x4 =LEG_LEN)
+(leg_bl:2x4 =LEG_LEN)
+(leg_br:2x4 =LEG_LEN)
+
+// ============================================
+// Aprons
+// ============================================
+(apron_front:2x4 =APRON_FRONT_LEN)
+(apron_back:2x4 =APRON_FRONT_LEN)
+(apron_left:2x4 =APRON_SIDE_LEN)
+(apron_right:2x4 =APRON_SIDE_LEN)
+
+// ============================================
+// Seat boards: 3 x 1x4 running along the width
+// 3 x 89 = 267, gaps (300 - 267) / 2 = 16.5
+// ============================================
+(top_1:1x4 =WIDTH)
+(top_2:1x4 =WIDTH)
+(top_3:1x4 =WIDTH)
+
+// ============================================
+// Frame: front/back aprons end into the legs' narrow faces
+// ============================================
+leg_fl -[LB>0 DB>0 D(:8x30)]- apron_front
+leg_fr -[RF>0 TF>0 D(:8x30)]- apron_front
+leg_bl -[LB>0 DB>0 D(:8x30)]- apron_back
+leg_br -[RF>0 TF>0 D(:8x30)]- apron_back
+
+// Side aprons end into the legs' wide faces
+leg_fl -[BR>0 DB>0 D(:8x30)]- apron_left
+leg_bl -[FR>0 TB>0 D(:8x30)]- apron_left
+leg_fr -[BL>0 DF>0 D(:8x30)]- apron_right
+leg_br -[FL>0 TF>0 D(:8x30)]- apron_right
+
+// ============================================
+// Seat boards: the outer boards screw down onto the front/back
+// aprons at mid-span; the middle board screws to both side aprons.
+// Board ends are flush with the outer sides of the bench.
+// ============================================
+apron_front -[RF<APRON_SCREW_OFFSET BL<BOARD_SCREW_OFFSET S(Slim:3.3x45)]- top_1
+apron_back  -[RB<APRON_SCREW_OFFSET BR<BOARD_SCREW_OFFSET S(Slim:3.3x45)]- top_3
+
+apron_left  -[RB<SEAT_ANCHOR_2 BD<44.5 S(Slim:3.3x45)]- top_2
+apron_right -[RF<SEAT_ANCHOR_2 BT<44.5 S(Slim:3.3x45)]- top_2
+
+steps {
+  "Left frame":  leg_fl, leg_bl, apron_left
+  "Right frame": leg_fr, leg_br, apron_right
+  "Join frames": apron_front, apron_back
+  "Seat":        top_1, top_2, top_3
+}

@@ -1,0 +1,13 @@
+
+(a:2x4 =500)
+(b:2x4 =300)
+(c:2x4 =300)
+(shelf:2x4 =600)
+(side:2x4 =800)
+(shelf2:2x4 =600)
+(shelf3:2x4 =600)
+a -[FL<100 DF<0 D(:8x30)]- b
+a -[BL<100 DB<0 D(4, 40)]- c
+shelf -[DL<0 BL<100 S(Slim:3.3x45)]- side
+shelf2 -[DL<0 BL<300 S(Coarse:3.8x57)]- side
+shelf3 -[DL<0 BL<500 S(3.5, 40)]- side

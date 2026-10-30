@@ -1,0 +1,83 @@
+// サイドテーブル / Side Table
+// 幅500 × 奥行400 × 高さ600mm
+// 材: 2x4 / 接合: 8x30ダボ
+// 脚4本、幕板は脚の上端にそろえる、天板は2x4を奥行方向に並べる
+
+WIDTH = 500          // 幅
+DEPTH = 400          // 奥行
+HEIGHT = 600         // 高さ
+TOP_T = 38           // 天板厚 (2x4)
+LEG_W = 89           // 2x4の幅
+LEG_T = 38           // 2x4の厚さ
+APRON_H = 89         // 幕板の高さ (2x4の幅)
+
+LEG_L = HEIGHT - TOP_T              // 脚長: 天板の厚さを引く
+APRON_FB = WIDTH - 2 * LEG_W        // 前後幕板: 脚の89mm面の間
+APRON_LR = DEPTH - 2 * LEG_T        // 左右幕板: 脚の38mm面の間
+SIDE_OFFSET = LEG_L - APRON_H       // 左右幕板を脚上端にそろえる位置
+
+N_TOP = 5                           // 天板枚数: 5*89 <= 500
+TOP_GAP = (WIDTH - N_TOP * LEG_W) / (N_TOP - 1)
+TOP_OFS_2 = TOP_GAP
+TOP_OFS_3 = 2 * (LEG_W + TOP_GAP) - LEG_W
+TOP_OFS_4 = 3 * (LEG_W + TOP_GAP) - LEG_W
+
+// ============================================
+// 脚 (4本)
+// ============================================
+(leg_fl:2x4 =LEG_L)
+(leg_fr:2x4 =LEG_L)
+(leg_bl:2x4 =LEG_L)
+(leg_br:2x4 =LEG_L)
+
+// ============================================
+// 幕板 (脚の上端にそろえる)
+// ============================================
+(apron_front:2x4 =APRON_FB)
+(apron_back:2x4 =APRON_FB)
+(apron_left:2x4 =APRON_LR)
+(apron_right:2x4 =APRON_LR)
+
+// ============================================
+// 天板 (2x4を奥行方向に5枚、隙間TOP_GAP)
+// ============================================
+(top_1:2x4 =DEPTH)
+(top_2:2x4 =DEPTH)
+(top_3:2x4 =DEPTH)
+(top_4:2x4 =DEPTH)
+(top_5:2x4 =DEPTH)
+
+// ============================================
+// 前後の幕板: 脚の狭い面へ、脚上端にそろえる
+// ============================================
+leg_fl -[LB>0 DB>0 D(:8x30)]- apron_front
+leg_fr -[RF>0 TF>0 D(:8x30)]- apron_front
+leg_bl -[LB>0 DB>0 D(:8x30)]- apron_back
+leg_br -[RF>0 TF>0 D(:8x30)]- apron_back
+
+// ============================================
+// 左右の幕板: 脚の広い面へ、脚上端にそろえる
+// ============================================
+leg_fl -[BR<SIDE_OFFSET DB<0 D(:8x30)]- apron_left
+leg_bl -[FR<SIDE_OFFSET TB<0 D(:8x30)]- apron_left
+leg_fr -[BL<SIDE_OFFSET DF<0 D(:8x30)]- apron_right
+leg_br -[FL<SIDE_OFFSET TF<0 D(:8x30)]- apron_right
+
+// ============================================
+// 天板: 両端の板は脚に、中央の板は前幕板にダボ留め
+// ============================================
+top_1 -[BD<0 TF<0 D(:8x30)]- leg_fl
+apron_front -[RF<TOP_OFS_2 BT<0 D(:8x30)]- top_2
+apron_front -[RF<TOP_OFS_3 BT<0 D(:8x30)]- top_3
+apron_front -[RF<TOP_OFS_4 BT<0 D(:8x30)]- top_4
+top_5 -[BD<0 TF<0 D(:8x30)]- leg_fr
+
+// ============================================
+// 組立手順
+// ============================================
+steps {
+  "Left frame":  leg_fl, leg_bl, apron_left
+  "Right frame": leg_fr, leg_br, apron_right
+  "Join":        apron_front, apron_back
+  "Top":         top_1, top_2, top_3, top_4, top_5
+}

@@ -1,0 +1,37 @@
+(leg_fl:2x4 =681)
+(leg_fr:2x4 =681)
+(leg_bl:2x4 =681)
+(leg_br:2x4 =681)
+(apron_left:2x4 =500)
+(apron_right:2x4 =500)
+(apron_front:2x4 =924)
+(apron_back:2x4 =924)
+(top_1:1x6 =500)
+(top_2:1x6 =500)
+(top_3:1x6 =500)
+(top_4:1x6 =500)
+(top_5:1x6 =500)
+(top_6:1x6 =500)
+(top_7:1x6 =500)
+leg_fl -[LT<0 BR>424 S(Slim:3.8x65)]- apron_left
+leg_bl -[LT<0 BR>38 S(Slim:3.8x65)]- apron_left
+leg_fr -[RT<0 FR>424 S(Slim:3.8x65)]- apron_right
+leg_br -[RT<0 FR>38 S(Slim:3.8x65)]- apron_right
+apron_front -[DF<0 BD>0 S(Slim:3.8x65)]- apron_left
+apron_front -[TF>0 FD<0 S(Slim:3.8x65)]- apron_right
+apron_back  -[DB>0 BT<0 S(Slim:3.8x65)]- apron_left
+apron_back  -[TB<0 FT>0 S(Slim:3.8x65)]- apron_right
+apron_front -[LF>102 BT>0 S(Slim:3.3x45)]- top_1
+apron_front -[LF>245.3333 BT>0 S(Slim:3.3x45)]- top_2
+apron_front -[LF>388.6667 BT>0 S(Slim:3.3x45)]- top_3
+apron_front -[LF>532 BT>0 S(Slim:3.3x45)]- top_4
+apron_front -[LF>675.3333 BT>0 S(Slim:3.3x45)]- top_5
+apron_front -[LF>818.6667 BT>0 S(Slim:3.3x45)]- top_6
+apron_front -[LF>822 BT<0 S(Slim:3.3x45)]- top_7
+apron_back -[LB>822 BD<0 S(Slim:3.3x45)]- top_1
+apron_back -[LB>678.6667 BD<0 S(Slim:3.3x45)]- top_2
+apron_back -[LB>535.3333 BD<0 S(Slim:3.3x45)]- top_3
+apron_back -[LB>392 BD<0 S(Slim:3.3x45)]- top_4
+apron_back -[LB>248.6667 BD<0 S(Slim:3.3x45)]- top_5
+apron_back -[LB>105.3333 BD<0 S(Slim:3.3x45)]- top_6
+apron_back -[LB>102 BD<140 S(Slim:3.3x45)]- top_7

@@ -1,0 +1,6 @@
+// Compact notation (recommended)
+(leg_1:2x4 =720)
+(shelf:1x4 =600)
+
+// JSON format (for future extensions)
+(leg_2:2x4 {"length": 720})

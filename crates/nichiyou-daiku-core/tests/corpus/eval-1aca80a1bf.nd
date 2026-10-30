@@ -1,0 +1,172 @@
+// Shoe Rack (3-tier)
+// Overall size: 600mm (W) x 300mm (D) x 500mm (H)
+// Frame: 2x2, dowel 8x30 joints
+// Shelves: 1x4 boards, screwed to the frame (Slim 3.3x45)
+// Shelf levels are equally spaced (221.5mm center-to-center gap)
+
+WIDTH = 600
+DEPTH = 300
+HEIGHT = 500
+
+// Legs run the full height minus the 19mm top board that sits on the top rail
+LEG_LEN = HEIGHT - 19          // 481
+
+// Front/back rails span between the legs' 38mm sides: 600 - 2*38 = 524
+RAIL_FB = WIDTH - 2 * 38
+// Left/right rails span between the legs' 38mm sides: 300 - 2*38 = 224
+RAIL_LR = DEPTH - 2 * 38
+
+// Shelf boards run front-to-back (length = DEPTH) on all 3 levels
+BOARD_LEN = DEPTH
+
+// Top rail offset from the leg bottom, flush with the leg top: 481 - 38 = 443
+TOP_OFFSET = LEG_LEN - 38
+// Bottom rail sits with its bottom edge on the floor (h=0)
+BOT_OFFSET = LEG_LEN - 0 - 38   // 443, same value as TOP_OFFSET by symmetry
+// Middle rail bottom edge is the midpoint between the bottom (h=0) and top (h=443) rails
+MID_H = TOP_OFFSET / 2          // 221.5
+
+// The legs are square (2x2), so a left/right rail flush with a front/back rail at the
+// same height would dowel into the same corner of the post and the holes would collide.
+// Each left/right rail is stacked one rail-width (38mm) below its front/back rail instead.
+LR_TOP_OFFSET = TOP_OFFSET - 38   // 405
+LR_MID_OFFSET = MID_H - 38        // 183.5
+LR_BOT_OFFSET = 0 + 38            // 38
+
+// ============================================
+// Legs (4x): leg_fl front-left, leg_fr front-right, leg_bl back-left, leg_br back-right
+// ============================================
+(leg_fl:2x2 =LEG_LEN)
+(leg_fr:2x2 =LEG_LEN)
+(leg_bl:2x2 =LEG_LEN)
+(leg_br:2x2 =LEG_LEN)
+
+// ============================================
+// Top rails (flush with the leg tops)
+// ============================================
+(rail_top_front:2x2 =RAIL_FB)
+(rail_top_back:2x2 =RAIL_FB)
+(rail_top_left:2x2 =RAIL_LR)
+(rail_top_right:2x2 =RAIL_LR)
+
+// ============================================
+// Middle rails (bottom edge 221.5mm above the floor)
+// ============================================
+(rail_mid_front:2x2 =RAIL_FB)
+(rail_mid_back:2x2 =RAIL_FB)
+(rail_mid_left:2x2 =RAIL_LR)
+(rail_mid_right:2x2 =RAIL_LR)
+
+// ============================================
+// Bottom rails (bottom edge on the floor)
+// ============================================
+(rail_bot_front:2x2 =RAIL_FB)
+(rail_bot_back:2x2 =RAIL_FB)
+(rail_bot_left:2x2 =RAIL_LR)
+(rail_bot_right:2x2 =RAIL_LR)
+
+// ============================================
+// Top shelf boards (1x4): fit between the legs (524mm inside), same layout as the
+// other two shelves (a 1x4 board is wider than a 2x2 leg, so it cannot rest on the
+// legs without overhanging past the frame)
+// 5 boards, 5*89=445mm, 6 gaps of (524-445)/6 = 13.1667mm
+// ============================================
+(board_top_1:1x4 =BOARD_LEN)
+(board_top_2:1x4 =BOARD_LEN)
+(board_top_3:1x4 =BOARD_LEN)
+(board_top_4:1x4 =BOARD_LEN)
+(board_top_5:1x4 =BOARD_LEN)
+
+// ============================================
+// Middle shelf boards (1x4): fit between the legs (524mm inside)
+// 5 boards, 5*89=445mm, 6 gaps of (524-445)/6 = 13.1667mm
+// ============================================
+(board_mid_1:1x4 =BOARD_LEN)
+(board_mid_2:1x4 =BOARD_LEN)
+(board_mid_3:1x4 =BOARD_LEN)
+(board_mid_4:1x4 =BOARD_LEN)
+(board_mid_5:1x4 =BOARD_LEN)
+
+// ============================================
+// Bottom shelf boards (1x4): same layout as the middle shelf
+// ============================================
+(board_bot_1:1x4 =BOARD_LEN)
+(board_bot_2:1x4 =BOARD_LEN)
+(board_bot_3:1x4 =BOARD_LEN)
+(board_bot_4:1x4 =BOARD_LEN)
+(board_bot_5:1x4 =BOARD_LEN)
+
+// ============================================
+// Top frame connections (flush with the leg tops)
+// ============================================
+leg_fl -[LB>0 DB>0 D(:8x30)]- rail_top_front
+leg_fr -[RF>0 TF>0 D(:8x30)]- rail_top_front
+leg_bl -[LB>0 DB>0 D(:8x30)]- rail_top_back
+leg_br -[RF>0 TF>0 D(:8x30)]- rail_top_back
+leg_fl -[BR<LR_TOP_OFFSET DB<0 D(:8x30)]- rail_top_left
+leg_bl -[FR<LR_TOP_OFFSET TB<0 D(:8x30)]- rail_top_left
+leg_fr -[BL<LR_TOP_OFFSET DF<0 D(:8x30)]- rail_top_right
+leg_br -[FL<LR_TOP_OFFSET TF<0 D(:8x30)]- rail_top_right
+
+// ============================================
+// Middle frame connections (bottom edge 221.5mm above the floor)
+// ============================================
+leg_fl -[LB>MID_H DB>0 D(:8x30)]- rail_mid_front
+leg_fr -[RF>MID_H TF>0 D(:8x30)]- rail_mid_front
+leg_bl -[LB>MID_H DB>0 D(:8x30)]- rail_mid_back
+leg_br -[RF>MID_H TF>0 D(:8x30)]- rail_mid_back
+leg_fl -[BR<LR_MID_OFFSET DB<0 D(:8x30)]- rail_mid_left
+leg_bl -[FR<LR_MID_OFFSET TB<0 D(:8x30)]- rail_mid_left
+leg_fr -[BL<LR_MID_OFFSET DF<0 D(:8x30)]- rail_mid_right
+leg_br -[FL<LR_MID_OFFSET TF<0 D(:8x30)]- rail_mid_right
+
+// ============================================
+// Bottom frame connections (bottom edge on the floor)
+// ============================================
+leg_fl -[LB>BOT_OFFSET DB>0 D(:8x30)]- rail_bot_front
+leg_fr -[RF>BOT_OFFSET TF>0 D(:8x30)]- rail_bot_front
+leg_bl -[LB>BOT_OFFSET DB>0 D(:8x30)]- rail_bot_back
+leg_br -[RF>BOT_OFFSET TF>0 D(:8x30)]- rail_bot_back
+leg_fl -[BR<LR_BOT_OFFSET DB<0 D(:8x30)]- rail_bot_left
+leg_bl -[FR<LR_BOT_OFFSET TB<0 D(:8x30)]- rail_bot_left
+leg_fr -[BL<LR_BOT_OFFSET DF<0 D(:8x30)]- rail_bot_right
+leg_br -[FL<LR_BOT_OFFSET TF<0 D(:8x30)]- rail_bot_right
+
+// ============================================
+// Top shelf board connections (all on rail_top_front, same layout as the other shelves)
+// ============================================
+rail_top_front -[RF<13.1667 BT<0 S(Slim:3.3x45)]- board_top_1
+rail_top_front -[RF<115.3333 BT<0 S(Slim:3.3x45)]- board_top_2
+rail_top_front -[RF<217.5 BT<0 S(Slim:3.3x45)]- board_top_3
+rail_top_front -[RF<319.6667 BT<0 S(Slim:3.3x45)]- board_top_4
+rail_top_front -[RF<421.8333 BT<0 S(Slim:3.3x45)]- board_top_5
+
+// ============================================
+// Middle shelf board connections (all on rail_mid_front)
+// ============================================
+rail_mid_front -[RF<13.1667 BT<0 S(Slim:3.3x45)]- board_mid_1
+rail_mid_front -[RF<115.3333 BT<0 S(Slim:3.3x45)]- board_mid_2
+rail_mid_front -[RF<217.5 BT<0 S(Slim:3.3x45)]- board_mid_3
+rail_mid_front -[RF<319.6667 BT<0 S(Slim:3.3x45)]- board_mid_4
+rail_mid_front -[RF<421.8333 BT<0 S(Slim:3.3x45)]- board_mid_5
+
+// ============================================
+// Bottom shelf board connections (all on rail_bot_front)
+// ============================================
+rail_bot_front -[RF<13.1667 BT<0 S(Slim:3.3x45)]- board_bot_1
+rail_bot_front -[RF<115.3333 BT<0 S(Slim:3.3x45)]- board_bot_2
+rail_bot_front -[RF<217.5 BT<0 S(Slim:3.3x45)]- board_bot_3
+rail_bot_front -[RF<319.6667 BT<0 S(Slim:3.3x45)]- board_bot_4
+rail_bot_front -[RF<421.8333 BT<0 S(Slim:3.3x45)]- board_bot_5
+
+// ============================================
+// Assembly: left frame, right frame, join with the front/back rails, then the shelves
+// ============================================
+steps {
+  "Left frame":   leg_fl, leg_bl, rail_top_left, rail_mid_left, rail_bot_left
+  "Right frame":  leg_fr, leg_br, rail_top_right, rail_mid_right, rail_bot_right
+  "Join":         rail_top_front, rail_top_back, rail_mid_front, rail_mid_back, rail_bot_front, rail_bot_back
+  "Bottom shelf": board_bot_1, board_bot_2, board_bot_3, board_bot_4, board_bot_5
+  "Middle shelf": board_mid_1, board_mid_2, board_mid_3, board_mid_4, board_mid_5
+  "Top shelf":    board_top_1, board_top_2, board_top_3, board_top_4, board_top_5
+}

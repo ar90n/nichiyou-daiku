@@ -1,0 +1,128 @@
+// 花台 (Plant Stand)
+// 全体寸法: 幅400 × 奥行300 × 高さ700mm
+// 材料: 2x2(脚・桁)、1x4(天板・棚板)
+// 継手: 骨組みはダベル 8x30、板はスクリュー Slim 3.3x45
+// 棚: 床から200mm(棚板の上面)
+
+WIDTH = 400                          // 全体幅
+DEPTH = 300                          // 全体奥行
+HEIGHT = 700                         // 全体高さ
+SHELF_TOP = 200                      // 棚板上面の高さ
+
+// 脚: 全体高さ - 天板1x4の厚み19
+LEG_LEN = HEIGHT - 19                // 681
+// 桁の長さ
+FRONT_BACK = WIDTH - 2 * 38          // 前後桁: 400 - 2x38 = 324
+SIDE = DEPTH - 2 * 38                // 左右桁: 300 - 2x38 = 224
+
+// 下部桁(FB): 桁上面を棚板の下 (200 - 19 = 181、脚長さ - 181) に合わせる
+RAIL_OFF = LEG_LEN - (SHELF_TOP - 19)  // 681 - 181 = 500
+
+// 側面桁(左右)は FB桁の下に1幅(38mm)下げて置く:
+// 同じ角に直交するダベル穴が食い合わないようにするため
+SIDE_UP = 38                     // 上部側桁: 脚上端から38下 (605〜643)
+SIDE_LOW = RAIL_OFF + 38         // 下部側桁: FB下桁の底と面一 (105〜143)
+
+// 天板: 4枚 x 89 = 356、隙間 (400-356)/3
+TOP_GAP = (WIDTH - 4 * 89) / 3       // 14.67
+// 天板2枚目・3枚目を前桁に置く位置 (桁開始 = 脚幅38)
+TOP_O2 = 89 + TOP_GAP - 38
+TOP_O3 = 2 * (89 + TOP_GAP) - 38
+
+// 棚板: 桁の内側324に3枚 x 89 = 267、隙間 (324-267)/4
+SHELF_SPAN = WIDTH - 2 * 38
+SHELF_GAP = (SHELF_SPAN - 3 * 89) / 4
+SHELF_O1 = SHELF_GAP
+SHELF_O2 = 2 * SHELF_GAP + 89
+SHELF_O3 = 3 * SHELF_GAP + 178
+
+// ============================================================
+// 脚 (4x) - 前左 leg_fl / 前右 leg_fr / 後左 leg_bl / 後右 leg_br
+// ============================================================
+(leg_fl:2x2 =LEG_LEN)
+(leg_fr:2x2 =LEG_LEN)
+(leg_bl:2x2 =LEG_LEN)
+(leg_br:2x2 =LEG_LEN)
+
+// ============================================================
+// 上部桁 (脚の上端と面一)
+// ============================================================
+(apron_upper_front:2x2 =FRONT_BACK)
+(apron_upper_back:2x2 =FRONT_BACK)
+(apron_upper_left:2x2 =SIDE)
+(apron_upper_right:2x2 =SIDE)
+
+// ============================================================
+// 下部桁 (棚板を受ける。上面=床から181mm)
+// ============================================================
+(apron_lower_front:2x2 =FRONT_BACK)
+(apron_lower_back:2x2 =FRONT_BACK)
+(apron_lower_left:2x2 =SIDE)
+(apron_lower_right:2x2 =SIDE)
+
+// ============================================================
+// 天板 (1x4, 4枚 - 奥行方向に走る)
+// ============================================================
+(top_1:1x4 =DEPTH)
+(top_2:1x4 =DEPTH)
+(top_3:1x4 =DEPTH)
+(top_4:1x4 =DEPTH)
+
+// ============================================================
+// 棚板 (1x4, 3枚 - 奥行方向に走る)
+// ============================================================
+(shelf_1:1x4 =DEPTH)
+(shelf_2:1x4 =DEPTH)
+(shelf_3:1x4 =DEPTH)
+
+// ============================================================
+// 上部桁と脚 (脚がダベルを受ける面に入る)
+// ============================================================
+leg_fl -[LB>0 DB>0 D(:8x30)]- apron_upper_front
+leg_fr -[RF>0 TF>0 D(:8x30)]- apron_upper_front
+leg_bl -[LB>0 DB>0 D(:8x30)]- apron_upper_back
+leg_br -[RF>0 TF>0 D(:8x30)]- apron_upper_back
+
+leg_fl -[BR>SIDE_UP DB>0 D(:8x30)]- apron_upper_left
+leg_bl -[FR>SIDE_UP TB>0 D(:8x30)]- apron_upper_left
+leg_fr -[BL>SIDE_UP DF>0 D(:8x30)]- apron_upper_right
+leg_br -[FL>SIDE_UP TF>0 D(:8x30)]- apron_upper_right
+
+// ============================================================
+// 下部桁と脚 (脚の上端から500mm下がった位置)
+// ============================================================
+leg_fl -[LB>RAIL_OFF DB>0 D(:8x30)]- apron_lower_front
+leg_fr -[RF>RAIL_OFF TF>0 D(:8x30)]- apron_lower_front
+leg_bl -[LB>RAIL_OFF DB>0 D(:8x30)]- apron_lower_back
+leg_br -[RF>RAIL_OFF TF>0 D(:8x30)]- apron_lower_back
+
+leg_fl -[BR>SIDE_LOW DB>0 D(:8x30)]- apron_lower_left
+leg_bl -[FR>SIDE_LOW TB>0 D(:8x30)]- apron_lower_left
+leg_fr -[BL>SIDE_LOW DF>0 D(:8x30)]- apron_lower_right
+leg_br -[FL>SIDE_LOW TF>0 D(:8x30)]- apron_lower_right
+
+// ============================================================
+// 天板 (端板は脚の上、中板は前桁の上)
+// ============================================================
+leg_fl -[TF>0 BD>0 S(Slim:3.3x45)]- top_1
+apron_upper_front -[RF<TOP_O2 BT<0 S(Slim:3.3x45)]- top_2
+apron_upper_front -[RF<TOP_O3 BT<0 S(Slim:3.3x45)]- top_3
+leg_fr -[TF<0 BD<0 S(Slim:3.3x45)]- top_4
+
+// ============================================================
+// 棚板 (前下部桁の上)
+// ============================================================
+apron_lower_front -[RF<SHELF_O1 BT<0 S(Slim:3.3x45)]- shelf_1
+apron_lower_front -[RF<SHELF_O2 BT<0 S(Slim:3.3x45)]- shelf_2
+apron_lower_front -[RF<SHELF_O3 BT<0 S(Slim:3.3x45)]- shelf_3
+
+// ============================================================
+// 組立順序: 側面フレーム → 前・後桁 → 棚板 → 天板
+// ============================================================
+steps {
+  "左フレーム": leg_fl, leg_bl, apron_upper_left, apron_lower_left
+  "右フレーム": leg_fr, leg_br, apron_upper_right, apron_lower_right
+  "前後の桁結合": apron_upper_front, apron_upper_back, apron_lower_front, apron_lower_back
+  "棚板": shelf_1, shelf_2, shelf_3
+  "天板": top_1, top_2, top_3, top_4
+}

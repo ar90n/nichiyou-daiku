@@ -1,0 +1,90 @@
+// Bench
+// Overall: 900mm (W) x 300mm (D) x 420mm (H)
+// Material: 2x4 frame (4 legs + aprons), 1x4 seat slats running along the width
+// Joints: 8x30 dowels for the frame, Slim 3.3x35 screws for the seat slats
+
+WIDTH = 900
+DEPTH = 300
+HEIGHT = 420
+SEAT_T = 19
+
+// Legs: 420 - 19 (1x4 seat) = 401
+LEG = HEIGHT - SEAT_T
+
+// Front/back aprons run between the legs' 89mm faces
+FRONT_BACK_APRON = WIDTH - 2 * 89
+// Side aprons run between the legs' 38mm faces
+SIDE_APRON = DEPTH - 2 * 38
+
+// Seat slats: 3 x 1x4 across the depth, gap (300 - 3*89) / 2 = 16.5
+SLAT = WIDTH
+GAP = (DEPTH - 3 * 89) / 2
+PITCH = 89 + GAP
+SLAT_BACK_Y = 0
+SLAT_MID_Y = PITCH
+SLAT_FRONT_Y = 2 * PITCH
+RAIL_FRONT_Y = DEPTH - 38
+
+// Screw points along the depth on the two side rails
+P_BACK = 63.5
+P_MID = SLAT_MID_Y + 89 / 2
+P_FRONT = SLAT_FRONT_Y + 89 / 2
+
+// ============================================
+// Legs (4x 2x4)
+// ============================================
+(leg_fl:2x4 =LEG)
+(leg_fr:2x4 =LEG)
+(leg_bl:2x4 =LEG)
+(leg_br:2x4 =LEG)
+
+// ============================================
+// Aprons (2x4, flush with the leg tops)
+// ============================================
+(apron_front:2x4 =FRONT_BACK_APRON)
+(apron_back:2x4 =FRONT_BACK_APRON)
+(apron_left:2x4 =SIDE_APRON)
+(apron_right:2x4 =SIDE_APRON)
+
+// ============================================
+// Seat slats (3x 1x4, length = overall width)
+// ============================================
+(slat_back:1x4 =SLAT)
+(slat_mid:1x4 =SLAT)
+(slat_front:1x4 =SLAT)
+
+// ============================================
+// Frame: front/back aprons into the legs' narrow faces
+// ============================================
+leg_fl -[LB>0 DB>0 D(:8x30)]- apron_front
+leg_fr -[RF>0 TF>0 D(:8x30)]- apron_front
+leg_bl -[LB>0 DB>0 D(:8x30)]- apron_back
+leg_br -[RF>0 TF>0 D(:8x30)]- apron_back
+
+// ============================================
+// Frame: side aprons into the legs' wide faces
+// ============================================
+leg_fl -[BR>0 DB>0 D(:8x30)]- apron_left
+leg_bl -[FR>0 TB>0 D(:8x30)]- apron_left
+leg_fr -[BL>0 DF>0 D(:8x30)]- apron_right
+leg_br -[FL>0 TF>0 D(:8x30)]- apron_right
+
+// ============================================
+// Seat slats screwed down to both side rails
+// (low-x rail: apron_right front face; high-x rail: apron_left back face)
+// ============================================
+apron_right -[RF<(RAIL_FRONT_Y - P_BACK) BD<(P_BACK - SLAT_BACK_Y) S(Slim:3.3x35)]- slat_back
+apron_left -[RB<(RAIL_FRONT_Y - P_BACK) BT<(P_BACK - SLAT_BACK_Y) S(Slim:3.3x35)]- slat_back
+
+apron_right -[RF<(RAIL_FRONT_Y - P_MID) BD<(P_MID - SLAT_MID_Y) S(Slim:3.3x35)]- slat_mid
+apron_left -[RB<(RAIL_FRONT_Y - P_MID) BT<(P_MID - SLAT_MID_Y) S(Slim:3.3x35)]- slat_mid
+
+apron_right -[RF<(RAIL_FRONT_Y - P_FRONT) BD<(P_FRONT - SLAT_FRONT_Y) S(Slim:3.3x35)]- slat_front
+apron_left -[RB<(RAIL_FRONT_Y - P_FRONT) BT<(P_FRONT - SLAT_FRONT_Y) S(Slim:3.3x35)]- slat_front
+
+steps {
+  "Low-x side frame": leg_fr, leg_br, apron_right
+  "High-x side frame": leg_fl, leg_bl, apron_left
+  "Join": apron_front, apron_back
+  "Seat": slat_back, slat_mid, slat_front
+}

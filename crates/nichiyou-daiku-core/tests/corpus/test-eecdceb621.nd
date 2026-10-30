@@ -1,0 +1,10 @@
+
+            // Simple table design
+            (leg1:2x4 =720)
+            (leg2:2x4 =720)
+            (apron:2x4 =600)
+            
+            // Connections
+            leg1 -[LB>0 DB>0]- apron
+            leg2 -[RF>0 TF>0]- apron
+            

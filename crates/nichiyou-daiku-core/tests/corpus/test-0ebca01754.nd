@@ -1,0 +1,11 @@
+
+        (beam1:2x4 =1000)
+        (beam2:2x4 =800)
+        (beam3:2x4 =600)
+
+        // Vanilla connection (default)
+        beam1 -[TF>80 BD<50]- beam2
+
+        // Dowel connection
+        beam2 -[LB>50 DB>25 D(5.0,25.0)]- beam3
+        

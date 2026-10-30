@@ -1,0 +1,4 @@
+W = 800
+LEG = 89
+APRON = W - 2 * LEG
+(a:2x4 =APRON)

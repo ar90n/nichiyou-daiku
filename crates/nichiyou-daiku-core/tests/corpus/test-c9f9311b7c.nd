@@ -1,0 +1,13 @@
+(leg_1:2x4 =720)
+(leg_3:2x4 =720)
+(apron_left:2x4 =524)
+(board_a:1x4 =300)
+(board_b:1x4 =300)
+leg_1 -[BR<100 DB<0]- apron_left
+leg_3 -[FR<100 TB<0]- apron_left
+apron_left -[RF<50 BT<0]- board_a
+apron_left -[RF<350 BT<0]- board_b
+steps {
+  "Frame": leg_1, leg_3, apron_left
+  "Boards": board_a, board_b
+}

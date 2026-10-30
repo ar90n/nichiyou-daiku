@@ -1,0 +1,5 @@
+(post:2x4 =600)
+(front:2x4 =300)
+(other:2x4 =300)
+post -[FL<300 BD<0 S(Slim:3.8x65)]- front
+post -[BL<300 FD<0 S(Slim:3.8x65)]- other

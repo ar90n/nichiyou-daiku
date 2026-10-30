@@ -1,0 +1,6 @@
+(a:2x4 =400)
+(b:2x4 =400)
+a -[TF<0 BD<0]- b
+steps {
+  "Corner": a, b
+}

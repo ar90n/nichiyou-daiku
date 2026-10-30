@@ -1,0 +1,192 @@
+// TV Stand
+// Dimensions: 1200mm (W) x 350mm (D) x 400mm (H)
+// Material: 2x6 top and middle shelf, 2x4 legs and aprons
+// Joints: 8x30 dowels in the frame, Slim 3.8x65 screws for the boards
+//
+// Structure:
+// - 6 legs: front/back rows, with a centre pair
+// - Upper aprons flush with the leg tops, lower aprons under the shelf
+// - Top: 8 x 2x6 boards running front to back
+// - Middle shelf: 3 x 2x6 boards in each bay (6 boards), at 200mm top height
+
+WIDTH = 1200
+DEPTH = 350
+HEIGHT = 400
+
+BOARD_WIDTH = 140
+BOARD_THICK = 38
+LEG_WIDTH = 89
+LEG_THICK = 38
+
+LEG_LENGTH = HEIGHT - BOARD_THICK
+BAY = WIDTH / 2 - LEG_WIDTH / 2 - LEG_WIDTH
+SIDE_APRON = DEPTH - 2 * LEG_THICK
+
+TOP_GAP = (WIDTH - 8 * BOARD_WIDTH) / 7
+TOP_PITCH = BOARD_WIDTH + TOP_GAP
+SHELF_GAP = (BAY - 3 * BOARD_WIDTH) / 2
+SHELF_PITCH = BOARD_WIDTH + SHELF_GAP
+
+SHELF_TOP = 200
+SHELF_BOTTOM = SHELF_TOP - BOARD_THICK
+LOWER_APRON_BOTTOM = SHELF_BOTTOM - LEG_WIDTH
+
+UPPER_SIDE_OFFSET = LEG_LENGTH - LEG_WIDTH
+LOWER_FB_OFFSET = LEG_LENGTH - LOWER_APRON_BOTTOM - LEG_WIDTH
+LOWER_SIDE_OFFSET = LOWER_APRON_BOTTOM
+
+BAY_HIGH_END = WIDTH / 2 - LEG_WIDTH / 2
+HIGH_APRON_END = WIDTH - LEG_WIDTH
+SCREW_INSET = 20
+
+// ============================================
+// Legs (6x) - 400mm height minus the 38mm top boards
+// leg_fl / leg_bl: high-x side, leg_fr / leg_br: low-x side
+// leg_cf / leg_cb: centre pair, front and back
+// ============================================
+(leg_fl:2x4 =LEG_LENGTH)
+(leg_fr:2x4 =LEG_LENGTH)
+(leg_bl:2x4 =LEG_LENGTH)
+(leg_br:2x4 =LEG_LENGTH)
+(leg_cf:2x4 =LEG_LENGTH)
+(leg_cb:2x4 =LEG_LENGTH)
+
+// ============================================
+// Upper aprons (flush with the leg tops)
+// Front/back: one segment per bay, 466.5mm
+// Sides: between the front and back legs, 274mm
+// ============================================
+(apron_upper_front_a:2x4 =BAY)
+(apron_upper_front_b:2x4 =BAY)
+(apron_upper_back_a:2x4 =BAY)
+(apron_upper_back_b:2x4 =BAY)
+(apron_upper_left:2x4 =SIDE_APRON)
+(apron_upper_center:2x4 =SIDE_APRON)
+(apron_upper_right:2x4 =SIDE_APRON)
+
+// ============================================
+// Lower aprons (bottom 73mm above the floor, supporting the shelf)
+// ============================================
+(apron_lower_front_a:2x4 =BAY)
+(apron_lower_front_b:2x4 =BAY)
+(apron_lower_back_a:2x4 =BAY)
+(apron_lower_back_b:2x4 =BAY)
+(apron_lower_left:2x4 =SIDE_APRON)
+(apron_lower_center:2x4 =SIDE_APRON)
+(apron_lower_right:2x4 =SIDE_APRON)
+
+// ============================================
+// Top surface (2x6, boards run front to back)
+// 8 boards: 8 x 140 = 1120mm, gaps (1200 - 1120) / 7 = 11.43mm
+// ============================================
+(top_1:2x6 =DEPTH)
+(top_2:2x6 =DEPTH)
+(top_3:2x6 =DEPTH)
+(top_4:2x6 =DEPTH)
+(top_5:2x6 =DEPTH)
+(top_6:2x6 =DEPTH)
+(top_7:2x6 =DEPTH)
+(top_8:2x6 =DEPTH)
+
+// ============================================
+// Middle shelf (2x6, boards run front to back)
+// 3 boards per bay: 3 x 140 = 420mm, gaps (466.5 - 420) / 2 = 23.25mm
+// ============================================
+(shelf_a1:2x6 =DEPTH)
+(shelf_a2:2x6 =DEPTH)
+(shelf_a3:2x6 =DEPTH)
+(shelf_b1:2x6 =DEPTH)
+(shelf_b2:2x6 =DEPTH)
+(shelf_b3:2x6 =DEPTH)
+
+// ============================================
+// Upper front aprons, high-x bay
+// ============================================
+leg_fl -[LB>0 DB>0 D(:8x30)]- apron_upper_front_a
+leg_cf -[RF>0 TF>0 D(:8x30)]- apron_upper_front_a
+
+// Upper front aprons, low-x bay
+leg_cf -[LB>0 DB>0 D(:8x30)]- apron_upper_front_b
+leg_fr -[RF>0 TF>0 D(:8x30)]- apron_upper_front_b
+
+// Upper back aprons, high-x bay
+leg_bl -[LB>0 DB>0 D(:8x30)]- apron_upper_back_a
+leg_cb -[RF>0 TF>0 D(:8x30)]- apron_upper_back_a
+
+// Upper back aprons, low-x bay
+leg_cb -[LB>0 DB>0 D(:8x30)]- apron_upper_back_b
+leg_br -[RF>0 TF>0 D(:8x30)]- apron_upper_back_b
+
+// Upper side aprons
+leg_fl -[BR<UPPER_SIDE_OFFSET DB<0 D(:8x30)]- apron_upper_left
+leg_bl -[FR<UPPER_SIDE_OFFSET TB<0 D(:8x30)]- apron_upper_left
+
+leg_cf -[BR<UPPER_SIDE_OFFSET DB<0 D(:8x30)]- apron_upper_center
+leg_cb -[FR<UPPER_SIDE_OFFSET TB<0 D(:8x30)]- apron_upper_center
+
+leg_fr -[BL<UPPER_SIDE_OFFSET DF<0 D(:8x30)]- apron_upper_right
+leg_br -[FL<UPPER_SIDE_OFFSET TF<0 D(:8x30)]- apron_upper_right
+
+// ============================================
+// Lower front aprons
+// ============================================
+leg_fl -[LB>LOWER_FB_OFFSET DB>0 D(:8x30)]- apron_lower_front_a
+leg_cf -[RF>LOWER_FB_OFFSET TF>0 D(:8x30)]- apron_lower_front_a
+
+leg_cf -[LB>LOWER_FB_OFFSET DB>0 D(:8x30)]- apron_lower_front_b
+leg_fr -[RF>LOWER_FB_OFFSET TF>0 D(:8x30)]- apron_lower_front_b
+
+// Lower back aprons
+leg_bl -[LB>LOWER_FB_OFFSET DB>0 D(:8x30)]- apron_lower_back_a
+leg_cb -[RF>LOWER_FB_OFFSET TF>0 D(:8x30)]- apron_lower_back_a
+
+leg_cb -[LB>LOWER_FB_OFFSET DB>0 D(:8x30)]- apron_lower_back_b
+leg_br -[RF>LOWER_FB_OFFSET TF>0 D(:8x30)]- apron_lower_back_b
+
+// Lower side aprons
+leg_fl -[BR<LOWER_SIDE_OFFSET DB<0 D(:8x30)]- apron_lower_left
+leg_bl -[FR<LOWER_SIDE_OFFSET TB<0 D(:8x30)]- apron_lower_left
+
+leg_cf -[BR<LOWER_SIDE_OFFSET DB<0 D(:8x30)]- apron_lower_center
+leg_cb -[FR<LOWER_SIDE_OFFSET TB<0 D(:8x30)]- apron_lower_center
+
+leg_fr -[BL<LOWER_SIDE_OFFSET DF<0 D(:8x30)]- apron_lower_right
+leg_br -[FL<LOWER_SIDE_OFFSET TF<0 D(:8x30)]- apron_lower_right
+
+// ============================================
+// Top boards
+// Outer boards sit on the outer legs, inner boards on the upper front apron
+// Board offsets leave a 20mm inset from the board edge for the screw
+// ============================================
+leg_fl -[TF>SCREW_INSET BD>SCREW_INSET S(Slim:3.8x65)]- top_1
+apron_upper_front_a -[RF<(TOP_PITCH - LEG_WIDTH + SCREW_INSET) BT<SCREW_INSET S(Slim:3.8x65)]- top_2
+apron_upper_front_a -[RF<(2 * TOP_PITCH - LEG_WIDTH + SCREW_INSET) BT<SCREW_INSET S(Slim:3.8x65)]- top_3
+apron_upper_front_a -[RF<(3 * TOP_PITCH - LEG_WIDTH + SCREW_INSET) BT<SCREW_INSET S(Slim:3.8x65)]- top_4
+apron_upper_front_b -[RF<SCREW_INSET BT<(WIDTH - 4 * TOP_PITCH - BAY_HIGH_END + SCREW_INSET) S(Slim:3.8x65)]- top_5
+apron_upper_front_b -[RF<(BAY_HIGH_END - (WIDTH - 5 * TOP_PITCH) + SCREW_INSET) BT<SCREW_INSET S(Slim:3.8x65)]- top_6
+apron_upper_front_b -[RF<(BAY_HIGH_END - (WIDTH - 6 * TOP_PITCH) + SCREW_INSET) BT<SCREW_INSET S(Slim:3.8x65)]- top_7
+leg_fr -[TF<SCREW_INSET BD<SCREW_INSET S(Slim:3.8x65)]- top_8
+
+// ============================================
+// Middle shelf boards, resting on the lower front aprons
+// The last board in each bay ends flush with the centre leg
+// ============================================
+apron_lower_front_a -[RF<SCREW_INSET BT<SCREW_INSET S(Slim:3.8x65)]- shelf_a1
+apron_lower_front_a -[RF<(SHELF_PITCH + SCREW_INSET) BT<SCREW_INSET S(Slim:3.8x65)]- shelf_a2
+apron_lower_front_a -[RF<(2 * SHELF_PITCH + SCREW_INSET) BT<SCREW_INSET S(Slim:3.8x65)]- shelf_a3
+
+apron_lower_front_b -[RF<SCREW_INSET BT<SCREW_INSET S(Slim:3.8x65)]- shelf_b1
+apron_lower_front_b -[RF<(SHELF_PITCH + SCREW_INSET) BT<SCREW_INSET S(Slim:3.8x65)]- shelf_b2
+apron_lower_front_b -[RF<(2 * SHELF_PITCH + SCREW_INSET) BT<SCREW_INSET S(Slim:3.8x65)]- shelf_b3
+
+// ============================================
+// Assembly: the three side frames, the front/back aprons, the shelf, the top
+// ============================================
+steps {
+  "High-x side frame": leg_fl, leg_bl, apron_upper_left, apron_lower_left
+  "Centre side frame": leg_cf, leg_cb, apron_upper_center, apron_lower_center
+  "Low-x side frame":  leg_fr, leg_br, apron_upper_right, apron_lower_right
+  "Join frames":       apron_upper_front_a, apron_upper_front_b, apron_upper_back_a, apron_upper_back_b, apron_lower_front_a, apron_lower_front_b, apron_lower_back_a, apron_lower_back_b
+  "Middle shelf":      shelf_a1, shelf_a2, shelf_a3, shelf_b1, shelf_b2, shelf_b3
+  "Top":               top_1, top_2, top_3, top_4, top_5, top_6, top_7, top_8
+}

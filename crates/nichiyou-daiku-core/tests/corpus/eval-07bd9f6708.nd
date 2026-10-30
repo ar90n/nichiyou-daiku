@@ -1,0 +1,57 @@
+// TV Stand
+// Overall size: 1200mm (W) x 350mm (D) x 400mm (H)
+// Material: 2x4 (6 legs: 4 corners + 2 at the width center), 2x6 (top and middle shelf)
+// Joints: shelf-to-leg dowels 8x30, top boards screwed down with Slim 3.8x65
+//
+// Structure:
+// - 6 legs, 38mm deep x 89mm wide, showing their wide faces to the width direction
+// - Top: two 2x6 boards running along the width, 140mm deep each,
+//   leaving a 70mm cable slot at the depth center (y=140..210)
+// - Middle shelf: three 2x6 boards (140 wide) between the front/back legs,
+//   z=150..188 (bottom 150mm above the floor), aligned flush with the leg planes underneath them
+//
+// Length notes:
+// - Legs: 400 - 38 (2x6 top) = 362
+// - Top/shelf boards: 2x6 is 38x140
+// - Leg tops ix: width 89 -> legs at x=0..89, 555.5..644.5, 1111..1200 (1200 - 2x89 = 1022 split in half)
+// - Shelf boards: depth between the legs 350 - 2x38 = 274, z=150..188
+
+// Legs (362mm)
+(leg_fl:2x4 =362)
+(leg_fr:2x4 =362)
+(leg_fc:2x4 =362)
+(leg_bc:2x4 =362)
+(leg_bl:2x4 =362)
+(leg_br:2x4 =362)
+
+// Top boards (along the width, 0..1200, front board y=210..350, back board y=0..140)
+(top_f:2x6 =1200)
+(top_b:2x6 =1200)
+
+// Middle shelf boards (depth 274 between front and back legs, (top 188mm))
+(shelf_l:2x6 =274)
+(shelf_m:2x6 =274)
+(shelf_r:2x6 =274)
+
+// Top boards screwed through into the leg tops (screw at the leg top center, 44.5 in from the outer side)
+leg_fl -[TF<44.5 BR<44.5 S(Slim:3.8x65)]- top_f
+leg_fc -[TF<44.5 BR<600 S(Slim:3.8x65)]- top_f
+leg_fr -[TF<44.5 BR<1155.5 S(Slim:3.8x65)]- top_f
+leg_bl -[TB<44.5 BL<44.5 S(Slim:3.8x65)]- top_b
+leg_bc -[TB<44.5 BL<600 S(Slim:3.8x65)]- top_b
+leg_br -[TB<44.5 BL<1155.5 S(Slim:3.8x65)]- top_b
+
+// Shelf boards dowelled into the legs (dowel 169mm above the floor: 19mm below the shelf top)
+shelf_l -[TL<19 BL<169 D(:8x30)]- leg_fl
+shelf_l -[DL<19 FL<169 D(:8x30)]- leg_bl
+shelf_m -[TL<19 BL<169 D(:8x30)]- leg_fc
+shelf_m -[DL<19 FL<169 D(:8x30)]- leg_bc
+shelf_r -[TR<19 BR<169 D(:8x30)]- leg_fr
+shelf_r -[DR<19 FR<169 D(:8x30)]- leg_br
+
+steps {
+  "Left section":  leg_bl, leg_fl, shelf_l
+  "Center section": leg_bc, leg_fc, shelf_m
+  "Right section": leg_br, leg_fr, shelf_r
+  "Top boards":    top_b, top_f
+}

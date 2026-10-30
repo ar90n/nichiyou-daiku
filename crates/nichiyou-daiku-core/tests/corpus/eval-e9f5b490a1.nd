@@ -1,0 +1,115 @@
+// Bookshelf (1x8 only)
+// Overall: width 600 x depth 184 x height 900 mm
+// Material: 1x8 only (board width 184, thickness 19)
+// Shelves: 4 (top and bottom included), equally spaced
+// Joints: 8x30 dowels
+
+// ============================================
+// Overall sizes
+// ============================================
+WIDTH = 600
+DEPTH = 184
+HEIGHT = 900
+THICK = 19
+SHELF_COUNT = 4
+BACK_COLUMNS = 3
+BOARD_WIDTH = 184
+
+// Shelves fit between the two side panels
+SHELF_LEN = WIDTH - 2 * THICK                  // 562
+// Distance between shelf bottoms
+PITCH = (HEIGHT - THICK) / (SHELF_COUNT - 1)   // 293.67
+// Clear opening between two shelves
+OPENING = PITCH - THICK                         // 274.67
+
+// Back boards: three columns with equal gaps
+COL_GAP = (SHELF_LEN - BACK_COLUMNS * BOARD_WIDTH) / (BACK_COLUMNS - 1)  // 5
+COL_1 = BOARD_WIDTH + COL_GAP                  // 189
+COL_2 = 2 * (BOARD_WIDTH + COL_GAP)            // 378
+BACK_OFF_0 = BOARD_WIDTH / 2                    // 92
+BACK_OFF_1 = COL_1 + BOARD_WIDTH / 2            // 281
+BACK_OFF_2 = COL_2 + BOARD_WIDTH / 2            // 470
+
+// Side-panel offsets for each shelf (measured from the panel top)
+SIDE_OFF_2 = HEIGHT - PITCH
+SIDE_OFF_3 = HEIGHT - 2 * PITCH
+SIDE_OFF_4 = HEIGHT - 3 * PITCH
+
+// ============================================
+// Back boards in the three openings (3 x 3)
+// ============================================
+(back_1_l:1x8 =OPENING)
+(back_1_m:1x8 =OPENING)
+(back_1_r:1x8 =OPENING)
+(back_2_l:1x8 =OPENING)
+(back_2_m:1x8 =OPENING)
+(back_2_r:1x8 =OPENING)
+(back_3_l:1x8 =OPENING)
+(back_3_m:1x8 =OPENING)
+(back_3_r:1x8 =OPENING)
+
+// ============================================
+// Side panels (full height, full depth)
+// ============================================
+(side_l:1x8 =HEIGHT)
+(side_r:1x8 =HEIGHT)
+
+// ============================================
+// Shelves (between the side panels)
+// ============================================
+(shelf_1:1x8 =SHELF_LEN)
+(shelf_2:1x8 =SHELF_LEN)
+(shelf_3:1x8 =SHELF_LEN)
+(shelf_4:1x8 =SHELF_LEN)
+
+// ============================================
+// Bottom opening: back boards sit on shelf_1
+// ============================================
+back_1_l -[DB<0 FL<0 D(:8x30)]- shelf_1
+shelf_1 -[FL<BACK_OFF_1 DB<92 D(:8x30)]- back_1_m
+shelf_1 -[FL<BACK_OFF_2 DB<92 D(:8x30)]- back_1_r
+
+// ============================================
+// Side panels to the bottom shelf
+// ============================================
+shelf_1 -[DL<0 FL>0 D(:8x30)]- side_l
+shelf_1 -[TL<0 BR<0 D(:8x30)]- side_r
+
+// ============================================
+// Remaining shelves to both side panels
+// ============================================
+side_l -[FL<SIDE_OFF_2 DL<0 D(:8x30)]- shelf_2
+side_r -[BL>SIDE_OFF_2 TR<0 D(:8x30)]- shelf_2
+side_l -[FL<SIDE_OFF_3 DL<0 D(:8x30)]- shelf_3
+side_r -[BL>SIDE_OFF_3 TR<0 D(:8x30)]- shelf_3
+side_l -[FL<SIDE_OFF_4 DL<0 D(:8x30)]- shelf_4
+side_r -[BL>SIDE_OFF_4 TR<0 D(:8x30)]- shelf_4
+
+// ============================================
+// Middle opening: back boards hang from shelf_3
+// ============================================
+shelf_3 -[BL<BACK_OFF_0 TB<92 D(:8x30)]- back_2_l
+shelf_3 -[BL<BACK_OFF_1 TB<92 D(:8x30)]- back_2_m
+shelf_3 -[BL<BACK_OFF_2 TB<92 D(:8x30)]- back_2_r
+
+// ============================================
+// Top opening: back boards hang from shelf_4
+// ============================================
+shelf_4 -[BL<BACK_OFF_0 TB<92 D(:8x30)]- back_3_l
+shelf_4 -[BL<BACK_OFF_1 TB<92 D(:8x30)]- back_3_m
+shelf_4 -[BL<BACK_OFF_2 TB<92 D(:8x30)]- back_3_r
+
+// ============================================
+// Assembly
+// ============================================
+steps {
+  "Left side":    side_l
+  "Right side":   side_r
+  "Bottom shelf": shelf_1
+  "Lower back":   back_1_l, back_1_m, back_1_r
+  "Second shelf": shelf_2
+  "Third shelf":  shelf_3
+  "Middle back":  back_2_l, back_2_m, back_2_r
+  "Top shelf":    shelf_4
+  "Upper back":   back_3_l, back_3_m, back_3_r
+}

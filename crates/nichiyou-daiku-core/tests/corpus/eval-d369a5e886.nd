@@ -1,0 +1,170 @@
+// 3-tier shoe rack: 2x2 frame, 1x4 boards
+// Overall: 600 (W) x 300 (D) x 500 (H) mm, evenly spaced tiers
+// 2x2 frame (8x30 dowels), 1x4 boards screwed (Slim 3.3x45)
+//
+// Structure:
+// - 4 posts (2x2) at the corners, 500mm tall
+// - 3 tiers, each a full 2x2 frame (front/back rails between the posts,
+//   side rails on the posts' inner wide faces)
+// - 5 boards (1x4, running front to back, 300mm = full depth) per tier,
+//   screwed to the front and back rails
+// - Bottom rails on the floor; top tier boards flush with the post tops
+
+W = 600                          // overall width
+DEPTH = 300                      // overall depth
+HEIGHT = 500                     // overall height
+P = 38                           // 2x2 section
+BT = 19                          // 1x4 thickness
+BW = 89                          // 1x4 board width
+NB = 5                           // boards per tier
+GAP = (W - 2*P - NB*BW) / (NB + 1)   // 13.17: even gap board/edge/board
+OB = BW + GAP                    // board pitch
+RAIL_LEN = W - 2*P               // 524: front/back rails
+SIDE_LEN = DEPTH - 2*P           // 224: side rails
+TOP_B = HEIGHT - BT              // 481: top tier board underside
+STEP = (TOP_B - P) / 2           // 221.5: height between tier frames
+OF1 = HEIGHT - P                 // 462: post anchor so rail tops = 38
+OF2 = HEIGHT - P - STEP          // 240.5: rail tops = 259.5
+OF3 = BT                         // 19: rail tops = 481 (boards to 500)
+O1 = GAP
+O2 = GAP + OB
+O3 = GAP + 2*OB
+O4 = GAP + 3*OB
+O5 = GAP + 4*OB
+
+// ============================================
+// Posts (4x): corner posts, 500mm
+// post_1 front-left, post_2 front-right, post_3 back-left, post_4 back-right
+// ============================================
+(post_1:2x2 =HEIGHT)
+(post_2:2x2 =HEIGHT)
+(post_3:2x2 =HEIGHT)
+(post_4:2x2 =HEIGHT)
+
+// ============================================
+// Rails (2x2, edge-standing): one frame per tier
+// front/back: 600 - 2*38 = 524 between the posts
+// sides: 300 - 2*38 = 224 between the posts
+// ============================================
+(rail_f_1:2x2 =RAIL_LEN)
+(rail_b_1:2x2 =RAIL_LEN)
+(rail_r_1:2x2 =SIDE_LEN)
+(rail_l_1:2x2 =SIDE_LEN)
+(rail_f_2:2x2 =RAIL_LEN)
+(rail_b_2:2x2 =RAIL_LEN)
+(rail_r_2:2x2 =SIDE_LEN)
+(rail_l_2:2x2 =SIDE_LEN)
+(rail_f_3:2x2 =RAIL_LEN)
+(rail_b_3:2x2 =RAIL_LEN)
+(rail_r_3:2x2 =SIDE_LEN)
+(rail_l_3:2x2 =SIDE_LEN)
+
+// ============================================
+// Boards (1x4, 300mm deep, running front to back): 5 per tier
+// gap (600-76-445)/6 = 13.17, offsets 13.17, 115.33, 217.5, 319.67, 421.83
+// ============================================
+(board_t1_1:1x4 =DEPTH)
+(board_t1_2:1x4 =DEPTH)
+(board_t1_3:1x4 =DEPTH)
+(board_t1_4:1x4 =DEPTH)
+(board_t1_5:1x4 =DEPTH)
+(board_t2_1:1x4 =DEPTH)
+(board_t2_2:1x4 =DEPTH)
+(board_t2_3:1x4 =DEPTH)
+(board_t2_4:1x4 =DEPTH)
+(board_t2_5:1x4 =DEPTH)
+(board_t3_1:1x4 =DEPTH)
+(board_t3_2:1x4 =DEPTH)
+(board_t3_3:1x4 =DEPTH)
+(board_t3_4:1x4 =DEPTH)
+(board_t3_5:1x4 =DEPTH)
+
+// ============================================
+// Bottom frame (rails on the floor, tier-1 board undersides at 38)
+// ============================================
+post_1 -[LB>OF1 DB>0 D(:8x30)]- rail_f_1
+post_2 -[RF>OF1 TF>0 D(:8x30)]- rail_f_1
+post_1 -[BR<0 BD>0 D(:6x25)]- rail_r_1
+post_3 -[FR<0 TD>0 D(:6x25)]- rail_r_1
+post_2 -[BL<0 BF>0 D(:6x25)]- rail_l_1
+post_4 -[FL<0 FD>0 D(:6x25)]- rail_l_1
+post_3 -[LB>OF1 DB>0 D(:8x30)]- rail_b_1
+post_4 -[RF>OF1 TF>0 D(:8x30)]- rail_b_1
+
+// ============================================
+// Middle frame (tier-2 board undersides at 259.5)
+// ============================================
+post_1 -[LB>OF2 DB>0 D(:8x30)]- rail_f_2
+post_2 -[RF>OF2 TF>0 D(:8x30)]- rail_f_2
+post_1 -[BR<STEP BD>0 D(:6x25)]- rail_r_2
+post_3 -[FR<STEP TD>0 D(:6x25)]- rail_r_2
+post_2 -[BL<STEP BF>0 D(:6x25)]- rail_l_2
+post_4 -[FL<STEP FD>0 D(:6x25)]- rail_l_2
+post_3 -[LB>OF2 DB>0 D(:8x30)]- rail_b_2
+post_4 -[RF>OF2 TF>0 D(:8x30)]- rail_b_2
+
+// ============================================
+// Top frame (tier-3 board undersides at 481 = post top - 19)
+// ============================================
+post_1 -[LB>OF3 DB>0 D(:8x30)]- rail_f_3
+post_2 -[RF>OF3 TF>0 D(:8x30)]- rail_f_3
+post_1 -[BR<OF3 BD>0 D(:6x25)]- rail_r_3
+post_3 -[FR<OF3 TD>0 D(:6x25)]- rail_r_3
+post_2 -[BL<OF3 BF>0 D(:6x25)]- rail_l_3
+post_4 -[FL<OF3 FD>0 D(:6x25)]- rail_l_3
+post_3 -[LB>OF3 DB>0 D(:8x30)]- rail_b_3
+post_4 -[RF>OF3 TF>0 D(:8x30)]- rail_b_3
+
+// ============================================
+// Tier 1 boards: screwed to the bottom front and back rails
+// ============================================
+rail_f_1 -[RF<O1 BT<0 S(Slim:3.3x45)]- board_t1_1
+rail_f_1 -[RF<O2 BT<0 S(Slim:3.3x45)]- board_t1_2
+rail_f_1 -[RF<O3 BT<0 S(Slim:3.3x45)]- board_t1_3
+rail_f_1 -[RF<O4 BT<0 S(Slim:3.3x45)]- board_t1_4
+rail_f_1 -[RF<O5 BT<0 S(Slim:3.3x45)]- board_t1_5
+rail_b_1 -[RB<O1 BD<0 S(Slim:3.3x45)]- board_t1_1
+rail_b_1 -[RB<O2 BD<0 S(Slim:3.3x45)]- board_t1_2
+rail_b_1 -[RB<O3 BD<0 S(Slim:3.3x45)]- board_t1_3
+rail_b_1 -[RB<O4 BD<0 S(Slim:3.3x45)]- board_t1_4
+rail_b_1 -[RB<O5 BD<0 S(Slim:3.3x45)]- board_t1_5
+
+// ============================================
+// Tier 2 boards: screwed to the middle front and back rails
+// ============================================
+rail_f_2 -[RF<O1 BT<0 S(Slim:3.3x45)]- board_t2_1
+rail_f_2 -[RF<O2 BT<0 S(Slim:3.3x45)]- board_t2_2
+rail_f_2 -[RF<O3 BT<0 S(Slim:3.3x45)]- board_t2_3
+rail_f_2 -[RF<O4 BT<0 S(Slim:3.3x45)]- board_t2_4
+rail_f_2 -[RF<O5 BT<0 S(Slim:3.3x45)]- board_t2_5
+rail_b_2 -[RB<O1 BD<0 S(Slim:3.3x45)]- board_t2_1
+rail_b_2 -[RB<O2 BD<0 S(Slim:3.3x45)]- board_t2_2
+rail_b_2 -[RB<O3 BD<0 S(Slim:3.3x45)]- board_t2_3
+rail_b_2 -[RB<O4 BD<0 S(Slim:3.3x45)]- board_t2_4
+rail_b_2 -[RB<O5 BD<0 S(Slim:3.3x45)]- board_t2_5
+
+// ============================================
+// Tier 3 boards: screwed to the top front and back rails
+// ============================================
+rail_f_3 -[RF<O1 BT<0 S(Slim:3.3x45)]- board_t3_1
+rail_f_3 -[RF<O2 BT<0 S(Slim:3.3x45)]- board_t3_2
+rail_f_3 -[RF<O3 BT<0 S(Slim:3.3x45)]- board_t3_3
+rail_f_3 -[RF<O4 BT<0 S(Slim:3.3x45)]- board_t3_4
+rail_f_3 -[RF<O5 BT<0 S(Slim:3.3x45)]- board_t3_5
+rail_b_3 -[RB<O1 BD<0 S(Slim:3.3x45)]- board_t3_1
+rail_b_3 -[RB<O2 BD<0 S(Slim:3.3x45)]- board_t3_2
+rail_b_3 -[RB<O3 BD<0 S(Slim:3.3x45)]- board_t3_3
+rail_b_3 -[RB<O4 BD<0 S(Slim:3.3x45)]- board_t3_4
+rail_b_3 -[RB<O5 BD<0 S(Slim:3.3x45)]- board_t3_5
+
+// ============================================
+// Assembly: bottom frame, middle, top, then the three tiers of boards
+// ============================================
+steps {
+  "Bottom frame": post_1, post_2, post_3, post_4, rail_f_1, rail_b_1, rail_r_1, rail_l_1
+  "Middle frame": rail_f_2, rail_b_2, rail_r_2, rail_l_2
+  "Top frame":    rail_f_3, rail_b_3, rail_r_3, rail_l_3
+  "Bottom shelf": board_t1_1, board_t1_2, board_t1_3, board_t1_4, board_t1_5
+  "Middle shelf": board_t2_1, board_t2_2, board_t2_3, board_t2_4, board_t2_5
+  "Top shelf":    board_t3_1, board_t3_2, board_t3_3, board_t3_4, board_t3_5
+}

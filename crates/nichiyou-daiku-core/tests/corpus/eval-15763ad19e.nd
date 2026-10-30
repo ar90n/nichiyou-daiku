@@ -1,0 +1,143 @@
+// Shoe Rack (3-tier, 靴箱)
+// Width: 600mm, Depth: 300mm, Height: 500mm
+// Frame: 2x2 posts + 2x2 rail rings at 3 equally-spaced levels (dowelled)
+// Shelves: 1x4 boards screwed to each level's front rail, lying between the posts
+
+WIDTH = 600
+DEPTH = 300
+HEIGHT = 500
+
+RAIL_W = 38   // 2x2 width/thickness
+BOARD_T = 19  // 1x4 thickness
+BOARD_W = 89  // 1x4 width
+
+// Front/back rails span the width between left/right posts; side rails span the depth
+FB_RAIL_LEN = WIDTH - 2 * RAIL_W   // 524
+LR_RAIL_LEN = DEPTH - 2 * RAIL_W   // 224
+SHELF_LEN = DEPTH                   // 300, boards run front-to-back
+
+// Shelf-surface heights, equally spaced over the full height
+BOT_H = HEIGHT / 3
+MID_H = HEIGHT * 2 / 3
+TOP_H = HEIGHT
+
+// Offset (from each post's top) at which a level's rail ring sits
+OFFSET_BOT = HEIGHT - BOT_H + BOARD_T
+OFFSET_MID = HEIGHT - MID_H + BOARD_T
+OFFSET_TOP = HEIGHT - TOP_H + BOARD_T
+
+// Side rails sit a little below the front/back rails at each level so their
+// corner dowel holes in the post don't run into each other
+STAGGER = 25
+OFFSET_BOT_SIDE = OFFSET_BOT + STAGGER
+OFFSET_MID_SIDE = OFFSET_MID + STAGGER
+OFFSET_TOP_SIDE = OFFSET_TOP + STAGGER
+
+// 5 boards span FB_RAIL_LEN with equal gaps, between the posts
+GAP = (FB_RAIL_LEN - 5 * BOARD_W) / 6
+O1 = GAP * 1 + BOARD_W * 0
+O2 = GAP * 2 + BOARD_W * 1
+O3 = GAP * 3 + BOARD_W * 2
+O4 = GAP * 4 + BOARD_W * 3
+O5 = GAP * 5 + BOARD_W * 4
+
+// Posts: front-left, front-right, back-left, back-right
+(leg_fl:2x2 =HEIGHT)
+(leg_fr:2x2 =HEIGHT)
+(leg_bl:2x2 =HEIGHT)
+(leg_br:2x2 =HEIGHT)
+
+// Bottom rail ring
+(rail_bot_front:2x2 =FB_RAIL_LEN)
+(rail_bot_back:2x2 =FB_RAIL_LEN)
+(rail_bot_left:2x2 =LR_RAIL_LEN)
+(rail_bot_right:2x2 =LR_RAIL_LEN)
+
+// Middle rail ring
+(rail_mid_front:2x2 =FB_RAIL_LEN)
+(rail_mid_back:2x2 =FB_RAIL_LEN)
+(rail_mid_left:2x2 =LR_RAIL_LEN)
+(rail_mid_right:2x2 =LR_RAIL_LEN)
+
+// Top rail ring
+(rail_top_front:2x2 =FB_RAIL_LEN)
+(rail_top_back:2x2 =FB_RAIL_LEN)
+(rail_top_left:2x2 =LR_RAIL_LEN)
+(rail_top_right:2x2 =LR_RAIL_LEN)
+
+// Shelf boards, 5 per level
+(shelf_bot_1:1x4 =SHELF_LEN)
+(shelf_bot_2:1x4 =SHELF_LEN)
+(shelf_bot_3:1x4 =SHELF_LEN)
+(shelf_bot_4:1x4 =SHELF_LEN)
+(shelf_bot_5:1x4 =SHELF_LEN)
+
+(shelf_mid_1:1x4 =SHELF_LEN)
+(shelf_mid_2:1x4 =SHELF_LEN)
+(shelf_mid_3:1x4 =SHELF_LEN)
+(shelf_mid_4:1x4 =SHELF_LEN)
+(shelf_mid_5:1x4 =SHELF_LEN)
+
+(shelf_top_1:1x4 =SHELF_LEN)
+(shelf_top_2:1x4 =SHELF_LEN)
+(shelf_top_3:1x4 =SHELF_LEN)
+(shelf_top_4:1x4 =SHELF_LEN)
+(shelf_top_5:1x4 =SHELF_LEN)
+
+// Bottom rail ring to posts
+leg_fl -[LB>OFFSET_BOT DB>0 D(:8x30)]- rail_bot_front
+leg_fr -[RF>OFFSET_BOT TF>0 D(:8x30)]- rail_bot_front
+leg_bl -[LB>OFFSET_BOT DB>0 D(:8x30)]- rail_bot_back
+leg_br -[RF>OFFSET_BOT TF>0 D(:8x30)]- rail_bot_back
+leg_fl -[BR>OFFSET_BOT_SIDE DB>0 D(:8x30)]- rail_bot_left
+leg_bl -[FR>OFFSET_BOT_SIDE TB>0 D(:8x30)]- rail_bot_left
+leg_fr -[BL>OFFSET_BOT_SIDE DF>0 D(:8x30)]- rail_bot_right
+leg_br -[FL>OFFSET_BOT_SIDE TF>0 D(:8x30)]- rail_bot_right
+
+// Middle rail ring to posts
+leg_fl -[LB>OFFSET_MID DB>0 D(:8x30)]- rail_mid_front
+leg_fr -[RF>OFFSET_MID TF>0 D(:8x30)]- rail_mid_front
+leg_bl -[LB>OFFSET_MID DB>0 D(:8x30)]- rail_mid_back
+leg_br -[RF>OFFSET_MID TF>0 D(:8x30)]- rail_mid_back
+leg_fl -[BR>OFFSET_MID_SIDE DB>0 D(:8x30)]- rail_mid_left
+leg_bl -[FR>OFFSET_MID_SIDE TB>0 D(:8x30)]- rail_mid_left
+leg_fr -[BL>OFFSET_MID_SIDE DF>0 D(:8x30)]- rail_mid_right
+leg_br -[FL>OFFSET_MID_SIDE TF>0 D(:8x30)]- rail_mid_right
+
+// Top rail ring to posts
+leg_fl -[LB>OFFSET_TOP DB>0 D(:8x30)]- rail_top_front
+leg_fr -[RF>OFFSET_TOP TF>0 D(:8x30)]- rail_top_front
+leg_bl -[LB>OFFSET_TOP DB>0 D(:8x30)]- rail_top_back
+leg_br -[RF>OFFSET_TOP TF>0 D(:8x30)]- rail_top_back
+leg_fl -[BR>OFFSET_TOP_SIDE DB>0 D(:8x30)]- rail_top_left
+leg_bl -[FR>OFFSET_TOP_SIDE TB>0 D(:8x30)]- rail_top_left
+leg_fr -[BL>OFFSET_TOP_SIDE DF>0 D(:8x30)]- rail_top_right
+leg_br -[FL>OFFSET_TOP_SIDE TF>0 D(:8x30)]- rail_top_right
+
+// Shelf boards rest on each level's front rail, between the posts
+rail_bot_front -[RF<O1 BT<0 S(Slim:3.3x45)]- shelf_bot_1
+rail_bot_front -[RF<O2 BT<0 S(Slim:3.3x45)]- shelf_bot_2
+rail_bot_front -[RF<O3 BT<0 S(Slim:3.3x45)]- shelf_bot_3
+rail_bot_front -[RF<O4 BT<0 S(Slim:3.3x45)]- shelf_bot_4
+rail_bot_front -[RF<O5 BT<0 S(Slim:3.3x45)]- shelf_bot_5
+
+rail_mid_front -[RF<O1 BT<0 S(Slim:3.3x45)]- shelf_mid_1
+rail_mid_front -[RF<O2 BT<0 S(Slim:3.3x45)]- shelf_mid_2
+rail_mid_front -[RF<O3 BT<0 S(Slim:3.3x45)]- shelf_mid_3
+rail_mid_front -[RF<O4 BT<0 S(Slim:3.3x45)]- shelf_mid_4
+rail_mid_front -[RF<O5 BT<0 S(Slim:3.3x45)]- shelf_mid_5
+
+rail_top_front -[RF<O1 BT<0 S(Slim:3.3x45)]- shelf_top_1
+rail_top_front -[RF<O2 BT<0 S(Slim:3.3x45)]- shelf_top_2
+rail_top_front -[RF<O3 BT<0 S(Slim:3.3x45)]- shelf_top_3
+rail_top_front -[RF<O4 BT<0 S(Slim:3.3x45)]- shelf_top_4
+rail_top_front -[RF<O5 BT<0 S(Slim:3.3x45)]- shelf_top_5
+
+steps {
+  "Posts and bottom frame": leg_fl, leg_fr, leg_bl, leg_br, rail_bot_front, rail_bot_back, rail_bot_left, rail_bot_right
+  "Middle frame": rail_mid_front, rail_mid_back, rail_mid_left, rail_mid_right
+  "Top frame": rail_top_front, rail_top_back, rail_top_left, rail_top_right
+  "Bottom shelf boards": shelf_bot_1, shelf_bot_2, shelf_bot_3, shelf_bot_4, shelf_bot_5
+  "Middle shelf boards": shelf_mid_1, shelf_mid_2, shelf_mid_3, shelf_mid_4, shelf_mid_5
+  "Top shelf boards": shelf_top_1, shelf_top_2, shelf_top_3, shelf_top_4, shelf_top_5
+}

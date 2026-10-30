@@ -1,0 +1,9 @@
+(post_a:2x4 =400)
+(post_b:2x4 =400)
+(rail:2x4 =224)
+(block:2x4 =100)
+(cap:2x4 =60)
+post_a -[BR<150 DB<0]- rail
+post_b -[FR<150 TB<0]- rail
+rail -[RF<50 BT<0]- block
+block -[RF<10 BT<0]- cap

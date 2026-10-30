@@ -1,0 +1,4 @@
+
+(leg:2x4 =720)
+(apron:2x4 =600)
+leg -[LB>0 DB>0]- apron

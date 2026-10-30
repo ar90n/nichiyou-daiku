@@ -1,0 +1,93 @@
+// Desk
+// Overall size: 1000mm (W) x 500mm (D) x 700mm (H)
+// Frame: 2x4 legs and front/back aprons, joined with wood screws
+// Top: seven 1x6 boards laid across the width, screwed to both aprons
+//
+// Dimensions:
+//   leg length = 700 - 19 (top board thickness) = 681
+//   aprons are 89mm high and flush with the leg tops (bottom at 592)
+//   top boards are 500mm long, 140mm wide; gaps (1000 - 7*140) / 6 = 3.333mm
+
+WIDTH = 1000
+DEPTH = 500
+HEIGHT = 700
+TOP_THICK = 19
+APRON_H = 89
+LEG = HEIGHT - TOP_THICK
+BOARD_W = 140
+BOARD_N = 7
+GAP = (WIDTH - BOARD_N * BOARD_W) / (BOARD_N - 1)
+STEP = BOARD_W + GAP
+APRON_SCREW_OFFSET = APRON_H - 38
+
+// ============================================
+// Legs (4x 2x4)
+// ============================================
+(leg_fl:2x4 =LEG)
+(leg_fr:2x4 =LEG)
+(leg_bl:2x4 =LEG)
+(leg_br:2x4 =LEG)
+
+// ============================================
+// Front and back aprons (2x4, full width)
+// ============================================
+(apron_front:2x4 =WIDTH)
+(apron_back:2x4 =WIDTH)
+
+// ============================================
+// Top boards (7x 1x6, running front to back)
+// ============================================
+(top_1:1x6 =DEPTH)
+(top_2:1x6 =DEPTH)
+(top_3:1x6 =DEPTH)
+(top_4:1x6 =DEPTH)
+(top_5:1x6 =DEPTH)
+(top_6:1x6 =DEPTH)
+(top_7:1x6 =DEPTH)
+
+// ============================================
+// Legs to front apron: screw through the leg into the apron
+// ============================================
+apron_front -[BT<(APRON_SCREW_OFFSET) FL>38 S(Coarse:3.8x57)]- leg_fl
+apron_front -[BD<(APRON_SCREW_OFFSET) FR>38 S(Coarse:3.8x57)]- leg_fr
+
+// ============================================
+// Legs to back apron: screw through the leg into the apron
+// ============================================
+apron_back -[BT<(APRON_SCREW_OFFSET) FL>38 S(Coarse:3.8x57)]- leg_bl
+apron_back -[BD<(APRON_SCREW_OFFSET) FR>38 S(Coarse:3.8x57)]- leg_br
+
+// ============================================
+// Top boards to the front apron
+// Offsets are measured from the apron's down end;
+// each offset is the board's right edge.
+// ============================================
+apron_front -[RF<(6 * STEP) BT<0 S(Slim:3.3x45)]- top_1
+apron_front -[RF<(5 * STEP) BT<0 S(Slim:3.3x45)]- top_2
+apron_front -[RF<(4 * STEP) BT<0 S(Slim:3.3x45)]- top_3
+apron_front -[RF<(3 * STEP) BT<0 S(Slim:3.3x45)]- top_4
+apron_front -[RF<(2 * STEP) BT<0 S(Slim:3.3x45)]- top_5
+apron_front -[RF<(1 * STEP) BT<0 S(Slim:3.3x45)]- top_6
+apron_front -[RF<0 BT<0 S(Slim:3.3x45)]- top_7
+
+// ============================================
+// Top boards to the back apron
+// The back apron's down end is at the opposite edge,
+// so these offsets are the board's right edge directly.
+// ============================================
+apron_back -[RF<BOARD_W BD<0 S(Slim:3.3x45)]- top_1
+apron_back -[RF<(STEP + BOARD_W) BD<0 S(Slim:3.3x45)]- top_2
+apron_back -[RF<(2 * STEP + BOARD_W) BD<0 S(Slim:3.3x45)]- top_3
+apron_back -[RF<(3 * STEP + BOARD_W) BD<0 S(Slim:3.3x45)]- top_4
+apron_back -[RF<(4 * STEP + BOARD_W) BD<0 S(Slim:3.3x45)]- top_5
+apron_back -[RF<(5 * STEP + BOARD_W) BD<0 S(Slim:3.3x45)]- top_6
+apron_back -[RF<(6 * STEP + BOARD_W) BD<0 S(Slim:3.3x45)]- top_7
+
+// ============================================
+// Assembly
+// ============================================
+steps {
+  "Front frame": leg_fl, leg_fr, apron_front
+  "Back frame":  leg_bl, leg_br, apron_back
+  "Top boards":  top_1, top_2, top_3, top_4, top_5, top_6, top_7
+}

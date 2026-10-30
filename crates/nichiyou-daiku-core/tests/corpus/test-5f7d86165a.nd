@@ -1,0 +1,3 @@
+(post:2x4 =600)
+(rail:2x4 =300)
+rail -[DF<0 RF<300 S(Slim:3.8x65)]- post

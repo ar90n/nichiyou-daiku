@@ -1,0 +1,28 @@
+// Desk draft 2 (all screws)
+WIDTH = 1000
+DEPTH = 500
+HEIGHT = 700
+TOP_THICK = 19
+WIDE = 89
+THICK = 38
+LEG = HEIGHT - TOP_THICK
+
+(leg_fl:2x4 =LEG)
+(leg_fr:2x4 =LEG)
+(leg_bl:2x4 =LEG)
+(leg_br:2x4 =LEG)
+
+(apron_front:2x4 =WIDTH - 2 * THICK)
+(apron_back:2x4 =WIDTH - 2 * THICK)
+(apron_left:2x4 =DEPTH - 2 * THICK)
+(apron_right:2x4 =DEPTH - 2 * THICK)
+
+leg_fl -[BR>0 DB>0 D(:8x30)]- apron_front
+leg_fr -[FR>0 TB>0 D(:8x30)]- apron_front
+leg_bl -[BR>0 DB>0 D(:8x30)]- apron_back
+leg_br -[FR>0 TB>0 D(:8x30)]- apron_back
+
+apron_front -[BR>0 DL<0 D(:8x30)]- apron_left
+apron_back -[FR>0 TL<0 D(:8x30)]- apron_left
+apron_front -[BL>0 DR<0 D(:8x30)]- apron_right
+apron_back -[FL>0 TR<0 D(:8x30)]- apron_right

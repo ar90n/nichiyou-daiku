@@ -1,0 +1,5 @@
+// Corner joint sample: corner_piece_b lies across corner_piece_a's top end
+(corner_piece_a:2x4 =400)
+(corner_piece_b:2x4 =400)
+
+corner_piece_a -[TF<0 BD<0]- corner_piece_b

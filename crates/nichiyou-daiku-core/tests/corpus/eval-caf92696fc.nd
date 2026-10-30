@@ -1,0 +1,59 @@
+// 1x8 Bookshelf
+// Overall size: 184mm (depth, x) x 600mm (width, y) x 900mm (height, z)
+// Width 600, Depth 184, Height 900
+// Material: 1x8 only
+// Joints: Slim 3.3x30 screws through the sides into the shelf ends
+
+WIDTH = 600                    // overall width (spanned by the shelves)
+DEPTH = 184                    // overall depth (= the 1x8 board width)
+HEIGHT = 900                   // overall height
+THICK = 19                     // 1x8 thickness
+SHELF_SPAN = WIDTH - 2 * THICK // shelves fit between the two sides: 562
+
+// Four shelf boards (bottom + two middle + top) evenly spaced.
+// The lowest underside sits on the floor (0) and the top board's top face is
+// flush with the side tops (HEIGHT); the boards in between are spread evenly.
+COUNT = 4
+LEVEL_GAP = (HEIGHT - THICK) / (COUNT - 1)  // 293.667mm between board undersides
+CENTER = THICK / 2                          // screw centred on the 19mm thickness
+
+// ============================================
+// Sides (2x): upright 1x8 boards, full height.
+// The board width (184) runs front to back (depth).
+// ============================================
+(side_l:1x8 =HEIGHT)
+(side_r:1x8 =HEIGHT)
+
+// ============================================
+// Shelves (4x): 1x8 boards lying flat, spanning between the sides.
+// ============================================
+(shelf_1:1x8 =SHELF_SPAN)
+(shelf_2:1x8 =SHELF_SPAN)
+(shelf_3:1x8 =SHELF_SPAN)
+(shelf_4:1x8 =SHELF_SPAN)
+
+// ============================================
+// Shelf to left side (underside at 0, LEVEL_GAP, 2*LEVEL_GAP, 3*LEVEL_GAP)
+// Screw driven through the side (target) into the shelf end (base).
+// ============================================
+shelf_1 -[DL<CENTER BL<CENTER S(Slim:3.3x30)]- side_l
+shelf_2 -[DL<CENTER BL<(LEVEL_GAP + CENTER) S(Slim:3.3x30)]- side_l
+shelf_3 -[DL<CENTER BL<(2 * LEVEL_GAP + CENTER) S(Slim:3.3x30)]- side_l
+shelf_4 -[DL<CENTER BL<(3 * LEVEL_GAP + CENTER) S(Slim:3.3x30)]- side_l
+
+// ============================================
+// Shelf to right side (the shelf's other end)
+// ============================================
+shelf_1 -[TL<CENTER FL<CENTER S(Slim:3.3x30)]- side_r
+shelf_2 -[TL<CENTER FL<(LEVEL_GAP + CENTER) S(Slim:3.3x30)]- side_r
+shelf_3 -[TL<CENTER FL<(2 * LEVEL_GAP + CENTER) S(Slim:3.3x30)]- side_r
+shelf_4 -[TL<CENTER FL<(3 * LEVEL_GAP + CENTER) S(Slim:3.3x30)]- side_r
+
+// ============================================
+// Assembly: the left side, the shelves onto it, then the right side
+// ============================================
+steps {
+  "Left side":  side_l
+  "Shelves":    shelf_1, shelf_2, shelf_3, shelf_4
+  "Right side": side_r
+}

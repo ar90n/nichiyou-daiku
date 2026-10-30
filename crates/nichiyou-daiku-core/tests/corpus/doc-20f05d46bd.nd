@@ -1,0 +1,33 @@
+// Simple Table Design: 800 (W) x 600 (D) x 758 (H)
+
+// Legs: leg_1 front-left, leg_2 front-right, leg_3 back-left, leg_4 back-right
+(leg_1:2x4 =720)
+(leg_2:2x4 =720)
+(leg_3:2x4 =720)
+(leg_4:2x4 =720)
+
+// Aprons: 800 - 2x89 = 622, 600 - 2x38 = 524
+(apron_front:2x4 =622)
+(apron_back:2x4 =622)
+(apron_left:2x4 =524)
+(apron_right:2x4 =524)
+
+// Table top boards (2x4, running front to back)
+(table_top_1:2x4 =600)
+(table_top_2:2x4 =600)
+
+// Leg to front/back apron connections
+leg_1 -[LB>0 DB>0]- apron_front
+leg_2 -[RF>0 TF>0]- apron_front
+leg_3 -[LB>0 DB>0]- apron_back
+leg_4 -[RF>0 TF>0]- apron_back
+
+// Side apron connections
+leg_1 -[BR>0 DB>0]- apron_left
+leg_3 -[FR>0 TB>0]- apron_left
+leg_2 -[BL>0 DF>0]- apron_right
+leg_4 -[FL>0 TF>0]- apron_right
+
+// Table top connections: the outer boards rest on the leg tops
+table_top_1 -[BD<0 TF<0]- leg_1
+table_top_2 -[BD<0 TF<0]- leg_2

@@ -1,0 +1,1 @@
+{"valid": false, "error": {"kind": "syntax", "message": "Syntax error at line 1, column 19: Unexpected token '?'. Expected one of: '(', '-', 'FromMax', 'FromMin', identifier, number, string. '?' (unknown) works in compact notation only, e.g. (x:2x4 =?) or RB? BD?", "line": 1, "column": 19}, "overall_size": null, "size_reference": null, "pieces": [], "problems": []}

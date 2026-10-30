@@ -1,0 +1,78 @@
+// Stool
+// Dimensions: 300mm (W) x 300mm (D) x 450mm (H)
+// Legs: 2x4 x4. Seat: 1x4 boards laid side by side. Joints: dowel 8x30.
+
+WIDTH = 300
+DEPTH = 300
+HEIGHT = 450
+
+// ============================================
+// Legs (4x) - height minus the 19mm seat boards
+// leg_fl: front-left, leg_fr: front-right
+// leg_bl: back-left, leg_br: back-right
+// ============================================
+LEG_LENGTH = HEIGHT - 19
+(leg_fl:2x4 =LEG_LENGTH)
+(leg_fr:2x4 =LEG_LENGTH)
+(leg_bl:2x4 =LEG_LENGTH)
+(leg_br:2x4 =LEG_LENGTH)
+
+// ============================================
+// Aprons
+// Front/back run between the legs' 89mm sides: 300 - 2*89 = 122mm
+// Left/right run between the legs' 38mm sides: 300 - 2*38 = 224mm
+// ============================================
+(apron_front:2x4 =WIDTH - 2 * 89)
+(apron_back:2x4 =WIDTH - 2 * 89)
+(apron_left:2x4 =DEPTH - 2 * 38)
+(apron_right:2x4 =DEPTH - 2 * 38)
+
+// ============================================
+// Seat boards (1x4, laid side by side, running front to back)
+// 3 boards: 3*89 = 267mm, leaving 2 gaps of (300 - 267) / 2 = 16.5mm
+// ============================================
+(seat_1:1x4 =DEPTH)
+(seat_2:1x4 =DEPTH)
+(seat_3:1x4 =DEPTH)
+
+// ============================================
+// Front apron to legs (flush with top)
+// ============================================
+leg_fl -[LB>0 DB>0 D(:8x30)]- apron_front
+leg_fr -[RF>0 TF>0 D(:8x30)]- apron_front
+
+// ============================================
+// Back apron to legs
+// ============================================
+leg_bl -[LB>0 DB>0 D(:8x30)]- apron_back
+leg_br -[RF>0 TF>0 D(:8x30)]- apron_back
+
+// ============================================
+// Left apron to legs (flush with top: LEG_LENGTH - 89 up the leg)
+// ============================================
+SIDE_OFFSET = LEG_LENGTH - 89
+leg_fl -[BR<SIDE_OFFSET DB<0 D(:8x30)]- apron_left
+leg_bl -[FR<SIDE_OFFSET TB<0 D(:8x30)]- apron_left
+
+// ============================================
+// Right apron to legs
+// ============================================
+leg_fr -[BL<SIDE_OFFSET DF<0 D(:8x30)]- apron_right
+leg_br -[FL<SIDE_OFFSET TF<0 D(:8x30)]- apron_right
+
+// ============================================
+// Seat boards to frame
+// Outer boards sit on the front legs, middle board on the front apron
+// gap = (300 - 267) / 2 = 16.5mm
+// ============================================
+seat_1 -[BD<0 TF<0 D(:8x30)]- leg_fl
+apron_front -[RF<16.5 BT<0 D(:8x30)]- seat_2
+seat_3 -[BD<0 TF<0 D(:8x30)]- leg_fr
+
+// Assembly: the side frames, the aprons joining them, the seat
+steps {
+  "Left frame":  leg_fl, leg_bl, apron_left
+  "Right frame": leg_fr, leg_br, apron_right
+  "Join":        apron_front, apron_back
+  "Seat":        seat_1, seat_2, seat_3
+}

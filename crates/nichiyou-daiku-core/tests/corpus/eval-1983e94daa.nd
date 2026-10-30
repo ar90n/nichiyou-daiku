@@ -1,0 +1,3 @@
+(leg:2x4 =681)
+(apron_side:2x4 =348)
+apron_side -[DL<0 BL<592 S(Slim:3.8x65)]- leg

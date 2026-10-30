@@ -1,0 +1,5 @@
+(shelf_1:1x6 =450)
+(side_l:1x6 =600)
+(side_r:1x6 =600)
+shelf_1 -[DL<0 BL<0 S(Slim:3.3x30)]- side_l
+shelf_1 -[TL<0 FL<0 S(Slim:3.3x30)]- side_r

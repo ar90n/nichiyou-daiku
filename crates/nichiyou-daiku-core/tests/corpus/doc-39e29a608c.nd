@@ -1,0 +1,6 @@
+// This is a comment
+(leg:2x4 =720)  // End-of-line comment
+
+// Multiple comment lines
+// Project: Dining Table
+// Created: 2025-07-30

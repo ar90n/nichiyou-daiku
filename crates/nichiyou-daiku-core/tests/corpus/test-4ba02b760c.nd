@@ -1,0 +1,5 @@
+
+        // (ignored:2x4 =500) - this should be ignored
+        (real:2x4 =1000)
+        // beam1 -[TF<0 BD<0]- beam2  // This connection is commented out
+        

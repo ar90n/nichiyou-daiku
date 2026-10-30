@@ -1,0 +1,48 @@
+// Four-Legged Table
+// Width: 800mm, Depth: 500mm, Height: 720mm
+// 2x4 frame with 8x30 dowels, 1x4 top boards screwed down with Slim 3.3x45
+
+// Legs: 720 - 19 (1x4 top) = 701
+(leg_fl:2x4 =701)
+(leg_fr:2x4 =701)
+(leg_bl:2x4 =701)
+(leg_br:2x4 =701)
+
+// Front/back aprons: 800 - 2x89 = 622
+(apron_front:2x4 =622)
+(apron_back:2x4 =622)
+// Side aprons: 500 - 2x38 = 424
+(apron_left:2x4 =424)
+(apron_right:2x4 =424)
+
+// Top boards: 8 x 89 = 712, gap (800 - 712) / 7 = 12.57
+(top_1:1x4 =500)
+(top_2:1x4 =500)
+(top_3:1x4 =500)
+(top_4:1x4 =500)
+(top_5:1x4 =500)
+(top_6:1x4 =500)
+(top_7:1x4 =500)
+(top_8:1x4 =500)
+
+// Front/back aprons: end into the legs' narrow faces, flush with the legs' front faces
+leg_fl -[LB>0 DB>0 D(:8x30)]- apron_front
+leg_fr -[RF>0 TF>0 D(:8x30)]- apron_front
+leg_bl -[LB>0 DB>0 D(:8x30)]- apron_back
+leg_br -[RF>0 TF>0 D(:8x30)]- apron_back
+
+// Side aprons: end into the legs' wide faces, flush with the legs' outer sides
+leg_fl -[BR>0 DB>0 D(:8x30)]- apron_left
+leg_bl -[FR>0 TB>0 D(:8x30)]- apron_left
+leg_fr -[BL>0 DF>0 D(:8x30)]- apron_right
+leg_br -[FL>0 TF>0 D(:8x30)]- apron_right
+
+// Top boards (screwed down through the board)
+leg_fl -[TF<0 BD<0 S(Slim:3.3x45)]- top_1
+apron_front -[RF<12.6 BT<0 S(Slim:3.3x45)]- top_2
+apron_front -[RF<114.1 BT<0 S(Slim:3.3x45)]- top_3
+apron_front -[RF<215.7 BT<0 S(Slim:3.3x45)]- top_4
+apron_front -[RF<317.3 BT<0 S(Slim:3.3x45)]- top_5
+apron_front -[RF<418.9 BT<0 S(Slim:3.3x45)]- top_6
+apron_front -[RF<520.4 BT<0 S(Slim:3.3x45)]- top_7
+leg_fr -[TF<0 BD<0 S(Slim:3.3x45)]- top_8

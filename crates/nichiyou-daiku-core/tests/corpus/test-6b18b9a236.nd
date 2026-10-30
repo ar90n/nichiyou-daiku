@@ -1,0 +1,6 @@
+
+        (piece1:2x4 =1000)
+        (piece2:2x4 =800)
+
+        piece1 -[TF<0 BD<0 D(:9x99)]- piece2
+        

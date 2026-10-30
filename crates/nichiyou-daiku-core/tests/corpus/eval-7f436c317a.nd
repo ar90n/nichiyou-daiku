@@ -1,0 +1,50 @@
+// Desk (test A: dowels frame, screws top)
+WIDTH = 1000
+DEPTH = 500
+HEIGHT = 700
+TOP_THICK = 19
+WIDE = 89
+THICK = 38
+LEG = HEIGHT - TOP_THICK
+
+BOARDS = 7
+BOARD_W = 140
+GAP = (WIDTH - BOARDS * BOARD_W) / (BOARDS - 1)
+PITCH = BOARD_W + GAP
+RAIL = LEG - WIDE
+
+(leg_fl:2x4 =LEG)
+(leg_fr:2x4 =LEG)
+(leg_bl:2x4 =LEG)
+(leg_br:2x4 =LEG)
+
+(apron_front:2x4 =WIDTH - 2 * WIDE)
+(apron_back:2x4 =WIDTH - 2 * WIDE)
+(apron_left:2x4 =DEPTH - 2 * THICK)
+(apron_right:2x4 =DEPTH - 2 * THICK)
+
+(top_1:1x6 =DEPTH)
+(top_2:1x6 =DEPTH)
+(top_3:1x6 =DEPTH)
+(top_4:1x6 =DEPTH)
+(top_5:1x6 =DEPTH)
+(top_6:1x6 =DEPTH)
+(top_7:1x6 =DEPTH)
+
+leg_fl -[LB>0 DB>0 D(:8x30)]- apron_front
+leg_fr -[RF>0 TF>0 D(:8x30)]- apron_front
+leg_bl -[LB>0 DB>0 D(:8x30)]- apron_back
+leg_br -[RF>0 TF>0 D(:8x30)]- apron_back
+
+leg_fl -[BR<RAIL DB<0 D(:8x30)]- apron_left
+leg_bl -[FR<RAIL TB<0 D(:8x30)]- apron_left
+leg_fr -[BL<RAIL DF<0 D(:8x30)]- apron_right
+leg_br -[FL<RAIL TF<0 D(:8x30)]- apron_right
+
+top_1 -[BD<0 TF<0 D(:8x30)]- leg_fl
+apron_front -[RF<GAP BT<0 D(:8x30)]- top_2
+apron_front -[RF<(GAP + PITCH) BT<0 D(:8x30)]- top_3
+apron_front -[RF<(GAP + 2 * PITCH) BT<0 D(:8x30)]- top_4
+apron_front -[RF<(GAP + 3 * PITCH) BT<0 D(:8x30)]- top_5
+apron_front -[RF<(GAP + 4 * PITCH) BT<0 D(:8x30)]- top_6
+top_7 -[BD<0 TF<0 D(:8x30)]- leg_fr

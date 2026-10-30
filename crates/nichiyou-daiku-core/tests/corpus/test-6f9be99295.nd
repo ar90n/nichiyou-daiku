@@ -1,0 +1,4 @@
+L = 400
+(rail:2x4 =L)
+(post:2x4 =500)
+rail -[FL<(L + 0.001) DF<0]- post

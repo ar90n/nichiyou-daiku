@@ -1,0 +1,3 @@
+(shelf:2x4 =600)
+(side:2x4 =800)
+shelf -[DL<0 BL<100 S(Slim:3.3x45)]- side

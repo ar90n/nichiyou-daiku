@@ -1,0 +1,6 @@
+(shelf:2x4 =600)
+(left_side:2x4 =800)
+(right_side:2x4 =800)
+
+left_side -[BL<300 DL<0 D(:8x30)]- shelf
+right_side -[FL<300 TL<0 D(:8x30)]- shelf

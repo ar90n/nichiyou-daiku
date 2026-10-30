@@ -1,0 +1,5 @@
+(post:2x4 =600)
+(rail_a:2x4 =300)
+(rail_b:2x4 =300)
+rail_a -[DF>0 BL<300 S(Slim:3.8x65)]- post
+rail_b -[DF<0 RF<400 S(Slim:3.8x65)]- post

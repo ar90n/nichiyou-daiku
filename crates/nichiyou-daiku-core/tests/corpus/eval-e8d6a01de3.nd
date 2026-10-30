@@ -1,0 +1,119 @@
+// Child's Step Stool
+// Dimensions: 380mm (W) x 300mm (D) x 300mm (H)
+// Material: 2x4 throughout
+// Joints: 8x30 dowels for the frame, Coarse 3.8x57 screws for the deck
+//
+// Structure:
+// - 4 corner legs, wide faces to the front/back
+// - Upper aprons flush with the leg tops
+// - Lower stretchers 70mm above the floor for rigidity
+// - 4 deck boards (2x4) laid flat, front to back, screwed at both ends
+
+WIDTH = 380
+DEPTH = 300
+HEIGHT = 300
+
+DECK_THICKNESS = 38
+LEG = HEIGHT - DECK_THICKNESS
+
+// Front/back rails sit between the legs' 89mm faces
+RAIL_FB = WIDTH - 2 * 89
+// Side rails sit between the legs' 38mm faces
+RAIL_LR = DEPTH - 2 * 38
+
+// Deck: 4 boards, 3 gaps
+DECK_GAP = (WIDTH - 4 * 89) / 3
+
+// Upper side aprons: top flush with the leg tops
+UPPER_SIDE = LEG - 89
+// Lower rail: bottom edge 70mm above the floor
+RAIL_BOTTOM = 70
+LOWER_OFFSET = LEG - RAIL_BOTTOM - 89
+
+// ============================================
+// Legs (4x)
+// leg_fl/leg_bl: one side, leg_fr/leg_br: the other
+// ============================================
+(leg_fl:2x4 =LEG)
+(leg_fr:2x4 =LEG)
+(leg_bl:2x4 =LEG)
+(leg_br:2x4 =LEG)
+
+// ============================================
+// Upper Aprons (flush with the leg tops)
+// ============================================
+(apron_front:2x4 =RAIL_FB)
+(apron_back:2x4 =RAIL_FB)
+(apron_left:2x4 =RAIL_LR)
+(apron_right:2x4 =RAIL_LR)
+
+// ============================================
+// Lower Stretchers (bottom edge 70mm above the floor)
+// ============================================
+(lower_front:2x4 =RAIL_FB)
+(lower_back:2x4 =RAIL_FB)
+(lower_left:2x4 =RAIL_LR)
+(lower_right:2x4 =RAIL_LR)
+
+// ============================================
+// Deck Boards (2x4 laid flat, depth direction)
+// 4 boards: 4*89 = 356mm, 3 gaps of (380 - 356) / 3 = 8mm
+// ============================================
+(top_1:2x4 =DEPTH)
+(top_2:2x4 =DEPTH)
+(top_3:2x4 =DEPTH)
+(top_4:2x4 =DEPTH)
+
+// ============================================
+// Upper Aprons
+// ============================================
+leg_fl -[LB>0 DB>0 D(:8x30)]- apron_front
+leg_fr -[RF>0 TF>0 D(:8x30)]- apron_front
+leg_bl -[LB>0 DB>0 D(:8x30)]- apron_back
+leg_br -[RF>0 TF>0 D(:8x30)]- apron_back
+
+// Side aprons: top flush with the leg tops, LEG - 89 up from the floor
+leg_fl -[BR<UPPER_SIDE DB<0 D(:8x30)]- apron_left
+leg_bl -[FR<UPPER_SIDE TB<0 D(:8x30)]- apron_left
+leg_fr -[BL<UPPER_SIDE DF<0 D(:8x30)]- apron_right
+leg_br -[FL<UPPER_SIDE TF<0 D(:8x30)]- apron_right
+
+// ============================================
+// Lower Stretchers
+// Front/back measure down from the leg top; sides up from the floor
+// ============================================
+leg_fl -[LB>LOWER_OFFSET DB>0 D(:8x30)]- lower_front
+leg_fr -[RF>LOWER_OFFSET TF>0 D(:8x30)]- lower_front
+leg_bl -[LB>LOWER_OFFSET DB>0 D(:8x30)]- lower_back
+leg_br -[RF>LOWER_OFFSET TF>0 D(:8x30)]- lower_back
+
+leg_fl -[BR<RAIL_BOTTOM DB<0 D(:8x30)]- lower_left
+leg_bl -[FR<RAIL_BOTTOM TB<0 D(:8x30)]- lower_left
+leg_fr -[BL<RAIL_BOTTOM DF<0 D(:8x30)]- lower_right
+leg_br -[FL<RAIL_BOTTOM TF<0 D(:8x30)]- lower_right
+
+// ============================================
+// Deck Boards
+// Outer boards on the front/back legs, inner boards on the front/back aprons
+// ============================================
+leg_fl -[TF<0 BD<0 S(Coarse:3.8x57)]- top_1
+leg_bl -[TB<0 BT<0 S(Coarse:3.8x57)]- top_1
+
+apron_front -[RF<DECK_GAP BT<0 S(Coarse:3.8x57)]- top_2
+apron_back -[RB<DECK_GAP BD<0 S(Coarse:3.8x57)]- top_2
+
+apron_front -[RF<(89 + 2 * DECK_GAP) BT<0 S(Coarse:3.8x57)]- top_3
+apron_back -[RB<(89 + 2 * DECK_GAP) BD<0 S(Coarse:3.8x57)]- top_3
+
+leg_fr -[TF<0 BD<0 S(Coarse:3.8x57)]- top_4
+leg_br -[TB<0 BT<0 S(Coarse:3.8x57)]- top_4
+
+// ============================================
+// Assembly: the two side frames, the rails joining them, the deck
+// ============================================
+steps {
+  "Side frame 1": leg_fl, leg_bl, apron_left, lower_left
+  "Side frame 2": leg_fr, leg_br, apron_right, lower_right
+  "Join":         apron_front, apron_back, lower_front, lower_back
+  "Deck":         top_1, top_2, top_3, top_4
+}

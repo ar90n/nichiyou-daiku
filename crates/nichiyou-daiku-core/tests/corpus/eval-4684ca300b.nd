@@ -1,0 +1,73 @@
+// Stool
+// Overall: 300mm (W) x 300mm (D) x 450mm (H)
+// Legs: 4x 2x4, seat: 3x 1x4 boards, frame doweled with 8x30 dowels
+
+WIDTH = 300
+DEPTH = 300
+HEIGHT = 450
+TOP_THICK = 19
+LEG_W = 89
+LEG_T = 38
+APRON_W = 89
+BOARD_W = 89
+BOARD_COUNT = 3
+GAP = (WIDTH - BOARD_COUNT * BOARD_W) / (BOARD_COUNT - 1)
+LEG_LEN = HEIGHT - TOP_THICK
+FRONT_APRON_LEN = WIDTH - 2 * LEG_W
+SIDE_APRON_LEN = DEPTH - 2 * LEG_T
+SIDE_APRON_OFFSET = LEG_LEN - APRON_W
+
+// ============================================
+// Legs: 450 - 19 (seat boards) = 431
+// ============================================
+(leg_fl:2x4 =LEG_LEN)
+(leg_fr:2x4 =LEG_LEN)
+(leg_bl:2x4 =LEG_LEN)
+(leg_br:2x4 =LEG_LEN)
+
+// ============================================
+// Aprons: flush under the seat
+// Front/back: 300 - 2*89 = 122
+// Sides: 300 - 2*38 = 224
+// ============================================
+(apron_front:2x4 =FRONT_APRON_LEN)
+(apron_back:2x4 =FRONT_APRON_LEN)
+(apron_left:2x4 =SIDE_APRON_LEN)
+(apron_right:2x4 =SIDE_APRON_LEN)
+
+// ============================================
+// Seat boards: 3 x 89 = 267, two gaps of 16.5
+// ============================================
+(top_1:1x4 =DEPTH)
+(top_2:1x4 =DEPTH)
+(top_3:1x4 =DEPTH)
+
+// ============================================
+// Front/back aprons into the legs' narrow faces
+// ============================================
+leg_fl -[LB>0 DB>0 D(:8x30)]- apron_front
+leg_fr -[RF>0 TF>0 D(:8x30)]- apron_front
+leg_bl -[LB>0 DB>0 D(:8x30)]- apron_back
+leg_br -[RF>0 TF>0 D(:8x30)]- apron_back
+
+// ============================================
+// Side aprons into the legs' wide faces
+// ============================================
+leg_fl -[BR<SIDE_APRON_OFFSET DB<0 D(:8x30)]- apron_left
+leg_bl -[FR<SIDE_APRON_OFFSET TB<0 D(:8x30)]- apron_left
+leg_fr -[BL<SIDE_APRON_OFFSET DF<0 D(:8x30)]- apron_right
+leg_br -[FL<SIDE_APRON_OFFSET TF<0 D(:8x30)]- apron_right
+
+// ============================================
+// Seat boards doweled to the frame
+// ============================================
+top_1 -[BD<0 TF<0 D(:8x30)]- leg_fl
+apron_front -[RF<GAP BT<0 D(:8x30)]- top_2
+top_3 -[BD<0 TF<0 D(:8x30)]- leg_fr
+
+steps {
+  "Left frame":  leg_fl, leg_bl, apron_left
+  "Right frame": leg_fr, leg_br, apron_right
+  "Join":        apron_front, apron_back
+  "Seat":        top_1, top_2, top_3
+}

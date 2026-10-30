@@ -1,0 +1,9 @@
+
+        (p1:2x4 {"length": 500})
+        (p2:2x4 {"length": 500})
+        (p3:2x4 {"length": 500})
+        
+        p1 -[TF<0 BD<0]- p2
+        p2 -[{"contact_face": "right", "edge_shared_face": "top", "offset": FromMax(30)}
+              {"contact_face": "left", "edge_shared_face": "down", "offset": FromMin(20)}]- p3
+        

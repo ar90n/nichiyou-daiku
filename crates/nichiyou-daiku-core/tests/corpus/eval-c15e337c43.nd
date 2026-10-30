@@ -1,0 +1,98 @@
+// 2x4 / 1x4 Bench
+// Overall: WIDTH 900 x DEPTH 300 x HEIGHT 420 mm
+// Frame: 2x4 legs and aprons, 8x30 dowels
+// Seat: 1x4 boards running along the 900mm length, screwed down with Slim 3.3x45
+// A flat 2x4 rail under the middle board supports it at mid-depth.
+
+WIDTH = 900
+DEPTH = 300
+HEIGHT = 420
+TOP_THICKNESS = 19
+LEG_WIDTH = 89
+LEG_THICKNESS = 38
+BOARD_WIDTH = 89
+BOARD_COUNT = 3
+GAP = (DEPTH - BOARD_COUNT * BOARD_WIDTH) / (BOARD_COUNT - 1)
+LEG_LENGTH = HEIGHT - TOP_THICKNESS
+APRON_LENGTH = WIDTH - 2 * LEG_WIDTH
+SIDE_APRON_LENGTH = DEPTH - 2 * LEG_THICKNESS
+RAIL_LENGTH = WIDTH - 2 * LEG_THICKNESS
+
+// Seat-board screw positions, measured from the board's left end
+SCREW_X = WIDTH / 3
+APRON_SCREW_OFFSET = WIDTH - LEG_WIDTH - SCREW_X
+RAIL_SCREW_OFFSET = SCREW_X - LEG_THICKNESS
+MID_DEPTH = DEPTH / 2
+CENTER_OFFSET = LEG_WIDTH / 2
+
+// ============================================
+// Legs (4x) - 420mm height minus the 19mm seat boards
+// ============================================
+(leg_fl:2x4 =LEG_LENGTH)
+(leg_fr:2x4 =LEG_LENGTH)
+(leg_bl:2x4 =LEG_LENGTH)
+(leg_br:2x4 =LEG_LENGTH)
+
+// ============================================
+// Aprons (flush with the seat frame)
+// Front/back run between the legs' 89mm faces: 900 - 2*89 = 722mm
+// Sides run between the legs' 38mm faces: 300 - 2*38 = 224mm
+// ============================================
+(apron_front:2x4 =APRON_LENGTH)
+(apron_back:2x4 =APRON_LENGTH)
+(apron_left:2x4 =SIDE_APRON_LENGTH)
+(apron_right:2x4 =SIDE_APRON_LENGTH)
+
+// ============================================
+// Center rail (2x4 laid flat, 89mm deep)
+// Runs between the side aprons: 900 - 2*38 = 824mm
+// Its top is flush with the aprons, under the middle seat board.
+// ============================================
+(rail_center:2x4 =RAIL_LENGTH)
+
+// ============================================
+// Seat boards (1x4, 900mm in the length direction)
+// 3 boards: 3*89 = 267mm, leaving 2 gaps of (300 - 267) / 2 = 16.5mm
+// ============================================
+(seat_back:1x4 =WIDTH)
+(seat_middle:1x4 =WIDTH)
+(seat_front:1x4 =WIDTH)
+
+// ============================================
+// Frame: front/back aprons into the legs' inner faces
+// The point at the leg top makes the apron top flush with the leg top.
+// ============================================
+leg_fl -[LB>0 DB>0 D(:8x30)]- apron_front
+leg_fr -[RF>0 TF>0 D(:8x30)]- apron_front
+leg_bl -[LB>0 DB>0 D(:8x30)]- apron_back
+leg_br -[RF>0 TF>0 D(:8x30)]- apron_back
+
+// Side aprons into the legs' back/front faces, flush with the outer sides.
+// LEG_LENGTH - 89mm apron height puts their tops flush with the leg tops.
+leg_fl -[BR<(LEG_LENGTH - LEG_WIDTH) DB<0 D(:8x30)]- apron_left
+leg_bl -[FR<(LEG_LENGTH - LEG_WIDTH) TB<0 D(:8x30)]- apron_left
+leg_fr -[BL<(LEG_LENGTH - LEG_WIDTH) DF<0 D(:8x30)]- apron_right
+leg_br -[FL<(LEG_LENGTH - LEG_WIDTH) TF<0 D(:8x30)]- apron_right
+
+// ============================================
+// Center rail into the side aprons
+// Top faces flush; the rail is centered at half the depth.
+// ============================================
+apron_right -[BR<(MID_DEPTH - LEG_THICKNESS) DF<CENTER_OFFSET D(:8x30)]- rail_center
+apron_left -[FR<(MID_DEPTH - LEG_THICKNESS) TF<CENTER_OFFSET D(:8x30)]- rail_center
+
+// ============================================
+// Seat boards screwed down
+// Front/back boards are flush with the bench's front/back edges;
+// the middle board sits centered on the rail.
+// ============================================
+apron_back -[RB<APRON_SCREW_OFFSET BL<SCREW_X S(Slim:3.3x45)]- seat_back
+rail_center -[FR<RAIL_SCREW_OFFSET BR<SCREW_X S(Slim:3.3x45)]- seat_middle
+apron_front -[RF<APRON_SCREW_OFFSET BR<SCREW_X S(Slim:3.3x45)]- seat_front
+
+steps {
+  "Left frame":  leg_fl, leg_bl, apron_left
+  "Right frame": leg_fr, leg_br, apron_right
+  "Join":        apron_front, apron_back, rail_center
+  "Seat":        seat_back, seat_middle, seat_front
+}

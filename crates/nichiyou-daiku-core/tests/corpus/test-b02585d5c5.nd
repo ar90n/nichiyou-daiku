@@ -1,0 +1,4 @@
+R = 4
+(a:2x4 =1000)
+(b:2x4 =800)
+a -[{"contact_face": "front", "edge_shared_face": "left", "offset": FromMin(0)}{"contact_face": "down", "edge_shared_face": "front", "offset": FromMin(0)}{"type": "dowel", "radius": R, "depth": R * 7}]- b

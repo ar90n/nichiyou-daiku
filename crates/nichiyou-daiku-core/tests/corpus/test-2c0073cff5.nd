@@ -1,0 +1,5 @@
+(shelf:2x4 =600)
+(side:2x4 =800)
+(shelf2:2x4 =600)
+shelf -[DL<0 BL<100 S(3.3, 45)]- side
+shelf2 -[DL<0 BL<300 S(1.1*3, 45)]- side

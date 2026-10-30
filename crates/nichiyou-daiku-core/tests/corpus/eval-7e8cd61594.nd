@@ -1,0 +1,67 @@
+// Desk: Width 1000mm x Depth 500mm x Height 700mm
+// Legs: 2x4 x4. Top: 1x6 boards running front-to-back, lined up across the width.
+// Apron (幕板): 2x4, flush with the top, below the top boards.
+// Joints: screw where the model supports it (side-apron-to-leg, all top boards).
+// Front/back apron-to-leg joints butt into the legs' narrow face, which a straight
+// screw cannot reach here, so those four joints use 8x30 dowels instead.
+
+WIDTH = 1000
+DEPTH = 500
+HEIGHT = 700
+TOP_THICKNESS = 19            // 1x6
+BOARD_WIDTH = 140             // 1x6 width
+BOARD_COUNT = 7                // largest n with n*140 <= 1000
+GAP = (WIDTH - BOARD_COUNT * BOARD_WIDTH) / (BOARD_COUNT - 1)
+PITCH = BOARD_WIDTH + GAP
+
+// Legs: leg_fl front-left, leg_fr front-right, leg_bl back-left, leg_br back-right
+// Length: HEIGHT - top thickness
+(leg_fl:2x4 =HEIGHT - TOP_THICKNESS)
+(leg_fr:2x4 =HEIGHT - TOP_THICKNESS)
+(leg_bl:2x4 =HEIGHT - TOP_THICKNESS)
+(leg_br:2x4 =HEIGHT - TOP_THICKNESS)
+
+// Aprons (幕板): front/back run the width, side aprons run the depth, flush with leg tops
+(apron_front:2x4 =WIDTH - 2 * 89)
+(apron_back:2x4 =WIDTH - 2 * 89)
+(apron_left:2x4 =DEPTH - 2 * 38)
+(apron_right:2x4 =DEPTH - 2 * 38)
+
+// Top boards (1x6), length = DEPTH, 7 boards lined up across the width
+(top_1:1x6 =DEPTH)
+(top_2:1x6 =DEPTH)
+(top_3:1x6 =DEPTH)
+(top_4:1x6 =DEPTH)
+(top_5:1x6 =DEPTH)
+(top_6:1x6 =DEPTH)
+(top_7:1x6 =DEPTH)
+
+// Front/back apron to legs: butts into the legs' narrow face -> dowel
+leg_fl -[LB>0 DB>0 D(:8x30)]- apron_front
+leg_fr -[RF>0 TF>0 D(:8x30)]- apron_front
+leg_bl -[LB>0 DB>0 D(:8x30)]- apron_back
+leg_br -[RF>0 TF>0 D(:8x30)]- apron_back
+
+// Side aprons to legs: hits the legs' wide face -> screw (base=apron, target=leg)
+apron_left -[DB>0 BR>0 S(Slim:3.8x65)]- leg_fl
+apron_left -[TB>0 FR>0 S(Slim:3.8x65)]- leg_bl
+apron_right -[DF>0 BL>0 S(Slim:3.8x65)]- leg_fr
+apron_right -[TF>0 FL>0 S(Slim:3.8x65)]- leg_br
+
+// Top boards screwed down through the board into the frame below.
+// The two outer boards land on legs that already take a side-apron screw near the
+// same top corner, so those two use a dowel instead to avoid the holes crossing.
+leg_fr -[TF<0 BD<0 D(:8x30)]- top_1
+apron_front -[RF<(1 * PITCH - 89) BT<0 S(Slim:3.3x45)]- top_2
+apron_front -[RF<(2 * PITCH - 89) BT<0 S(Slim:3.3x45)]- top_3
+apron_front -[RF<(3 * PITCH - 89) BT<0 S(Slim:3.3x45)]- top_4
+apron_front -[RF<(4 * PITCH - 89) BT<0 S(Slim:3.3x45)]- top_5
+apron_front -[RF<(5 * PITCH - 89) BT<0 S(Slim:3.3x45)]- top_6
+leg_fl -[TF>0 BD>0 D(:8x30)]- top_7
+
+steps {
+  "Front frame": leg_fl, leg_fr, apron_front
+  "Back frame": leg_bl, leg_br, apron_back
+  "Join sides": apron_left, apron_right
+  "Top boards": top_1, top_2, top_3, top_4, top_5, top_6, top_7
+}

@@ -1,0 +1,148 @@
+// 花台 (Plant Stand)
+// Dimensions: 400mm (W) x 300mm (D) x 700mm (H)
+// Material: 2x2 frame, 1x4 top and shelf boards
+// Joints: 8x30 dowels for the 2x2 frame, Slim 3.3x45 screws for the boards
+//
+// Structure:
+// - 4 legs at the corners
+// - Upper aprons flush with the leg tops
+// - Lower aprons with the shelf top surface 200mm above the floor
+// - Top: 1x4 boards running front-to-back
+// - Shelf: 1x4 boards running front-to-back, resting on the lower aprons
+
+// ============================================
+// Overall dimensions and derived sizes
+// ============================================
+WIDTH = 400
+DEPTH = 300
+HEIGHT = 700
+TOP_THICKNESS = 19
+LEG = HEIGHT - TOP_THICKNESS
+POST = 38
+BOARD_WIDTH = 89
+
+TOP_COUNT = 4
+TOP_GAP = (WIDTH - TOP_COUNT * BOARD_WIDTH) / (TOP_COUNT - 1)
+TOP_OFFSET_2 = (BOARD_WIDTH + TOP_GAP) - POST
+TOP_OFFSET_3 = 2 * (BOARD_WIDTH + TOP_GAP) - POST
+
+SHELF_HEIGHT = 200
+LOWER_APRON_BOTTOM = SHELF_HEIGHT - TOP_THICKNESS - POST
+LOWER_APRON_FROM_TOP = LEG - LOWER_APRON_BOTTOM - POST
+SHELF_COUNT = 3
+SHELF_INSIDE = WIDTH - 2 * POST
+SHELF_GAP = (SHELF_INSIDE - SHELF_COUNT * BOARD_WIDTH) / (SHELF_COUNT + 1)
+SHELF_OFFSET_1 = SHELF_GAP
+SHELF_OFFSET_2 = SHELF_GAP + (BOARD_WIDTH + SHELF_GAP)
+SHELF_OFFSET_3 = SHELF_GAP + 2 * (BOARD_WIDTH + SHELF_GAP)
+
+// Side aprons sit 12mm below the front/back aprons so the dowel holes at
+// the shared legs do not run into each other.
+SIDE_APRON_DROP = 12
+UPPER_SIDE_FROM_BOTTOM = LEG - POST - SIDE_APRON_DROP
+
+// ============================================
+// Legs (4x) - overall height minus the 19mm top boards
+// leg_fl: front-left, leg_fr: front-right
+// leg_bl: back-left, leg_br: back-right
+// ============================================
+(leg_fl:2x2 =LEG)
+(leg_fr:2x2 =LEG)
+(leg_bl:2x2 =LEG)
+(leg_br:2x2 =LEG)
+
+// ============================================
+// Upper aprons
+// Front/back are flush with the leg tops; left/right sit 12mm lower so
+// their dowels clear the front/back dowels in the 2x2 legs.
+// Front/back run between the legs' 38mm sides: WIDTH - 2*38 = 324mm
+// Left/right run between the legs' 38mm sides: DEPTH - 2*38 = 224mm
+// ============================================
+(apron_upper_front:2x2 =WIDTH - 2 * POST)
+(apron_upper_back:2x2 =WIDTH - 2 * POST)
+(apron_upper_left:2x2 =DEPTH - 2 * POST)
+(apron_upper_right:2x2 =DEPTH - 2 * POST)
+
+// ============================================
+// Lower aprons (shelf top surface 200mm above the floor)
+// The shelf boards are 19mm thick and the aprons 38mm deep:
+// apron bottom = 200 - 19 - 38 = 143mm above the floor
+// ============================================
+(apron_lower_front:2x2 =WIDTH - 2 * POST)
+(apron_lower_back:2x2 =WIDTH - 2 * POST)
+(apron_lower_left:2x2 =DEPTH - 2 * POST)
+(apron_lower_right:2x2 =DEPTH - 2 * POST)
+
+// ============================================
+// Top surface (1x4, depth direction)
+// 4 boards: 4*89 = 356mm, 3 gaps of (400 - 356) / 3 = 14.7mm
+// Board left sides: 0, 103.7, 207.3, 311mm
+// ============================================
+(top_1:1x4 =DEPTH)
+(top_2:1x4 =DEPTH)
+(top_3:1x4 =DEPTH)
+(top_4:1x4 =DEPTH)
+
+// ============================================
+// Shelf boards (1x4, depth direction, on the lower aprons)
+// Inside width: 400 - 2*38 = 324mm
+// 3 boards: 3*89 = 267mm, 4 gaps of (324 - 267) / 4 = 14.25mm
+// ============================================
+(shelf_1:1x4 =DEPTH)
+(shelf_2:1x4 =DEPTH)
+(shelf_3:1x4 =DEPTH)
+
+// ============================================
+// Upper apron connections (flush with the leg tops)
+// ============================================
+leg_fl -[LB>0 DB>0 D(:8x30)]- apron_upper_front
+leg_fr -[RF>0 TF>0 D(:8x30)]- apron_upper_front
+leg_bl -[LB>0 DB>0 D(:8x30)]- apron_upper_back
+leg_br -[RF>0 TF>0 D(:8x30)]- apron_upper_back
+
+leg_fl -[BR<UPPER_SIDE_FROM_BOTTOM DB<0 D(:8x30)]- apron_upper_left
+leg_bl -[FR<UPPER_SIDE_FROM_BOTTOM TB<0 D(:8x30)]- apron_upper_left
+leg_fr -[BL<UPPER_SIDE_FROM_BOTTOM DF<0 D(:8x30)]- apron_upper_right
+leg_br -[FL<UPPER_SIDE_FROM_BOTTOM TF<0 D(:8x30)]- apron_upper_right
+
+// ============================================
+// Lower apron connections (shelf top surface 200mm above the floor)
+// Front/back measured from the leg top: LEG - 143 - 38 = 500mm
+// Left/right measured from the leg bottom: 143mm
+// ============================================
+leg_fl -[LB>LOWER_APRON_FROM_TOP DB>0 D(:8x30)]- apron_lower_front
+leg_fr -[RF>LOWER_APRON_FROM_TOP TF>0 D(:8x30)]- apron_lower_front
+leg_bl -[LB>LOWER_APRON_FROM_TOP DB>0 D(:8x30)]- apron_lower_back
+leg_br -[RF>LOWER_APRON_FROM_TOP TF>0 D(:8x30)]- apron_lower_back
+
+leg_fl -[BR<(LOWER_APRON_BOTTOM - SIDE_APRON_DROP) DB<0 D(:8x30)]- apron_lower_left
+leg_bl -[FR<(LOWER_APRON_BOTTOM - SIDE_APRON_DROP) TB<0 D(:8x30)]- apron_lower_left
+leg_fr -[BL<(LOWER_APRON_BOTTOM - SIDE_APRON_DROP) DF<0 D(:8x30)]- apron_lower_right
+leg_br -[FL<(LOWER_APRON_BOTTOM - SIDE_APRON_DROP) TF<0 D(:8x30)]- apron_lower_right
+
+// ============================================
+// Top surface connections (screwed down through the boards)
+// Outer boards bear on the legs, inner boards on the upper front apron
+// ============================================
+leg_fr -[TF<0 BD<0 S(Slim:3.3x45)]- top_1
+apron_upper_front -[RF<TOP_OFFSET_2 BT<0 S(Slim:3.3x45)]- top_2
+apron_upper_front -[RF<TOP_OFFSET_3 BT<0 S(Slim:3.3x45)]- top_3
+leg_fl -[TF>0 BD>0 S(Slim:3.3x45)]- top_4
+
+// ============================================
+// Shelf connections (screwed down through the boards)
+// ============================================
+apron_lower_front -[RF<SHELF_OFFSET_1 BT<0 S(Slim:3.3x45)]- shelf_1
+apron_lower_front -[RF<SHELF_OFFSET_2 BT<0 S(Slim:3.3x45)]- shelf_2
+apron_lower_front -[RF<SHELF_OFFSET_3 BT<0 S(Slim:3.3x45)]- shelf_3
+
+// ============================================
+// Assembly: the side frames, the aprons joining them, the shelf, the top
+// ============================================
+steps {
+  "Left frame":  leg_fl, leg_bl, apron_upper_left, apron_lower_left
+  "Right frame": leg_fr, leg_br, apron_upper_right, apron_lower_right
+  "Join":        apron_upper_front, apron_upper_back, apron_lower_front, apron_lower_back
+  "Shelf":       shelf_1, shelf_2, shelf_3
+  "Top":         top_1, top_2, top_3, top_4
+}

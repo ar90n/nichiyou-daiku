@@ -1,0 +1,57 @@
+// Display Shelf (飾り棚)
+// Width: 450mm, Depth: 140mm, Height: 600mm
+// Material: 1x6 only
+// Joints: screws (Slim:3.3x30)
+//
+// Structure:
+// - 2 side posts (1x6, standing, full height)
+// - 3 shelf boards (1x6, bottom/middle/top), equally spaced
+//
+// Note: the posts' own width (140mm) equals the unit's depth, so with a
+// post declared first (its width fixed to the model's x axis), the model's
+// x/y come out as depth/width instead of width/depth. The geometry itself
+// (450 x 140 x 600) is correct; only the tool's axis labels are swapped.
+
+WIDTH = 450
+DEPTH = 140
+HEIGHT = 600
+THICK = 19          // 1x6 thickness
+
+// ============================================
+// Side posts: full height, standing
+// ============================================
+(side_l:1x6 =HEIGHT)
+(side_r:1x6 =HEIGHT)
+
+// ============================================
+// Shelf boards: span between the posts' inner faces
+// Length: 450 - 2*19 = 412
+// ============================================
+SHELF_LEN = WIDTH - 2 * THICK
+(shelf_bottom:1x6 =SHELF_LEN)
+(shelf_middle:1x6 =SHELF_LEN)
+(shelf_top:1x6 =SHELF_LEN)
+
+// ============================================
+// Equal spacing: 2 gaps between the 3 boards over the post length
+// Gap = (600 - 3*19) / 2 = 271.5
+// ============================================
+GAP = (HEIGHT - 3 * THICK) / 2
+H_MIDDLE = THICK + GAP     // underside of the middle shelf, above the floor
+
+// Bottom shelf: underside at the floor
+shelf_bottom -[DL<0 BL<0 S(Slim:3.3x30)]- side_l
+shelf_bottom -[TL<0 FL<0 S(Slim:3.3x30)]- side_r
+
+// Middle shelf: underside equally spaced between bottom and top shelves
+shelf_middle -[DL<0 BL<H_MIDDLE S(Slim:3.3x30)]- side_l
+shelf_middle -[TL<0 FL<H_MIDDLE S(Slim:3.3x30)]- side_r
+
+// Top shelf: flush with the post tops
+shelf_top -[DL<0 BL>THICK S(Slim:3.3x30)]- side_l
+shelf_top -[TL<0 FL>THICK S(Slim:3.3x30)]- side_r
+
+steps {
+  "Left post and shelves": side_l, shelf_bottom, shelf_middle, shelf_top
+  "Right post": side_r
+}

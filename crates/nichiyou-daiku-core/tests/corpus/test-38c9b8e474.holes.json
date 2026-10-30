@@ -1,0 +1,1 @@
+{"pieces": {"a": [{"face": "left", "center": [0.0, 19.0, 81.0], "diameter": 10.0, "depth": 15.0}], "b": [{"face": "top", "center": [19.0, 19.0, 300.0], "diameter": 10.0, "depth": 15.0}]}, "fasteners": [{"base": "a", "target": "b", "kind": "dowel", "diameter": 10.0, "count": 1}]}

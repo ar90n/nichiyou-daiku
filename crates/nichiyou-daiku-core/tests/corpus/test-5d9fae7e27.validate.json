@@ -1,0 +1,1 @@
+{"valid": false, "error": {"kind": "validation", "message": "line 3, column 1: An unknown offset (None; ? in the DSL) lets the pieces slide along the shared edge, so use it on both anchors of a connection or on neither", "line": 3, "column": 1}, "overall_size": null, "size_reference": null, "pieces": [], "problems": []}

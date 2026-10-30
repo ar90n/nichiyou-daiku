@@ -1,0 +1,14 @@
+
+        (leg1:2x4 =720)
+        (leg2:2x4 =720)
+        (leg3:2x4 =720)
+        (leg4:2x4 =720)
+        
+        (apron_front:2x4 =600)
+        (apron_back:2x4 =600)
+        
+        leg1 -[LB>0 DB>0]- apron_front
+        leg2 -[RF>0 TF>0]- apron_front
+        leg3 -[LB>0 DB>0]- apron_back
+        leg4 -[RF>0 TF>0]- apron_back
+        

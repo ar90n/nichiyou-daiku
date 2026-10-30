@@ -1,0 +1,134 @@
+// Low Table / Coffee Table
+// Overall: 900mm (W) x 450mm (D) x 400mm (H)
+// Legs: 2x4, top: six 1x6 boards running front-to-back, lower shelf: five 1x6 boards
+// Frame: 8x30 dowels; top and shelf boards: Slim 3.3x45 screws
+// Lower shelf underside is 100mm above the floor.
+
+WIDTH = 900
+DEPTH = 450
+HEIGHT = 400
+TOP_THICK = 19
+LEG_WIDTH = 89
+LEG_THICK = 38
+
+// Legs: height minus the 19mm top boards
+LEG_LEN = HEIGHT - TOP_THICK
+// Front/back aprons run between the legs' 89mm wide sides
+APRON_LEN = WIDTH - 2 * LEG_WIDTH
+// Side aprons run between the legs' 38mm thick sides
+SIDE_APRON_LEN = DEPTH - 2 * LEG_THICK
+// Top boards run front-to-back; 6 x 140 = 840, gap = (900 - 840) / 5
+TOP_COUNT = 6
+TOP_BOARD_WIDTH = 140
+TOP_GAP = (WIDTH - TOP_COUNT * TOP_BOARD_WIDTH) / (TOP_COUNT - 1)
+// Shelf underside at 100mm: the lower rails are 89mm tall and their tops are at 100mm
+SHELF_UNDERSIDE = 100
+LOWER_RAIL_BOTTOM = SHELF_UNDERSIDE - 89
+LOWER_RAIL_FROM_TOP = LEG_LEN - SHELF_UNDERSIDE
+SHELF_INSIDE = WIDTH - 2 * LEG_WIDTH
+SHELF_COUNT = 5
+SHELF_GAP = (SHELF_INSIDE - SHELF_COUNT * TOP_BOARD_WIDTH) / (SHELF_COUNT + 1)
+
+// ============================================
+// Legs (4x) - 400mm height minus the 19mm top boards
+// ============================================
+(leg_fl:2x4 =LEG_LEN)
+(leg_fr:2x4 =LEG_LEN)
+(leg_bl:2x4 =LEG_LEN)
+(leg_br:2x4 =LEG_LEN)
+
+// ============================================
+// Upper Aprons - flush with the leg tops
+// ============================================
+(apron_front:2x4 =APRON_LEN)
+(apron_back:2x4 =APRON_LEN)
+(apron_left:2x4 =SIDE_APRON_LEN)
+(apron_right:2x4 =SIDE_APRON_LEN)
+
+// ============================================
+// Lower Aprons - tops at 100mm for the lower shelf
+// ============================================
+(apron_lower_front:2x4 =APRON_LEN)
+(apron_lower_back:2x4 =APRON_LEN)
+(apron_lower_left:2x4 =SIDE_APRON_LEN)
+(apron_lower_right:2x4 =SIDE_APRON_LEN)
+
+// ============================================
+// Top boards (1x6, front-to-back)
+// ============================================
+(top_1:1x6 =DEPTH)
+(top_2:1x6 =DEPTH)
+(top_3:1x6 =DEPTH)
+(top_4:1x6 =DEPTH)
+(top_5:1x6 =DEPTH)
+(top_6:1x6 =DEPTH)
+
+// ============================================
+// Lower shelf boards (1x6, front-to-back)
+// ============================================
+(shelf_1:1x6 =DEPTH)
+(shelf_2:1x6 =DEPTH)
+(shelf_3:1x6 =DEPTH)
+(shelf_4:1x6 =DEPTH)
+(shelf_5:1x6 =DEPTH)
+
+// ============================================
+// Upper frame connections (8x30 dowels)
+// ============================================
+leg_fl -[LB>0 DB>0 D(:8x30)]- apron_front
+leg_fr -[RF>0 TF>0 D(:8x30)]- apron_front
+leg_bl -[LB>0 DB>0 D(:8x30)]- apron_back
+leg_br -[RF>0 TF>0 D(:8x30)]- apron_back
+
+leg_fl -[BR>0 DB>0 D(:8x30)]- apron_left
+leg_bl -[FR>0 TB>0 D(:8x30)]- apron_left
+leg_fr -[BL>0 DF>0 D(:8x30)]- apron_right
+leg_br -[FL>0 TF>0 D(:8x30)]- apron_right
+
+// ============================================
+// Lower frame connections (8x30 dowels)
+// Front/back rail tops at 100mm: 381 - 100 = 281mm below the leg top
+// Side rails: their bottom is 11mm above the floor
+// ============================================
+leg_fl -[LB>LOWER_RAIL_FROM_TOP DB>0 D(:8x30)]- apron_lower_front
+leg_fr -[RF>LOWER_RAIL_FROM_TOP TF>0 D(:8x30)]- apron_lower_front
+leg_bl -[LB>LOWER_RAIL_FROM_TOP DB>0 D(:8x30)]- apron_lower_back
+leg_br -[RF>LOWER_RAIL_FROM_TOP TF>0 D(:8x30)]- apron_lower_back
+
+leg_fl -[BR<LOWER_RAIL_BOTTOM DB<0 D(:8x30)]- apron_lower_left
+leg_bl -[FR<LOWER_RAIL_BOTTOM TB<0 D(:8x30)]- apron_lower_left
+leg_fr -[BL<LOWER_RAIL_BOTTOM DF<0 D(:8x30)]- apron_lower_right
+leg_br -[FL<LOWER_RAIL_BOTTOM TF<0 D(:8x30)]- apron_lower_right
+
+// ============================================
+// Top boards (screwed down through the boards)
+// Outer boards sit over the front legs; inner boards over the front apron
+// Inner offsets from the apron end at leg_fl: 63, 215, 367, 519
+// ============================================
+leg_fr -[TF<0 BD<0 S(Slim:3.3x45)]- top_1
+apron_front -[RF<519 BT<0 S(Slim:3.3x45)]- top_2
+apron_front -[RF<367 BT<0 S(Slim:3.3x45)]- top_3
+apron_front -[RF<215 BT<0 S(Slim:3.3x45)]- top_4
+apron_front -[RF<63 BT<0 S(Slim:3.3x45)]- top_5
+leg_fl -[TF>0 BD>0 S(Slim:3.3x45)]- top_6
+
+// ============================================
+// Lower shelf boards (screwed to the lower front rail)
+// Offsets from the rail end at leg_fl: 3.67, 147.33, 291, 434.67, 578.33
+// ============================================
+apron_lower_front -[RF<578.33 BT<0 S(Slim:3.3x45)]- shelf_1
+apron_lower_front -[RF<434.67 BT<0 S(Slim:3.3x45)]- shelf_2
+apron_lower_front -[RF<291 BT<0 S(Slim:3.3x45)]- shelf_3
+apron_lower_front -[RF<147.33 BT<0 S(Slim:3.3x45)]- shelf_4
+apron_lower_front -[RF<3.67 BT<0 S(Slim:3.3x45)]- shelf_5
+
+// ============================================
+// Assembly: side frames, rails joining them, shelf, top
+// ============================================
+steps {
+  "Left frame":  leg_fl, leg_bl, apron_left, apron_lower_left
+  "Right frame": leg_fr, leg_br, apron_right, apron_lower_right
+  "Join":        apron_front, apron_back, apron_lower_front, apron_lower_back
+  "Shelf":       shelf_1, shelf_2, shelf_3, shelf_4, shelf_5
+  "Top":         top_1, top_2, top_3, top_4, top_5, top_6
+}

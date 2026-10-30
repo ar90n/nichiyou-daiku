@@ -1,0 +1,86 @@
+// 1x8 Bookshelf
+// Overall: width 600 x depth 184 x height 900 mm
+// Material: 1x8 only (184 x 19 mm)
+// Shelves: 4 boards including the top and bottom, with equal clear openings
+// Joints: Slim 3.8x65 screws for the shelves, Slim 3.3x30 screws for the back stiffener
+//
+// The side panels carry the shelves between them. The narrow back stiffener
+// between the bottom and second shelves sets the axes (width along X, depth
+// along Y, height along Z) and stiffens the back.
+
+// ============================================
+// Overall dimensions and derived values
+// ============================================
+WIDTH = 600
+DEPTH = 184
+HEIGHT = 900
+SIDE_T = 19
+SHELF_T = 19
+
+// Shelves sit between the two side panels
+SHELF_LEN = WIDTH - 2 * SIDE_T
+
+// Four shelves leave three equal clear openings:
+// HEIGHT - 4 * SHELF_T divided by 3
+GAP = (HEIGHT - 4 * SHELF_T) / 3
+
+// Underside height of each shelf (the bottom one flush at the floor,
+// the top one flush with the top of the side panels)
+S1 = 0
+S2 = SHELF_T + GAP
+S3 = 2 * SHELF_T + 2 * GAP
+S4 = 3 * SHELF_T + 3 * GAP
+
+// Screw centres are in the middle of each shelf thickness
+O1 = S1 + SHELF_T / 2
+O2 = S2 + SHELF_T / 2
+O3 = S3 + SHELF_T / 2
+O4 = S4 + SHELF_T / 2
+
+// The 184mm-wide back stiffener is centred across the width
+BATTEN_OFF = (WIDTH - DEPTH) / 2 - SIDE_T
+
+// ============================================
+// Pieces
+// ============================================
+(back_batten:1x8 =GAP)
+(side_left:1x8 =HEIGHT)
+(side_right:1x8 =HEIGHT)
+(shelf_1:1x8 =SHELF_LEN)
+(shelf_2:1x8 =SHELF_LEN)
+(shelf_3:1x8 =SHELF_LEN)
+(shelf_4:1x8 =SHELF_LEN)
+
+// ============================================
+// Back stiffener: between shelf_1 and shelf_2 at the back
+// ============================================
+back_batten -[DB<0> FL<BATTEN_OFF> S(Slim:3.3x30)]- shelf_1
+back_batten -[TB<0> BL<BATTEN_OFF> S(Slim:3.3x30)]- shelf_2
+
+// ============================================
+// Shelves into the side panels
+// The screw centres O1..O4 put the shelf undersides at S1..S4.
+// ============================================
+shelf_1 -[DL<9.5> FL<O1> S(Slim:3.8x65)]- side_left
+shelf_1 -[TL<9.5> FL<O1> S(Slim:3.8x65)]- side_right
+
+shelf_2 -[DL<9.5> FL<O2> S(Slim:3.8x65)]- side_left
+shelf_2 -[TL<9.5> FL<O2> S(Slim:3.8x65)]- side_right
+
+shelf_3 -[DL<9.5> FL<O3> S(Slim:3.8x65)]- side_left
+shelf_3 -[TL<9.5> FL<O3> S(Slim:3.8x65)]- side_right
+
+shelf_4 -[DL<9.5> FL<O4> S(Slim:3.8x65)]- side_left
+shelf_4 -[TL<9.5> FL<O4> S(Slim:3.8x65)]- side_right
+
+// ============================================
+// Assembly
+// ============================================
+steps {
+  "Back stiffener and bottom shelf": back_batten, shelf_1
+  "Left side":                        side_left
+  "Right side":                       side_right
+  "Second shelf":                     shelf_2
+  "Third shelf":                      shelf_3
+  "Top shelf":                        shelf_4
+}

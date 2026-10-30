@@ -1,0 +1,89 @@
+// Plant stand (hanadai): 400 (W) x 300 (D) x 700 (H)
+// 2x4 legs... no: 2x2 frame, 1x4 top boards and shelf boards.
+// Shelf surface 200mm above the floor.
+// Chosen defaults: 8x30 dowels for the front/back aprons,
+// Slim 3.3x45 screws for the 1x4 boards, glued side aprons
+// (2x2 legs are square, so front/back and side dowel holes
+// would collide in the inner corner of each leg).
+
+WIDTH = 400
+DEPTH = 300
+HEIGHT = 700
+SHELF_H = 200                        // shelf surface height above the floor
+LEG = 38                             // 2x2 cross-section
+TOP_T = 19                           // 1x4 thickness
+
+// Top boards: 4 x 89 wide with 3 gaps
+TOP_G = (WIDTH - 4 * 89) / 3
+// Shelf boards: 3 x 89 wide with 4 gaps across the lower apron
+SHELF_G = (WIDTH - 2 * LEG - 3 * 89) / 4
+
+// Legs: 700 - 19 (1x4 top) = 681
+(leg_fl:2x2 =HEIGHT - TOP_T)
+(leg_fr:2x2 =HEIGHT - TOP_T)
+(leg_bl:2x2 =HEIGHT - TOP_T)
+(leg_br:2x2 =HEIGHT - TOP_T)
+
+// Upper aprons, flush with the leg tops
+(apron_front:2x2 =WIDTH - 2 * LEG)
+(apron_back:2x2 =WIDTH - 2 * LEG)
+(apron_left:2x2 =DEPTH - 2 * LEG)
+(apron_right:2x2 =DEPTH - 2 * LEG)
+
+// Lower aprons under the shelf boards
+(lower_front:2x2 =WIDTH - 2 * LEG)
+(lower_back:2x2 =WIDTH - 2 * LEG)
+(lower_left:2x2 =DEPTH - 2 * LEG)
+(lower_right:2x2 =DEPTH - 2 * LEG)
+
+// Top boards (run front to back, length = DEPTH)
+(top_1:1x4 =DEPTH)
+(top_2:1x4 =DEPTH)
+(top_3:1x4 =DEPTH)
+(top_4:1x4 =DEPTH)
+
+// Shelf boards (run front to back, length = DEPTH)
+(shelf_1:1x4 =DEPTH)
+(shelf_2:1x4 =DEPTH)
+(shelf_3:1x4 =DEPTH)
+
+// Upper frame: end into the legs' inner faces, flush with the leg tops
+leg_fl -[LB>0 DB>0 D(:8x30)]- apron_front
+leg_fr -[RF>0 TF>0 D(:8x30)]- apron_front
+leg_bl -[LB>0 DB>0 D(:8x30)]- apron_back
+leg_br -[RF>0 TF>0 D(:8x30)]- apron_back
+
+leg_fl -[BR>0 DB>0]- apron_left
+leg_bl -[FR>0 TB>0]- apron_left
+leg_fr -[BL>0 DF>0]- apron_right
+leg_br -[FL>0 TF>0]- apron_right
+
+// Lower frame: apron tops at HEIGHT - SHELF_H = 181 (shelf surface at 200)
+leg_fl -[LB>(HEIGHT - SHELF_H) DB>0 D(:8x30)]- lower_front
+leg_fr -[RF>(HEIGHT - SHELF_H) TF>0 D(:8x30)]- lower_front
+leg_bl -[LB>(HEIGHT - SHELF_H) DB>0 D(:8x30)]- lower_back
+leg_br -[RF>(HEIGHT - SHELF_H) TF>0 D(:8x30)]- lower_back
+
+leg_fl -[BR>(HEIGHT - SHELF_H) DB>0]- lower_left
+leg_bl -[FR>(HEIGHT - SHELF_H) TB>0]- lower_left
+leg_fr -[BL>(HEIGHT - SHELF_H) DF>0]- lower_right
+leg_br -[FL>(HEIGHT - SHELF_H) TF>0]- lower_right
+
+// Shelf boards rest on the lower front apron
+lower_front -[RF<SHELF_G BT<0 S(Slim:3.3x45)]- shelf_1
+lower_front -[RF<(2 * SHELF_G + 89) BT<0 S(Slim:3.3x45)]- shelf_2
+lower_front -[RF<(3 * SHELF_G + 2 * 89) BT<0 S(Slim:3.3x45)]- shelf_3
+
+// Top boards: the outer boards rest on the leg tops, inner boards on apron_front
+leg_fl -[TF>0 BD>0 S(Slim:3.3x45)]- top_1
+apron_front -[RF<(89 + TOP_G - LEG) BT<0 S(Slim:3.3x45)]- top_2
+apron_front -[RF<(2 * (89 + TOP_G) - LEG) BT<0 S(Slim:3.3x45)]- top_3
+leg_fr -[TF<0 BD<0 S(Slim:3.3x45)]- top_4
+
+steps {
+  "Left side frame": leg_fl, leg_bl, apron_left, lower_left
+  "Right side frame": leg_fr, leg_br, apron_right, lower_right
+  "Lower aprons and shelf boards": lower_front, lower_back, shelf_1, shelf_2, shelf_3
+  "Front and back top aprons": apron_front, apron_back
+  "Top boards": top_1, top_2, top_3, top_4
+}

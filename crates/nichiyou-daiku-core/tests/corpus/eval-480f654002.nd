@@ -1,0 +1,96 @@
+// Desk
+// Dimensions: 1000mm (W) x 500mm (D) x 700mm (H)
+// Legs: 4x 2x4. Top: 7x 1x6 boards running front to back, laid across the width.
+// Aprons under the top. All joints screwed.
+
+WIDTH = 1000
+DEPTH = 500
+HEIGHT = 700
+
+LEG_WIDTH = 89
+LEG_THICKNESS = 38
+APRON_HEIGHT = 89
+TOP_THICKNESS = 19
+
+LEG_LENGTH = HEIGHT - TOP_THICKNESS
+
+TOP_BOARD_WIDTH = 140
+TOP_COUNT = 7
+TOP_GAP = (WIDTH - TOP_COUNT * TOP_BOARD_WIDTH) / (TOP_COUNT - 1)
+TOP_PITCH = TOP_BOARD_WIDTH + TOP_GAP
+
+// Front and back aprons run the full width, on the outside faces of the legs.
+// Side aprons fit between the front and back legs.
+SIDE_APRON_LENGTH = DEPTH - 4 * LEG_THICKNESS
+
+// ============================================
+// Legs
+// ============================================
+(leg_fl:2x4 =LEG_LENGTH)
+(leg_fr:2x4 =LEG_LENGTH)
+(leg_bl:2x4 =LEG_LENGTH)
+(leg_br:2x4 =LEG_LENGTH)
+
+// ============================================
+// Aprons
+// ============================================
+(apron_front:2x4 =WIDTH)
+(apron_back:2x4 =WIDTH)
+(apron_left:2x4 =SIDE_APRON_LENGTH)
+(apron_right:2x4 =SIDE_APRON_LENGTH)
+
+// ============================================
+// Top boards: 7 x 140 = 980, gaps 20 / 6 = 3.33mm
+// ============================================
+(top_1:1x6 =DEPTH)
+(top_2:1x6 =DEPTH)
+(top_3:1x6 =DEPTH)
+(top_4:1x6 =DEPTH)
+(top_5:1x6 =DEPTH)
+(top_6:1x6 =DEPTH)
+(top_7:1x6 =DEPTH)
+
+// ============================================
+// Front/back aprons: screwed through the apron into the leg.
+// The apron's top edge is flush with the leg top.
+// ============================================
+leg_fl -[FT<0 BL<0 S(Slim:3.8x65)]- apron_front
+leg_fr -[FT>0 BL>0 S(Slim:3.8x65)]- apron_front
+leg_bl -[BT<0 FL<0 S(Slim:3.8x65)]- apron_back
+leg_br -[BT>0 FL>0 S(Slim:3.8x65)]- apron_back
+
+// ============================================
+// Side aprons: ends screwed into the legs, top edges flush.
+// ============================================
+apron_left -[TB>0 BL>0 S(Slim:3.8x65)]- leg_fl
+apron_left -[DB>0 FL>0 S(Slim:3.8x65)]- leg_bl
+apron_right -[TF>0 BR>0 S(Slim:3.8x65)]- leg_fr
+apron_right -[DF>0 FR>0 S(Slim:3.8x65)]- leg_br
+
+// ============================================
+// Top boards: screwed down to the front apron.
+// The anchor sits on the board edge: offset = board right edge from the left.
+// ============================================
+apron_front -[LF<(1 * TOP_PITCH - TOP_GAP) BT<0 S(Slim:3.3x45)]- top_1
+apron_front -[LF<(2 * TOP_PITCH - TOP_GAP) BT<0 S(Slim:3.3x45)]- top_2
+apron_front -[LF<(3 * TOP_PITCH - TOP_GAP) BT<0 S(Slim:3.3x45)]- top_3
+apron_front -[LF<(4 * TOP_PITCH - TOP_GAP) BT<0 S(Slim:3.3x45)]- top_4
+apron_front -[LF<(5 * TOP_PITCH - TOP_GAP) BT<0 S(Slim:3.3x45)]- top_5
+apron_front -[LF<(6 * TOP_PITCH - TOP_GAP) BT<0 S(Slim:3.3x45)]- top_6
+apron_front -[LF<(7 * TOP_PITCH - TOP_GAP) BT<0 S(Slim:3.3x45)]- top_7
+
+// Top boards: screwed down to the back apron as well (sliding offset).
+apron_back -[LB? BD? S(Slim:3.3x45)]- top_1
+apron_back -[LB? BD? S(Slim:3.3x45)]- top_2
+apron_back -[LB? BD? S(Slim:3.3x45)]- top_3
+apron_back -[LB? BD? S(Slim:3.3x45)]- top_4
+apron_back -[LB? BD? S(Slim:3.3x45)]- top_5
+apron_back -[LB? BD? S(Slim:3.3x45)]- top_6
+apron_back -[LB? BD? S(Slim:3.3x45)]- top_7
+
+steps {
+  "Front apron and legs": leg_fl, leg_fr, apron_front
+  "Back apron and legs":  leg_bl, leg_br, apron_back
+  "Side aprons":          apron_left, apron_right
+  "Top boards":           top_1, top_2, top_3, top_4, top_5, top_6, top_7
+}

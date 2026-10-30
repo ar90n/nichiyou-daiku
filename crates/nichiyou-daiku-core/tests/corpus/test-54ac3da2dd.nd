@@ -1,0 +1,7 @@
+
+        (beam1:2x4 {"length": 1000})
+        (beam2:2x4 {"length": 800})
+        beam1 -[{"contact_face": "front", "edge_shared_face": "top", "offset": FromMin(0)}
+                {"contact_face": "back", "edge_shared_face": "top", "offset": FromMin(0)}
+                {"type": "screw", "diameter": 3.5, "length": 50.0}]- beam2
+        

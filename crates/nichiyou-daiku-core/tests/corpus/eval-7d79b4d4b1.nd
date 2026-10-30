@@ -1,0 +1,3 @@
+(leg_fl:2x4 =681)
+(apron_left:2x4 =500)
+leg_fl -[LT<0 BR>424 S(Slim:3.8x65)]- apron_left

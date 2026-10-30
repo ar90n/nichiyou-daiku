@@ -1,0 +1,183 @@
+// TV Stand
+// Overall: 1200mm (W) x 350mm (D) x 400mm (H)
+// Top and middle shelf: 2x6
+// Legs: 6 x 2x4 (corner pairs plus a centre pair)
+// Frame: 2x4 rails, 8x30 dowels; boards: Slim 3.8x65 screws
+
+// --------------------------------------------
+// Overall dimensions and derived sizes
+// --------------------------------------------
+WIDTH = 1200
+DEPTH = 350
+HEIGHT = 400
+BOARD_THICK = 38
+LEG_W = 89
+LEG_T = 38
+RAIL_H = 89
+
+LEG_LEN = HEIGHT - BOARD_THICK
+RAIL_SEG = (WIDTH - 3 * LEG_W) / 2
+SIDE_RAIL_LEN = DEPTH - 2 * LEG_T
+MID_LEG_LEFT = (WIDTH - LEG_W) / 2
+RIGHT_RAIL_START = MID_LEG_LEFT + LEG_W
+
+// Middle shelf underside 150mm above the floor
+SHELF_UNDER = 150
+LOWER_POINT_FROM_TOP = LEG_LEN - SHELF_UNDER
+UPPER_SIDE_POINT_FROM_BOTTOM = LEG_LEN - RAIL_H
+
+// Top: eight 2x6 boards running front to back
+TOP_BOARD_W = 140
+TOP_GAP = (WIDTH - 8 * TOP_BOARD_W) / 7
+TOP_PITCH = TOP_BOARD_W + TOP_GAP
+BOARD_INSET = 20
+
+// Shelf: three 2x6 boards in each 466.5mm bay
+SHELF_GAP = (RAIL_SEG - 3 * TOP_BOARD_W) / 4
+SHELF_PITCH = TOP_BOARD_W + SHELF_GAP
+
+// Screw positions on top boards
+TOP1_BASE = LEG_W / 2
+TOP1_TARGET = TOP_BOARD_W - LEG_W / 2
+TOP2_BASE = TOP_PITCH + BOARD_INSET - LEG_W
+TOP3_BASE = 2 * TOP_PITCH + BOARD_INSET - LEG_W
+TOP4_BASE = 3 * TOP_PITCH + BOARD_INSET - LEG_W
+TOP5_TARGET = 50
+TOP5_BASE = MID_LEG_LEFT - (4 * TOP_PITCH - TOP_GAP) + TOP5_TARGET
+TOP6_BASE = 5 * TOP_PITCH + BOARD_INSET - RIGHT_RAIL_START
+TOP7_BASE = 6 * TOP_PITCH + BOARD_INSET - RIGHT_RAIL_START
+TOP8_BASE = LEG_W / 2
+TOP8_TARGET = LEG_W / 2
+
+// Screw positions on shelf boards
+SHELF1_BASE = SHELF_GAP + BOARD_INSET
+SHELF2_BASE = SHELF_GAP + SHELF_PITCH + BOARD_INSET
+SHELF3_BASE = SHELF_GAP + 2 * SHELF_PITCH + BOARD_INSET
+
+// --------------------------------------------
+// Legs (6)
+// --------------------------------------------
+(leg_fl:2x4 =LEG_LEN)
+(leg_fc:2x4 =LEG_LEN)
+(leg_fr:2x4 =LEG_LEN)
+(leg_bl:2x4 =LEG_LEN)
+(leg_bc:2x4 =LEG_LEN)
+(leg_br:2x4 =LEG_LEN)
+
+// --------------------------------------------
+// Upper rails, flush with the leg tops
+// Front/back rails are split at the centre legs
+// --------------------------------------------
+(rail_upper_front_left:2x4 =RAIL_SEG)
+(rail_upper_front_right:2x4 =RAIL_SEG)
+(rail_upper_back_left:2x4 =RAIL_SEG)
+(rail_upper_back_right:2x4 =RAIL_SEG)
+(rail_upper_left:2x4 =SIDE_RAIL_LEN)
+(rail_upper_right:2x4 =SIDE_RAIL_LEN)
+(rail_upper_center:2x4 =SIDE_RAIL_LEN)
+
+// --------------------------------------------
+// Lower rails, top edges at the shelf underside
+// --------------------------------------------
+(rail_lower_front_left:2x4 =RAIL_SEG)
+(rail_lower_front_right:2x4 =RAIL_SEG)
+(rail_lower_back_left:2x4 =RAIL_SEG)
+(rail_lower_back_right:2x4 =RAIL_SEG)
+
+// --------------------------------------------
+// Top boards (2x6, front to back)
+// --------------------------------------------
+(top_1:2x6 =DEPTH)
+(top_2:2x6 =DEPTH)
+(top_3:2x6 =DEPTH)
+(top_4:2x6 =DEPTH)
+(top_5:2x6 =DEPTH)
+(top_6:2x6 =DEPTH)
+(top_7:2x6 =DEPTH)
+(top_8:2x6 =DEPTH)
+
+// --------------------------------------------
+// Middle shelf boards (2x6, front to back)
+// Left and right bays, split by the centre legs
+// --------------------------------------------
+(shelf_l1:2x6 =DEPTH)
+(shelf_l2:2x6 =DEPTH)
+(shelf_l3:2x6 =DEPTH)
+(shelf_r1:2x6 =DEPTH)
+(shelf_r2:2x6 =DEPTH)
+(shelf_r3:2x6 =DEPTH)
+
+// --------------------------------------------
+// Upper rail connections (dowels 8x30)
+// --------------------------------------------
+leg_fl -[LB>0 DB>0 D(:8x30)]- rail_upper_front_left
+leg_fc -[RF>0 TF>0 D(:8x30)]- rail_upper_front_left
+
+leg_fc -[LB>0 DB>0 D(:8x30)]- rail_upper_front_right
+leg_fr -[RF>0 TF>0 D(:8x30)]- rail_upper_front_right
+
+leg_bl -[LB>0 DB>0 D(:8x30)]- rail_upper_back_left
+leg_bc -[RF>0 TF>0 D(:8x30)]- rail_upper_back_left
+
+leg_bc -[LB>0 DB>0 D(:8x30)]- rail_upper_back_right
+leg_br -[RF>0 TF>0 D(:8x30)]- rail_upper_back_right
+
+leg_fl -[BR<UPPER_SIDE_POINT_FROM_BOTTOM DB<0 D(:8x30)]- rail_upper_left
+leg_bl -[FR<UPPER_SIDE_POINT_FROM_BOTTOM TB<0 D(:8x30)]- rail_upper_left
+
+leg_fr -[BL<UPPER_SIDE_POINT_FROM_BOTTOM DF<0 D(:8x30)]- rail_upper_right
+leg_br -[FL<UPPER_SIDE_POINT_FROM_BOTTOM TF<0 D(:8x30)]- rail_upper_right
+
+leg_fc -[BR<UPPER_SIDE_POINT_FROM_BOTTOM DB<0 D(:8x30)]- rail_upper_center
+leg_bc -[FR<UPPER_SIDE_POINT_FROM_BOTTOM TB<0 D(:8x30)]- rail_upper_center
+
+// --------------------------------------------
+// Lower rail connections (dowels 8x30)
+// Top edge 150mm above the floor
+// --------------------------------------------
+leg_fl -[LB>LOWER_POINT_FROM_TOP DB>0 D(:8x30)]- rail_lower_front_left
+leg_fc -[RF>LOWER_POINT_FROM_TOP TF>0 D(:8x30)]- rail_lower_front_left
+
+leg_fc -[LB>LOWER_POINT_FROM_TOP DB>0 D(:8x30)]- rail_lower_front_right
+leg_fr -[RF>LOWER_POINT_FROM_TOP TF>0 D(:8x30)]- rail_lower_front_right
+
+leg_bl -[LB>LOWER_POINT_FROM_TOP DB>0 D(:8x30)]- rail_lower_back_left
+leg_bc -[RF>LOWER_POINT_FROM_TOP TF>0 D(:8x30)]- rail_lower_back_left
+
+leg_bc -[LB>LOWER_POINT_FROM_TOP DB>0 D(:8x30)]- rail_lower_back_right
+leg_br -[RF>LOWER_POINT_FROM_TOP TF>0 D(:8x30)]- rail_lower_back_right
+
+// --------------------------------------------
+// Top board connections (Slim 3.8x65 screws)
+// --------------------------------------------
+leg_fl -[TF<TOP1_BASE BD<TOP1_TARGET S(Slim:3.8x65)]- top_1
+rail_upper_front_left -[RF<TOP2_BASE BT<BOARD_INSET S(Slim:3.8x65)]- top_2
+rail_upper_front_left -[RF<TOP3_BASE BT<BOARD_INSET S(Slim:3.8x65)]- top_3
+rail_upper_front_left -[RF<TOP4_BASE BT<BOARD_INSET S(Slim:3.8x65)]- top_4
+rail_upper_front_right -[RF<TOP5_BASE BT<TOP5_TARGET S(Slim:3.8x65)]- top_5
+rail_upper_front_right -[RF<TOP6_BASE BT<BOARD_INSET S(Slim:3.8x65)]- top_6
+rail_upper_front_right -[RF<TOP7_BASE BT<BOARD_INSET S(Slim:3.8x65)]- top_7
+leg_fr -[TF<TOP8_BASE BD<TOP8_TARGET S(Slim:3.8x65)]- top_8
+
+// --------------------------------------------
+// Shelf board connections (Slim 3.8x65 screws)
+// --------------------------------------------
+rail_lower_front_left -[RF<SHELF1_BASE BT<BOARD_INSET S(Slim:3.8x65)]- shelf_l1
+rail_lower_front_left -[RF<SHELF2_BASE BT<BOARD_INSET S(Slim:3.8x65)]- shelf_l2
+rail_lower_front_left -[RF<SHELF3_BASE BT<BOARD_INSET S(Slim:3.8x65)]- shelf_l3
+
+rail_lower_front_right -[RF<SHELF1_BASE BT<BOARD_INSET S(Slim:3.8x65)]- shelf_r1
+rail_lower_front_right -[RF<SHELF2_BASE BT<BOARD_INSET S(Slim:3.8x65)]- shelf_r2
+rail_lower_front_right -[RF<SHELF3_BASE BT<BOARD_INSET S(Slim:3.8x65)]- shelf_r3
+
+// --------------------------------------------
+// Assembly order
+// --------------------------------------------
+steps {
+  "Left frame":   leg_fl, leg_bl, rail_upper_left
+  "Right frame":  leg_fr, leg_br, rail_upper_right
+  "Centre frame": leg_fc, leg_bc, rail_upper_center
+  "Join frames":  rail_upper_front_left, rail_upper_front_right, rail_upper_back_left, rail_upper_back_right, rail_lower_front_left, rail_lower_front_right, rail_lower_back_left, rail_lower_back_right
+  "Shelf":        shelf_l1, shelf_l2, shelf_l3, shelf_r1, shelf_r2, shelf_r3
+  "Top":          top_1, top_2, top_3, top_4, top_5, top_6, top_7, top_8
+}

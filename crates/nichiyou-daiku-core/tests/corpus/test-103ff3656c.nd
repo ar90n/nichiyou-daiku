@@ -1,0 +1,5 @@
+
+        (beam1:2x4 {"length": 1000})
+        (beam2:2x4 {"length": 800})
+        beam1 -[TF<12.5 BD>37.8]- beam2
+        

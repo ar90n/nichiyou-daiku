@@ -1,0 +1,45 @@
+// Bookshelf (1x8 material only)
+// Overall: Width 600 x Depth 184 x Height 900
+// Material: all 1x8 (19 x 184 mm)
+// Structure: two side panels + 4 shelves (bottom, 2 middle, top), evenly spaced
+// Joints: Slim 3.3x45 screws driven through the side panels into the shelf ends
+
+WIDTH = 600                                 // overall width
+DEPTH = 184                                 // overall depth (= 1x8 board width)
+HEIGHT = 900                                // overall height
+LT = 19                                     // 1x8 board thickness
+SPAN = WIDTH - 2 * LT                       // shelf length between the sides: 562
+NUM_SHELVES = 4
+SLOT = (HEIGHT - LT) / (NUM_SHELVES - 1)    // spacing between shelf undersides: 293.67
+
+// Side panels (upright; board width 184 faces front/back = the furniture depth)
+(side_l:1x8 =HEIGHT)
+(side_r:1x8 =HEIGHT)
+
+// Shelves (lying flat; board width 184 spans the depth)
+// shelf_1 = bottom, shelf_4 = top
+(shelf_1:1x8 =SPAN)
+(shelf_2:1x8 =SPAN)
+(shelf_3:1x8 =SPAN)
+(shelf_4:1x8 =SPAN)
+
+// Shelf ends butt against the sides' wide faces; one screw per end
+// shelf_1: underside on the floor
+shelf_1 -[DL<0 BL<0 S(Slim:3.3x45)]- side_l
+shelf_1 -[TL<0 FL<0 S(Slim:3.3x45)]- side_r
+// shelf_2: underside 1 x SLOT above the floor
+shelf_2 -[DL<0 BL<SLOT S(Slim:3.3x45)]- side_l
+shelf_2 -[TL<0 FL<SLOT S(Slim:3.3x45)]- side_r
+// shelf_3: underside 2 x SLOT above the floor
+shelf_3 -[DL<0 BL<(2 * SLOT) S(Slim:3.3x45)]- side_l
+shelf_3 -[TL<0 FL<(2 * SLOT) S(Slim:3.3x45)]- side_r
+// shelf_4: top face flush with the side tops
+shelf_4 -[DL<0 BL<(3 * SLOT) S(Slim:3.3x45)]- side_l
+shelf_4 -[TL<0 FL<(3 * SLOT) S(Slim:3.3x45)]- side_r
+
+steps {
+  "Base: bottom shelf onto the two sides": side_l, side_r, shelf_1
+  "Lower middle shelf": shelf_2
+  "Upper middle shelf": shelf_3
+  "Top shelf": shelf_4
+}
