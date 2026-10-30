@@ -12,6 +12,7 @@ pub mod piece;
 pub mod placement;
 pub mod presets;
 pub mod pyfmt;
+pub mod resolve;
 
 use serde_json::{Value, json};
 
