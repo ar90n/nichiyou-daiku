@@ -4,6 +4,7 @@
 pub mod anchor;
 pub mod connection;
 pub mod difflib;
+pub mod dsl;
 pub mod field;
 pub mod geometry;
 pub mod model;
