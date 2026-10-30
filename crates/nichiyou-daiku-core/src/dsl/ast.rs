@@ -7,25 +7,32 @@ pub struct Pos {
     pub column: usize,
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Op {
+    Add,
+    Sub,
+    Mul,
+    Div,
+}
+
 #[derive(Clone, Debug, PartialEq)]
 pub enum Expr {
     Number(f64, Pos),
     Var(String, Pos),
     /// At the `-`
     Neg(Box<Expr>, Pos),
-    /// At the first token of the left operand (brackets are not kept)
-    Add(Box<Expr>, Box<Expr>, Pos),
-    Sub(Box<Expr>, Box<Expr>, Pos),
-    Mul(Box<Expr>, Box<Expr>, Pos),
-    Div(Box<Expr>, Box<Expr>, Pos),
+    /// Operations of one precedence, applied left to right (`a - b - c` is
+    /// `(a - b) - c`), kept in a list so that long ones do not nest. At the
+    /// start of the first operand, with its bracket if it has one, as Lark
+    /// places every operation of the chain.
+    Chain(Box<Expr>, Vec<(Op, Expr)>, Pos),
 }
 
 impl Expr {
     pub fn pos(&self) -> Pos {
         match self {
             Expr::Number(_, pos) | Expr::Var(_, pos) | Expr::Neg(_, pos) => *pos,
-            Expr::Add(_, _, pos) | Expr::Sub(_, _, pos) => *pos,
-            Expr::Mul(_, _, pos) | Expr::Div(_, _, pos) => *pos,
+            Expr::Chain(_, _, pos) => *pos,
         }
     }
 }

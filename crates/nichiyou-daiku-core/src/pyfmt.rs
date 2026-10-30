@@ -79,8 +79,13 @@ pub fn repr_str(value: &str) -> String {
                 out.push('\\');
                 out.push(c);
             }
-            c if (c as u32) < 0x20 || (0x7f..=0xa0).contains(&(c as u32)) => {
-                out.push_str(&format!("\\x{:02x}", c as u32));
+            c if !crate::printable::is_printable(c) => {
+                let code = u32::from(c);
+                out.push_str(&match code {
+                    0..=0xff => format!("\\x{code:02x}"),
+                    0x100..=0xffff => format!("\\u{code:04x}"),
+                    _ => format!("\\U{code:08x}"),
+                });
             }
             c => out.push(c),
         }
@@ -233,6 +238,23 @@ mod tests {
             ("\n", "'\\n'"),
             ("say \"hi\" it's", "'say \"hi\" it\\'s'"),
             ("日本", "'日本'"),
+        ];
+        for (value, expected) in cases {
+            assert_eq!(repr_str(value), expected, "{value:?}");
+        }
+    }
+
+    #[test]
+    fn repr_str_escapes_what_python_cannot_print() {
+        let cases = [
+            ("\u{3000}", "'\\u3000'"),
+            ("\u{feff}", "'\\ufeff'"),
+            ("\u{200b}", "'\\u200b'"),
+            ("\u{85}", "'\\x85'"),
+            ("\u{e0001}", "'\\U000e0001'"),
+            ("\u{378}", "'\\u0378'"),
+            ("a\u{ad}b", "'a\\xadb'"),
+            ("top\u{3000}", "'top\\u3000'"),
         ];
         for (value, expected) in cases {
             assert_eq!(repr_str(value), expected, "{value:?}");

@@ -129,15 +129,21 @@ impl Evaluator {
                 )
             })?,
             Expr::Neg(inner, _) => -self.expr(inner)?,
-            Expr::Add(a, b, _) => self.expr(a)? + self.expr(b)?,
-            Expr::Sub(a, b, _) => self.expr(a)? - self.expr(b)?,
-            Expr::Mul(a, b, _) => self.expr(a)? * self.expr(b)?,
-            Expr::Div(a, b, pos) => {
-                let (dividend, divisor) = (self.expr(a)?, self.expr(b)?);
-                if divisor == 0.0 {
-                    return Err(validation("Division by zero", *pos));
+            Expr::Chain(first, rest, pos) => {
+                let mut value = self.expr(first)?;
+                for (op, operand) in rest {
+                    let operand = self.expr(operand)?;
+                    value = match op {
+                        Op::Add => value + operand,
+                        Op::Sub => value - operand,
+                        Op::Mul => value * operand,
+                        Op::Div if operand == 0.0 => {
+                            return Err(validation("Division by zero", *pos));
+                        }
+                        Op::Div => value / operand,
+                    };
                 }
-                dividend / divisor
+                value
             }
         })
     }
@@ -522,5 +528,28 @@ mod tests {
         let model = parse("(:2x4 =100)\n(:2x4 =200)").unwrap();
         assert_eq!(model.pieces[0].id, "00000000-0000-4000-8000-000000000001");
         assert_eq!(model.pieces[1].id, "00000000-0000-4000-8000-000000000002");
+    }
+
+    #[test]
+    fn an_operation_is_placed_at_its_first_operand_with_its_brackets() {
+        assert_eq!(error("W = (1+1) / 0"), "line 1, column 5: Division by zero");
+        assert_eq!(error("W = ((1+1))/0"), "line 1, column 5: Division by zero");
+        assert_eq!(error("W = (1/0)"), "line 1, column 6: Division by zero");
+        assert_eq!(error("W = -(1+1)/0"), "line 1, column 5: Division by zero");
+        let p = "(a:2x4 =100)\n(b:2x4 =100)\n";
+        assert_eq!(
+            error(&format!("{p}a -[FL<0 BL<0 D((0-1), 10)]- b")),
+            "line 3, column 17: radius: Input should be greater than or equal to 0 (got -1.0)"
+        );
+        assert_eq!(
+            error(&format!("{p}a -[FL<0 BL<0 S((0-1),10)]- b")),
+            "line 3, column 17: diameter: Input should be greater than or equal to 0 (got -1.0)"
+        );
+    }
+
+    #[test]
+    fn a_long_sum_evaluates_without_deep_recursion() {
+        let model = parse(&format!("W = 1{}\n(a:2x4 =W)", "+1".repeat(100_000))).unwrap();
+        assert_eq!(model.pieces[0].length, Some(100_001.0));
     }
 }

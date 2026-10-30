@@ -13,6 +13,7 @@ pub mod model;
 pub mod piece;
 pub mod placement;
 pub mod presets;
+pub mod printable;
 pub mod pyfmt;
 pub mod resolve;
 
