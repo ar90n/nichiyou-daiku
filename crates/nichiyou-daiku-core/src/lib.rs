@@ -1,8 +1,12 @@
 //! The core of nichiyou-daiku: the .nd language, the placement of pieces,
 //! fasteners and holes, and the problems `validate` reports.
 
+pub mod anchor;
+pub mod connection;
+pub mod difflib;
 pub mod field;
 pub mod geometry;
+pub mod model;
 pub mod piece;
 pub mod presets;
 pub mod pyfmt;
