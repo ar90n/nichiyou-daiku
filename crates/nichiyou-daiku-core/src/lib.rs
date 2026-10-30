@@ -2,6 +2,7 @@
 //! fasteners and holes, and the problems `validate` reports.
 
 pub mod anchor;
+pub mod assembly;
 pub mod connection;
 pub mod difflib;
 pub mod dsl;
