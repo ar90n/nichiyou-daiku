@@ -10,21 +10,38 @@ pub mod parser;
 /// The model of an .nd source with its unknowns solved, or the first error
 /// in it.
 pub fn parse(source: &str) -> Result<crate::model::Model, error::DslError> {
+    parse_located(source).map(|located| located.model)
+}
+
+/// As `parse`, with where each piece and connection is written.
+pub fn parse_located(source: &str) -> Result<eval::Located, error::DslError> {
     let statements = parser::parse_statements(source)?;
     let located = eval::evaluate(&statements)?;
-    crate::resolve::resolve_model(located.model).map_err(|error| {
+    let eval::Located {
+        model,
+        pieces,
+        connections,
+        start,
+    } = located;
+    let model = crate::resolve::resolve_model(model).map_err(|error| {
         // At the piece or connection the error names, else at the first token
         let pos = match (&error.piece_id, &error.connection) {
-            (Some(id), _) => located.pieces.get(id),
-            (None, Some(key)) => located.connections.get(key),
+            (Some(id), _) => pieces.get(id),
+            (None, Some(key)) => connections.get(key),
             (None, None) => None,
         }
         .copied()
-        .unwrap_or(located.start);
+        .unwrap_or(start);
         error::DslError::new(
             error::ErrorKind::Validation,
             error.message,
             Some((pos.line, pos.column)),
         )
+    })?;
+    Ok(eval::Located {
+        model,
+        pieces,
+        connections,
+        start,
     })
 }

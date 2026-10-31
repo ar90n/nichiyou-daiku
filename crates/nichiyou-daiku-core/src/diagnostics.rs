@@ -1,9 +1,13 @@
 //! The problems `validate` reports, and its JSON: piece boxes, the overall
 //! size and the problems, or why validation stopped.
 
+use std::collections::HashMap;
+
 use serde_json::{Value, json};
 
-use crate::assembly::{Assembly, Hole, LayoutIssue};
+use crate::assembly::{Assembly, FastenerKind, Hole, LayoutIssue};
+use crate::connection::ConnectionType;
+use crate::dsl::ast::Pos;
 use crate::geometry::{Face, SurfacePoint};
 use crate::placement::{ConstraintKind, axis_index, find_overlaps, overall_bounds, rotate};
 use crate::pyfmt::{format_mm, round_mm};
@@ -219,6 +223,124 @@ pub fn failure_report(
     })
 }
 
+/// A hole in the world for the viewer: `center` is where it enters.
+fn view_hole(
+    assembly: &Assembly,
+    piece_id: &str,
+    kind: &str,
+    (at, drilled): (SurfacePoint, Hole),
+    origin: [f64; 3],
+) -> Value {
+    let placed = hole(assembly, piece_id, at, drilled, origin);
+    json!({
+        "piece": piece_id,
+        "kind": kind,
+        "center": placed["entry"],
+        "direction": placed["direction"],
+        "diameter": placed["diameter"],
+        "depth": placed["depth"],
+    })
+}
+
+/// What the viewer draws: `validation_report` with each piece's pose and
+/// line, the connections and the holes in the world.
+pub fn view_report(
+    assembly: &Assembly,
+    pieces: &HashMap<String, Pos>,
+    connections: &HashMap<(String, String), Pos>,
+) -> Value {
+    let origin = origin(assembly);
+    let mut report = validation_report(assembly);
+    let listed = report["pieces"]
+        .as_array_mut()
+        .expect("validate lists pieces");
+    for (entry, piece) in listed.iter_mut().zip(&assembly.model.pieces) {
+        let pose = assembly.placement.pose(&piece.id);
+        let shape = piece.shape();
+        entry["size"] = json!([shape.width, shape.height, shape.length].map(round_mm));
+        entry["position"] = vector(minus(pose.translation, origin));
+        entry["rotation"] = json!(pose.rotation);
+        entry["line"] = json!(pieces[&piece.id].line);
+    }
+    report["connections"] = assembly
+        .model
+        .connections
+        .iter()
+        .map(|connection| {
+            let (kind, diameter, length, screw_type) = match connection.kind {
+                ConnectionType::Vanilla => ("vanilla", None, None, None),
+                ConnectionType::Dowel { radius, depth } => {
+                    ("dowel", Some(radius * 2.0), Some(depth), None)
+                }
+                ConnectionType::Screw {
+                    diameter,
+                    length,
+                    screw_type,
+                } => (
+                    "screw",
+                    Some(diameter),
+                    Some(length),
+                    screw_type.map(|t| t.as_str()),
+                ),
+            };
+            let key = (
+                connection.base_id().to_string(),
+                connection.target_id().to_string(),
+            );
+            json!({
+                "base": key.0,
+                "target": key.1,
+                "kind": kind,
+                "diameter": diameter.map(round_mm),
+                "length": length.map(round_mm),
+                "screw_type": screw_type,
+                "line": connections[&key].line,
+            })
+        })
+        .collect();
+    let mut holes = Vec::new();
+    for fastener in &assembly.fasteners {
+        let kind = match fastener.kind {
+            FastenerKind::Dowel => "dowel",
+            FastenerKind::Screw => "pilot",
+        };
+        let base = (fastener.base_position, fastener.base_hole);
+        let target = (fastener.target_position, fastener.target_hole);
+        holes.push(view_hole(assembly, &fastener.base_id, kind, base, origin));
+        holes.push(view_hole(
+            assembly,
+            &fastener.target_id,
+            kind,
+            target,
+            origin,
+        ));
+        if let Some(counterbore) = fastener.counterbore {
+            holes.push(view_hole(
+                assembly,
+                &fastener.target_id,
+                "counterbore",
+                counterbore,
+                origin,
+            ));
+        }
+    }
+    report["holes"] = Value::Array(holes);
+    report
+}
+
+/// What the viewer gets when validation stops (see `failure_report`).
+pub fn view_failure(
+    kind: &str,
+    message: &str,
+    line: Option<usize>,
+    column: Option<usize>,
+) -> Value {
+    let mut report = failure_report(kind, message, line, column);
+    report["connections"] = json!([]);
+    report["holes"] = json!([]);
+    report
+}
+
 /// Every piece's holes (by face, then centre, in the piece's coordinates) and
 /// each connection's fasteners, counted.
 pub fn holes_report(assembly: &Assembly) -> Value {
@@ -333,5 +455,47 @@ mod tests {
         );
         assert_eq!(report["pieces"], json!([]));
         assert_eq!(holes("(a:2x4 =100"), None);
+    }
+
+    #[test]
+    fn view_adds_poses_connections_holes_and_lines() {
+        let source = "(post:2x4 =600)\n(rail:2x4 =300)\nrail -[DF<0 RF<300 S(Slim:3.8x65)]- post\n";
+        let v = crate::view(source);
+        assert_eq!(v["pieces"][0]["line"], 1);
+        assert_eq!(v["pieces"][1]["size"], json!([89.0, 38.0, 300.0]));
+        assert_eq!(
+            v["connections"],
+            json!([{"base": "rail", "target": "post", "kind": "screw",
+                "diameter": 3.8, "length": 65.0, "screw_type": "slim", "line": 3}])
+        );
+        let kinds: Vec<&str> = v["holes"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|h| h["kind"].as_str().unwrap())
+            .collect();
+        assert_eq!(
+            kinds,
+            [
+                "pilot",
+                "pilot",
+                "counterbore",
+                "pilot",
+                "pilot",
+                "counterbore"
+            ]
+        );
+        assert_eq!(v["holes"][2]["diameter"], 10.0);
+        assert_eq!(v["holes"][2]["depth"], 51.0);
+    }
+
+    #[test]
+    fn a_failed_view_has_no_connections_or_holes() {
+        let v = crate::view("(a:2x4 =100");
+        assert_eq!(v["error"]["kind"], "syntax");
+        assert_eq!(
+            (v["connections"].clone(), v["holes"].clone()),
+            (json!([]), json!([]))
+        );
     }
 }

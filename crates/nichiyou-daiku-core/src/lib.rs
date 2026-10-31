@@ -43,13 +43,41 @@ fn validate_source(source: &str) -> Value {
 /// What `nichiyou-daiku validate --json` prints for an .nd source. A panic
 /// is a bug, reported as an unexpected error (where panics unwind).
 pub fn validate(source: &str) -> Value {
-    std::panic::catch_unwind(|| validate_source(source)).unwrap_or_else(|panic| {
-        let message = panic
-            .downcast_ref::<String>()
-            .cloned()
-            .or_else(|| panic.downcast_ref::<&str>().map(|text| text.to_string()))
-            .unwrap_or_else(|| "the core panicked".into());
-        failure_report("unexpected", &message, None, None)
+    std::panic::catch_unwind(|| validate_source(source))
+        .unwrap_or_else(|panic| failure_report("unexpected", &panic_message(panic), None, None))
+}
+
+fn panic_message(panic: Box<dyn std::any::Any + Send>) -> String {
+    panic
+        .downcast_ref::<String>()
+        .cloned()
+        .or_else(|| panic.downcast_ref::<&str>().map(|text| text.to_string()))
+        .unwrap_or_else(|| "the core panicked".into())
+}
+
+fn view_source(source: &str) -> Value {
+    let located = match dsl::parse_located(source) {
+        Ok(located) => located,
+        Err(error) => {
+            return diagnostics::view_failure(
+                error.kind.as_str(),
+                &error.to_string(),
+                error.line,
+                error.column,
+            );
+        }
+    };
+    match Assembly::of(located.model) {
+        Ok(assembly) => diagnostics::view_report(&assembly, &located.pieces, &located.connections),
+        Err(message) => diagnostics::view_failure("assembly", &message, None, None),
+    }
+}
+
+/// What the viewer draws for an .nd source: `validate` with the pieces'
+/// poses, the connections, the holes and where each is written.
+pub fn view(source: &str) -> Value {
+    std::panic::catch_unwind(|| view_source(source)).unwrap_or_else(|panic| {
+        diagnostics::view_failure("unexpected", &panic_message(panic), None, None)
     })
 }
 
