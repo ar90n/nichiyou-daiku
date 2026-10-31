@@ -78,6 +78,8 @@ make web       # build the static site into web/dist
 
 Open a file with **Open** or by dropping it on the page, or open a URL: `?src=<URL of an .nd>` opens it when the page loads, so the address can be shared. The server must let other sites read the file; on GitHub, use the raw file (`raw.githubusercontent.com`) or a gist's raw URL. The `Viewer on GitHub Pages` workflow publishes the viewer when started by hand (choose "GitHub Actions" as the Pages source first).
 
+The **Steps** tab walks through the assembly: the parts list, then one step at a time (with **◀ Prev** / **Next ▶** or the arrow keys), drawing the part each step leaves with the step's pieces in blue. `?step=N` opens a step (0 is the parts list). The steps come from the design's `steps` block, or one piece at a time without one.
+
 ## Documentation
 
 - [DSL specification](docs/dsl-specification.md): pieces, faces and offsets, connections, variables, unknowns, fasteners, CLI, grammar, errors

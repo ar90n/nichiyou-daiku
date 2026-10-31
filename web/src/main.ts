@@ -3,6 +3,10 @@ import { atLine, forPiece, forProblem, NONE, type Highlight, type Paint } from "
 import { fetchSource, readFile, sourceUrl, takeFile, withSourceUrl, type Source } from "./load";
 import { failedView, loadCore, safeView } from "./model";
 import { markLine, renderHeader, renderPiece, renderProblems, renderSource } from "./panels";
+import {
+  clampStep, partScene, stepFromSearch, stepHighlight, stepKey, stepScene, stepsTab, withStep,
+} from "./steps";
+import { renderSteps } from "./stepsPanel";
 import type { View } from "./types";
 import { openViewer, VIEWS, type ViewName } from "./viewer";
 
@@ -12,8 +16,14 @@ const sourceEl = byId("source");
 const problemsEl = byId("problems");
 const problemsTitle = byId("problems-title");
 const pieceEl = byId("piece");
+const stepsEl = byId("steps");
+const modelTab = byId<HTMLButtonElement>("tab-model");
+const stepsTabButton = byId<HTMLButtonElement>("tab-steps");
 const viewer = openViewer(byId("scene"));
 let current: View | null = null;
+// The Steps tab's step (0: the parts list), or null on the Model tab
+let step: number | null = null;
+let part: number | null = null;
 
 const core = loadCore();
 
@@ -51,14 +61,47 @@ function render(name: string | null, text: string, view: View): void {
   renderPiece(pieceEl, view, null, showLine);
   viewer.show(view.error ? null : view);
   if (view.error) markLine(sourceEl, view.error.line, true);
+  const tab = stepsTab(view);
+  stepsTabButton.disabled = !tab.enabled;
+  stepsTabButton.title = tab.reason ?? "";
 }
 
-async function open(load: () => Promise<Source>, name: string | null): Promise<void> {
+function setTab(tab: "model" | "steps"): void {
+  document.body.classList.toggle("steps-mode", tab === "steps");
+  modelTab.classList.toggle("active", tab === "model");
+  stepsTabButton.classList.toggle("active", tab === "steps");
+}
+
+function showStep(next: number, picked: number | null = null): void {
+  if (!current || !stepsTab(current).enabled) return;
+  step = clampStep(current, next);
+  part = step === 0 ? picked : null;
+  const scene = step === 0 ? partScene(current, part) : stepScene(current, step);
+  viewer.showOnly(scene.visible);
+  viewer.apply(stepHighlight(scene));
+  viewer.fit(scene.bounds);
+  renderSteps(stepsEl, current, step, part, { onStep: (n) => showStep(n), onPart: (i) => showStep(0, i) });
+  setTab("steps");
+  history.replaceState(null, "", withStep(location.href, step));
+}
+
+function showModel(): void {
+  step = null;
+  part = null;
+  viewer.showOnly(null);
+  viewer.apply(NONE);
+  viewer.fit(null);
+  setTab("model");
+  history.replaceState(null, "", withStep(location.href, null));
+}
+
+async function open(load: () => Promise<Source>, name: string | null, wanted: number | null = step): Promise<void> {
   let source: Source;
   try {
     source = await load();
   } catch (error) {
     render(name, "", failedView("file", error instanceof Error ? error.message : String(error)));
+    if (step !== null) showModel();
     return;
   }
   let viewOf;
@@ -68,12 +111,16 @@ async function open(load: () => Promise<Source>, name: string | null): Promise<v
     const reason = error instanceof Error ? error.message : String(error);
     render(source.name, source.text, failedView("internal",
       `Could not load the core (WebAssembly): ${reason}. Use a browser with WebAssembly, or rebuild it (make wasm).`));
+    if (step !== null) showModel();
     return;
   }
   render(source.name, source.text, safeView(viewOf, source.text));
   // The address bar shares what is open: a file from this computer has no URL
   const page = source.url ? withSourceUrl(location.href, source.url) : withoutSource(location.href);
   history.replaceState(null, "", page);
+  // Reopened, a file keeps its step; one with fewer steps goes to its last
+  if (wanted !== null && current && stepsTab(current).enabled) showStep(wanted);
+  else if (step !== null) showModel();
 }
 
 function withoutSource(href: string): string {
@@ -82,9 +129,9 @@ function withoutSource(href: string): string {
   return page.toString();
 }
 
-function openUrl(url: string): void {
+function openUrl(url: string, wanted: number | null = step): void {
   byId<HTMLInputElement>("url").value = url;
-  void open(() => fetchSource(url), url);
+  void open(() => fetchSource(url), url, wanted);
 }
 
 function openFile(file: File): void {
@@ -92,7 +139,7 @@ function openFile(file: File): void {
 }
 
 viewer.onPick = (id) => {
-  if (!current) return;
+  if (!current || step !== null) return; // The Steps tab only shows
   if (id === null) select(NONE, null);
   else select(forPiece(current, id), id);
 };
@@ -128,5 +175,16 @@ document.addEventListener("drop", (e) => {
   if (file) openFile(file);
 });
 
+modelTab.addEventListener("click", () => showModel());
+stepsTabButton.addEventListener("click", () => showStep(step ?? 0));
+document.addEventListener("keydown", (e) => {
+  if (step === null) return;
+  const move = stepKey(e.key, (e.target as HTMLElement | null)?.tagName);
+  if (move !== 0) {
+    e.preventDefault();
+    showStep(step + move);
+  }
+});
+
 const initial = sourceUrl(location.search);
-if (initial) openUrl(initial);
+if (initial) openUrl(initial, stepFromSearch(location.search));
