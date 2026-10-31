@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, expect, it, vi } from "vitest";
-import { renderSteps } from "../src/stepsPanel";
+import { renderSteps, renderUnavailable } from "../src/stepsPanel";
 import type { PieceView, View } from "../src/types";
 
 const v = (over: Partial<View> = {}): View => ({
@@ -66,4 +66,10 @@ it("says how to group steps, and that problems may spoil them", () => {
   renderSteps(root, v({ steps_hint: "No steps block: …", problems: [{ kind: "overlap", message: "", pieces: ["leg", "rail"], volume_mm3: 1 }] }), 1, null, none);
   expect(root.querySelector(".notice")?.textContent).toBe("No steps block: …");
   expect(root.querySelector(".warning")?.textContent).toBe("This design has 1 problem (see Model); the steps may be wrong");
+});
+
+it("says why the steps cannot be shown, where a phone shows it", () => {
+  const root = document.createElement("div");
+  renderUnavailable(root, "Fix the error first: the steps need a design that reads");
+  expect(root.querySelector(".unavailable")?.textContent).toBe("Fix the error first: the steps need a design that reads");
 });

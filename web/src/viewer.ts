@@ -65,6 +65,8 @@ export class Viewer implements Drawing {
   private parts: SceneParts | null = null;
   private labels = new THREE.Group();
   private extraHoles: THREE.Mesh[] = [];
+  // What fit() last looked at, for the view buttons; null: the whole model
+  private focus: THREE.Box3 | null = null;
   private pressedAt: { x: number; y: number } | null = null;
 
   constructor(private readonly container: HTMLElement) {
@@ -99,6 +101,7 @@ export class Viewer implements Drawing {
     if (this.parts) this.scene.remove(this.parts.root);
     this.scene.remove(this.labels);
     this.extraHoles = [];
+    this.focus = null;
     this.view = view;
     this.parts = view ? buildScene(view) : null;
     this.labels = new THREE.Group();
@@ -121,8 +124,10 @@ export class Viewer implements Drawing {
   }
 
   setView(name: ViewName): void {
-    if (!this.parts || this.parts.bounds.isEmpty()) return;
-    this.place(this.parts.bounds, new THREE.Vector3(...VIEWS[name]));
+    if (!this.parts) return;
+    const box = this.focus ?? this.parts.bounds;
+    if (box.isEmpty()) return;
+    this.place(box, new THREE.Vector3(...VIEWS[name]));
   }
 
   /** Draw only these pieces, with their holes and labels; null draws them all. */
@@ -145,6 +150,7 @@ export class Viewer implements Drawing {
       ? new THREE.Box3(new THREE.Vector3(...bounds.min), new THREE.Vector3(...bounds.max))
       : this.parts.bounds;
     if (box.isEmpty()) return;
+    this.focus = bounds ? box : null;
     const direction = this.camera.position.clone().sub(this.controls.target);
     if (direction.lengthSq() === 0) direction.set(...VIEWS.Iso);
     this.place(box, direction);

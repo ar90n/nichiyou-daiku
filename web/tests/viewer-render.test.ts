@@ -64,3 +64,15 @@ it("fitting a step keeps the way the camera looks", () => {
   const [x, y, z] = viewer.controls.target.toArray();
   expect([x, y, z].map((v) => Math.round(v * 1000) / 1000)).toEqual([244.5, 19, 150]);
 });
+
+it("on a step, the view buttons look at the step's part, not the whole model", () => {
+  const viewer = new Viewer(document.createElement("div"));
+  viewer.show(view([piece, second]));
+  viewer.fit({ min: second.min, max: second.max });
+  viewer.setView("Top");
+  const [x, y, z] = viewer.controls.target.toArray();
+  expect([x, y, z].map((v) => Math.round(v * 1000) / 1000)).toEqual([244.5, 19, 150]);
+  viewer.fit(null);
+  viewer.setView("Top");
+  expect(Math.round(viewer.controls.target.x * 1000) / 1000).toBe(144.5);
+});

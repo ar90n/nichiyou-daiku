@@ -33,6 +33,11 @@ function card(step: number, title: string, open: boolean, on: StepsHandlers): HT
   return section;
 }
 
+/** Why the steps cannot be shown: a phone shows no tooltip on the tab. */
+export function renderUnavailable(root: HTMLElement, reason: string): void {
+  root.replaceChildren(element("p", reason, "hint unavailable"));
+}
+
 export function renderSteps(root: HTMLElement, view: View, step: number, part: number | null, on: StepsHandlers): void {
   root.replaceChildren();
   if (view.steps_hint) root.append(element("p", view.steps_hint, "notice"));

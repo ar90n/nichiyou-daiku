@@ -6,7 +6,7 @@ import { markLine, renderHeader, renderPiece, renderProblems, renderSource } fro
 import {
   clampStep, partScene, stepFromSearch, stepHighlight, stepKey, stepScene, stepsTab, withStep,
 } from "./steps";
-import { renderSteps } from "./stepsPanel";
+import { renderSteps, renderUnavailable } from "./stepsPanel";
 import type { View } from "./types";
 import { openViewer, VIEWS, type ViewName } from "./viewer";
 
@@ -21,7 +21,9 @@ const modelTab = byId<HTMLButtonElement>("tab-model");
 const stepsTabButton = byId<HTMLButtonElement>("tab-steps");
 const viewer = openViewer(byId("scene"));
 let current: View | null = null;
-// The Steps tab's step (0: the parts list), or null on the Model tab
+let tab: "model" | "steps" = "model";
+// The Steps tab's step (0: the parts list); null on the Model tab, or when
+// the Steps tab only says why it cannot show the steps
 let step: number | null = null;
 let part: number | null = null;
 
@@ -61,15 +63,28 @@ function render(name: string | null, text: string, view: View): void {
   renderPiece(pieceEl, view, null, showLine);
   viewer.show(view.error ? null : view);
   if (view.error) markLine(sourceEl, view.error.line, true);
-  const tab = stepsTab(view);
-  stepsTabButton.disabled = !tab.enabled;
-  stepsTabButton.title = tab.reason ?? "";
+  const state = stepsTab(view);
+  stepsTabButton.classList.toggle("unavailable", !state.enabled);
+  stepsTabButton.title = state.reason ?? "";
 }
 
-function setTab(tab: "model" | "steps"): void {
-  document.body.classList.toggle("steps-mode", tab === "steps");
-  modelTab.classList.toggle("active", tab === "model");
-  stepsTabButton.classList.toggle("active", tab === "steps");
+function setTab(next: "model" | "steps"): void {
+  tab = next;
+  document.body.classList.toggle("steps-mode", next === "steps");
+  modelTab.classList.toggle("active", next === "model");
+  stepsTabButton.classList.toggle("active", next === "steps");
+}
+
+function openStepsTab(wanted: number): void {
+  const state = stepsTab(current);
+  if (state.enabled) {
+    showStep(wanted);
+    return;
+  }
+  step = null;
+  part = null;
+  renderUnavailable(stepsEl, state.reason ?? "");
+  setTab("steps");
 }
 
 function showStep(next: number, picked: number | null = null): void {
@@ -101,7 +116,7 @@ async function open(load: () => Promise<Source>, name: string | null, wanted: nu
     source = await load();
   } catch (error) {
     render(name, "", failedView("file", error instanceof Error ? error.message : String(error)));
-    if (step !== null) showModel();
+    if (tab === "steps") showModel();
     return;
   }
   let viewOf;
@@ -111,7 +126,7 @@ async function open(load: () => Promise<Source>, name: string | null, wanted: nu
     const reason = error instanceof Error ? error.message : String(error);
     render(source.name, source.text, failedView("internal",
       `Could not load the core (WebAssembly): ${reason}. Use a browser with WebAssembly, or rebuild it (make wasm).`));
-    if (step !== null) showModel();
+    if (tab === "steps") showModel();
     return;
   }
   render(source.name, source.text, safeView(viewOf, source.text));
@@ -119,8 +134,8 @@ async function open(load: () => Promise<Source>, name: string | null, wanted: nu
   const page = source.url ? withSourceUrl(location.href, source.url) : withoutSource(location.href);
   history.replaceState(null, "", page);
   // Reopened, a file keeps its step; one with fewer steps goes to its last
-  if (wanted !== null && current && stepsTab(current).enabled) showStep(wanted);
-  else if (step !== null) showModel();
+  if ((wanted !== null || tab === "steps") && stepsTab(current).enabled) showStep(wanted ?? 0);
+  else if (tab === "steps") showModel();
 }
 
 function withoutSource(href: string): string {
@@ -176,7 +191,7 @@ document.addEventListener("drop", (e) => {
 });
 
 modelTab.addEventListener("click", () => showModel());
-stepsTabButton.addEventListener("click", () => showStep(step ?? 0));
+stepsTabButton.addEventListener("click", () => openStepsTab(step ?? 0));
 document.addEventListener("keydown", (e) => {
   if (step === null) return;
   const move = stepKey(e.key, (e.target as HTMLElement | null)?.tagName);
