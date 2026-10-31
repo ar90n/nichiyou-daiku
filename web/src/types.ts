@@ -78,6 +78,13 @@ export interface HardwareView {
 
 export type StepKind = "first" | "attach" | "sub-assembly" | "join";
 
+export interface DimensionChain {
+  axis: "x" | "y" | "z";
+  side: "left" | "below";
+  stops: number[];
+  segments: { start: number; end: number; lumber: boolean }[];
+}
+
 export interface StepView {
   number: number;
   name: string | null;
@@ -87,6 +94,7 @@ export interface StepView {
   shown: string[];
   view: { axis: "x" | "y" | "z"; side: number };
   hardware: HardwareView[];
+  dimensions: DimensionChain[];
 }
 
 export interface View {

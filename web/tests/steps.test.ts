@@ -6,7 +6,7 @@ const piece = (id: string, x: number): PieceView => ({ id, type: "2x4", length: 
   max: [x + 89, 38, 400], faces: { top: "+z", right: "+x", front: "+y" }, size: [89, 38, 400],
   position: [x, 0, 0], rotation: [[1, 0, 0], [0, 1, 0], [0, 0, 1]], line: 1 });
 const step = (number: number, pieces: string[], shown: string[], over: Partial<StepView> = {}): StepView => ({
-  number, name: null, kind: "attach", pieces, connections: [], shown, view: { axis: "y", side: 1 }, hardware: [], ...over });
+  number, name: null, kind: "attach", pieces, connections: [], shown, view: { axis: "y", side: 1 }, hardware: [], dimensions: [], ...over });
 const v: View = {
   valid: true, error: null, overall_size: [389, 38, 400], size_reference: "a",
   pieces: [piece("a", 0), piece("b", 100), piece("c", 300)], problems: [], connections: [], holes: [],

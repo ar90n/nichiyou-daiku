@@ -9,9 +9,9 @@ const v = (over: Partial<View> = {}): View => ({
   problems: [], connections: [], holes: [],
   parts: [{ pieces: ["leg"], type: "2x4", length: 750, count: 1 }, { pieces: ["rail"], type: "1x4", length: 364.5, count: 1 }],
   steps: [
-    { number: 1, name: "Leg", kind: "first", pieces: ["leg"], connections: [], shown: ["leg"], view: { axis: "z", side: 1 }, hardware: [] },
+    { number: 1, name: "Leg", kind: "first", pieces: ["leg"], connections: [], shown: ["leg"], view: { axis: "z", side: 1 }, hardware: [], dimensions: [] },
     { number: 2, name: null, kind: "attach", pieces: ["rail"], connections: [["rail", "leg"]], shown: ["leg", "rail"],
-      view: { axis: "y", side: 1 }, hardware: [{ name: "Slim screw 3.8x65", count: 2 }] },
+      view: { axis: "y", side: 1 }, hardware: [{ name: "Slim screw 3.8x65", count: 2 }], dimensions: [] },
   ],
   steps_declared: true, steps_hint: null, ...over,
 });
