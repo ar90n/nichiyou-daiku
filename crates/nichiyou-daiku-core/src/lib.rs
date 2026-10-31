@@ -6,6 +6,7 @@ pub mod assembly;
 pub mod connection;
 pub mod diagnostics;
 pub mod difflib;
+pub mod dimensioning;
 pub mod dsl;
 pub mod field;
 pub mod geometry;
