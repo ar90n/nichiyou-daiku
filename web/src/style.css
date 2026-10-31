@@ -87,3 +87,11 @@ body.steps-mode aside section.steps { display: flex; flex-direction: column; min
   body.steps-mode aside { display: flex; flex-direction: column; overflow: hidden; }
   .step-nav button { flex: 1; min-height: 44px; font-size: 16px; }
 }
+.steps-only { display: none; }
+body.on-step .steps-only { display: inline-flex; align-items: center; gap: 4px; }
+.dim-label {
+  padding: 0 3px; border-radius: 2px; font-size: 11px; line-height: 1.3;
+  background: rgb(255 255 255 / 0.85); color: #3d5a80;
+}
+.dim-label.overall { font-weight: 600; }
+.dim-label.lumber { color: #7a8ca3; }

@@ -1,4 +1,5 @@
 import "./style.css";
+import { dimensionDirection, layoutDimensions } from "./dimensions";
 import { atLine, forPiece, forProblem, NONE, type Highlight, type Paint } from "./highlight";
 import { fetchSource, readFile, sourceUrl, takeFile, withSourceUrl, type Source } from "./load";
 import { failedView, loadCore, safeView } from "./model";
@@ -26,6 +27,7 @@ let tab: "model" | "steps" = "model";
 // the Steps tab only says why it cannot show the steps
 let step: number | null = null;
 let part: number | null = null;
+let dims = true;
 
 const core = loadCore();
 
@@ -75,6 +77,14 @@ function setTab(next: "model" | "steps"): void {
   stepsTabButton.classList.toggle("active", next === "steps");
 }
 
+/** The current step's dimensions, when the Steps tab shows a step and they are on. */
+function drawDimensions(): void {
+  const planned = current && step ? current.steps[step - 1] : undefined;
+  const bounds = planned && current ? stepScene(current, step!).bounds : null;
+  viewer.showDimensions(planned && bounds && dims ? layoutDimensions(planned, bounds) : null);
+  document.body.classList.toggle("on-step", planned !== undefined);
+}
+
 function openStepsTab(wanted: number): void {
   const state = stepsTab(current);
   if (state.enabled) {
@@ -84,6 +94,8 @@ function openStepsTab(wanted: number): void {
   step = null;
   part = null;
   renderUnavailable(stepsEl, state.reason ?? "");
+  viewer.showDimensions(null);
+  document.body.classList.remove("on-step");
   setTab("steps");
 }
 
@@ -95,6 +107,7 @@ function showStep(next: number, picked: number | null = null): void {
   viewer.showOnly(scene.visible);
   viewer.apply(stepHighlight(scene));
   viewer.fit(scene.bounds);
+  drawDimensions();
   renderSteps(stepsEl, current, step, part, { onStep: (n) => showStep(n), onPart: (i) => showStep(0, i) });
   setTab("steps");
   history.replaceState(null, "", withStep(location.href, step));
@@ -105,6 +118,8 @@ function showModel(): void {
   part = null;
   viewer.showOnly(null);
   viewer.apply(NONE);
+  viewer.showDimensions(null);
+  document.body.classList.remove("on-step");
   viewer.fit(null);
   setTab("model");
   history.replaceState(null, "", withStep(location.href, null));
@@ -166,6 +181,18 @@ for (const name of Object.keys(VIEWS) as ViewName[]) {
   button.addEventListener("click", () => viewer.setView(name));
   views.append(button);
 }
+const dimensionView = document.createElement("button");
+dimensionView.textContent = "Dimensions";
+dimensionView.className = "steps-only";
+dimensionView.title = "Look from where the step's dimensions read best";
+dimensionView.addEventListener("click", () => {
+  if (current && step) viewer.lookAlong(dimensionDirection(current.steps[step - 1].view));
+});
+views.append(dimensionView);
+byId<HTMLInputElement>("dims").addEventListener("change", (e) => {
+  dims = (e.target as HTMLInputElement).checked;
+  drawDimensions();
+});
 byId<HTMLInputElement>("labels").addEventListener("change", (e) =>
   viewer.setLabels((e.target as HTMLInputElement).checked));
 

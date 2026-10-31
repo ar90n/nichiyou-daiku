@@ -80,6 +80,8 @@ Open a file with **Open** or by dropping it on the page, or open a URL: `?src=<U
 
 The **Steps** tab walks through the assembly: the parts list, then one step at a time (with **◀ Prev** / **Next ▶** or the arrow keys), drawing the part each step leaves with the step's pieces in blue. `?step=N` opens a step (0 is the parts list). The steps come from the design's `steps` block, or one piece at a time without one.
 
+On a step, the 3D shows its dimensions as the CLI's step images do: where the step's pieces go, stopping at both ends of them and of the pieces they join, and the part's overall size. **Dimensions** turns the camera to the view they read best from; the checkbox hides them. Values that would overlap are hidden, lumber sizes first; zoom in to see them.
+
 ## Documentation
 
 - [DSL specification](docs/dsl-specification.md): pieces, faces and offsets, connections, variables, unknowns, fasteners, CLI, grammar, errors
