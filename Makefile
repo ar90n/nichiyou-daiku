@@ -1,4 +1,4 @@
-.PHONY: help check test lint format ci-local ci-setup clean eval eval-full
+.PHONY: help check test lint format rust-check wasm-bindgen-cli wasm ci-local ci-setup clean eval eval-full
 
 help:  ## Show this help message
 	@echo "Available commands:"
@@ -19,6 +19,18 @@ rust-check:  ## Rust: format, lint, test, and build the core for WebAssembly
 	cargo clippy --all-targets -- -D warnings
 	cargo test
 	cargo build -p nichiyou-daiku-core --target wasm32-unknown-unknown
+
+WASM_BINDGEN_VERSION := 0.2.130
+WASM := target/wasm32-unknown-unknown/release/nichiyou_daiku_wasm.wasm
+
+wasm-bindgen-cli:  ## Install wasm-bindgen's CLI at the version the crate uses
+	@wasm-bindgen --version 2>/dev/null | grep -q "$(WASM_BINDGEN_VERSION)" || \
+		cargo install wasm-bindgen-cli --version $(WASM_BINDGEN_VERSION) --locked
+
+wasm: wasm-bindgen-cli  ## Build the core as WebAssembly for the viewer (web/src/wasm)
+	cargo build -p nichiyou-daiku-wasm --target wasm32-unknown-unknown --release
+	wasm-bindgen --target web --out-dir web/src/wasm $(WASM)
+	@ls -l web/src/wasm/nichiyou_daiku_wasm_bg.wasm
 
 format:  ## Format code
 	uv run ruff format src/ tests/ evals/ tools/

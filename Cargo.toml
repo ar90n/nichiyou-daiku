@@ -6,3 +6,9 @@ resolver = "3"
 edition = "2024"
 version = "0.2.0"
 license = "Apache-2.0"
+
+[profile.release]
+# The viewer downloads the WebAssembly: small over fast
+opt-level = "z"
+lto = true
+codegen-units = 1

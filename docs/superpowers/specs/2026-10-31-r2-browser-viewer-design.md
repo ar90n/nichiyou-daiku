@@ -112,7 +112,8 @@
 ## ビルド・公開・テスト
 
 - `make web`: WASM を作り（release、サイズ優先）、wasm-bindgen で包み、Vite で `web/dist` にまとめる。
-  `make web-dev` は開発用のサーバー。WASM の大きさは測ってこの文書に書く。
+  `make web-dev` は開発用のサーバー。WASM の大きさは測ってこの文書に書く: 2026-10-31（R2 の最初）で
+  0.51 MB（509,033 バイト）、gzip で 0.14 MB（141,412 バイト）。
 - 公開: `.github/workflows/pages.yml`（手で動かしたときだけ、ビルドして GitHub Pages に置く。公開先は
   `https://ar90n.github.io/nichiyou-daiku/` の見込み）。
 - テスト:

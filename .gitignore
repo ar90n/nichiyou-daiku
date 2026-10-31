@@ -216,3 +216,8 @@ report.md
 # Design skill evaluation runs (designs, transcripts, reports)
 evals/design/runs/
 /target
+
+# The viewer: dependencies, build and the WebAssembly built from the core
+web/node_modules/
+web/dist/
+web/src/wasm/
