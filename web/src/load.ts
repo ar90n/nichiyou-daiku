@@ -19,7 +19,8 @@ export function withSourceUrl(href: string, url: string): string {
 
 /** The file name at the end of a URL's path. */
 export function nameOf(url: string): string {
-  const last = new URL(url).pathname.split("/").filter(Boolean).pop();
+  // Any base will do: only the path's last part is wanted, and ?src= may be relative
+  const last = new URL(url, "file:///").pathname.split("/").filter(Boolean).pop();
   return last ? decodeURIComponent(last) : "source.nd";
 }
 

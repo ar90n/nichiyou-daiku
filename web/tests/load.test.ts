@@ -15,6 +15,10 @@ describe("the page's URL", () => {
   it("names a file by its URL", () => {
     expect(nameOf("https://raw.githubusercontent.com/u/r/main/file%20wagon.nd?token=1")).toBe("file wagon.nd");
   });
+
+  it("names a file by a URL relative to the page", () => {
+    expect(nameOf("examples/table.nd")).toBe("table.nd");
+  });
 });
 
 describe("fetchSource", () => {

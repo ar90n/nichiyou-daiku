@@ -6,7 +6,37 @@
     <title>nichiyou-daiku viewer</title>
   </head>
   <body>
-    <div id="app"></div>
+    <header>
+      <label class="button">Open<input id="file" type="file" accept=".nd,text/plain" hidden /></label>
+      <form id="url-form">
+        <input id="url" type="url" placeholder="URL of an .nd (raw file)" />
+        <button type="submit">Open URL</button>
+      </form>
+      <div id="status"></div>
+    </header>
+    <main>
+      <aside>
+        <section class="source">
+          <h2>.nd source</h2>
+          <pre id="source"></pre>
+        </section>
+        <section class="problems">
+          <h2 id="problems-title">Problems</h2>
+          <ul id="problems"><li class="hint">Open an .nd: Open, a URL, or drop the file here</li></ul>
+        </section>
+        <section class="piece">
+          <h2>Piece</h2>
+          <div id="piece"></div>
+        </section>
+      </aside>
+      <section class="view">
+        <div class="toolbar">
+          <span id="views"></span>
+          <label><input id="labels" type="checkbox" checked /> Labels</label>
+        </div>
+        <div id="scene"></div>
+      </section>
+    </main>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
