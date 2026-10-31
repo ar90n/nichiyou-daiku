@@ -2,7 +2,7 @@ import { connectionsOf } from "./highlight";
 import type { ConnectionView, Problem, Vec3, View } from "./types";
 
 /** Millimetres with one decimal at most: 659.99999 reads 660. */
-function mm(value: number): string {
+export function mm(value: number): string {
   return String(Number(value.toFixed(1)));
 }
 
@@ -16,7 +16,7 @@ export function describeConnection(c: ConnectionView): string {
   return c.screw_type ? `${size} (${c.screw_type})` : size;
 }
 
-function element<K extends keyof HTMLElementTagNameMap>(
+export function element<K extends keyof HTMLElementTagNameMap>(
   tag: K,
   text: string,
   className?: string,
