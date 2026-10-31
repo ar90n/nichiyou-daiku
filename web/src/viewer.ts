@@ -108,9 +108,9 @@ export class Viewer implements Drawing {
       }
       this.scene.add(this.labels);
       this.setView("Iso");
-    } else {
-      this.render();
     }
+    // setView draws nothing for a view without pieces, which would leave the last model on screen
+    this.render();
   }
 
   setView(name: ViewName): void {

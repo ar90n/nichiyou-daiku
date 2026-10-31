@@ -46,3 +46,10 @@ export async function fetchSource(url: string, fetchFn: typeof fetch = fetch): P
 export async function readFile(file: Blob & { name: string }): Promise<Source> {
   return { name: file.name, text: await file.text(), url: null };
 }
+
+/** The file an <input type="file"> holds. The input is emptied, or choosing the same file again (after editing it) would not fire change. */
+export function takeFile(input: HTMLInputElement): File | null {
+  const file = input.files?.[0] ?? null;
+  input.value = "";
+  return file;
+}

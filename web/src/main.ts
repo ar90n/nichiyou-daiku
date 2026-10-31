@@ -1,6 +1,6 @@
 import "./style.css";
 import { atLine, forPiece, forProblem, NONE, type Highlight, type Paint } from "./highlight";
-import { fetchSource, readFile, sourceUrl, withSourceUrl, type Source } from "./load";
+import { fetchSource, readFile, sourceUrl, takeFile, withSourceUrl, type Source } from "./load";
 import { failedView, loadCore, safeView } from "./model";
 import { markLine, renderHeader, renderPiece, renderProblems, renderSource } from "./panels";
 import type { View } from "./types";
@@ -113,7 +113,7 @@ byId<HTMLFormElement>("url-form").addEventListener("submit", (e) => {
   if (url) openUrl(url);
 });
 byId<HTMLInputElement>("file").addEventListener("change", (e) => {
-  const file = (e.target as HTMLInputElement).files?.[0];
+  const file = takeFile(e.target as HTMLInputElement);
   if (file) openFile(file);
 });
 document.addEventListener("dragover", (e) => {
