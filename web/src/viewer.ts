@@ -140,6 +140,7 @@ export class Viewer implements Drawing {
         paint === undefined ? COLORS.wood
         : paint === "selected" ? COLORS.selected
         : paint === "problem" ? COLORS.problem
+        : paint === "earlier" ? COLORS.earlier
         : COLORS.groups[paint.group % COLORS.groups.length];
       const faded = highlight.faded.has(id);
       mesh.material.color.setHex(color);

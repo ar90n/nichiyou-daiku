@@ -11,4 +11,5 @@ it("the built WebAssembly views an example", () => {
   expect(result.valid).toBe(true);
   expect(result.pieces).toHaveLength(16);
   expect(result.connections.length).toBeGreaterThan(0);
+  expect(result.steps.length).toBeGreaterThan(0);
 });

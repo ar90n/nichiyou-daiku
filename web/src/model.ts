@@ -1,6 +1,9 @@
 import type { View } from "./types";
 
-const KEYS = ["valid", "error", "pieces", "problems", "connections", "holes"] as const;
+const KEYS = [
+  "valid", "error", "pieces", "problems", "connections", "holes",
+  "parts", "steps", "steps_declared", "steps_hint",
+] as const;
 
 /** The core's view JSON, checked for the keys this viewer reads. */
 export function parseView(json: string): View {
@@ -25,7 +28,8 @@ export async function loadCore(): Promise<ViewFn> {
 /** A view with nothing to draw but an error. */
 export function failedView(kind: string, message: string): View {
   return { valid: false, overall_size: null, size_reference: null, pieces: [], problems: [],
-    connections: [], holes: [], error: { kind, line: null, column: null, message } };
+    connections: [], holes: [], parts: [], steps: [], steps_declared: false, steps_hint: null,
+    error: { kind, line: null, column: null, message } };
 }
 
 /** The view of a source; a core that throws (a panic traps in WebAssembly) gives an internal error. */

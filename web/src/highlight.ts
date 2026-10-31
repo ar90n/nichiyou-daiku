@@ -1,6 +1,6 @@
 import type { ConnectionView, HoleShape, Problem, View } from "./types";
 
-export type Paint = "selected" | "problem" | { group: number };
+export type Paint = "selected" | "problem" | "earlier" | { group: number };
 
 /** What to colour, fade and draw for a selection, and the source line to show. */
 export interface Highlight {

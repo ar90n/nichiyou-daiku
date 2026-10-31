@@ -64,6 +64,31 @@ export type Problem =
       holes: [HolePosition, HolePosition] }
   | { kind: "overlap"; message: string; pieces: [string, string]; volume_mm3: number };
 
+export interface PartView {
+  pieces: string[];
+  type: string;
+  length: number;
+  count: number;
+}
+
+export interface HardwareView {
+  name: string;
+  count: number;
+}
+
+export type StepKind = "first" | "attach" | "sub-assembly" | "join";
+
+export interface StepView {
+  number: number;
+  name: string | null;
+  kind: StepKind;
+  pieces: string[];
+  connections: [string, string][];
+  shown: string[];
+  view: { axis: "x" | "y" | "z"; side: number };
+  hardware: HardwareView[];
+}
+
 export interface View {
   valid: boolean;
   error: ViewError | null;
@@ -73,4 +98,8 @@ export interface View {
   problems: Problem[];
   connections: ConnectionView[];
   holes: HoleView[];
+  parts: PartView[];
+  steps: StepView[];
+  steps_declared: boolean;
+  steps_hint: string | null;
 }

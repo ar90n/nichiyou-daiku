@@ -10,7 +10,7 @@ const v: View = {
     { base: "a", target: "b", kind: "screw", diameter: 3.8, length: 65, screw_type: "slim", line: 5 },
     { base: "b", target: "c", kind: "vanilla", diameter: null, length: null, screw_type: null, line: 6 },
   ],
-  holes: [], problems: [],
+  holes: [], problems: [], parts: [], steps: [], steps_declared: false, steps_hint: null,
 };
 
 it("a piece is selected with its line and connections", () => {

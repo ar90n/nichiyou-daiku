@@ -7,6 +7,7 @@ export const COLORS = {
   hole: 0x2a2018,
   counterbore: 0x4a3828,
   selected: 0x3b82f6,
+  earlier: 0xc8c2b8,
   problem: 0xe0433a,
   groups: [0x3b82f6, 0x22a06b, 0xf59e0b, 0x9b5de5, 0x0ea5b7, 0xdb2777],
 };

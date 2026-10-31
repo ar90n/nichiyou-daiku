@@ -10,7 +10,7 @@ const piece = (id: string, over: Partial<PieceView> = {}): PieceView => ({
 });
 
 const view = (over: Partial<View> = {}): View => ({ valid: true, error: null, overall_size: [38, 338, 100],
-  size_reference: "b", pieces: [piece("b")], problems: [], connections: [], holes: [], ...over });
+  size_reference: "b", pieces: [piece("b")], problems: [], connections: [], holes: [], parts: [], steps: [], steps_declared: false, steps_hint: null, ...over });
 
 describe("pieces", () => {
   it("are boxes placed by their rotation and position", () => {

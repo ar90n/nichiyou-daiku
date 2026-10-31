@@ -4,7 +4,7 @@ import { parseView, safeView } from "../src/model";
 describe("parseView", () => {
   it("reads the core's answer", () => {
     const view = parseView(JSON.stringify({ valid: true, error: null, overall_size: [1, 2, 3],
-      size_reference: "a", pieces: [], problems: [], connections: [], holes: [] }));
+      size_reference: "a", pieces: [], problems: [], connections: [], holes: [], parts: [], steps: [], steps_declared: false, steps_hint: null }));
     expect(view.overall_size).toEqual([1, 2, 3]);
   });
 

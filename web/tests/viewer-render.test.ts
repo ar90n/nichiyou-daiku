@@ -29,7 +29,7 @@ const piece: PieceView = {
   rotation: [[1, 0, 0], [0, 1, 0], [0, 0, 1]], line: 1,
 };
 const view = (pieces: PieceView[]): View => ({ valid: true, error: null, overall_size: null,
-  size_reference: null, pieces, problems: [], connections: [], holes: [] });
+  size_reference: null, pieces, problems: [], connections: [], holes: [], parts: [], steps: [], steps_declared: false, steps_hint: null });
 
 beforeEach(() => { frames.length = 0; });
 

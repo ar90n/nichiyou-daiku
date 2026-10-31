@@ -6,7 +6,7 @@ import type { PieceView, View } from "../src/types";
 const v = (over: Partial<View> = {}): View => ({ valid: true, error: null, overall_size: [530, 440, 659.99999],
   size_reference: "a", pieces: [{ id: "a", type: "2x4", length: 659, line: 3 } as PieceView], problems: [],
   connections: [{ base: "a", target: "b", kind: "dowel", diameter: 8, length: 30, screw_type: null, line: 9 }],
-  holes: [], ...over });
+  holes: [], parts: [], steps: [], steps_declared: false, steps_hint: null, ...over });
 
 it("sizes read as millimetres", () => {
   expect(formatSize([530, 440, 659.99999])).toBe("530×440×660mm");
