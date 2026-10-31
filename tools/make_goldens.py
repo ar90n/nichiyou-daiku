@@ -7,9 +7,9 @@
 
 Each source becomes NAME.nd, NAME.validate.json (what `validate --json` prints),
 NAME.holes.json (every piece's holes and each connection's fasteners) and
-NAME.steps.json (the parts, the assembly steps and their fasteners); the last
-two only when the source assembles. `--steps-only` adds NAME.steps.json to the
-corpus that is there.
+NAME.steps.json (the parts, the assembly steps with their fasteners and
+dimensions); the last two only when the source assembles. `--steps-only` adds
+NAME.steps.json to the corpus that is there.
 """
 
 import argparse
@@ -26,6 +26,7 @@ from nichiyou_daiku.cli.commands.validate import _classify  # noqa: E402
 from nichiyou_daiku.core.assembly import Assembly  # noqa: E402
 from nichiyou_daiku.core.assembly.parts import part_groups  # noqa: E402
 from nichiyou_daiku.core.assembly.steps import plan_steps  # noqa: E402
+from nichiyou_daiku.core.placement import overall_bounds  # noqa: E402
 from nichiyou_daiku.core.geometry import Point3D  # noqa: E402
 from nichiyou_daiku.core.placement import round_mm  # noqa: E402
 from nichiyou_daiku.dsl import parse_dsl  # noqa: E402
@@ -33,8 +34,10 @@ from nichiyou_daiku.shell.diagnostics import (  # noqa: E402
     failure_report,
     validation_report,
 )
+from nichiyou_daiku.shell.dimensioning import chain_for  # noqa: E402
 from nichiyou_daiku.shell.instructions import grouping_hint  # noqa: E402
 from nichiyou_daiku.shell.resources import count_hardware  # noqa: E402
+from nichiyou_daiku.shell.views import axis_view, project  # noqa: E402
 from tests.test_docs import ND_BLOCKS, ND_FILES  # noqa: E402
 
 CORPUS = ROOT / "crates" / "nichiyou-daiku-core" / "tests" / "corpus"
@@ -84,10 +87,46 @@ def holes(assembly: Assembly) -> dict:
     return {"pieces": pieces, "fasteners": fasteners}
 
 
+def step_dimensions(assembly: Assembly, step, origin) -> list[dict]:
+    """The step's chains as the CLI's step image picks them (instructions.py:
+    _dimension_view), moved to the model's origin."""
+    view = axis_view(*step.view)
+    partners = {p for key in step.connections for p in key if p not in step.pieces}
+    chosen = [*step.pieces, *sorted(partners)]
+    model, poses = assembly.model, assembly.placement.poses
+    world = {p: poses[p].bounds(model.pieces[p]) for p in step.shown}
+    chains = []
+    for axis in (a for a in range(3) if a != step.view[0]):
+        unit = [0.0, 0.0, 0.0]
+        unit[axis] = 1.0
+        x, y = project(view, unit)
+        side = "below" if abs(x) > abs(y) else "left"
+        name = "xyz"[axis]
+        chain = chain_for(view.caption, name, side, world, dict(model.pieces), chosen)
+        shift = getattr(origin, name)
+        chains.append(
+            {
+                "axis": name,
+                "side": side,
+                "stops": [round_mm(s - shift) for s in chain.stops],
+                "segments": [
+                    {
+                        "start": round_mm(s.start - shift),
+                        "end": round_mm(s.end - shift),
+                        "lumber": s.lumber,
+                    }
+                    for s in chain.segments
+                ],
+            }
+        )
+    return chains
+
+
 def steps_report(assembly: Assembly) -> dict:
     """The parts, the steps with their fasteners, and the grouping hint, as
     the Rust core's view gives them."""
     plan = plan_steps(assembly)
+    origin = overall_bounds(assembly.model, assembly.placement)[0]
     return {
         "parts": [
             {
@@ -111,6 +150,7 @@ def steps_report(assembly: Assembly) -> dict:
                     {"name": item.name, "count": item.count}
                     for item in count_hardware(assembly, step.connections)
                 ],
+                "dimensions": step_dimensions(assembly, step, origin),
             }
             for step in plan.steps
         ],

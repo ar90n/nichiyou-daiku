@@ -7,6 +7,7 @@ use serde_json::{Value, json};
 
 use crate::assembly::{Assembly, FastenerKind, Hole, LayoutIssue};
 use crate::connection::ConnectionType;
+use crate::dimensioning::{Chain, step_dimensions};
 use crate::dsl::ast::Pos;
 use crate::geometry::{Face, SurfacePoint};
 use crate::hardware::count_hardware;
@@ -361,12 +362,31 @@ pub fn view_report(
                 "shown": step.shown,
                 "view": {"axis": AXES[step.view.0], "side": step.view.1},
                 "hardware": hardware,
+                "dimensions": step_dimensions(assembly, step)
+                    .iter()
+                    .map(|chain| chain_json(chain, origin))
+                    .collect::<Vec<_>>(),
             })
         })
         .collect();
     report["steps_declared"] = json!(plan.declared);
     report["steps_hint"] = json!(grouping_hint(&plan));
     report
+}
+
+/// A chain for the viewer, moved to the model's origin.
+fn chain_json(chain: &Chain, origin: [f64; 3]) -> Value {
+    let at = |value: f64| round_mm(value - origin[chain.axis]);
+    json!({
+        "axis": AXES[chain.axis],
+        "side": chain.side.as_str(),
+        "stops": chain.stops.iter().map(|&s| at(s)).collect::<Vec<_>>(),
+        "segments": chain
+            .segments
+            .iter()
+            .map(|s| json!({"start": at(s.start), "end": at(s.end), "lumber": s.lumber}))
+            .collect::<Vec<_>>(),
+    })
 }
 
 /// What the viewer gets when validation stops (see `failure_report`).
@@ -500,6 +520,30 @@ mod tests {
         );
         assert_eq!(report["pieces"], json!([]));
         assert_eq!(holes("(a:2x4 =100"), None);
+    }
+
+    #[test]
+    fn a_steps_dimensions_stop_at_its_pieces_and_partners() {
+        let v = crate::view(
+            "(a:2x4 =400)\n(b:2x4 =400)\n(c:2x4 =300)\na -[TF<0 BD<0]- b\nc -[FL<100 DF<0]- a\n",
+        );
+        assert_eq!(
+            v["steps"][1]["dimensions"],
+            json!([
+                {"axis": "x", "side": "below", "stops": [0.0, 200.0, 289.0, 300.0], "segments": [
+                    {"start": 0.0, "end": 200.0, "lumber": false},
+                    {"start": 200.0, "end": 289.0, "lumber": true},
+                    {"start": 289.0, "end": 300.0, "lumber": false}]},
+                {"axis": "y", "side": "left", "stops": [0.0, 311.0, 362.0, 400.0], "segments": [
+                    {"start": 0.0, "end": 311.0, "lumber": false},
+                    {"start": 311.0, "end": 362.0, "lumber": false},
+                    {"start": 362.0, "end": 400.0, "lumber": true}]}
+            ])
+        );
+        assert_eq!(
+            v["steps"][0]["dimensions"][0],
+            json!({"axis": "x", "side": "below", "stops": [200.0, 289.0], "segments": []})
+        );
     }
 
     #[test]
