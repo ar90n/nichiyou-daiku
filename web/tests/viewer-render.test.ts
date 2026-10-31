@@ -3,8 +3,10 @@ import * as THREE from "three";
 import { beforeEach, expect, it, vi } from "vitest";
 import type { PieceView, View } from "../src/types";
 
-// jsdom has no WebGL: a renderer that counts the meshes each frame shows
+// jsdom has no WebGL: a renderer that counts the meshes each frame shows,
+// and the points of the dimension lines
 const frames: number[] = [];
+const dimensionPoints: number[] = [];
 vi.mock("three", async (importOriginal) => {
   const actual = await importOriginal<typeof import("three")>();
   class CountingRenderer {
@@ -15,6 +17,11 @@ vi.mock("three", async (importOriginal) => {
       let meshes = 0;
       scene.traverseVisible((object) => { if ((object as THREE.Mesh).isMesh) meshes++; });
       frames.push(meshes);
+      let points = 0;
+      scene.traverseVisible((object) => {
+        if (object.userData.dimensions) points += (object as THREE.LineSegments).geometry.getAttribute("position").count;
+      });
+      dimensionPoints.push(points);
     }
   }
   return { ...actual, WebGLRenderer: CountingRenderer };
@@ -31,7 +38,10 @@ const piece: PieceView = {
 const view = (pieces: PieceView[]): View => ({ valid: true, error: null, overall_size: null,
   size_reference: null, pieces, problems: [], connections: [], holes: [], parts: [], steps: [], steps_declared: false, steps_hint: null });
 
-beforeEach(() => { frames.length = 0; });
+beforeEach(() => {
+  frames.length = 0;
+  dimensionPoints.length = 0;
+});
 
 it("a view with no pieces clears the model already drawn", () => {
   const viewer = new Viewer(document.createElement("div"));
@@ -75,4 +85,39 @@ it("on a step, the view buttons look at the step's part, not the whole model", (
   viewer.fit(null);
   viewer.setView("Top");
   expect(Math.round(viewer.controls.target.x * 1000) / 1000).toBe(144.5);
+});
+
+const layout = {
+  lines: [[[0, 0, -40], [89, 0, -40]], [[0, 0, 0], [0, 0, -48]]] as [[number, number, number], [number, number, number]][],
+  labels: [{ text: "89", position: [44.5, 0, -54] as [number, number, number], kind: "overall" as const }],
+};
+
+it("draws a step's dimensions and takes them away", () => {
+  const container = document.createElement("div");
+  const viewer = new Viewer(container);
+  viewer.show(view([piece]));
+  viewer.showDimensions(layout);
+  expect(dimensionPoints.at(-1)).toBe(4);
+  expect(container.querySelectorAll(".dim-label.overall")).toHaveLength(1);
+  viewer.showDimensions(null);
+  expect(dimensionPoints.at(-1)).toBe(0);
+  expect(container.querySelectorAll(".dim-label")).toHaveLength(0);
+});
+
+it("opening another view leaves no dimensions behind", () => {
+  const viewer = new Viewer(document.createElement("div"));
+  viewer.show(view([piece]));
+  viewer.showDimensions(layout);
+  viewer.show(view([piece]));
+  expect(dimensionPoints.at(-1)).toBe(0);
+});
+
+it("the Dimensions button looks along the step's view at the step's part", () => {
+  const viewer = new Viewer(document.createElement("div"));
+  viewer.show(view([piece, second]));
+  viewer.fit({ min: second.min, max: second.max });
+  viewer.lookAlong([0, 1, 0]);
+  const looking = viewer.camera.position.clone().sub(viewer.controls.target).normalize();
+  expect(looking.toArray().map((x) => Math.round(x * 1000) / 1000 + 0)).toEqual([0, 1, 0]);
+  expect(Math.round(viewer.controls.target.x * 1000) / 1000).toBe(244.5);
 });

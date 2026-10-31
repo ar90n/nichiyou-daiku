@@ -1,10 +1,11 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { CSS2DObject, CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer.js";
+import { labelOrder, visibleLabels, type DimensionLabel, type DimensionLayout } from "./dimensions";
 import type { Highlight } from "./highlight";
 import { buildScene, COLORS, holeMesh, type SceneParts } from "./scene";
 import type { Box } from "./steps";
-import type { View } from "./types";
+import type { Vec3, View } from "./types";
 
 export type ViewName = "Front" | "Top" | "Right" | "Iso";
 
@@ -21,6 +22,7 @@ export const VIEWS: Record<ViewName, [number, number, number]> = {
 // A press that moves this far is a drag (turning the model), not a pick
 const CLICK_PX = 4;
 const FADED_OPACITY = 0.25;
+const DIMENSION_COLOR = 0x3d5a80;
 
 /** What the page asks of the 3D view. */
 export interface Drawing {
@@ -31,6 +33,8 @@ export interface Drawing {
   apply(highlight: Highlight): void;
   showOnly(ids: Set<string> | null): void;
   fit(bounds: Box | null): void;
+  showDimensions(layout: DimensionLayout | null): void;
+  lookAlong(direction: Vec3): void;
 }
 
 /** The 3D view, or, where the browser cannot draw it, a note in its place. */
@@ -47,7 +51,7 @@ export function openViewer(container: HTMLElement): Drawing {
     container.replaceChildren(note);
     return {
       onPick: () => {}, show: () => {}, setView: () => {}, setLabels: () => {}, apply: () => {},
-      showOnly: () => {}, fit: () => {},
+      showOnly: () => {}, fit: () => {}, showDimensions: () => {}, lookAlong: () => {},
     };
   }
 }
@@ -67,6 +71,8 @@ export class Viewer implements Drawing {
   private extraHoles: THREE.Mesh[] = [];
   // What fit() last looked at, for the view buttons; null: the whole model
   private focus: THREE.Box3 | null = null;
+  private dimensions = new THREE.Group();
+  private dimensionLabels: { element: HTMLElement; label: DimensionLabel }[] = [];
   private pressedAt: { x: number; y: number } | null = null;
 
   constructor(private readonly container: HTMLElement) {
@@ -98,6 +104,7 @@ export class Viewer implements Drawing {
 
   /** Draw a view (null clears) and look at it from the iso view. */
   show(view: View | null): void {
+    this.clearDimensions();
     if (this.parts) this.scene.remove(this.parts.root);
     this.scene.remove(this.labels);
     this.extraHoles = [];
@@ -219,8 +226,56 @@ export class Viewer implements Drawing {
     this.render();
   }
 
+  /** Draw a step's dimensions; null takes them away. */
+  showDimensions(layout: DimensionLayout | null): void {
+    this.clearDimensions();
+    if (layout) {
+      const positions = layout.lines.flatMap(([from, to]) => [...from, ...to]);
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+      const lines = new THREE.LineSegments(geometry, new THREE.LineBasicMaterial({ color: DIMENSION_COLOR }));
+      lines.userData.dimensions = true;
+      this.dimensions.add(lines);
+      for (const label of layout.labels) {
+        const element = document.createElement("div");
+        element.className = `dim-label ${label.kind}`;
+        element.textContent = label.text;
+        const object = new CSS2DObject(element);
+        object.position.set(...label.position);
+        this.dimensions.add(object);
+        this.dimensionLabels.push({ element, label });
+      }
+      this.scene.add(this.dimensions);
+    }
+    this.render();
+  }
+
+  lookAlong(direction: Vec3): void {
+    if (!this.parts) return;
+    const box = this.focus ?? this.parts.bounds;
+    if (box.isEmpty()) return;
+    this.place(box, new THREE.Vector3(...direction));
+  }
+
+  private clearDimensions(): void {
+    this.scene.remove(this.dimensions);
+    for (const child of [...this.dimensions.children]) this.dimensions.remove(child);
+    this.dimensionLabels = [];
+  }
+
+  /** Values that overlap one shown before them are hidden: overall sizes first, lumber last. */
+  private hideCrowded(): void {
+    if (this.dimensionLabels.length === 0) return;
+    const rects = this.dimensionLabels.map(({ element }) => element.getBoundingClientRect());
+    const shown = visibleLabels(rects, labelOrder(this.dimensionLabels.map(({ label }) => label)));
+    this.dimensionLabels.forEach(({ element }, i) => {
+      element.style.visibility = shown[i] ? "" : "hidden";
+    });
+  }
+
   private render(): void {
     this.renderer.render(this.scene, this.camera);
     this.labelRenderer.render(this.scene, this.camera);
+    this.hideCrowded();
   }
 }
