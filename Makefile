@@ -1,10 +1,10 @@
-.PHONY: help check test lint format rust-check wasm-bindgen-cli wasm ci-local ci-setup clean eval eval-full
+.PHONY: help check test lint format rust-check wasm-bindgen-cli wasm web-node-modules web web-dev web-check ci-local ci-setup clean eval eval-full
 
 help:  ## Show this help message
 	@echo "Available commands:"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
 
-check: lint test rust-check  ## Lint and test; run before every commit (~3min)
+check: lint test rust-check web-check  ## Lint and test; run before every commit (~3min)
 
 test:  ## Run tests with coverage (including doctests)
 	uv run pytest src/ tests/ --doctest-modules --cov=nichiyou_daiku --cov-report=term-missing --cov-fail-under=90 -v
@@ -31,6 +31,18 @@ wasm: wasm-bindgen-cli  ## Build the core as WebAssembly for the viewer (web/src
 	cargo build -p nichiyou-daiku-wasm --target wasm32-unknown-unknown --release
 	wasm-bindgen --target web --out-dir web/src/wasm $(WASM)
 	@ls -l web/src/wasm/nichiyou_daiku_wasm_bg.wasm
+
+web-node-modules:
+	@cd web && ([ -d node_modules ] || npm ci --no-audit --no-fund)
+
+web: wasm web-node-modules  ## Build the viewer into web/dist
+	cd web && npm run build
+
+web-dev: wasm web-node-modules  ## Open the viewer on a local server
+	cd web && npm run dev
+
+web-check: wasm web-node-modules  ## Viewer: type check, tests, build
+	cd web && npm run typecheck && npm test && npm run build
 
 format:  ## Format code
 	uv run ruff format src/ tests/ evals/ tools/
