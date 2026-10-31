@@ -5,9 +5,11 @@
         -p tools.capture_dsl tests/ -q
     .venv/bin/python tools/make_goldens.py --captured /tmp/nd-captured.jsonl
 
-Each source becomes NAME.nd, NAME.validate.json (what `validate --json` prints)
-and NAME.holes.json (every piece's holes and each connection's fasteners;
-only when the source assembles).
+Each source becomes NAME.nd, NAME.validate.json (what `validate --json` prints),
+NAME.holes.json (every piece's holes and each connection's fasteners) and
+NAME.steps.json (the parts, the assembly steps and their fasteners); the last
+two only when the source assembles. `--steps-only` adds NAME.steps.json to the
+corpus that is there.
 """
 
 import argparse
@@ -22,6 +24,8 @@ sys.path.insert(0, str(ROOT))
 
 from nichiyou_daiku.cli.commands.validate import _classify  # noqa: E402
 from nichiyou_daiku.core.assembly import Assembly  # noqa: E402
+from nichiyou_daiku.core.assembly.parts import part_groups  # noqa: E402
+from nichiyou_daiku.core.assembly.steps import plan_steps  # noqa: E402
 from nichiyou_daiku.core.geometry import Point3D  # noqa: E402
 from nichiyou_daiku.core.placement import round_mm  # noqa: E402
 from nichiyou_daiku.dsl import parse_dsl  # noqa: E402
@@ -29,10 +33,12 @@ from nichiyou_daiku.shell.diagnostics import (  # noqa: E402
     failure_report,
     validation_report,
 )
+from nichiyou_daiku.shell.instructions import grouping_hint  # noqa: E402
+from nichiyou_daiku.shell.resources import count_hardware  # noqa: E402
 from tests.test_docs import ND_BLOCKS, ND_FILES  # noqa: E402
 
 CORPUS = ROOT / "crates" / "nichiyou-daiku-core" / "tests" / "corpus"
-GENERATED = ("*.nd", "*.validate.json", "*.holes.json")
+GENERATED = ("*.nd", "*.validate.json", "*.holes.json", "*.steps.json")
 
 
 def sources(captured: Path | None):
@@ -78,16 +84,53 @@ def holes(assembly: Assembly) -> dict:
     return {"pieces": pieces, "fasteners": fasteners}
 
 
-def reports(source: str) -> tuple[dict, dict | None]:
+def steps_report(assembly: Assembly) -> dict:
+    """The parts, the steps with their fasteners, and the grouping hint, as
+    the Rust core's view gives them."""
+    plan = plan_steps(assembly)
+    return {
+        "parts": [
+            {
+                "pieces": list(group.pieces),
+                "type": assembly.model.pieces[group.pieces[0]].type.value,
+                "length": round_mm(group.size[2]),
+                "count": len(group.pieces),
+            }
+            for group in part_groups(assembly)
+        ],
+        "steps": [
+            {
+                "number": step.number,
+                "name": step.name,
+                "kind": step.kind,
+                "pieces": list(step.pieces),
+                "connections": [list(key) for key in step.connections],
+                "shown": list(step.shown),
+                "view": {"axis": "xyz"[step.view[0]], "side": step.view[1]},
+                "hardware": [
+                    {"name": item.name, "count": item.count}
+                    for item in count_hardware(assembly, step.connections)
+                ],
+            }
+            for step in plan.steps
+        ],
+        "steps_declared": plan.declared,
+        "steps_hint": grouping_hint(plan),
+    }
+
+
+def reports(source: str) -> tuple[dict, dict | None, dict | None]:
     try:
         model = parse_dsl(source)
     except Exception as error:
-        return failure_report(_classify(error)[0], error).model_dump(mode="json"), None
+        report = failure_report(_classify(error)[0], error)
+        return report.model_dump(mode="json"), None, None
     try:
         assembly = Assembly.of(model)
     except Exception as error:
-        return failure_report("assembly", error).model_dump(mode="json"), None
-    return validation_report(assembly).model_dump(mode="json"), holes(assembly)
+        return failure_report("assembly", error).model_dump(mode="json"), None, None
+    report = validation_report(assembly).model_dump(mode="json")
+    return report, holes(assembly), steps_report(assembly)
 
 
 def write(path: Path, value) -> None:
@@ -99,7 +142,25 @@ def main() -> None:
     parser.add_argument(
         "--captured", type=Path, help="JSON lines from tools/capture_dsl.py"
     )
+    parser.add_argument(
+        "--steps-only",
+        action="store_true",
+        help="write NAME.steps.json for the .nd files already in the corpus",
+    )
     args = parser.parse_args()
+    if args.steps_only:
+        for old in CORPUS.glob("*.steps.json"):
+            old.unlink()
+        written = 0
+        for path in sorted(CORPUS.glob("*.nd")):
+            try:
+                assembly = Assembly.of(parse_dsl(path.read_text(encoding="utf-8")))
+            except Exception:
+                continue  # No holes.json either: it does not assemble
+            write(path.with_suffix(".steps.json"), steps_report(assembly))
+            written += 1
+        print(f"steps.json {written}")
+        return
     CORPUS.mkdir(parents=True, exist_ok=True)
     for pattern in GENERATED:
         for old in CORPUS.glob(pattern):
@@ -113,10 +174,12 @@ def main() -> None:
         seen.add(digest)
         name = f"{origin}-{digest[:10]}"
         (CORPUS / f"{name}.nd").write_text(source, encoding="utf-8")
-        report, hole_list = reports(source)
+        report, hole_list, steps = reports(source)
         write(CORPUS / f"{name}.validate.json", report)
         if hole_list is not None:
             write(CORPUS / f"{name}.holes.json", hole_list)
+        if steps is not None:
+            write(CORPUS / f"{name}.steps.json", steps)
         error = report["error"] or {}
         kind = error.get("kind") or ("problems" if report["problems"] else "valid")
         counts[f"{origin}/{kind}"] += 1

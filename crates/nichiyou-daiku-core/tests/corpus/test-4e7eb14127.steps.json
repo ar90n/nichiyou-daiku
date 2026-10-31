@@ -1,0 +1,1 @@
+{"parts": [{"pieces": ["board"], "type": "1x4", "length": 1800.0, "count": 1}], "steps": [{"number": 1, "name": null, "kind": "first", "pieces": ["board"], "connections": [], "shown": ["board"], "view": {"axis": "y", "side": 1}, "hardware": []}], "steps_declared": false, "steps_hint": null}

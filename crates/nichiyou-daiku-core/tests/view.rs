@@ -45,6 +45,9 @@ fn without_its_additions_view_is_validate() {
         let object = view.as_object_mut().unwrap();
         object.remove("connections").expect("connections");
         object.remove("holes").expect("holes");
+        for key in ["parts", "steps", "steps_declared", "steps_hint"] {
+            object.remove(key).expect(key);
+        }
         for piece in object["pieces"].as_array_mut().unwrap() {
             for key in EXTRA_PIECE_KEYS {
                 piece.as_object_mut().unwrap().remove(key).expect(key);

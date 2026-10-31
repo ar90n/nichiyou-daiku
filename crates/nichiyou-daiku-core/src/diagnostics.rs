@@ -9,8 +9,11 @@ use crate::assembly::{Assembly, FastenerKind, Hole, LayoutIssue};
 use crate::connection::ConnectionType;
 use crate::dsl::ast::Pos;
 use crate::geometry::{Face, SurfacePoint};
+use crate::hardware::count_hardware;
+use crate::parts::part_groups;
 use crate::placement::{ConstraintKind, axis_index, find_overlaps, overall_bounds, rotate};
 use crate::pyfmt::{format_mm, round_mm};
+use crate::steps::{grouping_hint, plan_steps};
 
 const AXES: [&str; 3] = ["x", "y", "z"];
 
@@ -325,6 +328,44 @@ pub fn view_report(
         }
     }
     report["holes"] = Value::Array(holes);
+    let plan = plan_steps(assembly);
+    report["parts"] = part_groups(assembly)
+        .iter()
+        .map(|group| {
+            let first = assembly
+                .model
+                .piece(&group.pieces[0])
+                .expect("a piece of the model");
+            json!({
+                "pieces": group.pieces,
+                "type": first.kind.as_str(),
+                "length": round_mm(group.size[2]),
+                "count": group.pieces.len(),
+            })
+        })
+        .collect();
+    report["steps"] = plan
+        .steps
+        .iter()
+        .map(|step| {
+            let hardware: Vec<Value> = count_hardware(assembly, Some(&step.connections))
+                .into_iter()
+                .map(|item| json!({"name": item.name, "count": item.count}))
+                .collect();
+            json!({
+                "number": step.number,
+                "name": step.name,
+                "kind": step.kind.as_str(),
+                "pieces": step.pieces,
+                "connections": step.connections.iter().map(|(a, b)| json!([a, b])).collect::<Vec<_>>(),
+                "shown": step.shown,
+                "view": {"axis": AXES[step.view.0], "side": step.view.1},
+                "hardware": hardware,
+            })
+        })
+        .collect();
+    report["steps_declared"] = json!(plan.declared);
+    report["steps_hint"] = json!(grouping_hint(&plan));
     report
 }
 
@@ -338,6 +379,10 @@ pub fn view_failure(
     let mut report = failure_report(kind, message, line, column);
     report["connections"] = json!([]);
     report["holes"] = json!([]);
+    report["parts"] = json!([]);
+    report["steps"] = json!([]);
+    report["steps_declared"] = json!(false);
+    report["steps_hint"] = Value::Null;
     report
 }
 
@@ -496,6 +541,15 @@ mod tests {
         assert_eq!(
             (v["connections"].clone(), v["holes"].clone()),
             (json!([]), json!([]))
+        );
+        assert_eq!(
+            (
+                v["parts"].clone(),
+                v["steps"].clone(),
+                v["steps_declared"].clone(),
+                v["steps_hint"].clone()
+            ),
+            (json!([]), json!([]), json!(false), json!(null))
         );
     }
 }
