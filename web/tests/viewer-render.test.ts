@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { beforeEach, expect, it, vi } from "vitest";
 import type { PieceView, View } from "../src/types";
 
-// jsdom has no WebGL: a renderer that counts the meshes each frame draws
+// jsdom has no WebGL: a renderer that counts the meshes each frame shows
 const frames: number[] = [];
 vi.mock("three", async (importOriginal) => {
   const actual = await importOriginal<typeof import("three")>();
@@ -13,7 +13,7 @@ vi.mock("three", async (importOriginal) => {
     setSize() {}
     render(scene: THREE.Scene) {
       let meshes = 0;
-      scene.traverse((object) => { if ((object as THREE.Mesh).isMesh) meshes++; });
+      scene.traverseVisible((object) => { if ((object as THREE.Mesh).isMesh) meshes++; });
       frames.push(meshes);
     }
   }
@@ -39,4 +39,28 @@ it("a view with no pieces clears the model already drawn", () => {
   expect(frames.at(-1)).toBe(1);
   viewer.show(view([])); // e.g. a file with only variables so far
   expect(frames.at(-1)).toBe(0);
+});
+
+const second: PieceView = { ...piece, id: "c", min: [200, 0, 0], max: [289, 38, 300], position: [200, 0, 0] };
+
+it("a step draws only the pieces it shows", () => {
+  const viewer = new Viewer(document.createElement("div"));
+  viewer.show(view([piece, second]));
+  expect(frames.at(-1)).toBe(2);
+  viewer.showOnly(new Set(["c"]));
+  expect(frames.at(-1)).toBe(1);
+  viewer.showOnly(null);
+  expect(frames.at(-1)).toBe(2);
+});
+
+it("fitting a step keeps the way the camera looks", () => {
+  const viewer = new Viewer(document.createElement("div"));
+  viewer.show(view([piece, second]));
+  viewer.setView("Front");
+  viewer.fit({ min: second.min, max: second.max });
+  const looking = viewer.camera.position.clone().sub(viewer.controls.target).normalize();
+  expect(looking.toArray().map((x) => Math.round(x * 1000) / 1000 + 0)).toEqual([0, 1, 0]);
+  // OrbitControls.update() clamps the target, so it is off by a rounding
+  const [x, y, z] = viewer.controls.target.toArray();
+  expect([x, y, z].map((v) => Math.round(v * 1000) / 1000)).toEqual([244.5, 19, 150]);
 });

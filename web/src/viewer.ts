@@ -3,6 +3,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { CSS2DObject, CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer.js";
 import type { Highlight } from "./highlight";
 import { buildScene, COLORS, holeMesh, type SceneParts } from "./scene";
+import type { Box } from "./steps";
 import type { View } from "./types";
 
 export type ViewName = "Front" | "Top" | "Right" | "Iso";
@@ -28,6 +29,8 @@ export interface Drawing {
   setView(name: ViewName): void;
   setLabels(visible: boolean): void;
   apply(highlight: Highlight): void;
+  showOnly(ids: Set<string> | null): void;
+  fit(bounds: Box | null): void;
 }
 
 /** The 3D view, or, where the browser cannot draw it, a note in its place. */
@@ -42,7 +45,10 @@ export function openViewer(container: HTMLElement): Drawing {
       `This browser cannot draw 3D (WebGL): ${reason} Turn on hardware acceleration or use ` +
       `another browser; the source and the problems still work.`;
     container.replaceChildren(note);
-    return { onPick: () => {}, show: () => {}, setView: () => {}, setLabels: () => {}, apply: () => {} };
+    return {
+      onPick: () => {}, show: () => {}, setView: () => {}, setLabels: () => {}, apply: () => {},
+      showOnly: () => {}, fit: () => {},
+    };
   }
 }
 
@@ -52,8 +58,8 @@ export class Viewer implements Drawing {
   private readonly renderer = new THREE.WebGLRenderer({ antialias: true });
   private readonly labelRenderer = new CSS2DRenderer();
   private readonly scene = new THREE.Scene();
-  private readonly camera = new THREE.PerspectiveCamera(35, 1, 1, 100_000);
-  private readonly controls: OrbitControls;
+  readonly camera = new THREE.PerspectiveCamera(35, 1, 1, 100_000);
+  readonly controls: OrbitControls;
   private readonly raycaster = new THREE.Raycaster();
   private view: View | null = null;
   private parts: SceneParts | null = null;
@@ -104,6 +110,7 @@ export class Viewer implements Drawing {
         element.textContent = label.id;
         const object = new CSS2DObject(element);
         object.position.copy(label.position);
+        object.userData.id = label.id;
         this.labels.add(object);
       }
       this.scene.add(this.labels);
@@ -115,10 +122,38 @@ export class Viewer implements Drawing {
 
   setView(name: ViewName): void {
     if (!this.parts || this.parts.bounds.isEmpty()) return;
-    const sphere = this.parts.bounds.getBoundingSphere(new THREE.Sphere());
+    this.place(this.parts.bounds, new THREE.Vector3(...VIEWS[name]));
+  }
+
+  /** Draw only these pieces, with their holes and labels; null draws them all. */
+  showOnly(ids: Set<string> | null): void {
+    if (!this.parts) return;
+    const shows = (id: string) => ids === null || ids.has(id);
+    for (const [id, { mesh, edges }] of this.parts.pieces) {
+      mesh.visible = shows(id);
+      edges.visible = shows(id);
+    }
+    for (const hole of this.parts.holes) hole.visible = shows(hole.userData.piece as string);
+    for (const label of this.labels.children) label.visible = shows(label.userData.id as string);
+    this.render();
+  }
+
+  /** Fit a box (null: the whole model), looking the way the camera looks now. */
+  fit(bounds: Box | null): void {
+    if (!this.parts) return;
+    const box = bounds
+      ? new THREE.Box3(new THREE.Vector3(...bounds.min), new THREE.Vector3(...bounds.max))
+      : this.parts.bounds;
+    if (box.isEmpty()) return;
+    const direction = this.camera.position.clone().sub(this.controls.target);
+    if (direction.lengthSq() === 0) direction.set(...VIEWS.Iso);
+    this.place(box, direction);
+  }
+
+  private place(box: THREE.Box3, direction: THREE.Vector3): void {
+    const sphere = box.getBoundingSphere(new THREE.Sphere());
     const distance = Math.max(sphere.radius, 1) * 2.5;
-    const direction = new THREE.Vector3(...VIEWS[name]).normalize();
-    this.camera.position.copy(sphere.center).addScaledVector(direction, distance);
+    this.camera.position.copy(sphere.center).addScaledVector(direction.clone().normalize(), distance);
     this.camera.near = distance / 100;
     this.camera.far = distance * 10;
     this.camera.updateProjectionMatrix();
