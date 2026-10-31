@@ -11,6 +11,7 @@ pub mod field;
 pub mod geometry;
 pub mod hardware;
 pub mod model;
+pub mod parts;
 pub mod piece;
 pub mod placement;
 pub mod presets;
