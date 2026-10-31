@@ -106,8 +106,9 @@ function showStep(next: number, picked: number | null = null): void {
   const scene = step === 0 ? partScene(current, part) : stepScene(current, step);
   viewer.showOnly(scene.visible);
   viewer.apply(stepHighlight(scene));
-  viewer.fit(scene.bounds);
+  // Drawn first, so that the camera frames the dimension rows too
   drawDimensions();
+  viewer.fit(scene.bounds);
   renderSteps(stepsEl, current, step, part, { onStep: (n) => showStep(n), onPart: (i) => showStep(0, i) });
   setTab("steps");
   history.replaceState(null, "", withStep(location.href, step));

@@ -99,3 +99,12 @@ describe("crowded values", () => {
     expect(visibleLabels(rects, [0, 1])).toEqual([true, true]);
   });
 });
+
+it("overall sizes are never hidden, even by each other", () => {
+  const rects = [
+    { left: 0, top: 0, right: 10, bottom: 10 },
+    { left: 5, top: 5, right: 15, bottom: 15 },
+    { left: 8, top: 8, right: 18, bottom: 18 },
+  ];
+  expect(visibleLabels(rects, [0, 1, 2], [true, true, false])).toEqual([true, true, false]);
+});

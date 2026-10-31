@@ -110,15 +110,15 @@ function overlaps(a: LabelRect, b: LabelRect): boolean {
   return a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
 }
 
-/** Which values to show: in order, each that overlaps none shown before it. */
-export function visibleLabels(rects: LabelRect[], order: number[]): boolean[] {
+/** Which values to show: in order, each that overlaps none shown before it; `kept` ones always show. */
+export function visibleLabels(rects: LabelRect[], order: number[], kept: boolean[] = []): boolean[] {
   const shown: LabelRect[] = [];
   const visible = rects.map(() => true);
   for (const i of order) {
     const rect = rects[i];
     // No size: off screen or behind the camera, where it covers nothing
     if (rect.right <= rect.left || rect.bottom <= rect.top) continue;
-    if (shown.some((other) => overlaps(rect, other))) visible[i] = false;
+    if (!kept[i] && shown.some((other) => overlaps(rect, other))) visible[i] = false;
     else shown.push(rect);
   }
   return visible;

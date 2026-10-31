@@ -68,11 +68,14 @@ export class Viewer implements Drawing {
   private view: View | null = null;
   private parts: SceneParts | null = null;
   private labels = new THREE.Group();
+  private labelsShown = true;
   private extraHoles: THREE.Mesh[] = [];
   // What fit() last looked at, for the view buttons; null: the whole model
   private focus: THREE.Box3 | null = null;
   private dimensions = new THREE.Group();
   private dimensionLabels: { element: HTMLElement; label: DimensionLabel }[] = [];
+  // Where the dimension rows reach, so that the camera frames them too
+  private dimensionBox: THREE.Box3 | null = null;
   private pressedAt: { x: number; y: number } | null = null;
 
   constructor(private readonly container: HTMLElement) {
@@ -106,12 +109,15 @@ export class Viewer implements Drawing {
   show(view: View | null): void {
     this.clearDimensions();
     if (this.parts) this.scene.remove(this.parts.root);
+    // Each name leaves the overlay only when removed itself, not with its group
+    for (const name of [...this.labels.children]) this.labels.remove(name);
     this.scene.remove(this.labels);
     this.extraHoles = [];
     this.focus = null;
     this.view = view;
     this.parts = view ? buildScene(view) : null;
     this.labels = new THREE.Group();
+    this.labels.visible = this.labelsShown;
     if (this.parts) {
       this.scene.add(this.parts.root);
       for (const label of this.parts.labels) {
@@ -134,7 +140,7 @@ export class Viewer implements Drawing {
     if (!this.parts) return;
     const box = this.focus ?? this.parts.bounds;
     if (box.isEmpty()) return;
-    this.place(box, new THREE.Vector3(...VIEWS[name]));
+    this.place(this.framing(box), new THREE.Vector3(...VIEWS[name]));
   }
 
   /** Draw only these pieces, with their holes and labels; null draws them all. */
@@ -160,7 +166,7 @@ export class Viewer implements Drawing {
     this.focus = bounds ? box : null;
     const direction = this.camera.position.clone().sub(this.controls.target);
     if (direction.lengthSq() === 0) direction.set(...VIEWS.Iso);
-    this.place(box, direction);
+    this.place(this.framing(box), direction);
   }
 
   private place(box: THREE.Box3, direction: THREE.Vector3): void {
@@ -175,8 +181,11 @@ export class Viewer implements Drawing {
     this.render();
   }
 
+  /** Piece names only: the dimension values share the overlay and stay. */
   setLabels(visible: boolean): void {
-    this.labelRenderer.domElement.style.display = visible ? "" : "none";
+    this.labelsShown = visible;
+    this.labels.visible = visible;
+    this.render();
   }
 
   /** Colour and fade the pieces, and draw the holes a highlight adds. */
@@ -246,6 +255,9 @@ export class Viewer implements Drawing {
         this.dimensionLabels.push({ element, label });
       }
       this.scene.add(this.dimensions);
+      this.dimensionBox = new THREE.Box3().setFromPoints(
+        [...layout.lines.flat(), ...layout.labels.map((label) => label.position)].map((p) => new THREE.Vector3(...p)),
+      );
     }
     this.render();
   }
@@ -254,20 +266,27 @@ export class Viewer implements Drawing {
     if (!this.parts) return;
     const box = this.focus ?? this.parts.bounds;
     if (box.isEmpty()) return;
-    this.place(box, new THREE.Vector3(...direction));
+    this.place(this.framing(box), new THREE.Vector3(...direction));
+  }
+
+  /** The box the camera fits: the part's, grown to hold the dimension rows. */
+  private framing(box: THREE.Box3): THREE.Box3 {
+    return this.dimensionBox ? box.clone().union(this.dimensionBox) : box;
   }
 
   private clearDimensions(): void {
     this.scene.remove(this.dimensions);
     for (const child of [...this.dimensions.children]) this.dimensions.remove(child);
     this.dimensionLabels = [];
+    this.dimensionBox = null;
   }
 
   /** Values that overlap one shown before them are hidden: overall sizes first, lumber last. */
   private hideCrowded(): void {
     if (this.dimensionLabels.length === 0) return;
     const rects = this.dimensionLabels.map(({ element }) => element.getBoundingClientRect());
-    const shown = visibleLabels(rects, labelOrder(this.dimensionLabels.map(({ label }) => label)));
+    const labels = this.dimensionLabels.map(({ label }) => label);
+    const shown = visibleLabels(rects, labelOrder(labels), labels.map((label) => label.kind === "overall"));
     this.dimensionLabels.forEach(({ element }, i) => {
       element.style.visibility = shown[i] ? "" : "hidden";
     });

@@ -121,3 +121,36 @@ it("the Dimensions button looks along the step's view at the step's part", () =>
   expect(looking.toArray().map((x) => Math.round(x * 1000) / 1000 + 0)).toEqual([0, 1, 0]);
   expect(Math.round(viewer.controls.target.x * 1000) / 1000).toBe(244.5);
 });
+
+it("turning the piece names off keeps the dimension values", () => {
+  const container = document.createElement("div");
+  const viewer = new Viewer(container);
+  viewer.show(view([piece]));
+  viewer.showDimensions(layout);
+  viewer.setLabels(false);
+  expect(container.querySelector<HTMLElement>(".labels")!.style.display).not.toBe("none");
+  expect(container.querySelector<HTMLElement>(".label")!.style.display).toBe("none");
+  expect(container.querySelector<HTMLElement>(".dim-label")!.style.display).not.toBe("none");
+});
+
+it("the camera frames the dimension rows with the part", () => {
+  const viewer = new Viewer(document.createElement("div"));
+  viewer.show(view([piece]));
+  viewer.showDimensions({ lines: [[[0, 0, -200], [89, 0, -200]]], labels: [] });
+  viewer.fit({ min: piece.min, max: piece.max });
+  expect(Math.round(viewer.controls.target.z * 1000) / 1000).toBe(50);
+  viewer.lookAlong([0, 1, 0]);
+  expect(Math.round(viewer.controls.target.z * 1000) / 1000).toBe(50);
+});
+
+it("piece names stay off after opening another view", () => {
+  const container = document.createElement("div");
+  const viewer = new Viewer(container);
+  viewer.show(view([piece]));
+  viewer.setLabels(false);
+  viewer.show(view([piece]));
+  const shown = () => [...container.querySelectorAll<HTMLElement>(".label")].filter((e) => e.style.display !== "none");
+  expect(shown()).toHaveLength(0);
+  viewer.setLabels(true);
+  expect(shown()).toHaveLength(1); // the first view's names left with it
+});

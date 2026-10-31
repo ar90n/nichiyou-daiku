@@ -40,8 +40,8 @@ li.error { color: #c0392b; white-space: pre-wrap; }
 li.none, li.hint, p.hint { color: #7a6e60; }
 .line-link { padding: 0 6px; font-size: 12px; }
 .view { position: relative; display: flex; flex-direction: column; min-height: 0; }
-.toolbar { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 6px 10px; }
-#views { display: flex; gap: 6px; }
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px; padding: 6px 10px; }
+#views { display: flex; flex-wrap: wrap; gap: 6px; }
 #scene { position: relative; flex: 1; min-height: 0; overflow: hidden; }
 #scene canvas, #scene .labels { position: absolute; inset: 0; }
 #scene .labels { pointer-events: none; }
