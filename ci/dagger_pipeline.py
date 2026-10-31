@@ -131,6 +131,69 @@ async def rust_pipeline(client: dagger.Client, source_dir: Directory) -> Contain
     )
 
 
+WASM_BINDGEN_VERSION = "0.2.130"
+
+
+async def web_pipeline(client: dagger.Client, source_dir: Directory) -> Container:
+    """Build the core as WebAssembly, then check, test and build the viewer."""
+    wasm = (
+        client.container()
+        .from_("rust:1.99-slim")
+        .with_mounted_directory("/src", source_dir)
+        .with_workdir("/src")
+        # Compiling wasm-bindgen's CLI takes minutes; keep it between runs
+        .with_mounted_cache(
+            "/opt/wasm-bindgen",
+            client.cache_volume(f"wasm-bindgen-cli-{WASM_BINDGEN_VERSION}"),
+        )
+        .with_exec(["rustup", "target", "add", "wasm32-unknown-unknown"])
+        .with_exec(
+            [
+                "cargo",
+                "install",
+                "wasm-bindgen-cli",
+                "--version",
+                WASM_BINDGEN_VERSION,
+                "--locked",
+                "--root",
+                "/opt/wasm-bindgen",
+            ]
+        )
+        .with_exec(
+            [
+                "cargo",
+                "build",
+                "-p",
+                "nichiyou-daiku-wasm",
+                "--target",
+                "wasm32-unknown-unknown",
+                "--release",
+            ]
+        )
+        .with_exec(
+            [
+                "/opt/wasm-bindgen/bin/wasm-bindgen",
+                "--target",
+                "web",
+                "--out-dir",
+                "web/src/wasm",
+                "target/wasm32-unknown-unknown/release/nichiyou_daiku_wasm.wasm",
+            ]
+        )
+    )
+    return (
+        client.container()
+        .from_("node:24-slim")
+        .with_directory("/src", source_dir)
+        .with_directory("/src/web/src/wasm", wasm.directory("/src/web/src/wasm"))
+        .with_workdir("/src/web")
+        .with_exec(["npm", "ci", "--no-audit", "--no-fund"])
+        .with_exec(["npm", "run", "typecheck"])
+        .with_exec(["npm", "test"])
+        .with_exec(["npm", "run", "build"])
+    )
+
+
 async def build_pipeline(
     client: dagger.Client,
     source_dir: Directory,
@@ -185,6 +248,10 @@ async def main(
                 "evals/design/runs/",
                 # Rust build output
                 "target/",
+                # The viewer's dependencies and what it builds
+                "web/node_modules/",
+                "web/dist/",
+                "web/src/wasm/",
             ],
         )
 
@@ -215,6 +282,9 @@ async def main(
         print("\n🦀 Checking the Rust crates...")
         rust_result = await rust_pipeline(client, source)
 
+        print("\n🌐 Checking the viewer...")
+        web_result = await web_pipeline(client, source)
+
         # Execute all pipelines
         print("\n🚀 Executing all pipelines...")
 
@@ -225,6 +295,13 @@ async def main(
             await rust_result.stdout()
         except Exception as e:
             print(f"❌ Rust checks failed: {e}")
+            has_failures = True
+
+        print("\n🌐 Viewer results:")
+        try:
+            await web_result.stdout()
+        except Exception as e:
+            print(f"❌ Viewer checks failed: {e}")
             has_failures = True
 
         # Execute test results

@@ -67,6 +67,17 @@ Run the command again with `--force` to update. The Claude Code plugin follows t
 
 > **Note** build123d currently has limited support for ARM64/aarch64. The core works everywhere.
 
+## Viewer (next generation)
+
+The `next` branch rewrites the core in Rust and runs it in the browser as WebAssembly. The viewer opens an `.nd` file, draws it in 3D with its holes, lists what `validate` finds and shows the source beside it. Nothing leaves the browser.
+
+```bash
+make web-dev   # open it on a local server (needs Rust and Node.js 24 or later)
+make web       # build the static site into web/dist
+```
+
+Open a file with **Open** or by dropping it on the page, or open a URL: `?src=<URL of an .nd>` opens it when the page loads, so the address can be shared. The server must let other sites read the file; on GitHub, use the raw file (`raw.githubusercontent.com`) or a gist's raw URL. The `Viewer on GitHub Pages` workflow publishes the viewer when started by hand (choose "GitHub Actions" as the Pages source first).
+
 ## Documentation
 
 - [DSL specification](docs/dsl-specification.md): pieces, faces and offsets, connections, variables, unknowns, fasteners, CLI, grammar, errors
