@@ -9,6 +9,7 @@ pub mod difflib;
 pub mod dsl;
 pub mod field;
 pub mod geometry;
+pub mod hardware;
 pub mod model;
 pub mod piece;
 pub mod placement;
