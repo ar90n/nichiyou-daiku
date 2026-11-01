@@ -1,5 +1,5 @@
 import { element, mm } from "./panels";
-import { stepHeading } from "./steps";
+import { stepHeading, stepsTab } from "./steps";
 import type { View } from "./types";
 
 export interface StepsHandlers {
@@ -33,6 +33,15 @@ function card(step: number, title: string, open: boolean, on: StepsHandlers): HT
   heading.addEventListener("click", () => on.onStep(step));
   section.append(heading);
   return section;
+}
+
+/** Steps and Manual open only for a design that reads; their tooltips say why not. */
+export function markTabs(tabs: HTMLElement[], view: View | null): void {
+  const state = stepsTab(view);
+  for (const tab of tabs) {
+    tab.classList.toggle("unavailable", !state.enabled);
+    tab.title = state.reason ?? "";
+  }
 }
 
 /** Why the steps cannot be shown: a phone shows no tooltip on the tab. */

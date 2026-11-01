@@ -16,6 +16,7 @@
       <nav id="tabs">
         <button id="tab-model" class="tab active" type="button">Model</button>
         <button id="tab-steps" class="tab unavailable" type="button" title="Open an .nd first">Steps</button>
+        <button id="tab-manual" class="tab unavailable" type="button" title="Open an .nd first">Manual</button>
       </nav>
     </header>
     <main>
@@ -45,6 +46,10 @@
           <div class="drawing-tools"><button class="close" type="button">3D</button><button class="fit" type="button">Fit</button><span class="drawing-notes"></span></div>
           <div class="drawing-page"></div>
         </div>
+      </section>
+      <section id="manual">
+        <div class="manual-tools"><button id="print" type="button">Print</button></div>
+        <div id="manual-pages"></div>
       </section>
     </main>
     <script type="module" src="/src/main.ts"></script>

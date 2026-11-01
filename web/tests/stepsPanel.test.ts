@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { readFileSync } from "node:fs";
 import { describe, expect, it, vi } from "vitest";
-import { renderSteps, renderUnavailable } from "../src/stepsPanel";
+import { markTabs, renderSteps, renderUnavailable } from "../src/stepsPanel";
 import type { PieceView, View } from "../src/types";
 
 const v = (over: Partial<View> = {}): View => ({
@@ -114,4 +114,19 @@ it("the Drawing buttons stay in the panel, apart from the drawing pane", () => {
   expect(getComputedStyle(step).position).not.toBe("absolute");
   root.remove();
   style.remove();
+});
+
+it("Steps and Manual open only for a design that reads, and say why not", () => {
+  const steps = document.createElement("button");
+  const manual = document.createElement("button");
+  markTabs([steps, manual], v({ error: { kind: "parse", message: "bad", line: 1, column: 1 } }));
+  for (const tab of [steps, manual]) {
+    expect(tab.classList.contains("unavailable")).toBe(true);
+    expect(tab.title).toBe("Fix the error first: the steps need a design that reads");
+  }
+  markTabs([steps, manual], v());
+  for (const tab of [steps, manual]) {
+    expect(tab.classList.contains("unavailable")).toBe(false);
+    expect(tab.title).toBe("");
+  }
 });
