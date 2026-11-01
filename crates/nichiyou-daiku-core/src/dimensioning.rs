@@ -193,6 +193,74 @@ pub fn step_dimensions(assembly: &Assembly, step: &PlannedStep) -> Vec<Chain> {
         .collect()
 }
 
+/// Chain dimensions through given stops, such as hole centres, between the
+/// lowest and the highest; none of its stretches is a lumber size.
+pub fn chain_from_stops(axis: usize, side: Side, stops: &[f64]) -> Chain {
+    let mut ordered = stops.to_vec();
+    ordered.sort_by(f64::total_cmp);
+    let last = ordered.len() - 1;
+    let merged = merged_stops(&ordered[1..last], ordered[0], ordered[last]);
+    let segments = if merged.len() > 2 {
+        merged
+            .windows(2)
+            .map(|w| Segment {
+                start: w[0],
+                end: w[1],
+                lumber: false,
+            })
+            .collect()
+    } else {
+        Vec::new()
+    };
+    Chain {
+        axis,
+        side,
+        stops: merged,
+        segments,
+    }
+}
+
+fn span(run: &[usize], wanted: &[f64], sizes: &[f64], low: f64, high: f64, gap: f64) -> (f64, f64) {
+    let total = run.iter().map(|&i| sizes[i]).sum::<f64>() + gap * (run.len() as f64 - 1.0);
+    let start = run.iter().map(|&i| wanted[i]).sum::<f64>() / run.len() as f64 - total / 2.0;
+    let start = low.max(start.min(high - total));
+    (start, start + total)
+}
+
+/// Centres for labels along a line, and whether they all fit. Labels keep
+/// the order of `wanted` (ascending) and stay `gap` apart; each run of
+/// labels that would touch is centred on where its labels want to be, then
+/// moved inside `low`..`high`. A run longer than that starts at `low`.
+pub fn spread(wanted: &[f64], sizes: &[f64], low: f64, high: f64, gap: f64) -> (Vec<f64>, bool) {
+    let mut runs: Vec<Vec<usize>> = (0..wanted.len()).map(|i| vec![i]).collect();
+    let spans = loop {
+        let spans: Vec<(f64, f64)> = runs
+            .iter()
+            .map(|run| span(run, wanted, sizes, low, high, gap))
+            .collect();
+        let touching =
+            (0..runs.len().saturating_sub(1)).find(|&k| spans[k + 1].0 < spans[k].1 + gap);
+        match touching {
+            None => break spans,
+            Some(k) => {
+                let next = runs.remove(k + 1);
+                runs[k].extend(next);
+            }
+        }
+    };
+    let mut centres = vec![0.0; wanted.len()];
+    let mut fits = true;
+    for (run, &(start, end)) in runs.iter().zip(&spans) {
+        fits = fits && start >= low - 1e-9 && end <= high + 1e-9;
+        let mut cursor = start;
+        for &i in run {
+            centres[i] = cursor + sizes[i] / 2.0;
+            cursor += sizes[i] + gap;
+        }
+    }
+    (centres, fits)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -237,6 +305,29 @@ mod tests {
         let model = parse("(a:2x4 =300)\n(b:2x4 =300)\n(c:1x4 =300)\n").unwrap();
         let chain = chain_for(0, Side::Below, &boxes(), &model, &["a".to_string()]);
         assert_eq!((chain.stops, chain.segments), (vec![0.0, 500.0], vec![]));
+    }
+
+    #[test]
+    fn stops_from_holes_merge_and_sort() {
+        let chain = chain_from_stops(0, Side::Below, &[0.0, 750.0, 22.2, 66.7, 66.72]);
+        assert_eq!(chain.stops, [0.0, 22.2, 66.7, 750.0]);
+        assert!(chain.segments.iter().all(|s| !s.lumber));
+        assert_eq!(chain.segments.len(), 3);
+        let ends = chain_from_stops(0, Side::Below, &[0.0, 300.0]);
+        assert_eq!((ends.stops, ends.segments), (vec![0.0, 300.0], vec![]));
+    }
+
+    #[test]
+    fn values_spread_apart_and_say_whether_they_fit() {
+        assert_eq!(
+            spread(&[0.0, 1.0], &[2.0, 2.0], -10.0, 10.0, 1.0),
+            (vec![-1.0, 2.0], true)
+        );
+        assert_eq!(spread(&[0.0], &[4.0], 0.0, 10.0, 1.0), (vec![2.0], true));
+        assert_eq!(
+            spread(&[0.0, 1.0, 2.0], &[5.0, 5.0, 5.0], 0.0, 10.0, 1.0),
+            (vec![2.5, 8.5, 14.5], false)
+        );
     }
 
     #[test]
