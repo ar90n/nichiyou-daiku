@@ -1,0 +1,283 @@
+[
+  {
+    "name": "report-no-cut-diagram",
+    "args": [
+      "report",
+      "--no-cut-diagram",
+      "-"
+    ],
+    "file": "examples/nd_files/simple_table_compact.nd",
+    "text": null
+  },
+  {
+    "name": "report-no-anchor-details",
+    "args": [
+      "report",
+      "--no-anchor-details",
+      "-"
+    ],
+    "file": "examples/nd_files/simple_table_compact.nd",
+    "text": null
+  },
+  {
+    "name": "report-no-pilot-holes",
+    "args": [
+      "report",
+      "--no-pilot-holes",
+      "-"
+    ],
+    "file": "examples/nd_files/simple_table_compact.nd",
+    "text": null
+  },
+  {
+    "name": "report-last-flag-wins",
+    "args": [
+      "report",
+      "--no-cut-diagram",
+      "--include-cut-diagram",
+      "-"
+    ],
+    "file": "examples/nd_files/simple_table_compact.nd",
+    "text": null
+  },
+  {
+    "name": "report-project-name",
+    "args": [
+      "report",
+      "--project-name",
+      "Side table",
+      "-"
+    ],
+    "file": "examples/nd_files/simple_table_compact.nd",
+    "text": null
+  },
+  {
+    "name": "report-stock",
+    "args": [
+      "report",
+      "--stock",
+      "stock/ok.toml",
+      "-"
+    ],
+    "file": "examples/nd_files/simple_table_compact.nd",
+    "text": null
+  },
+  {
+    "name": "report-oversize",
+    "args": [
+      "report",
+      "-"
+    ],
+    "file": null,
+    "text": "(a:2x4 =4000)\n(b:2x4 =400)\na -[TF<0 BD<0]- b\n"
+  },
+  {
+    "name": "report-warnings",
+    "args": [
+      "report",
+      "-"
+    ],
+    "file": null,
+    "text": "(a:2x4 =400)\n(b:2x4 =400)\n"
+  },
+  {
+    "name": "report-quiet",
+    "args": [
+      "-q",
+      "report",
+      "-"
+    ],
+    "file": null,
+    "text": "(a:2x4 =400)\n(b:2x4 =400)\n"
+  },
+  {
+    "name": "report-verbose",
+    "args": [
+      "-v",
+      "report",
+      "-"
+    ],
+    "file": null,
+    "text": "(a:2x4 =400)\n(b:2x4 =400)\n"
+  },
+  {
+    "name": "report-missing-file",
+    "args": [
+      "report",
+      "missing.nd"
+    ],
+    "file": null,
+    "text": null
+  },
+  {
+    "name": "report-stock-missing",
+    "args": [
+      "report",
+      "--stock",
+      "stock/missing.toml",
+      "-"
+    ],
+    "file": "examples/nd_files/simple_table_compact.nd",
+    "text": null
+  },
+  {
+    "name": "report-stock-bad-toml",
+    "args": [
+      "report",
+      "--stock",
+      "stock/bad-toml.toml",
+      "-"
+    ],
+    "file": "examples/nd_files/simple_table_compact.nd",
+    "text": null
+  },
+  {
+    "name": "report-stock-not-utf8",
+    "args": [
+      "report",
+      "--stock",
+      "stock/not-utf8.toml",
+      "-"
+    ],
+    "file": "examples/nd_files/simple_table_compact.nd",
+    "text": null
+  },
+  {
+    "name": "report-stock-unknown-key",
+    "args": [
+      "report",
+      "--stock",
+      "stock/unknown-key.toml",
+      "-"
+    ],
+    "file": "examples/nd_files/simple_table_compact.nd",
+    "text": null
+  },
+  {
+    "name": "report-stock-kerf-text",
+    "args": [
+      "report",
+      "--stock",
+      "stock/kerf-text.toml",
+      "-"
+    ],
+    "file": "examples/nd_files/simple_table_compact.nd",
+    "text": null
+  },
+  {
+    "name": "report-stock-kerf-negative",
+    "args": [
+      "report",
+      "--stock",
+      "stock/kerf-negative.toml",
+      "-"
+    ],
+    "file": "examples/nd_files/simple_table_compact.nd",
+    "text": null
+  },
+  {
+    "name": "report-stock-lengths-not-table",
+    "args": [
+      "report",
+      "--stock",
+      "stock/lengths-not-table.toml",
+      "-"
+    ],
+    "file": "examples/nd_files/simple_table_compact.nd",
+    "text": null
+  },
+  {
+    "name": "report-stock-kerf-in-lengths",
+    "args": [
+      "report",
+      "--stock",
+      "stock/kerf-in-lengths.toml",
+      "-"
+    ],
+    "file": "examples/nd_files/simple_table_compact.nd",
+    "text": null
+  },
+  {
+    "name": "report-stock-unknown-type",
+    "args": [
+      "report",
+      "--stock",
+      "stock/unknown-type.toml",
+      "-"
+    ],
+    "file": "examples/nd_files/simple_table_compact.nd",
+    "text": null
+  },
+  {
+    "name": "report-stock-not-list",
+    "args": [
+      "report",
+      "--stock",
+      "stock/not-list.toml",
+      "-"
+    ],
+    "file": "examples/nd_files/simple_table_compact.nd",
+    "text": null
+  },
+  {
+    "name": "report-stock-empty-list",
+    "args": [
+      "report",
+      "--stock",
+      "stock/empty-list.toml",
+      "-"
+    ],
+    "file": "examples/nd_files/simple_table_compact.nd",
+    "text": null
+  },
+  {
+    "name": "report-stock-bad-lengths",
+    "args": [
+      "report",
+      "--stock",
+      "stock/bad-lengths.toml",
+      "-"
+    ],
+    "file": "examples/nd_files/simple_table_compact.nd",
+    "text": null
+  },
+  {
+    "name": "validate-verbose",
+    "args": [
+      "-v",
+      "validate",
+      "-"
+    ],
+    "file": "examples/nd_files/simple_table_compact.nd",
+    "text": null
+  },
+  {
+    "name": "validate-quiet",
+    "args": [
+      "-q",
+      "validate",
+      "-"
+    ],
+    "file": null,
+    "text": "(a:2x4 =400)\n(b:2x4 =400)\n"
+  },
+  {
+    "name": "validate-missing-file",
+    "args": [
+      "validate",
+      "missing.nd"
+    ],
+    "file": null,
+    "text": null
+  },
+  {
+    "name": "validate-json-missing-file",
+    "args": [
+      "validate",
+      "--json",
+      "missing.nd"
+    ],
+    "file": null,
+    "text": null
+  }
+]

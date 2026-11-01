@@ -1,0 +1,6 @@
+exit: 1
+--- stdout
+--- stderr
+✗ Semantic error
+
+line 3, column 8: Undefined variable 'X' (define it before it is used)

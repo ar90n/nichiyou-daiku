@@ -1,0 +1,4 @@
+exit: 1
+--- stdout
+--- stderr
+DSL Error: line 2, column 3: Duplicate piece ID: a

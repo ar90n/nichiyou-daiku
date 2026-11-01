@@ -1,0 +1,4 @@
+exit: 1
+--- stdout
+--- stderr
+Error: stock/not-utf8.toml: not UTF-8 text (byte 11). Save the file as UTF-8

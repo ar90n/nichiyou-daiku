@@ -1,0 +1,6 @@
+exit: 1
+--- stdout
+✓ DSL syntax is valid
+--- stderr
+✗ Model has problems
+  - Pieces 'q' and 's' overlap (338200mm³)

@@ -1,0 +1,9 @@
+exit: 1
+--- stdout
+✓ DSL syntax is valid
+--- stderr
+✗ Model has problems
+  - Connection apron_front -> apron_left: screw hole in 'apron_left' runs into a screw hole of connection apron_left -> leg_fl
+  - Connection apron_back -> apron_left: screw hole in 'apron_left' runs into a screw hole of connection apron_left -> leg_bl
+  - Connection apron_front -> apron_right: screw hole in 'apron_right' runs into a screw hole of connection apron_right -> leg_fr
+  - Connection apron_back -> apron_right: screw hole in 'apron_right' runs into a screw hole of connection apron_right -> leg_br

@@ -1,0 +1,4 @@
+exit: 1
+--- stdout
+--- stderr
+Error: stock/empty-list.toml: '2x4' needs at least one length, e.g. "2x4" = [1820]

@@ -1,0 +1,6 @@
+exit: 1
+--- stdout
+✓ DSL syntax is valid
+--- stderr
+✗ Model has problems
+  - Connection base -> target: pieces do not share a contact area

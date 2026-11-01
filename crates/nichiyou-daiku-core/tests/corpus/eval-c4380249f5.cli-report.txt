@@ -1,0 +1,4 @@
+exit: 1
+--- stdout
+--- stderr
+DSL Error: Syntax error at line 16, column 21: Unexpected token '>'. Expected: face letter (T, D, L, R, F, B)

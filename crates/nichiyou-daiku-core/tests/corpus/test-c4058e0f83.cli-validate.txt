@@ -1,0 +1,7 @@
+exit: 1
+--- stdout
+✓ DSL syntax is valid
+--- stderr
+✗ Model has problems
+  - Pieces 'leg1' and 'leg3' overlap (2367400mm³)
+  - Pieces 'leg2' and 'leg4' overlap (2367400mm³)

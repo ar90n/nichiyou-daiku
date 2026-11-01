@@ -1,0 +1,6 @@
+exit: 1
+--- stdout
+--- stderr
+✗ Syntax error
+
+Syntax error at line 4, column 9: Unexpected token '+'. Expected: face letter (T, D, L, R, F, B). A compact offset that is an expression needs parentheses, e.g. FL<(X + 1)

@@ -1,0 +1,6 @@
+exit: 1
+--- stdout
+--- stderr
+✗ Validation error
+
+line 2, column 1: length: Input should be greater than 0 (got 0.0)

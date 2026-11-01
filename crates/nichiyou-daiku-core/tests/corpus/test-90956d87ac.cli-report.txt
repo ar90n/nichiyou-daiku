@@ -1,0 +1,4 @@
+exit: 1
+--- stdout
+--- stderr
+DSL Error: line 3, column 9: Unknown piece reference: beam2

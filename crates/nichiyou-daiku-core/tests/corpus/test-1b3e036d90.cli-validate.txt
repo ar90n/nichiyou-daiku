@@ -1,0 +1,6 @@
+exit: 1
+--- stdout
+--- stderr
+✗ Semantic error
+
+line 4, column 1: steps leaves out b; add it to a step

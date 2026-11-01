@@ -1,0 +1,6 @@
+exit: 1
+--- stdout
+✓ DSL syntax is valid
+--- stderr
+✗ Model has problems
+  - Connection post -> other: dowel hole in 'post' runs into a dowel hole of connection post -> front

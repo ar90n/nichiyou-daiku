@@ -1,0 +1,4 @@
+exit: 1
+--- stdout
+--- stderr
+DSL Error: Syntax error at line 3, column 20: Unexpected token ')'. Expected one of: '(', '-', identifier, number

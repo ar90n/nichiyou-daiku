@@ -1,0 +1,4 @@
+exit: 1
+--- stdout
+--- stderr
+DSL Error: line 5, column 26: Unknown dowel preset: 8x30.5

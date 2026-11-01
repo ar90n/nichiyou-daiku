@@ -1,0 +1,6 @@
+exit: 1
+--- stdout
+--- stderr
+✗ Semantic error
+
+line 2, column 3: Duplicate piece ID: a

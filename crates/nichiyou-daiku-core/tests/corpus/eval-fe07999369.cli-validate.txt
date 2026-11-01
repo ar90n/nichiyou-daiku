@@ -1,0 +1,13 @@
+exit: 1
+--- stdout
+✓ DSL syntax is valid
+--- stderr
+✗ Model has problems
+  - Connection apron_back -> top_1: edge (x) is off by 860mm (loop: apron_back -> apron_left -> apron_front -> top_1)
+  - Connection apron_back -> top_2: edge (x) is off by 573.3mm (loop: apron_back -> apron_left -> apron_front -> top_2)
+  - Connection apron_back -> top_3: edge (x) is off by 286.7mm (loop: apron_back -> apron_left -> apron_front -> top_3)
+  - Connection apron_back -> top_5: edge (x) is off by 286.7mm (loop: apron_back -> apron_left -> apron_front -> top_5)
+  - Connection apron_back -> top_6: edge (x) is off by 573.3mm (loop: apron_back -> apron_left -> apron_front -> top_6)
+  - Connection apron_back -> top_7: edge (x) is off by 860mm (loop: apron_back -> apron_left -> apron_front -> top_7)
+  - Connection apron_front -> top_7: screw hole in 'apron_front' runs into a screw hole of connection apron_front -> apron_left
+  - Connection apron_front -> top_1: screw hole in 'apron_front' runs into a screw hole of connection apron_front -> apron_right

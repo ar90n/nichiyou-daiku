@@ -1,0 +1,449 @@
+exit: 0
+--- stdout
+# Woodworking Project Report
+
+*Generated on DATE*
+
+## Project Overview
+
+- **Overall Size (X × Y × Z)**: 127 × 300 × 1200 mm (Z is the length direction of 'rail')
+- **Total Pieces**: 13
+- **Lumber Types**: 2 (2x2, 2x4)
+- **Total Volume**: 9,256,800 mm³
+- **Estimated Weight**: ~4.6 kg (assuming pine density)
+
+
+## Bill of Materials
+
+| ID | Type | Length (mm) | Width (mm) | Height (mm) | Volume (mm³) |
+|----|------|------------|-----------|------------|-------------|
+| slat_with_a_long_name_00 | 2x2 | 300 | 38 | 38 | 433,200 |
+| slat_with_a_long_name_01 | 2x2 | 300 | 38 | 38 | 433,200 |
+| slat_with_a_long_name_02 | 2x2 | 300 | 38 | 38 | 433,200 |
+| slat_with_a_long_name_03 | 2x2 | 300 | 38 | 38 | 433,200 |
+| slat_with_a_long_name_04 | 2x2 | 300 | 38 | 38 | 433,200 |
+| slat_with_a_long_name_05 | 2x2 | 300 | 38 | 38 | 433,200 |
+| slat_with_a_long_name_06 | 2x2 | 300 | 38 | 38 | 433,200 |
+| slat_with_a_long_name_07 | 2x2 | 300 | 38 | 38 | 433,200 |
+| slat_with_a_long_name_08 | 2x2 | 300 | 38 | 38 | 433,200 |
+| slat_with_a_long_name_09 | 2x2 | 300 | 38 | 38 | 433,200 |
+| slat_with_a_long_name_10 | 2x2 | 300 | 38 | 38 | 433,200 |
+| slat_with_a_long_name_11 | 2x2 | 300 | 38 | 38 | 433,200 |
+| rail | 2x4 | 1200 | 89 | 38 | 4,058,400 |
+
+
+## Anchor Details
+
+### rail (2x4, 1200mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| right | front | FromMin 0.0mm |
+| right | front | FromMin 90.0mm |
+| right | front | FromMin 180.0mm |
+| right | front | FromMin 270.0mm |
+| right | front | FromMin 360.0mm |
+| right | front | FromMin 450.0mm |
+| right | front | FromMin 540.0mm |
+| right | front | FromMin 630.0mm |
+| right | front | FromMin 720.0mm |
+| right | front | FromMin 810.0mm |
+| right | front | FromMin 900.0mm |
+| right | front | FromMin 990.0mm |
+
+### slat_with_a_long_name_00 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### slat_with_a_long_name_01 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### slat_with_a_long_name_02 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### slat_with_a_long_name_03 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### slat_with_a_long_name_04 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### slat_with_a_long_name_05 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### slat_with_a_long_name_06 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### slat_with_a_long_name_07 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### slat_with_a_long_name_08 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### slat_with_a_long_name_09 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### slat_with_a_long_name_10 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### slat_with_a_long_name_11 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+## Pilot Holes
+
+Distances are measured on the face the hole is drilled into:
+- front/back faces: *From Length Edge* from the down end, *From Width Edge* from the left side
+- left/right faces: *From Length Edge* from the down end, *From Width Edge* from the back side
+- top/down (end) faces: *From Length Edge* from the left side, *From Width Edge* from the back side
+
+### rail (2x4, 1200mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| right | 19.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| right | 19.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| right | 109.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| right | 109.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| right | 199.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| right | 199.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| right | 289.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| right | 289.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| right | 379.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| right | 379.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| right | 469.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| right | 469.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| right | 559.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| right | 559.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| right | 649.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| right | 649.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| right | 739.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| right | 739.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| right | 829.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| right | 829.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| right | 919.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| right | 919.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| right | 1009.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| right | 1009.0mm | 28.5mm | φ8.0mm | 15.0mm |
+
+```
+right (1200mm x 38mm):
++----------------------------------------+
+|                                        |
+|o  o  o  o  o  o  o  o  o  o  o  o      |
+|                                        |
+|o  o  o  o  o  o  o  o  o  o  o  o      |
+|                                        |
++----------------------------------------+
+```
+
+### slat_with_a_long_name_00 (2x2, 300mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 271.5mm | 19.0mm | φ8.0mm | 15.0mm |
+| back | 290.5mm | 19.0mm | φ8.0mm | 15.0mm |
+
+```
+back (300mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|                                    o o |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### slat_with_a_long_name_01 (2x2, 300mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 271.5mm | 19.0mm | φ8.0mm | 15.0mm |
+| back | 290.5mm | 19.0mm | φ8.0mm | 15.0mm |
+
+```
+back (300mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|                                    o o |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### slat_with_a_long_name_02 (2x2, 300mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 271.5mm | 19.0mm | φ8.0mm | 15.0mm |
+| back | 290.5mm | 19.0mm | φ8.0mm | 15.0mm |
+
+```
+back (300mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|                                    o o |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### slat_with_a_long_name_03 (2x2, 300mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 271.5mm | 19.0mm | φ8.0mm | 15.0mm |
+| back | 290.5mm | 19.0mm | φ8.0mm | 15.0mm |
+
+```
+back (300mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|                                    o o |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### slat_with_a_long_name_04 (2x2, 300mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 271.5mm | 19.0mm | φ8.0mm | 15.0mm |
+| back | 290.5mm | 19.0mm | φ8.0mm | 15.0mm |
+
+```
+back (300mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|                                    o o |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### slat_with_a_long_name_05 (2x2, 300mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 271.5mm | 19.0mm | φ8.0mm | 15.0mm |
+| back | 290.5mm | 19.0mm | φ8.0mm | 15.0mm |
+
+```
+back (300mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|                                    o o |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### slat_with_a_long_name_06 (2x2, 300mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 271.5mm | 19.0mm | φ8.0mm | 15.0mm |
+| back | 290.5mm | 19.0mm | φ8.0mm | 15.0mm |
+
+```
+back (300mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|                                    o o |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### slat_with_a_long_name_07 (2x2, 300mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 271.5mm | 19.0mm | φ8.0mm | 15.0mm |
+| back | 290.5mm | 19.0mm | φ8.0mm | 15.0mm |
+
+```
+back (300mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|                                    o o |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### slat_with_a_long_name_08 (2x2, 300mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 271.5mm | 19.0mm | φ8.0mm | 15.0mm |
+| back | 290.5mm | 19.0mm | φ8.0mm | 15.0mm |
+
+```
+back (300mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|                                    o o |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### slat_with_a_long_name_09 (2x2, 300mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 271.5mm | 19.0mm | φ8.0mm | 15.0mm |
+| back | 290.5mm | 19.0mm | φ8.0mm | 15.0mm |
+
+```
+back (300mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|                                    o o |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### slat_with_a_long_name_10 (2x2, 300mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 271.5mm | 19.0mm | φ8.0mm | 15.0mm |
+| back | 290.5mm | 19.0mm | φ8.0mm | 15.0mm |
+
+```
+back (300mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|                                    o o |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### slat_with_a_long_name_11 (2x2, 300mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 271.5mm | 19.0mm | φ8.0mm | 15.0mm |
+| back | 290.5mm | 19.0mm | φ8.0mm | 15.0mm |
+
+```
+back (300mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|                                    o o |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+## Shopping List
+
+### Lumber Required:
+
+- **2x2**: 12 pieces, total 3.6 meters
+- **2x4**: 1 pieces, total 1.2 meters
+
+### Hardware Required:
+
+- **Dowel 8x30**: 24
+
+### Drill Bits:
+
+- **8mm**: 48 holes, deepest 15mm
+
+
+## Purchase Recommendations
+
+Saw kerf: 3mm per cut
+
+### 2x2 Lumber (Available: 1820mm, 2440mm, 3050mm, 3650mm)
+Optimal purchase:
+- 2 × 1820mm boards
+Total waste: 4mm (0.1%)
+
+### 2x4 Lumber (Available: 1820mm, 2440mm, 3050mm, 3650mm)
+Optimal purchase:
+- 1 × 1820mm boards
+Total waste: 617mm (33.9%)
+
+## Optimized Cut List
+
+### 2x2 Boards
+
+**Board 1** (1820mm):
+- Cut 300mm → slat_with_a_long_name_00
+- Cut 300mm → slat_with_a_long_name_01
+- Cut 300mm → slat_with_a_long_name_02
+- Cut 300mm → slat_with_a_long_name_03
+- Cut 300mm → slat_with_a_long_name_04
+- Cut 300mm → slat_with_a_long_name_05
+- Waste: 2mm
+
+**Board 2** (1820mm):
+- Cut 300mm → slat_with_a_long_name_06
+- Cut 300mm → slat_with_a_long_name_07
+- Cut 300mm → slat_with_a_long_name_08
+- Cut 300mm → slat_with_a_long_name_09
+- Cut 300mm → slat_with_a_long_name_10
+- Cut 300mm → slat_with_a_long_name_11
+- Waste: 2mm
+
+### 2x4 Boards
+
+**Board 1** (1820mm):
+- Cut 1200mm → rail
+- Waste: 617mm
+
+---
+*Report generated by nichiyou-daiku*
+--- stderr

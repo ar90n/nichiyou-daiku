@@ -10,12 +10,17 @@ NAME.holes.json (every piece's holes and each connection's fasteners),
 NAME.steps.json (the parts, the assembly steps with their fasteners and
 dimensions) and NAME.parts.json (what each drilled part's drawing says); the
 last three only when the source assembles. `--steps-only` writes the steps and
-parts files again for the corpus that is there.
+parts files again for the corpus that is there. `--cli` writes what the CLI
+prints (NAME.cli-validate.txt, NAME.cli-report.txt and, for examples,
+NAME.cli-validate-json.txt) and the option cases in
+crates/nichiyou-daiku-cli/tests/cli.
 """
 
 import argparse
+import contextlib
 import hashlib
 import json
+import re
 import sys
 from collections import Counter
 from pathlib import Path
@@ -23,7 +28,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+from click.testing import CliRunner  # noqa: E402
+
 from nichiyou_daiku.cli.commands.validate import _classify  # noqa: E402
+from nichiyou_daiku.cli.dsl_cli import cli  # noqa: E402
 from nichiyou_daiku.core.assembly import Assembly  # noqa: E402
 from nichiyou_daiku.core.assembly.parts import (  # noqa: E402
     face_letters,
@@ -227,6 +235,129 @@ def write(path: Path, value) -> None:
     path.write_text(json.dumps(value, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
+CLI_DIR = ROOT / "crates" / "nichiyou-daiku-cli" / "tests" / "cli"
+CLI_GENERATED = ("*.cli-validate.txt", "*.cli-report.txt", "*.cli-validate-json.txt")
+GENERATED_ON = re.compile(r"^\*Generated on \d{4}-\d{2}-\d{2} \d{2}:\d{2}\*$", re.M)
+
+# A design with a problem (an unconnected piece) and one with a piece longer
+# than every stock board
+UNCONNECTED = "(a:2x4 =400)\n(b:2x4 =400)\n"
+OVERSIZE = "(a:2x4 =4000)\n(b:2x4 =400)\na -[TF<0 BD<0]- b\n"
+TABLE = "examples/nd_files/simple_table_compact.nd"
+
+STOCK_FILES: dict[str, str | bytes] = {
+    "ok.toml": 'kerf = 2\n\n[lengths]\n"2x4" = [1820, 2440]\n"1x4" = [910.5]\n',
+    "bad-toml.toml": "kerf = = 3\n",
+    "not-utf8.toml": b"kerf = 3 # \xff\n",
+    "unknown-key.toml": "kerf = 3\nwidth = 5\n",
+    "kerf-text.toml": 'kerf = "3mm"\n',
+    "kerf-negative.toml": "kerf = -1\n",
+    "lengths-not-table.toml": "lengths = 5\n",
+    "kerf-in-lengths.toml": '[lengths]\n"2x4" = [1820]\nkerf = 2\n',
+    "unknown-type.toml": '[lengths]\n"2x3" = [1820]\n',
+    "not-list.toml": '[lengths]\n"2x4" = 1820\n',
+    "empty-list.toml": '[lengths]\n"2x4" = []\n',
+    "bad-lengths.toml": '[lengths]\n"2x4" = [1820, "a", true, -5]\n',
+}
+
+OPTION_CASES: list[tuple[str, list[str], str | None, str | None]] = [
+    # name, args, file, text
+    ("report-no-cut-diagram", ["report", "--no-cut-diagram", "-"], TABLE, None),
+    ("report-no-anchor-details", ["report", "--no-anchor-details", "-"], TABLE, None),
+    ("report-no-pilot-holes", ["report", "--no-pilot-holes", "-"], TABLE, None),
+    (
+        "report-last-flag-wins",
+        ["report", "--no-cut-diagram", "--include-cut-diagram", "-"],
+        TABLE,
+        None,
+    ),
+    (
+        "report-project-name",
+        ["report", "--project-name", "Side table", "-"],
+        TABLE,
+        None,
+    ),
+    ("report-stock", ["report", "--stock", "stock/ok.toml", "-"], TABLE, None),
+    ("report-oversize", ["report", "-"], None, OVERSIZE),
+    ("report-warnings", ["report", "-"], None, UNCONNECTED),
+    ("report-quiet", ["-q", "report", "-"], None, UNCONNECTED),
+    ("report-verbose", ["-v", "report", "-"], None, UNCONNECTED),
+    ("report-missing-file", ["report", "missing.nd"], None, None),
+    (
+        "report-stock-missing",
+        ["report", "--stock", "stock/missing.toml", "-"],
+        TABLE,
+        None,
+    ),
+    *(
+        (
+            f"report-stock-{name.removesuffix('.toml')}",
+            ["report", "--stock", f"stock/{name}", "-"],
+            TABLE,
+            None,
+        )
+        for name in STOCK_FILES
+        if name != "ok.toml"
+    ),
+    ("validate-verbose", ["-v", "validate", "-"], TABLE, None),
+    ("validate-quiet", ["-q", "validate", "-"], None, UNCONNECTED),
+    ("validate-missing-file", ["validate", "missing.nd"], None, None),
+    ("validate-json-missing-file", ["validate", "--json", "missing.nd"], None, None),
+]
+
+
+def run_cli(args: list[str], source: str | None = None) -> str:
+    """What the CLI prints, as the Rust CLI's tests read it: the exit code,
+    then stdout and stderr, colourless, with the report's date fixed."""
+    result = CliRunner().invoke(cli, args, input=source)
+    if result.exception is not None and not isinstance(result.exception, SystemExit):
+        raise result.exception
+    text = f"exit: {result.exit_code}\n--- stdout\n{result.stdout}--- stderr\n{result.stderr}"
+    return GENERATED_ON.sub("*Generated on DATE*", text)
+
+
+def write_cli_goldens() -> None:
+    for pattern in CLI_GENERATED:
+        for old in CORPUS.glob(pattern):
+            old.unlink()
+    for path in sorted(CORPUS.glob("*.nd")):
+        source = path.read_text(encoding="utf-8")
+        name = path.name.removesuffix(".nd")
+        (CORPUS / f"{name}.cli-validate.txt").write_text(
+            run_cli(["validate", "-"], source), encoding="utf-8"
+        )
+        (CORPUS / f"{name}.cli-report.txt").write_text(
+            run_cli(["report", "-"], source), encoding="utf-8"
+        )
+        if name.startswith("example-"):
+            (CORPUS / f"{name}.cli-validate-json.txt").write_text(
+                run_cli(["validate", "--json", "-"], source), encoding="utf-8"
+            )
+    stock = CLI_DIR / "stock"
+    stock.mkdir(parents=True, exist_ok=True)
+    for old in CLI_DIR.glob("*.txt"):
+        old.unlink()
+    for name, content in STOCK_FILES.items():
+        if isinstance(content, bytes):
+            (stock / name).write_bytes(content)
+        else:
+            (stock / name).write_text(content, encoding="utf-8")
+    cases = []
+    with contextlib.chdir(CLI_DIR):
+        for name, args, file, text in OPTION_CASES:
+            source = (ROOT / file).read_text(encoding="utf-8") if file else text
+            (CLI_DIR / f"{name}.txt").write_text(
+                run_cli(args, source), encoding="utf-8"
+            )
+            cases.append({"name": name, "args": args, "file": file, "text": text})
+    (CLI_DIR / "cases.json").write_text(
+        json.dumps(cases, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
+    print(
+        f"cli goldens {len(list(CORPUS.glob('*.cli-validate.txt')))} cases, {len(cases)} option cases"
+    )
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -237,7 +368,15 @@ def main() -> None:
         action="store_true",
         help="write NAME.steps.json and NAME.parts.json for the .nd files already in the corpus",
     )
+    parser.add_argument(
+        "--cli",
+        action="store_true",
+        help="write what the CLI prints (validate, report) for the corpus and the option cases",
+    )
     args = parser.parse_args()
+    if args.cli:
+        write_cli_goldens()
+        return
     if args.steps_only:
         for pattern in ("*.steps.json", "*.parts.json"):
             for old in CORPUS.glob(pattern):

@@ -1,0 +1,243 @@
+exit: 0
+--- stdout
+# Woodworking Project Report
+
+*Generated on DATE*
+
+## Project Overview
+
+- **Overall Size (X × Y × Z)**: 489 × 114 × 600 mm (Z is the length direction of 'post')
+- **Total Pieces**: 5
+- **Lumber Types**: 1 (2x4)
+- **Total Volume**: 7,440,400 mm³
+- **Estimated Weight**: ~3.7 kg (assuming pine density)
+
+
+## Bill of Materials
+
+| ID | Type | Length (mm) | Width (mm) | Height (mm) | Volume (mm³) |
+|----|------|------------|-----------|------------|-------------|
+| rail | 2x4 | 400 | 89 | 38 | 1,352,800 |
+| rail_low | 2x4 | 400 | 89 | 38 | 1,352,800 |
+| cleat | 2x4 | 400 | 89 | 38 | 1,352,800 |
+| rail_side | 2x4 | 400 | 89 | 38 | 1,352,800 |
+| post | 2x4 | 600 | 89 | 38 | 2,029,200 |
+
+
+## Anchor Details
+
+### cleat (2x4, 400mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| front | top | FromMin 0.0mm |
+
+### post (2x4, 600mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| front | left | FromMin 300.0mm |
+| front | left | FromMin 100.0mm |
+| back | top | FromMin 0.0mm |
+| right | front | FromMin 300.0mm |
+
+### rail (2x4, 400mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### rail_low (2x4, 400mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### rail_side (2x4, 400mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| down | front | FromMin 0.0mm |
+
+## Pilot Holes
+
+Distances are measured on the face the hole is drilled into:
+- front/back faces: *From Length Edge* from the down end, *From Width Edge* from the left side
+- left/right faces: *From Length Edge* from the down end, *From Width Edge* from the back side
+- top/down (end) faces: *From Length Edge* from the left side, *From Width Edge* from the back side
+
+### cleat (2x4, 400mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| front | 100.0mm | 44.5mm | φ2.5mm | through |
+| front | 300.0mm | 44.5mm | φ2.5mm | through |
+
+```
+front (400mm x 89mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### post (2x4, 600mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| front | 344.5mm | 22.2mm | φ2.0mm | 12.0mm |
+| front | 344.5mm | 66.8mm | φ2.0mm | 12.0mm |
+| front | 144.5mm | 22.2mm | φ2.5mm | 12.0mm |
+| front | 144.5mm | 66.8mm | φ2.5mm | 12.0mm |
+| back | 300.0mm | 44.5mm | φ2.5mm | 19.0mm |
+| back | 500.0mm | 44.5mm | φ2.5mm | 19.0mm |
+| right | 277.8mm | 19.0mm | φ2.5mm | through |
+| left | 277.8mm | 19.0mm | φ10.0mm | 51.0mm |
+| right | 233.2mm | 19.0mm | φ2.5mm | through |
+| left | 233.2mm | 19.0mm | φ10.0mm | 51.0mm |
+
+```
+back (600mm x 89mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|                    o            o      |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+```
+front (600mm x 89mm):
++----------------------------------------+
+|                                        |
+|         o            o                 |
+|                                        |
+|         o            o                 |
+|                                        |
++----------------------------------------+
+```
+
+```
+left (600mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|               o  o                     |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+```
+right (600mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|               o  o                     |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### rail (2x4, 400mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 377.8mm | 44.5mm | φ2.0mm | through |
+| back | 333.2mm | 44.5mm | φ2.0mm | through |
+
+```
+back (400mm x 89mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|                                 o   o  |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### rail_low (2x4, 400mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 377.8mm | 44.5mm | φ2.5mm | through |
+| back | 333.2mm | 44.5mm | φ2.5mm | through |
+
+```
+back (400mm x 89mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|                                 o   o  |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### rail_side (2x4, 400mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| down | 22.2mm | 19.0mm | φ2.5mm | 27.0mm |
+| down | 66.8mm | 19.0mm | φ2.5mm | 27.0mm |
+
+```
+down (89mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+## Shopping List
+
+### Lumber Required:
+
+- **2x4**: 5 pieces, total 2.2 meters
+
+### Hardware Required:
+
+- **Slim screw 3.3x50**: 2
+- **Slim screw 3.8x65**: 2
+- **Coarse screw 3.8x57**: 2
+- **Screw 3.5x50**: 2
+
+### Drill Bits:
+
+- **2mm**: 4 holes, deepest: through
+- **2.5mm**: 12 holes, deepest: through
+- **10mm**: 2 holes, deepest 51mm
+
+
+## Purchase Recommendations
+
+Saw kerf: 3mm per cut
+
+### 2x4 Lumber (Available: 1820mm, 2440mm, 3050mm, 3650mm)
+Optimal purchase:
+- 1 × 2440mm boards
+Total waste: 225mm (9.2%)
+
+## Optimized Cut List
+
+### 2x4 Boards
+
+**Board 1** (2440mm):
+- Cut 600mm → post
+- Cut 400mm → rail
+- Cut 400mm → rail_low
+- Cut 400mm → cleat
+- Cut 400mm → rail_side
+- Waste: 225mm
+
+---
+*Report generated by nichiyou-daiku*
+--- stderr

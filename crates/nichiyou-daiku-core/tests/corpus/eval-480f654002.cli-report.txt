@@ -1,0 +1,646 @@
+exit: 0
+--- stdout
+# Woodworking Project Report
+
+*Generated on DATE*
+
+## Project Overview
+
+- **Overall Size (X × Y × Z)**: 1000 × 500 × 700 mm (Z is the length direction of 'leg_fl')
+- **Total Pieces**: 15
+- **Lumber Types**: 2 (1x6, 2x4)
+- **Total Volume**: 27,640,440 mm³
+- **Estimated Weight**: ~13.8 kg (assuming pine density)
+
+
+## Bill of Materials
+
+| ID | Type | Length (mm) | Width (mm) | Height (mm) | Volume (mm³) |
+|----|------|------------|-----------|------------|-------------|
+| top_1 | 1x6 | 500 | 140 | 19 | 1,330,000 |
+| top_2 | 1x6 | 500 | 140 | 19 | 1,330,000 |
+| top_3 | 1x6 | 500 | 140 | 19 | 1,330,000 |
+| top_4 | 1x6 | 500 | 140 | 19 | 1,330,000 |
+| top_5 | 1x6 | 500 | 140 | 19 | 1,330,000 |
+| top_6 | 1x6 | 500 | 140 | 19 | 1,330,000 |
+| top_7 | 1x6 | 500 | 140 | 19 | 1,330,000 |
+| apron_left | 2x4 | 348 | 89 | 38 | 1,176,936 |
+| apron_right | 2x4 | 348 | 89 | 38 | 1,176,936 |
+| leg_fl | 2x4 | 681 | 89 | 38 | 2,303,142 |
+| leg_fr | 2x4 | 681 | 89 | 38 | 2,303,142 |
+| leg_bl | 2x4 | 681 | 89 | 38 | 2,303,142 |
+| leg_br | 2x4 | 681 | 89 | 38 | 2,303,142 |
+| apron_front | 2x4 | 1000 | 89 | 38 | 3,382,000 |
+| apron_back | 2x4 | 1000 | 89 | 38 | 3,382,000 |
+
+
+## Anchor Details
+
+### apron_back (2x4, 1000mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| front | left | FromMin 0.0mm |
+| front | left | FromMax 0.0mm |
+| left | back | FromMin 0.0mm |
+| left | back | FromMin 143.3mm |
+| left | back | FromMin 286.7mm |
+| left | back | FromMin 430.0mm |
+| left | back | FromMin 573.3mm |
+| left | back | FromMin 716.7mm |
+| left | back | FromMin 860.0mm |
+
+### apron_front (2x4, 1000mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| back | left | FromMax 0.0mm |
+| left | front | FromMin 140.0mm |
+| left | front | FromMin 283.3mm |
+| left | front | FromMin 426.7mm |
+| left | front | FromMin 570.0mm |
+| left | front | FromMin 713.3mm |
+| left | front | FromMin 856.7mm |
+| left | front | FromMin 1000.0mm |
+
+### apron_left (2x4, 348mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| top | back | FromMax 0.0mm |
+| down | back | FromMax 0.0mm |
+
+### apron_right (2x4, 348mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| top | front | FromMax 0.0mm |
+| down | front | FromMax 0.0mm |
+
+### leg_bl (2x4, 681mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+| front | left | FromMax 0.0mm |
+
+### leg_br (2x4, 681mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMax 0.0mm |
+| front | right | FromMax 0.0mm |
+
+### leg_fl (2x4, 681mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| front | top | FromMin 0.0mm |
+| back | left | FromMax 0.0mm |
+
+### leg_fr (2x4, 681mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| front | top | FromMax 0.0mm |
+| back | right | FromMax 0.0mm |
+
+### top_1 (1x6, 500mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+| back | down | FromMin 140.0mm |
+
+### top_2 (1x6, 500mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+| back | down | FromMin 140.0mm |
+
+### top_3 (1x6, 500mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+| back | down | FromMin 140.0mm |
+
+### top_4 (1x6, 500mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+| back | down | FromMin 140.0mm |
+
+### top_5 (1x6, 500mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+| back | down | FromMin 140.0mm |
+
+### top_6 (1x6, 500mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+| back | down | FromMin 140.0mm |
+
+### top_7 (1x6, 500mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+| back | down | FromMin 140.0mm |
+
+## Pilot Holes
+
+Distances are measured on the face the hole is drilled into:
+- front/back faces: *From Length Edge* from the down end, *From Width Edge* from the left side
+- left/right faces: *From Length Edge* from the down end, *From Width Edge* from the back side
+- top/down (end) faces: *From Length Edge* from the left side, *From Width Edge* from the back side
+
+### apron_back (2x4, 1000mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| front | 22.2mm | 44.5mm | φ2.5mm | through |
+| front | 66.8mm | 44.5mm | φ2.5mm | through |
+| front | 933.2mm | 44.5mm | φ2.5mm | through |
+| front | 977.8mm | 44.5mm | φ2.5mm | through |
+| left | 35.0mm | 19.0mm | φ2.0mm | 26.0mm |
+| left | 105.0mm | 19.0mm | φ2.0mm | 26.0mm |
+| left | 178.3mm | 19.0mm | φ2.0mm | 26.0mm |
+| left | 248.3mm | 19.0mm | φ2.0mm | 26.0mm |
+| left | 321.7mm | 19.0mm | φ2.0mm | 26.0mm |
+| left | 391.7mm | 19.0mm | φ2.0mm | 26.0mm |
+| left | 465.0mm | 19.0mm | φ2.0mm | 26.0mm |
+| left | 535.0mm | 19.0mm | φ2.0mm | 26.0mm |
+| left | 608.3mm | 19.0mm | φ2.0mm | 26.0mm |
+| left | 678.3mm | 19.0mm | φ2.0mm | 26.0mm |
+| left | 751.7mm | 19.0mm | φ2.0mm | 26.0mm |
+| left | 821.7mm | 19.0mm | φ2.0mm | 26.0mm |
+| left | 895.0mm | 19.0mm | φ2.0mm | 26.0mm |
+| left | 965.0mm | 19.0mm | φ2.0mm | 26.0mm |
+
+```
+front (1000mm x 89mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|o o                                  o o|
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+```
+left (1000mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+| o  o  o o  o  o  o  o  o  o  o o  o  o |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### apron_front (2x4, 1000mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 22.2mm | 44.5mm | φ2.5mm | through |
+| back | 66.8mm | 44.5mm | φ2.5mm | through |
+| back | 933.2mm | 44.5mm | φ2.5mm | through |
+| back | 977.8mm | 44.5mm | φ2.5mm | through |
+| left | 35.0mm | 19.0mm | φ2.0mm | 26.0mm |
+| left | 105.0mm | 19.0mm | φ2.0mm | 26.0mm |
+| left | 178.3mm | 19.0mm | φ2.0mm | 26.0mm |
+| left | 248.3mm | 19.0mm | φ2.0mm | 26.0mm |
+| left | 321.7mm | 19.0mm | φ2.0mm | 26.0mm |
+| left | 391.7mm | 19.0mm | φ2.0mm | 26.0mm |
+| left | 465.0mm | 19.0mm | φ2.0mm | 26.0mm |
+| left | 535.0mm | 19.0mm | φ2.0mm | 26.0mm |
+| left | 608.3mm | 19.0mm | φ2.0mm | 26.0mm |
+| left | 678.3mm | 19.0mm | φ2.0mm | 26.0mm |
+| left | 751.7mm | 19.0mm | φ2.0mm | 26.0mm |
+| left | 821.7mm | 19.0mm | φ2.0mm | 26.0mm |
+| left | 895.0mm | 19.0mm | φ2.0mm | 26.0mm |
+| left | 965.0mm | 19.0mm | φ2.0mm | 26.0mm |
+
+```
+back (1000mm x 89mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|o o                                  o o|
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+```
+left (1000mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+| o  o  o o  o  o  o  o  o  o  o o  o  o |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### apron_left (2x4, 348mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| top | 22.2mm | 19.0mm | φ2.5mm | 27.0mm |
+| top | 66.8mm | 19.0mm | φ2.5mm | 27.0mm |
+| down | 22.2mm | 19.0mm | φ2.5mm | 27.0mm |
+| down | 66.8mm | 19.0mm | φ2.5mm | 27.0mm |
+
+```
+down (89mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+```
+top (89mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### apron_right (2x4, 348mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| top | 22.2mm | 19.0mm | φ2.5mm | 27.0mm |
+| top | 66.8mm | 19.0mm | φ2.5mm | 27.0mm |
+| down | 22.2mm | 19.0mm | φ2.5mm | 27.0mm |
+| down | 66.8mm | 19.0mm | φ2.5mm | 27.0mm |
+
+```
+down (89mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+```
+top (89mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### leg_bl (2x4, 681mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 636.5mm | 22.2mm | φ2.5mm | 27.0mm |
+| back | 636.5mm | 66.8mm | φ2.5mm | 27.0mm |
+| front | 614.2mm | 19.0mm | φ2.5mm | through |
+| front | 658.8mm | 19.0mm | φ2.5mm | through |
+
+```
+back (681mm x 89mm):
++----------------------------------------+
+|                                        |
+|                                     o  |
+|                                        |
+|                                     o  |
+|                                        |
++----------------------------------------+
+```
+
+```
+front (681mm x 89mm):
++----------------------------------------+
+|                                        |
+|                                    o o |
+|                                        |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### leg_br (2x4, 681mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 636.5mm | 22.2mm | φ2.5mm | 27.0mm |
+| back | 636.5mm | 66.8mm | φ2.5mm | 27.0mm |
+| front | 614.2mm | 70.0mm | φ2.5mm | through |
+| front | 658.8mm | 70.0mm | φ2.5mm | through |
+
+```
+back (681mm x 89mm):
++----------------------------------------+
+|                                        |
+|                                     o  |
+|                                        |
+|                                     o  |
+|                                        |
++----------------------------------------+
+```
+
+```
+front (681mm x 89mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|                                        |
+|                                    o o |
+|                                        |
++----------------------------------------+
+```
+
+### leg_fl (2x4, 681mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| front | 636.5mm | 22.2mm | φ2.5mm | 27.0mm |
+| front | 636.5mm | 66.8mm | φ2.5mm | 27.0mm |
+| back | 614.2mm | 19.0mm | φ2.5mm | through |
+| back | 658.8mm | 19.0mm | φ2.5mm | through |
+
+```
+back (681mm x 89mm):
++----------------------------------------+
+|                                        |
+|                                    o o |
+|                                        |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+```
+front (681mm x 89mm):
++----------------------------------------+
+|                                        |
+|                                     o  |
+|                                        |
+|                                     o  |
+|                                        |
++----------------------------------------+
+```
+
+### leg_fr (2x4, 681mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| front | 636.5mm | 22.2mm | φ2.5mm | 27.0mm |
+| front | 636.5mm | 66.8mm | φ2.5mm | 27.0mm |
+| back | 614.2mm | 70.0mm | φ2.5mm | through |
+| back | 658.8mm | 70.0mm | φ2.5mm | through |
+
+```
+back (681mm x 89mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|                                        |
+|                                    o o |
+|                                        |
++----------------------------------------+
+```
+
+```
+front (681mm x 89mm):
++----------------------------------------+
+|                                        |
+|                                     o  |
+|                                        |
+|                                     o  |
+|                                        |
++----------------------------------------+
+```
+
+### top_1 (1x6, 500mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 481.0mm | 105.0mm | φ2.0mm | through |
+| back | 481.0mm | 35.0mm | φ2.0mm | through |
+| back | 19.0mm | 105.0mm | φ2.0mm | through |
+| back | 19.0mm | 35.0mm | φ2.0mm | through |
+
+```
+back (500mm x 140mm):
++----------------------------------------+
+|                                        |
+| o                                    o |
+|                                        |
+| o                                    o |
+|                                        |
++----------------------------------------+
+```
+
+### top_2 (1x6, 500mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 481.0mm | 105.0mm | φ2.0mm | through |
+| back | 481.0mm | 35.0mm | φ2.0mm | through |
+| back | 19.0mm | 105.0mm | φ2.0mm | through |
+| back | 19.0mm | 35.0mm | φ2.0mm | through |
+
+```
+back (500mm x 140mm):
++----------------------------------------+
+|                                        |
+| o                                    o |
+|                                        |
+| o                                    o |
+|                                        |
++----------------------------------------+
+```
+
+### top_3 (1x6, 500mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 481.0mm | 105.0mm | φ2.0mm | through |
+| back | 481.0mm | 35.0mm | φ2.0mm | through |
+| back | 19.0mm | 105.0mm | φ2.0mm | through |
+| back | 19.0mm | 35.0mm | φ2.0mm | through |
+
+```
+back (500mm x 140mm):
++----------------------------------------+
+|                                        |
+| o                                    o |
+|                                        |
+| o                                    o |
+|                                        |
++----------------------------------------+
+```
+
+### top_4 (1x6, 500mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 481.0mm | 105.0mm | φ2.0mm | through |
+| back | 481.0mm | 35.0mm | φ2.0mm | through |
+| back | 19.0mm | 105.0mm | φ2.0mm | through |
+| back | 19.0mm | 35.0mm | φ2.0mm | through |
+
+```
+back (500mm x 140mm):
++----------------------------------------+
+|                                        |
+| o                                    o |
+|                                        |
+| o                                    o |
+|                                        |
++----------------------------------------+
+```
+
+### top_5 (1x6, 500mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 481.0mm | 105.0mm | φ2.0mm | through |
+| back | 481.0mm | 35.0mm | φ2.0mm | through |
+| back | 19.0mm | 105.0mm | φ2.0mm | through |
+| back | 19.0mm | 35.0mm | φ2.0mm | through |
+
+```
+back (500mm x 140mm):
++----------------------------------------+
+|                                        |
+| o                                    o |
+|                                        |
+| o                                    o |
+|                                        |
++----------------------------------------+
+```
+
+### top_6 (1x6, 500mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 481.0mm | 105.0mm | φ2.0mm | through |
+| back | 481.0mm | 35.0mm | φ2.0mm | through |
+| back | 19.0mm | 105.0mm | φ2.0mm | through |
+| back | 19.0mm | 35.0mm | φ2.0mm | through |
+
+```
+back (500mm x 140mm):
++----------------------------------------+
+|                                        |
+| o                                    o |
+|                                        |
+| o                                    o |
+|                                        |
++----------------------------------------+
+```
+
+### top_7 (1x6, 500mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 481.0mm | 105.0mm | φ2.0mm | through |
+| back | 481.0mm | 35.0mm | φ2.0mm | through |
+| back | 19.0mm | 105.0mm | φ2.0mm | through |
+| back | 19.0mm | 35.0mm | φ2.0mm | through |
+
+```
+back (500mm x 140mm):
++----------------------------------------+
+|                                        |
+| o                                    o |
+|                                        |
+| o                                    o |
+|                                        |
++----------------------------------------+
+```
+
+## Shopping List
+
+### Lumber Required:
+
+- **1x6**: 7 pieces, total 3.5 meters
+- **2x4**: 8 pieces, total 5.4 meters
+
+### Hardware Required:
+
+- **Slim screw 3.3x45**: 28
+- **Slim screw 3.8x65**: 16
+
+### Drill Bits:
+
+- **2mm**: 56 holes, deepest: through
+- **2.5mm**: 32 holes, deepest: through
+
+
+## Purchase Recommendations
+
+Saw kerf: 3mm per cut
+
+### 1x6 Lumber (Available: 1820mm, 2440mm, 3050mm, 3650mm)
+Optimal purchase:
+- 1 × 3650mm boards
+Total waste: 129mm (3.5%)
+
+### 2x4 Lumber (Available: 1820mm, 2440mm, 3050mm, 3650mm)
+Optimal purchase:
+- 1 × 2440mm boards
+- 1 × 3050mm boards
+Total waste: 46mm (0.8%)
+
+## Optimized Cut List
+
+### 1x6 Boards
+
+**Board 1** (3650mm):
+- Cut 500mm → top_1
+- Cut 500mm → top_2
+- Cut 500mm → top_3
+- Cut 500mm → top_4
+- Cut 500mm → top_5
+- Cut 500mm → top_6
+- Cut 500mm → top_7
+- Waste: 129mm
+
+### 2x4 Boards
+
+**Board 1** (3050mm):
+- Cut 1000mm → apron_front
+- Cut 1000mm → apron_back
+- Cut 681mm → leg_fl
+- Cut 348mm → apron_left
+- Waste: 9mm
+
+**Board 2** (2440mm):
+- Cut 681mm → leg_fr
+- Cut 681mm → leg_bl
+- Cut 681mm → leg_br
+- Cut 348mm → apron_right
+- Waste: 37mm
+
+---
+*Report generated by nichiyou-daiku*
+--- stderr

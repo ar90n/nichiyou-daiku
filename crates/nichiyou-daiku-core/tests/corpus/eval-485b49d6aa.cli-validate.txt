@@ -1,0 +1,8 @@
+exit: 1
+--- stdout
+✓ DSL syntax is valid
+--- stderr
+✗ Model has problems
+  - Some pieces are not connected to each other, so their relative position is undefined (groups: leg_fl, leg_bl, apron_left; leg_fr, leg_br, apron_right)
+  - Connection apron_right -> leg_fr: pieces do not share a contact area
+  - Connection apron_right -> leg_br: pieces do not share a contact area

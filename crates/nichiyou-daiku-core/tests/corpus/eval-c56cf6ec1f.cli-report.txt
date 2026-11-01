@@ -1,0 +1,4 @@
+exit: 1
+--- stdout
+--- stderr
+DSL Error: Syntax error at line 1, column 41: Unexpected character '['. Expected one of: '(', '-', 'FromMax', 'FromMin', identifier, number, string

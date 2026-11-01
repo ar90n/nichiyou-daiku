@@ -1,0 +1,4 @@
+exit: 1
+--- stdout
+--- stderr
+DSL Error: line 2, column 1: The length of 'b' is not fixed by its connections

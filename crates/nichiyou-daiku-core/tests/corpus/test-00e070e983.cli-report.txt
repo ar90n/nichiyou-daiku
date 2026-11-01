@@ -1,0 +1,316 @@
+exit: 0
+--- stdout
+# Woodworking Project Report
+
+*Generated on DATE*
+
+## Project Overview
+
+- **Overall Size (X × Y × Z)**: 489 × 438 × 700 mm (Z is the length direction of 'c')
+- **Total Pieces**: 7
+- **Lumber Types**: 1 (2x4)
+- **Total Volume**: 5,073,000 mm³
+- **Estimated Weight**: ~2.5 kg (assuming pine density)
+
+
+## Bill of Materials
+
+| ID | Type | Length (mm) | Width (mm) | Height (mm) | Volume (mm³) |
+|----|------|------------|-----------|------------|-------------|
+| up | 2x4 | 200 | 89 | 38 | 676,400 |
+| dn | 2x4 | 200 | 89 | 38 | 676,400 |
+| f | 2x4 | 200 | 89 | 38 | 676,400 |
+| b | 2x4 | 200 | 89 | 38 | 676,400 |
+| l | 2x4 | 200 | 89 | 38 | 676,400 |
+| r | 2x4 | 200 | 89 | 38 | 676,400 |
+| c | 2x4 | 300 | 89 | 38 | 1,014,600 |
+
+
+## Anchor Details
+
+### b (2x4, 200mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| down | back | FromMin 0.0mm |
+
+### c (2x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| top | front | FromMin 0.0mm |
+| down | front | FromMin 0.0mm |
+| front | left | FromMin 100.0mm |
+| back | left | FromMin 100.0mm |
+| left | front | FromMin 100.0mm |
+| right | front | FromMin 100.0mm |
+
+### dn (2x4, 200mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| top | front | FromMin 0.0mm |
+
+### f (2x4, 200mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| down | front | FromMin 0.0mm |
+
+### l (2x4, 200mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| down | front | FromMin 0.0mm |
+
+### r (2x4, 200mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| down | front | FromMin 0.0mm |
+
+### up (2x4, 200mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| down | front | FromMin 0.0mm |
+
+## Pilot Holes
+
+Distances are measured on the face the hole is drilled into:
+- front/back faces: *From Length Edge* from the down end, *From Width Edge* from the left side
+- left/right faces: *From Length Edge* from the down end, *From Width Edge* from the back side
+- top/down (end) faces: *From Length Edge* from the left side, *From Width Edge* from the back side
+
+### b (2x4, 200mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| down | 66.8mm | 19.0mm | φ8.0mm | 15.0mm |
+| down | 22.2mm | 19.0mm | φ8.0mm | 15.0mm |
+
+```
+down (89mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### c (2x4, 300mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| top | 22.2mm | 19.0mm | φ8.0mm | 15.0mm |
+| top | 66.8mm | 19.0mm | φ8.0mm | 15.0mm |
+| down | 22.2mm | 19.0mm | φ8.0mm | 15.0mm |
+| down | 66.8mm | 19.0mm | φ8.0mm | 15.0mm |
+| front | 33.2mm | 19.0mm | φ8.0mm | 15.0mm |
+| front | 77.8mm | 19.0mm | φ8.0mm | 15.0mm |
+| back | 33.2mm | 19.0mm | φ8.0mm | 15.0mm |
+| back | 77.8mm | 19.0mm | φ8.0mm | 15.0mm |
+| left | 122.2mm | 19.0mm | φ8.0mm | 15.0mm |
+| left | 166.8mm | 19.0mm | φ8.0mm | 15.0mm |
+| right | 33.2mm | 19.0mm | φ8.0mm | 15.0mm |
+| right | 77.8mm | 19.0mm | φ8.0mm | 15.0mm |
+
+```
+back (300mm x 89mm):
++----------------------------------------+
+|                                        |
+|    o     o                             |
+|                                        |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+```
+down (89mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+```
+front (300mm x 89mm):
++----------------------------------------+
+|                                        |
+|    o     o                             |
+|                                        |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+```
+left (300mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|                o     o                 |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+```
+right (300mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|    o     o                             |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+```
+top (89mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### dn (2x4, 200mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| top | 22.2mm | 19.0mm | φ8.0mm | 15.0mm |
+| top | 66.8mm | 19.0mm | φ8.0mm | 15.0mm |
+
+```
+top (89mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### f (2x4, 200mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| down | 66.8mm | 19.0mm | φ8.0mm | 15.0mm |
+| down | 22.2mm | 19.0mm | φ8.0mm | 15.0mm |
+
+```
+down (89mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### l (2x4, 200mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| down | 22.2mm | 19.0mm | φ8.0mm | 15.0mm |
+| down | 66.8mm | 19.0mm | φ8.0mm | 15.0mm |
+
+```
+down (89mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### r (2x4, 200mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| down | 66.8mm | 19.0mm | φ8.0mm | 15.0mm |
+| down | 22.2mm | 19.0mm | φ8.0mm | 15.0mm |
+
+```
+down (89mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### up (2x4, 200mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| down | 22.2mm | 19.0mm | φ8.0mm | 15.0mm |
+| down | 66.8mm | 19.0mm | φ8.0mm | 15.0mm |
+
+```
+down (89mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+## Shopping List
+
+### Lumber Required:
+
+- **2x4**: 7 pieces, total 1.5 meters
+
+### Hardware Required:
+
+- **Dowel 8x30**: 12
+
+### Drill Bits:
+
+- **8mm**: 24 holes, deepest 15mm
+
+
+## Purchase Recommendations
+
+Saw kerf: 3mm per cut
+
+### 2x4 Lumber (Available: 1820mm, 2440mm, 3050mm, 3650mm)
+Optimal purchase:
+- 1 × 1820mm boards
+Total waste: 299mm (16.4%)
+
+## Optimized Cut List
+
+### 2x4 Boards
+
+**Board 1** (1820mm):
+- Cut 300mm → c
+- Cut 200mm → up
+- Cut 200mm → dn
+- Cut 200mm → f
+- Cut 200mm → b
+- Cut 200mm → l
+- Cut 200mm → r
+- Waste: 299mm
+
+---
+*Report generated by nichiyou-daiku*
+--- stderr

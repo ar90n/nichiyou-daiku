@@ -1,0 +1,7 @@
+exit: 1
+--- stdout
+✓ DSL syntax is valid
+--- stderr
+✗ Model has problems
+  - Connection u -> s: contact (z) is off by 800mm (loop: u -> q -> a -> s)
+  - Pieces 's' and 'u' overlap (1014600mm³)

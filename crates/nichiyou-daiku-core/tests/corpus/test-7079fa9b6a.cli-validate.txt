@@ -1,0 +1,7 @@
+exit: 1
+--- stdout
+✓ DSL syntax is valid
+--- stderr
+✗ Model has problems
+  - Connection base -> leg1: pieces do not share a contact area
+  - Pieces 'leg1' and 'leg2' overlap (444600mm³)

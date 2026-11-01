@@ -1,0 +1,4 @@
+exit: 1
+--- stdout
+--- stderr
+DSL Error: line 3, column 10: contact_face 'right' and edge_shared_face 'left' must be adjacent faces

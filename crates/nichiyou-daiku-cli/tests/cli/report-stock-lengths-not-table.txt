@@ -1,0 +1,4 @@
+exit: 1
+--- stdout
+--- stderr
+Error: stock/lengths-not-table.toml: [lengths] must be a table of lumber types, e.g. "2x4" = [1820, 2440]

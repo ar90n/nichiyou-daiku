@@ -1,0 +1,6 @@
+exit: 1
+--- stdout
+✓ DSL syntax is valid
+--- stderr
+✗ Model has problems
+  - Connection post -> other: screw hole in 'post' runs into a screw hole of connection post -> front

@@ -1,0 +1,6 @@
+exit: 1
+--- stdout
+--- stderr
+✗ Validation error
+
+line 4, column 1: The connections make 'u' -100mm long; a piece needs a positive length

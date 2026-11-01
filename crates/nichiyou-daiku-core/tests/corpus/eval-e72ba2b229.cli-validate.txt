@@ -1,0 +1,13 @@
+exit: 1
+--- stdout
+✓ DSL syntax is valid
+--- stderr
+✗ Model has problems
+  - Connection apron_back -> apron_left: dowel hole in 'apron_left' runs into a dowel hole of connection apron_front -> apron_left
+  - Connection apron_back -> apron_right: dowel hole in 'apron_right' runs into a dowel hole of connection apron_front -> apron_right
+  - Connection apron_front -> apron_right: dowel hole in 'apron_front' runs into a dowel hole of connection apron_front -> apron_left
+  - Connection apron_back -> apron_right: dowel hole in 'apron_back' runs into a dowel hole of connection apron_back -> apron_left
+  - Pieces 'leg_fl' and 'leg_fr' overlap (983364mm³)
+  - Pieces 'leg_bl' and 'leg_br' overlap (983364mm³)
+  - Pieces 'apron_front' and 'apron_back' overlap (3124968mm³)
+  - Pieces 'apron_left' and 'apron_right' overlap (1433968mm³)

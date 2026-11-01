@@ -1,0 +1,248 @@
+exit: 0
+--- stdout
+# Woodworking Project Report
+
+*Generated on DATE*
+
+## Project Overview
+
+- **Overall Size (X × Y × Z)**: 140 × 450 × 600 mm (Z is the length direction of 'side_left')
+- **Total Pieces**: 5
+- **Lumber Types**: 1 (1x6)
+- **Total Volume**: 6,479,760 mm³
+- **Estimated Weight**: ~3.2 kg (assuming pine density)
+
+
+## Bill of Materials
+
+| ID | Type | Length (mm) | Width (mm) | Height (mm) | Volume (mm³) |
+|----|------|------------|-----------|------------|-------------|
+| shelf_bottom | 1x6 | 412 | 140 | 19 | 1,095,920 |
+| shelf_middle | 1x6 | 412 | 140 | 19 | 1,095,920 |
+| shelf_top | 1x6 | 412 | 140 | 19 | 1,095,920 |
+| side_left | 1x6 | 600 | 140 | 19 | 1,596,000 |
+| side_right | 1x6 | 600 | 140 | 19 | 1,596,000 |
+
+
+## Anchor Details
+
+### shelf_bottom (1x6, 412mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| down | left | FromMin 0.0mm |
+| top | left | FromMin 0.0mm |
+
+### shelf_middle (1x6, 412mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| down | left | FromMin 0.0mm |
+| top | left | FromMin 0.0mm |
+
+### shelf_top (1x6, 412mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| down | left | FromMin 0.0mm |
+| top | left | FromMin 0.0mm |
+
+### side_left (1x6, 600mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| back | left | FromMin 290.5mm |
+| back | left | FromMax 19.0mm |
+
+### side_right (1x6, 600mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| front | left | FromMin 0.0mm |
+| front | left | FromMin 290.5mm |
+| front | left | FromMax 19.0mm |
+
+## Pilot Holes
+
+Distances are measured on the face the hole is drilled into:
+- front/back faces: *From Length Edge* from the down end, *From Width Edge* from the left side
+- left/right faces: *From Length Edge* from the down end, *From Width Edge* from the back side
+- top/down (end) faces: *From Length Edge* from the left side, *From Width Edge* from the back side
+
+### shelf_bottom (1x6, 412mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| down | 35.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| down | 105.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| top | 35.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| top | 105.0mm | 9.5mm | φ8.0mm | 15.0mm |
+
+```
+down (140mm x 19mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+```
+top (140mm x 19mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### shelf_middle (1x6, 412mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| down | 35.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| down | 105.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| top | 35.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| top | 105.0mm | 9.5mm | φ8.0mm | 15.0mm |
+
+```
+down (140mm x 19mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+```
+top (140mm x 19mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### shelf_top (1x6, 412mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| down | 35.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| down | 105.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| top | 35.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| top | 105.0mm | 9.5mm | φ8.0mm | 15.0mm |
+
+```
+down (140mm x 19mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+```
+top (140mm x 19mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### side_left (1x6, 600mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 9.5mm | 35.0mm | φ8.0mm | 15.0mm |
+| back | 9.5mm | 105.0mm | φ8.0mm | 15.0mm |
+| back | 300.0mm | 35.0mm | φ8.0mm | 15.0mm |
+| back | 300.0mm | 105.0mm | φ8.0mm | 15.0mm |
+| back | 590.5mm | 35.0mm | φ8.0mm | 15.0mm |
+| back | 590.5mm | 105.0mm | φ8.0mm | 15.0mm |
+
+```
+back (600mm x 140mm):
++----------------------------------------+
+|                                        |
+|o                   o                  o|
+|                                        |
+|o                   o                  o|
+|                                        |
++----------------------------------------+
+```
+
+### side_right (1x6, 600mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| front | 9.5mm | 35.0mm | φ8.0mm | 15.0mm |
+| front | 9.5mm | 105.0mm | φ8.0mm | 15.0mm |
+| front | 300.0mm | 35.0mm | φ8.0mm | 15.0mm |
+| front | 300.0mm | 105.0mm | φ8.0mm | 15.0mm |
+| front | 590.5mm | 35.0mm | φ8.0mm | 15.0mm |
+| front | 590.5mm | 105.0mm | φ8.0mm | 15.0mm |
+
+```
+front (600mm x 140mm):
++----------------------------------------+
+|                                        |
+|o                   o                  o|
+|                                        |
+|o                   o                  o|
+|                                        |
++----------------------------------------+
+```
+
+## Shopping List
+
+### Lumber Required:
+
+- **1x6**: 5 pieces, total 2.4 meters
+
+### Hardware Required:
+
+- **Dowel 8x30**: 12
+
+### Drill Bits:
+
+- **8mm**: 24 holes, deepest 15mm
+
+
+## Purchase Recommendations
+
+Saw kerf: 3mm per cut
+
+### 1x6 Lumber (Available: 1820mm, 2440mm, 3050mm, 3650mm)
+Optimal purchase:
+- 1 × 3050mm boards
+Total waste: 599mm (19.6%)
+
+## Optimized Cut List
+
+### 1x6 Boards
+
+**Board 1** (3050mm):
+- Cut 600mm → side_left
+- Cut 600mm → side_right
+- Cut 412mm → shelf_bottom
+- Cut 412mm → shelf_middle
+- Cut 412mm → shelf_top
+- Waste: 599mm
+
+---
+*Report generated by nichiyou-daiku*
+--- stderr

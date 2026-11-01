@@ -1,0 +1,6 @@
+exit: 1
+--- stdout
+--- stderr
+✗ Syntax error
+
+Syntax error at line 4, column 22: Unexpected token '{'. Expected: face letter (T, D, L, R, F, B)

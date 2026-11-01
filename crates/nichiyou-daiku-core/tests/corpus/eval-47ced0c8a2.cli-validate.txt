@@ -1,0 +1,6 @@
+exit: 1
+--- stdout
+--- stderr
+✗ Syntax error
+
+Syntax error at line 57, column 19: Unexpected token '>'. Expected: face letter (T, D, L, R, F, B)

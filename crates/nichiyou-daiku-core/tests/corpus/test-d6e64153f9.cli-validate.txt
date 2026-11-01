@@ -1,0 +1,6 @@
+exit: 1
+--- stdout
+--- stderr
+✗ Syntax error
+
+Syntax error at line 4, column 17: Unexpected token 'XF'. Expected one of: '{', face letter (T, D, L, R, F, B)

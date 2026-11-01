@@ -1,0 +1,504 @@
+exit: 0
+--- stdout
+# Woodworking Project Report
+
+*Generated on DATE*
+
+## Project Overview
+
+- **Overall Size (X × Y × Z)**: 1200 × 350 × 400 mm (Z is the length direction of 'leg_fl')
+- **Total Pieces**: 11
+- **Lumber Types**: 2 (2x4, 2x6)
+- **Total Volume**: 24,486,744 mm³
+- **Estimated Weight**: ~12.2 kg (assuming pine density)
+
+
+## Bill of Materials
+
+| ID | Type | Length (mm) | Width (mm) | Height (mm) | Volume (mm³) |
+|----|------|------------|-----------|------------|-------------|
+| leg_fl | 2x4 | 362 | 89 | 38 | 1,224,284 |
+| leg_fr | 2x4 | 362 | 89 | 38 | 1,224,284 |
+| leg_fc | 2x4 | 362 | 89 | 38 | 1,224,284 |
+| leg_bc | 2x4 | 362 | 89 | 38 | 1,224,284 |
+| leg_bl | 2x4 | 362 | 89 | 38 | 1,224,284 |
+| leg_br | 2x4 | 362 | 89 | 38 | 1,224,284 |
+| shelf_l | 2x6 | 274 | 140 | 38 | 1,457,680 |
+| shelf_m | 2x6 | 274 | 140 | 38 | 1,457,680 |
+| shelf_r | 2x6 | 274 | 140 | 38 | 1,457,680 |
+| top_f | 2x6 | 1200 | 140 | 38 | 6,384,000 |
+| top_b | 2x6 | 1200 | 140 | 38 | 6,384,000 |
+
+
+## Anchor Details
+
+### leg_bc (2x4, 362mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| top | back | FromMin 44.5mm |
+| front | left | FromMin 169.0mm |
+
+### leg_bl (2x4, 362mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| top | back | FromMin 44.5mm |
+| front | left | FromMin 169.0mm |
+
+### leg_br (2x4, 362mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| top | back | FromMin 44.5mm |
+| front | right | FromMin 169.0mm |
+
+### leg_fc (2x4, 362mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| top | front | FromMin 44.5mm |
+| back | left | FromMin 169.0mm |
+
+### leg_fl (2x4, 362mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| top | front | FromMin 44.5mm |
+| back | left | FromMin 169.0mm |
+
+### leg_fr (2x4, 362mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| top | front | FromMin 44.5mm |
+| back | right | FromMin 169.0mm |
+
+### shelf_l (2x6, 274mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| top | left | FromMin 19.0mm |
+| down | left | FromMin 19.0mm |
+
+### shelf_m (2x6, 274mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| top | left | FromMin 19.0mm |
+| down | left | FromMin 19.0mm |
+
+### shelf_r (2x6, 274mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| top | right | FromMin 19.0mm |
+| down | right | FromMin 19.0mm |
+
+### top_b (2x6, 1200mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 44.5mm |
+| back | left | FromMin 600.0mm |
+| back | left | FromMin 1155.5mm |
+
+### top_f (2x6, 1200mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | right | FromMin 44.5mm |
+| back | right | FromMin 600.0mm |
+| back | right | FromMin 1155.5mm |
+
+## Pilot Holes
+
+Distances are measured on the face the hole is drilled into:
+- front/back faces: *From Length Edge* from the down end, *From Width Edge* from the left side
+- left/right faces: *From Length Edge* from the down end, *From Width Edge* from the back side
+- top/down (end) faces: *From Length Edge* from the left side, *From Width Edge* from the back side
+
+### leg_bc (2x4, 362mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| top | 22.2mm | 19.0mm | φ2.5mm | 27.0mm |
+| top | 66.8mm | 19.0mm | φ2.5mm | 27.0mm |
+| front | 169.0mm | 22.2mm | φ8.0mm | 15.0mm |
+| front | 169.0mm | 66.8mm | φ8.0mm | 15.0mm |
+
+```
+front (362mm x 89mm):
++----------------------------------------+
+|                                        |
+|                  o                     |
+|                                        |
+|                  o                     |
+|                                        |
++----------------------------------------+
+```
+
+```
+top (89mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### leg_bl (2x4, 362mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| top | 22.2mm | 19.0mm | φ2.5mm | 27.0mm |
+| top | 66.8mm | 19.0mm | φ2.5mm | 27.0mm |
+| front | 169.0mm | 22.2mm | φ8.0mm | 15.0mm |
+| front | 169.0mm | 66.8mm | φ8.0mm | 15.0mm |
+
+```
+front (362mm x 89mm):
++----------------------------------------+
+|                                        |
+|                  o                     |
+|                                        |
+|                  o                     |
+|                                        |
++----------------------------------------+
+```
+
+```
+top (89mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### leg_br (2x4, 362mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| top | 22.2mm | 19.0mm | φ2.5mm | 27.0mm |
+| top | 66.8mm | 19.0mm | φ2.5mm | 27.0mm |
+| front | 169.0mm | 22.2mm | φ8.0mm | 15.0mm |
+| front | 169.0mm | 66.8mm | φ8.0mm | 15.0mm |
+
+```
+front (362mm x 89mm):
++----------------------------------------+
+|                                        |
+|                  o                     |
+|                                        |
+|                  o                     |
+|                                        |
++----------------------------------------+
+```
+
+```
+top (89mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### leg_fc (2x4, 362mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| top | 22.2mm | 19.0mm | φ2.5mm | 27.0mm |
+| top | 66.8mm | 19.0mm | φ2.5mm | 27.0mm |
+| back | 169.0mm | 22.2mm | φ8.0mm | 15.0mm |
+| back | 169.0mm | 66.8mm | φ8.0mm | 15.0mm |
+
+```
+back (362mm x 89mm):
++----------------------------------------+
+|                                        |
+|                  o                     |
+|                                        |
+|                  o                     |
+|                                        |
++----------------------------------------+
+```
+
+```
+top (89mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### leg_fl (2x4, 362mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| top | 22.2mm | 19.0mm | φ2.5mm | 27.0mm |
+| top | 66.8mm | 19.0mm | φ2.5mm | 27.0mm |
+| back | 169.0mm | 22.2mm | φ8.0mm | 15.0mm |
+| back | 169.0mm | 66.8mm | φ8.0mm | 15.0mm |
+
+```
+back (362mm x 89mm):
++----------------------------------------+
+|                                        |
+|                  o                     |
+|                                        |
+|                  o                     |
+|                                        |
++----------------------------------------+
+```
+
+```
+top (89mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### leg_fr (2x4, 362mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| top | 22.2mm | 19.0mm | φ2.5mm | 27.0mm |
+| top | 66.8mm | 19.0mm | φ2.5mm | 27.0mm |
+| back | 169.0mm | 22.2mm | φ8.0mm | 15.0mm |
+| back | 169.0mm | 66.8mm | φ8.0mm | 15.0mm |
+
+```
+back (362mm x 89mm):
++----------------------------------------+
+|                                        |
+|                  o                     |
+|                                        |
+|                  o                     |
+|                                        |
++----------------------------------------+
+```
+
+```
+top (89mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### shelf_l (2x6, 274mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| top | 22.2mm | 19.0mm | φ8.0mm | 15.0mm |
+| top | 66.8mm | 19.0mm | φ8.0mm | 15.0mm |
+| down | 22.2mm | 19.0mm | φ8.0mm | 15.0mm |
+| down | 66.8mm | 19.0mm | φ8.0mm | 15.0mm |
+
+```
+down (140mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|      o            o                    |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+```
+top (140mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|      o            o                    |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### shelf_m (2x6, 274mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| top | 22.2mm | 19.0mm | φ8.0mm | 15.0mm |
+| top | 66.8mm | 19.0mm | φ8.0mm | 15.0mm |
+| down | 22.2mm | 19.0mm | φ8.0mm | 15.0mm |
+| down | 66.8mm | 19.0mm | φ8.0mm | 15.0mm |
+
+```
+down (140mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|      o            o                    |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+```
+top (140mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|      o            o                    |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### shelf_r (2x6, 274mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| top | 73.2mm | 19.0mm | φ8.0mm | 15.0mm |
+| top | 117.8mm | 19.0mm | φ8.0mm | 15.0mm |
+| down | 73.2mm | 19.0mm | φ8.0mm | 15.0mm |
+| down | 117.8mm | 19.0mm | φ8.0mm | 15.0mm |
+
+```
+down (140mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|                    o            o      |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+```
+top (140mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|                    o            o      |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### top_b (2x6, 1200mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 22.2mm | 19.0mm | φ2.5mm | through |
+| back | 66.8mm | 19.0mm | φ2.5mm | through |
+| back | 577.8mm | 19.0mm | φ2.5mm | through |
+| back | 622.2mm | 19.0mm | φ2.5mm | through |
+| back | 1133.2mm | 19.0mm | φ2.5mm | through |
+| back | 1177.8mm | 19.0mm | φ2.5mm | through |
+
+```
+back (1200mm x 140mm):
++----------------------------------------+
+|o o                oo                o o|
+|                                        |
+|                                        |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### top_f (2x6, 1200mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 22.2mm | 121.0mm | φ2.5mm | through |
+| back | 66.8mm | 121.0mm | φ2.5mm | through |
+| back | 577.8mm | 121.0mm | φ2.5mm | through |
+| back | 622.2mm | 121.0mm | φ2.5mm | through |
+| back | 1133.2mm | 121.0mm | φ2.5mm | through |
+| back | 1177.8mm | 121.0mm | φ2.5mm | through |
+
+```
+back (1200mm x 140mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|                                        |
+|                                        |
+|o o                oo                o o|
++----------------------------------------+
+```
+
+## Shopping List
+
+### Lumber Required:
+
+- **2x4**: 6 pieces, total 2.2 meters
+- **2x6**: 5 pieces, total 3.2 meters
+
+### Hardware Required:
+
+- **Dowel 8x30**: 12
+- **Slim screw 3.8x65**: 12
+
+### Drill Bits:
+
+- **2.5mm**: 24 holes, deepest: through
+- **8mm**: 24 holes, deepest 15mm
+
+
+## Purchase Recommendations
+
+Saw kerf: 3mm per cut
+
+### 2x4 Lumber (Available: 1820mm, 2440mm, 3050mm, 3650mm)
+Optimal purchase:
+- 1 × 2440mm boards
+Total waste: 250mm (10.2%)
+
+### 2x6 Lumber (Available: 1820mm, 2440mm, 3050mm, 3650mm)
+Optimal purchase:
+- 2 × 1820mm boards
+Total waste: 403mm (11.1%)
+
+## Optimized Cut List
+
+### 2x4 Boards
+
+**Board 1** (2440mm):
+- Cut 362mm → leg_fl
+- Cut 362mm → leg_fr
+- Cut 362mm → leg_fc
+- Cut 362mm → leg_bc
+- Cut 362mm → leg_bl
+- Cut 362mm → leg_br
+- Waste: 250mm
+
+### 2x6 Boards
+
+**Board 1** (1820mm):
+- Cut 1200mm → top_f
+- Cut 274mm → shelf_l
+- Cut 274mm → shelf_m
+- Waste: 63mm
+
+**Board 2** (1820mm):
+- Cut 1200mm → top_b
+- Cut 274mm → shelf_r
+- Waste: 340mm
+
+---
+*Report generated by nichiyou-daiku*
+--- stderr

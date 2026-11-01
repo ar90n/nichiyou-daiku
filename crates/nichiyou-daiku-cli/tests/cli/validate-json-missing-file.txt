@@ -1,0 +1,16 @@
+exit: 1
+--- stdout
+{
+  "valid": false,
+  "error": {
+    "kind": "file",
+    "message": "File not found: missing.nd",
+    "line": null,
+    "column": null
+  },
+  "overall_size": null,
+  "size_reference": null,
+  "pieces": [],
+  "problems": []
+}
+--- stderr

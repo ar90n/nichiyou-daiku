@@ -1,0 +1,4 @@
+exit: 1
+--- stdout
+--- stderr
+DSL Error: line 10, column 1: Offset 250.0mm exceeds piece dimension 200.0mm (piece 'u', edge front/right)

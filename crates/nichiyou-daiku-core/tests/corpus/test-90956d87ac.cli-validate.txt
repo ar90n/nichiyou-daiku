@@ -1,0 +1,6 @@
+exit: 1
+--- stdout
+--- stderr
+✗ Semantic error
+
+line 3, column 9: Unknown piece reference: beam2

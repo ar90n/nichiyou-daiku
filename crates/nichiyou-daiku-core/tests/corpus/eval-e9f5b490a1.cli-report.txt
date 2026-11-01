@@ -1,0 +1,592 @@
+exit: 0
+--- stdout
+# Woodworking Project Report
+
+*Generated on DATE*
+
+## Project Overview
+
+- **Overall Size (X × Y × Z)**: 600 × 184 × 900 mm (Z is the length direction of 'back_1_l')
+- **Total Pieces**: 15
+- **Lumber Types**: 1 (1x8)
+- **Total Volume**: 22,793,920 mm³
+- **Estimated Weight**: ~11.4 kg (assuming pine density)
+
+
+## Bill of Materials
+
+| ID | Type | Length (mm) | Width (mm) | Height (mm) | Volume (mm³) |
+|----|------|------------|-----------|------------|-------------|
+| back_1_l | 1x8 | 274.7 | 184 | 19 | 960,235 |
+| back_1_m | 1x8 | 274.7 | 184 | 19 | 960,235 |
+| back_1_r | 1x8 | 274.7 | 184 | 19 | 960,235 |
+| back_2_l | 1x8 | 274.7 | 184 | 19 | 960,235 |
+| back_2_m | 1x8 | 274.7 | 184 | 19 | 960,235 |
+| back_2_r | 1x8 | 274.7 | 184 | 19 | 960,235 |
+| back_3_l | 1x8 | 274.7 | 184 | 19 | 960,235 |
+| back_3_m | 1x8 | 274.7 | 184 | 19 | 960,235 |
+| back_3_r | 1x8 | 274.7 | 184 | 19 | 960,235 |
+| shelf_1 | 1x8 | 562 | 184 | 19 | 1,964,752 |
+| shelf_2 | 1x8 | 562 | 184 | 19 | 1,964,752 |
+| shelf_3 | 1x8 | 562 | 184 | 19 | 1,964,752 |
+| shelf_4 | 1x8 | 562 | 184 | 19 | 1,964,752 |
+| side_l | 1x8 | 900 | 184 | 19 | 3,146,400 |
+| side_r | 1x8 | 900 | 184 | 19 | 3,146,400 |
+
+
+## Anchor Details
+
+### back_1_l (1x8, 274.7mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| down | back | FromMin 0.0mm |
+
+### back_1_m (1x8, 274.7mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| down | back | FromMin 92.0mm |
+
+### back_1_r (1x8, 274.7mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| down | back | FromMin 92.0mm |
+
+### back_2_l (1x8, 274.7mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| top | back | FromMin 92.0mm |
+
+### back_2_m (1x8, 274.7mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| top | back | FromMin 92.0mm |
+
+### back_2_r (1x8, 274.7mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| top | back | FromMin 92.0mm |
+
+### back_3_l (1x8, 274.7mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| top | back | FromMin 92.0mm |
+
+### back_3_m (1x8, 274.7mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| top | back | FromMin 92.0mm |
+
+### back_3_r (1x8, 274.7mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| top | back | FromMin 92.0mm |
+
+### shelf_1 (1x8, 562mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| front | left | FromMin 0.0mm |
+| front | left | FromMin 281.0mm |
+| front | left | FromMin 470.0mm |
+| down | left | FromMin 0.0mm |
+| top | left | FromMin 0.0mm |
+
+### shelf_2 (1x8, 562mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| down | left | FromMin 0.0mm |
+| top | right | FromMin 0.0mm |
+
+### shelf_3 (1x8, 562mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| down | left | FromMin 0.0mm |
+| top | right | FromMin 0.0mm |
+| back | left | FromMin 92.0mm |
+| back | left | FromMin 281.0mm |
+| back | left | FromMin 470.0mm |
+
+### shelf_4 (1x8, 562mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| down | left | FromMin 0.0mm |
+| top | right | FromMin 0.0mm |
+| back | left | FromMin 92.0mm |
+| back | left | FromMin 281.0mm |
+| back | left | FromMin 470.0mm |
+
+### side_l (1x8, 900mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| front | left | FromMax 0.0mm |
+| front | left | FromMin 606.3mm |
+| front | left | FromMin 312.7mm |
+| front | left | FromMin 19.0mm |
+
+### side_r (1x8, 900mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | right | FromMin 0.0mm |
+| back | left | FromMax 606.3mm |
+| back | left | FromMax 312.7mm |
+| back | left | FromMax 19.0mm |
+
+## Pilot Holes
+
+Distances are measured on the face the hole is drilled into:
+- front/back faces: *From Length Edge* from the down end, *From Width Edge* from the left side
+- left/right faces: *From Length Edge* from the down end, *From Width Edge* from the back side
+- top/down (end) faces: *From Length Edge* from the left side, *From Width Edge* from the back side
+
+### back_1_l (1x8, 274.7mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| down | 46.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| down | 138.0mm | 9.5mm | φ8.0mm | 15.0mm |
+
+```
+down (184mm x 19mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### back_1_m (1x8, 274.7mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| down | 46.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| down | 138.0mm | 9.5mm | φ8.0mm | 15.0mm |
+
+```
+down (184mm x 19mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### back_1_r (1x8, 274.7mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| down | 46.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| down | 138.0mm | 9.5mm | φ8.0mm | 15.0mm |
+
+```
+down (184mm x 19mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### back_2_l (1x8, 274.7mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| top | 46.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| top | 138.0mm | 9.5mm | φ8.0mm | 15.0mm |
+
+```
+top (184mm x 19mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### back_2_m (1x8, 274.7mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| top | 46.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| top | 138.0mm | 9.5mm | φ8.0mm | 15.0mm |
+
+```
+top (184mm x 19mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### back_2_r (1x8, 274.7mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| top | 46.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| top | 138.0mm | 9.5mm | φ8.0mm | 15.0mm |
+
+```
+top (184mm x 19mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### back_3_l (1x8, 274.7mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| top | 46.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| top | 138.0mm | 9.5mm | φ8.0mm | 15.0mm |
+
+```
+top (184mm x 19mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### back_3_m (1x8, 274.7mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| top | 46.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| top | 138.0mm | 9.5mm | φ8.0mm | 15.0mm |
+
+```
+top (184mm x 19mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### back_3_r (1x8, 274.7mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| top | 46.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| top | 138.0mm | 9.5mm | φ8.0mm | 15.0mm |
+
+```
+top (184mm x 19mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### shelf_1 (1x8, 562mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| front | 46.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| front | 138.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| front | 235.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| front | 327.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| front | 424.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| front | 516.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| down | 46.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| down | 138.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| top | 46.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| top | 138.0mm | 9.5mm | φ8.0mm | 15.0mm |
+
+```
+down (184mm x 19mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+```
+front (562mm x 184mm):
++----------------------------------------+
+|   o     o      o      o      o     o   |
+|                                        |
+|                                        |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+```
+top (184mm x 19mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### shelf_2 (1x8, 562mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| down | 46.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| down | 138.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| top | 138.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| top | 46.0mm | 9.5mm | φ8.0mm | 15.0mm |
+
+```
+down (184mm x 19mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+```
+top (184mm x 19mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### shelf_3 (1x8, 562mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| down | 46.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| down | 138.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| top | 138.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| top | 46.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| back | 46.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| back | 138.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| back | 235.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| back | 327.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| back | 424.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| back | 516.0mm | 9.5mm | φ8.0mm | 15.0mm |
+
+```
+back (562mm x 184mm):
++----------------------------------------+
+|   o     o      o      o      o     o   |
+|                                        |
+|                                        |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+```
+down (184mm x 19mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+```
+top (184mm x 19mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### shelf_4 (1x8, 562mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| down | 46.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| down | 138.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| top | 138.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| top | 46.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| back | 46.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| back | 138.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| back | 235.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| back | 327.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| back | 424.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| back | 516.0mm | 9.5mm | φ8.0mm | 15.0mm |
+
+```
+back (562mm x 184mm):
++----------------------------------------+
+|   o     o      o      o      o     o   |
+|                                        |
+|                                        |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+```
+down (184mm x 19mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+```
+top (184mm x 19mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### side_l (1x8, 900mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| front | 890.5mm | 46.0mm | φ8.0mm | 15.0mm |
+| front | 890.5mm | 138.0mm | φ8.0mm | 15.0mm |
+| front | 596.8mm | 46.0mm | φ8.0mm | 15.0mm |
+| front | 596.8mm | 138.0mm | φ8.0mm | 15.0mm |
+| front | 303.2mm | 46.0mm | φ8.0mm | 15.0mm |
+| front | 303.2mm | 138.0mm | φ8.0mm | 15.0mm |
+| front | 9.5mm | 46.0mm | φ8.0mm | 15.0mm |
+| front | 9.5mm | 138.0mm | φ8.0mm | 15.0mm |
+
+```
+front (900mm x 184mm):
++----------------------------------------+
+|                                        |
+|o            o            o            o|
+|                                        |
+|o            o            o            o|
+|                                        |
++----------------------------------------+
+```
+
+### side_r (1x8, 900mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 9.5mm | 138.0mm | φ8.0mm | 15.0mm |
+| back | 9.5mm | 46.0mm | φ8.0mm | 15.0mm |
+| back | 303.2mm | 46.0mm | φ8.0mm | 15.0mm |
+| back | 303.2mm | 138.0mm | φ8.0mm | 15.0mm |
+| back | 596.8mm | 46.0mm | φ8.0mm | 15.0mm |
+| back | 596.8mm | 138.0mm | φ8.0mm | 15.0mm |
+| back | 890.5mm | 46.0mm | φ8.0mm | 15.0mm |
+| back | 890.5mm | 138.0mm | φ8.0mm | 15.0mm |
+
+```
+back (900mm x 184mm):
++----------------------------------------+
+|                                        |
+|o            o            o            o|
+|                                        |
+|o            o            o            o|
+|                                        |
++----------------------------------------+
+```
+
+## Shopping List
+
+### Lumber Required:
+
+- **1x8**: 15 pieces, total 6.5 meters
+
+### Hardware Required:
+
+- **Dowel 8x30**: 34
+
+### Drill Bits:
+
+- **8mm**: 68 holes, deepest 15mm
+
+
+## Purchase Recommendations
+
+Saw kerf: 3mm per cut
+
+### 1x8 Lumber (Available: 1820mm, 2440mm, 3050mm, 3650mm)
+Optimal purchase:
+- 1 × 3050mm boards
+- 1 × 3650mm boards
+Total waste: 135mm (2.0%)
+
+## Optimized Cut List
+
+### 1x8 Boards
+
+**Board 1** (3050mm):
+- Cut 900mm → side_l
+- Cut 900mm → side_r
+- Cut 562mm → shelf_1
+- Cut 562mm → shelf_2
+- Waste: 114mm
+
+**Board 2** (3650mm):
+- Cut 562mm → shelf_3
+- Cut 562mm → shelf_4
+- Cut 274.7mm → back_1_l
+- Cut 274.7mm → back_1_m
+- Cut 274.7mm → back_1_r
+- Cut 274.7mm → back_2_l
+- Cut 274.7mm → back_2_m
+- Cut 274.7mm → back_2_r
+- Cut 274.7mm → back_3_l
+- Cut 274.7mm → back_3_m
+- Cut 274.7mm → back_3_r
+- Waste: 21mm
+
+---
+*Report generated by nichiyou-daiku*
+--- stderr

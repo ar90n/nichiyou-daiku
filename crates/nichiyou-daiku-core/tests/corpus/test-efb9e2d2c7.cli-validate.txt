@@ -1,0 +1,6 @@
+exit: 1
+--- stdout
+--- stderr
+✗ Validation error
+
+line 5, column 26: Unknown dowel preset: 8.9x30.7

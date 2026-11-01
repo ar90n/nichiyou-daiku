@@ -1,0 +1,4 @@
+exit: 1
+--- stdout
+--- stderr
+Error: stock/kerf-text.toml: kerf must be a number in mm, got '3mm'

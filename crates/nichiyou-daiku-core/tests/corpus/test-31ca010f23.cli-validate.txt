@@ -1,0 +1,6 @@
+exit: 1
+--- stdout
+--- stderr
+✗ Semantic error
+
+line 3, column 17: Undefined variable 'R' (define it before it is used)

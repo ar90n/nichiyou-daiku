@@ -1,0 +1,6 @@
+exit: 1
+--- stdout
+✓ DSL syntax is valid
+--- stderr
+✗ Model has problems
+  - Connection apron_right -> leg_br: flush (x) is off by 51mm (loop: apron_right -> leg_fr -> apron_front -> leg_fl -> apron_left -> leg_bl -> apron_back -> leg_br)

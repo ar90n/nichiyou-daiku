@@ -1,0 +1,6 @@
+exit: 1
+--- stdout
+--- stderr
+✗ Syntax error
+
+Syntax error: No pieces defined: the input is empty or contains only comments. Expected at least one piece definition such as (leg:2x4 =720)

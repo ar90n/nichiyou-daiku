@@ -1,0 +1,6 @@
+exit: 1
+--- stdout
+--- stderr
+✗ Semantic error
+
+line 1, column 1: 'steps' names the steps block and cannot name a piece; rename the piece

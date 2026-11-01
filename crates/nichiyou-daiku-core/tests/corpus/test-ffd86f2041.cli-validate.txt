@@ -1,0 +1,6 @@
+exit: 1
+--- stdout
+--- stderr
+✗ Validation error
+
+line 14, column 1: The length of 'apron_front' is not fixed by its connections

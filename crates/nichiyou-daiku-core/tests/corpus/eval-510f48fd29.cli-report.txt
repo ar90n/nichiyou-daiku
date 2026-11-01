@@ -1,0 +1,196 @@
+exit: 0
+--- stdout
+# Woodworking Project Report
+
+*Generated on DATE*
+
+## Project Overview
+
+- **Overall Size (X × Y × Z)**: 1051 × 462 × 1273 mm (Z is the length direction of 'leg_fl')
+- **Total Pieces**: 4
+- **Lumber Types**: 1 (2x4)
+- **Total Volume**: 9,165,220 mm³
+- **Estimated Weight**: ~4.6 kg (assuming pine density)
+
+
+## Bill of Materials
+
+| ID | Type | Length (mm) | Width (mm) | Height (mm) | Volume (mm³) |
+|----|------|------------|-----------|------------|-------------|
+| apron_left | 2x4 | 348 | 89 | 38 | 1,176,936 |
+| leg_fl | 2x4 | 681 | 89 | 38 | 2,303,142 |
+| leg_bl | 2x4 | 681 | 89 | 38 | 2,303,142 |
+| apron_front | 2x4 | 1000 | 89 | 38 | 3,382,000 |
+
+
+## Anchor Details
+
+### apron_front (2x4, 1000mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+
+### apron_left (2x4, 348mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| down | front | FromMin 0.0mm |
+| top | back | FromMin 0.0mm |
+
+### leg_bl (2x4, 681mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| front | right | FromMin 0.0mm |
+
+### leg_fl (2x4, 681mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| front | top | FromMin 0.0mm |
+| back | left | FromMin 592.0mm |
+
+## Pilot Holes
+
+Distances are measured on the face the hole is drilled into:
+- front/back faces: *From Length Edge* from the down end, *From Width Edge* from the left side
+- left/right faces: *From Length Edge* from the down end, *From Width Edge* from the back side
+- top/down (end) faces: *From Length Edge* from the left side, *From Width Edge* from the back side
+
+### apron_front (2x4, 1000mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 22.2mm | 44.5mm | φ2.5mm | through |
+| back | 66.8mm | 44.5mm | φ2.5mm | through |
+
+```
+back (1000mm x 89mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|o o                                     |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### apron_left (2x4, 348mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| down | 22.2mm | 19.0mm | φ2.5mm | 27.0mm |
+| down | 66.8mm | 19.0mm | φ2.5mm | 27.0mm |
+| top | 22.2mm | 19.0mm | φ2.5mm | 27.0mm |
+| top | 66.8mm | 19.0mm | φ2.5mm | 27.0mm |
+
+```
+down (89mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+```
+top (89mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### leg_bl (2x4, 681mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| front | 22.2mm | 70.0mm | φ2.5mm | through |
+| front | 66.8mm | 70.0mm | φ2.5mm | through |
+
+```
+front (681mm x 89mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|                                        |
+| o o                                    |
+|                                        |
++----------------------------------------+
+```
+
+### leg_fl (2x4, 681mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| front | 636.5mm | 22.2mm | φ2.5mm | 27.0mm |
+| front | 636.5mm | 66.8mm | φ2.5mm | 27.0mm |
+| back | 614.2mm | 19.0mm | φ2.5mm | through |
+| back | 658.8mm | 19.0mm | φ2.5mm | through |
+
+```
+back (681mm x 89mm):
++----------------------------------------+
+|                                        |
+|                                    o o |
+|                                        |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+```
+front (681mm x 89mm):
++----------------------------------------+
+|                                        |
+|                                     o  |
+|                                        |
+|                                     o  |
+|                                        |
++----------------------------------------+
+```
+
+## Shopping List
+
+### Lumber Required:
+
+- **2x4**: 4 pieces, total 2.7 meters
+
+### Hardware Required:
+
+- **Slim screw 3.8x65**: 6
+
+### Drill Bits:
+
+- **2.5mm**: 12 holes, deepest: through
+
+
+## Purchase Recommendations
+
+Saw kerf: 3mm per cut
+
+### 2x4 Lumber (Available: 1820mm, 2440mm, 3050mm, 3650mm)
+Optimal purchase:
+- 1 × 3050mm boards
+Total waste: 328mm (10.8%)
+
+## Optimized Cut List
+
+### 2x4 Boards
+
+**Board 1** (3050mm):
+- Cut 1000mm → apron_front
+- Cut 681mm → leg_fl
+- Cut 681mm → leg_bl
+- Cut 348mm → apron_left
+- Waste: 328mm
+
+---
+*Report generated by nichiyou-daiku*
+--- stderr

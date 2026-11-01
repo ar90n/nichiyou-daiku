@@ -1,0 +1,6 @@
+exit: 1
+--- stdout
+--- stderr
+✗ Semantic error
+
+line 4, column 1: Duplicate connection between 'a' and 'b': only one connection per piece pair is supported

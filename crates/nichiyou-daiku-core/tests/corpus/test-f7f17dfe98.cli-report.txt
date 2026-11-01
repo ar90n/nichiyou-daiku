@@ -1,0 +1,204 @@
+exit: 0
+--- stdout
+# Woodworking Project Report
+
+*Generated on DATE*
+
+## Project Overview
+
+- **Overall Size (X × Y × Z)**: 89 × 676 × 800 mm (Z is the length direction of 'side_l')
+- **Total Pieces**: 4
+- **Lumber Types**: 1 (2x4)
+- **Total Volume**: 9,469,600 mm³
+- **Estimated Weight**: ~4.7 kg (assuming pine density)
+
+
+## Bill of Materials
+
+| ID | Type | Length (mm) | Width (mm) | Height (mm) | Volume (mm³) |
+|----|------|------------|-----------|------------|-------------|
+| shelf_bottom | 2x4 | 600 | 89 | 38 | 2,029,200 |
+| shelf_top | 2x4 | 600 | 89 | 38 | 2,029,200 |
+| side_l | 2x4 | 800 | 89 | 38 | 2,705,600 |
+| side_r | 2x4 | 800 | 89 | 38 | 2,705,600 |
+
+
+## Anchor Details
+
+### shelf_bottom (2x4, 600mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| down | left | FromMin 0.0mm |
+| top | left | FromMin 0.0mm |
+
+### shelf_top (2x4, 600mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| down | left | FromMin 0.0mm |
+| top | left | FromMin 0.0mm |
+
+### side_l (2x4, 800mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 100.0mm |
+| back | left | FromMax 38.0mm |
+
+### side_r (2x4, 800mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| front | left | FromMin 100.0mm |
+| front | left | FromMax 38.0mm |
+
+## Pilot Holes
+
+Distances are measured on the face the hole is drilled into:
+- front/back faces: *From Length Edge* from the down end, *From Width Edge* from the left side
+- left/right faces: *From Length Edge* from the down end, *From Width Edge* from the back side
+- top/down (end) faces: *From Length Edge* from the left side, *From Width Edge* from the back side
+
+### shelf_bottom (2x4, 600mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| down | 22.2mm | 19.0mm | φ8.0mm | 15.0mm |
+| down | 66.8mm | 19.0mm | φ8.0mm | 15.0mm |
+| top | 22.2mm | 19.0mm | φ8.0mm | 15.0mm |
+| top | 66.8mm | 19.0mm | φ8.0mm | 15.0mm |
+
+```
+down (89mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+```
+top (89mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### shelf_top (2x4, 600mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| down | 22.2mm | 19.0mm | φ2.5mm | 27.0mm |
+| down | 66.8mm | 19.0mm | φ2.5mm | 27.0mm |
+| top | 22.2mm | 19.0mm | φ2.5mm | 27.0mm |
+| top | 66.8mm | 19.0mm | φ2.5mm | 27.0mm |
+
+```
+down (89mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+```
+top (89mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### side_l (2x4, 800mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 119.0mm | 22.2mm | φ8.0mm | 15.0mm |
+| back | 119.0mm | 66.8mm | φ8.0mm | 15.0mm |
+| back | 781.0mm | 22.2mm | φ2.5mm | through |
+| back | 781.0mm | 66.8mm | φ2.5mm | through |
+
+```
+back (800mm x 89mm):
++----------------------------------------+
+|                                        |
+|     o                                 o|
+|                                        |
+|     o                                 o|
+|                                        |
++----------------------------------------+
+```
+
+### side_r (2x4, 800mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| front | 119.0mm | 22.2mm | φ8.0mm | 15.0mm |
+| front | 119.0mm | 66.8mm | φ8.0mm | 15.0mm |
+| front | 781.0mm | 22.2mm | φ2.5mm | through |
+| front | 781.0mm | 66.8mm | φ2.5mm | through |
+
+```
+front (800mm x 89mm):
++----------------------------------------+
+|                                        |
+|     o                                 o|
+|                                        |
+|     o                                 o|
+|                                        |
++----------------------------------------+
+```
+
+## Shopping List
+
+### Lumber Required:
+
+- **2x4**: 4 pieces, total 2.8 meters
+
+### Hardware Required:
+
+- **Dowel 8x30**: 4
+- **Slim screw 3.8x65**: 4
+
+### Drill Bits:
+
+- **2.5mm**: 8 holes, deepest: through
+- **8mm**: 8 holes, deepest 15mm
+
+
+## Purchase Recommendations
+
+Saw kerf: 3mm per cut
+
+### 2x4 Lumber (Available: 1820mm, 2440mm, 3050mm, 3650mm)
+Optimal purchase:
+- 1 × 3050mm boards
+Total waste: 238mm (7.8%)
+
+## Optimized Cut List
+
+### 2x4 Boards
+
+**Board 1** (3050mm):
+- Cut 800mm → side_l
+- Cut 800mm → side_r
+- Cut 600mm → shelf_bottom
+- Cut 600mm → shelf_top
+- Waste: 238mm
+
+---
+*Report generated by nichiyou-daiku*
+--- stderr

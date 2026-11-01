@@ -1,0 +1,5 @@
+exit: 1
+--- stdout
+--- stderr
+✗ Model has problems
+  - Some pieces are not connected to each other, so their relative position is undefined (groups: a; b)

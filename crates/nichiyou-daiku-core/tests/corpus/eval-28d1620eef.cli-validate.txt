@@ -1,0 +1,12 @@
+exit: 1
+--- stdout
+✓ DSL syntax is valid
+--- stderr
+✗ Model has problems
+  - Connection apron_back -> top_1: orientation contradicts the other connections (loop: apron_back -> leg_bl -> apron_left -> leg_fl -> apron_front -> top_1)
+  - Connection apron_back -> top_2: orientation contradicts the other connections (loop: apron_back -> leg_bl -> apron_left -> leg_fl -> apron_front -> top_2)
+  - Connection apron_back -> top_3: orientation contradicts the other connections (loop: apron_back -> leg_bl -> apron_left -> leg_fl -> apron_front -> top_3)
+  - Connection apron_back -> top_4: orientation contradicts the other connections (loop: apron_back -> leg_bl -> apron_left -> leg_fl -> apron_front -> top_4)
+  - Connection apron_back -> top_5: orientation contradicts the other connections (loop: apron_back -> leg_bl -> apron_left -> leg_fl -> apron_front -> top_5)
+  - Connection apron_back -> top_6: orientation contradicts the other connections (loop: apron_back -> leg_bl -> apron_left -> leg_fl -> apron_front -> top_6)
+  - Connection apron_back -> top_7: orientation contradicts the other connections (loop: apron_back -> leg_bl -> apron_left -> leg_fl -> apron_front -> top_7)

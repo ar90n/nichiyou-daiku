@@ -1,0 +1,4 @@
+exit: 1
+--- stdout
+--- stderr
+Error: stock/bad-lengths.toml: '2x4' lengths must be positive numbers in mm, got [1820, 'a', True, -5]

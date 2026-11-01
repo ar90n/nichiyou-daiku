@@ -1,0 +1,210 @@
+exit: 0
+--- stdout
+# Woodworking Project Report
+
+*Generated on DATE*
+
+## Project Overview
+
+- **Overall Size (X × Y × Z)**: 800 × 600 × 758 mm (Z is the length direction of 'leg_1')
+- **Total Pieces**: 16
+- **Lumber Types**: 1 (2x4)
+- **Total Volume**: 33,725,304 mm³
+- **Estimated Weight**: ~16.9 kg (assuming pine density)
+
+
+## Bill of Materials
+
+| ID | Type | Length (mm) | Width (mm) | Height (mm) | Volume (mm³) |
+|----|------|------------|-----------|------------|-------------|
+| apron_left | 2x4 | 524 | 89 | 38 | 1,772,168 |
+| apron_right | 2x4 | 524 | 89 | 38 | 1,772,168 |
+| table_top_1 | 2x4 | 600 | 89 | 38 | 2,029,200 |
+| table_top_2 | 2x4 | 600 | 89 | 38 | 2,029,200 |
+| table_top_3 | 2x4 | 600 | 89 | 38 | 2,029,200 |
+| table_top_4 | 2x4 | 600 | 89 | 38 | 2,029,200 |
+| table_top_5 | 2x4 | 600 | 89 | 38 | 2,029,200 |
+| table_top_6 | 2x4 | 600 | 89 | 38 | 2,029,200 |
+| table_top_7 | 2x4 | 600 | 89 | 38 | 2,029,200 |
+| table_top_8 | 2x4 | 600 | 89 | 38 | 2,029,200 |
+| apron_front | 2x4 | 622 | 89 | 38 | 2,103,604 |
+| apron_back | 2x4 | 622 | 89 | 38 | 2,103,604 |
+| leg_1 | 2x4 | 720 | 89 | 38 | 2,435,040 |
+| leg_2 | 2x4 | 720 | 89 | 38 | 2,435,040 |
+| leg_3 | 2x4 | 720 | 89 | 38 | 2,435,040 |
+| leg_4 | 2x4 | 720 | 89 | 38 | 2,435,040 |
+
+
+## Anchor Details
+
+### apron_back (2x4, 622mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| down | back | FromMax 0.0mm |
+| top | front | FromMax 0.0mm |
+
+### apron_front (2x4, 622mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| down | back | FromMax 0.0mm |
+| top | front | FromMax 0.0mm |
+| right | front | FromMin 12.6mm |
+| right | front | FromMin 114.1mm |
+| right | front | FromMin 215.7mm |
+| right | front | FromMin 317.3mm |
+| right | front | FromMin 418.9mm |
+| right | front | FromMin 520.4mm |
+
+### apron_left (2x4, 524mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| down | back | FromMin 0.0mm |
+| top | back | FromMin 0.0mm |
+
+### apron_right (2x4, 524mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| down | front | FromMin 0.0mm |
+| top | front | FromMin 0.0mm |
+
+### leg_1 (2x4, 720mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| left | back | FromMax 0.0mm |
+| back | right | FromMin 100.0mm |
+| top | front | FromMin 0.0mm |
+
+### leg_2 (2x4, 720mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| right | front | FromMax 0.0mm |
+| back | left | FromMin 100.0mm |
+| top | front | FromMin 0.0mm |
+
+### leg_3 (2x4, 720mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| left | back | FromMax 0.0mm |
+| front | right | FromMin 100.0mm |
+
+### leg_4 (2x4, 720mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| right | front | FromMax 0.0mm |
+| front | left | FromMin 100.0mm |
+
+### table_top_1 (2x4, 600mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | down | FromMin 0.0mm |
+
+### table_top_2 (2x4, 600mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### table_top_3 (2x4, 600mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### table_top_4 (2x4, 600mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### table_top_5 (2x4, 600mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### table_top_6 (2x4, 600mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### table_top_7 (2x4, 600mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### table_top_8 (2x4, 600mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | down | FromMin 0.0mm |
+
+## Pilot Holes
+
+*No pilot holes in this project.*
+
+## Shopping List
+
+### Lumber Required:
+
+- **2x4**: 16 pieces, total 10.0 meters
+
+
+## Purchase Recommendations
+
+Saw kerf: 3mm per cut
+
+### 2x4 Lumber (Available: 1820mm, 2440mm, 3050mm, 3650mm)
+Optimal purchase:
+- 4 × 1820mm boards
+- 1 × 3050mm boards
+Total waste: 310mm (3.0%)
+
+## Optimized Cut List
+
+### 2x4 Boards
+
+**Board 1** (3050mm):
+- Cut 720mm → leg_1
+- Cut 720mm → leg_2
+- Cut 720mm → leg_3
+- Cut 720mm → leg_4
+- Waste: 158mm
+
+**Board 2** (1820mm):
+- Cut 622mm → apron_front
+- Cut 622mm → apron_back
+- Cut 524mm → apron_left
+- Waste: 43mm
+
+**Board 3** (1820mm):
+- Cut 600mm → table_top_1
+- Cut 600mm → table_top_2
+- Cut 600mm → table_top_3
+- Waste: 11mm
+
+**Board 4** (1820mm):
+- Cut 600mm → table_top_4
+- Cut 600mm → table_top_5
+- Cut 600mm → table_top_6
+- Waste: 11mm
+
+**Board 5** (1820mm):
+- Cut 600mm → table_top_7
+- Cut 600mm → table_top_8
+- Cut 524mm → apron_right
+- Waste: 87mm
+
+---
+*Report generated by nichiyou-daiku*
+--- stderr

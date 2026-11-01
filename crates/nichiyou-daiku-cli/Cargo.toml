@@ -1,0 +1,10 @@
+[package]
+name = "nichiyou-daiku-cli"
+description = "The nichiyou-daiku command line: validate and report on furniture designs (.nd)"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "nichiyou-daiku"
+path = "src/main.rs"

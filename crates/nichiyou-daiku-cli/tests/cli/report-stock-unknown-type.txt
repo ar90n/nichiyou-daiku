@@ -1,0 +1,4 @@
+exit: 1
+--- stdout
+--- stderr
+Error: stock/unknown-type.toml: Unknown lumber type '2x3' in [lengths]. Use one of: 1x4, 1x6, 1x8, 2x2, 2x4, 2x6

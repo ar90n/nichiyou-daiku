@@ -1,0 +1,4 @@
+exit: 1
+--- stdout
+--- stderr
+DSL Error: line 4, column 28: Unknown Coarse screw preset: 9.9x999

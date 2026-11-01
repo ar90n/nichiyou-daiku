@@ -1,0 +1,6 @@
+exit: 1
+--- stdout
+--- stderr
+✗ Validation error
+
+line 3, column 5: contact_face: Input should be 'top', 'down', 'left', 'right', 'front' or 'back' (got 'tpo')

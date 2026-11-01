@@ -1,0 +1,7 @@
+exit: 1
+--- stdout
+✓ DSL syntax is valid
+--- stderr
+✗ Model has problems
+  - Connection leg_fr -> apron_front: screw hole in 'apron_front' runs into a screw hole of connection leg_fl -> apron_front
+  - Pieces 'leg_fl' and 'leg_fr' overlap (300998mm³)

@@ -1,0 +1,420 @@
+exit: 0
+--- stdout
+# Woodworking Project Report
+
+*Generated on DATE*
+
+## Project Overview
+
+- **Overall Size (X × Y × Z)**: 89 × 760 × 300 mm (Z is the length direction of 'shelf_board_00')
+- **Total Pieces**: 40
+- **Lumber Types**: 1 (1x4)
+- **Total Volume**: 20,292,000 mm³
+- **Estimated Weight**: ~10.1 kg (assuming pine density)
+
+
+## Bill of Materials
+
+| ID | Type | Length (mm) | Width (mm) | Height (mm) | Volume (mm³) |
+|----|------|------------|-----------|------------|-------------|
+| shelf_board_00 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_01 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_02 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_03 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_04 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_05 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_06 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_07 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_08 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_09 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_10 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_11 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_12 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_13 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_14 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_15 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_16 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_17 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_18 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_19 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_20 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_21 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_22 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_23 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_24 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_25 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_26 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_27 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_28 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_29 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_30 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_31 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_32 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_33 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_34 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_35 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_36 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_37 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_38 | 1x4 | 300 | 89 | 19 | 507,300 |
+| shelf_board_39 | 1x4 | 300 | 89 | 19 | 507,300 |
+
+
+## Anchor Details
+
+### shelf_board_00 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| front | left | FromMin 0.0mm |
+
+### shelf_board_01 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_02 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_03 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_04 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_05 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_06 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_07 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_08 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_09 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_10 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_11 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_12 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_13 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_14 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_15 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_16 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_17 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_18 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_19 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_20 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_21 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_22 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_23 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_24 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_25 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_26 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_27 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_28 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_29 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_30 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_31 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_32 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_33 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_34 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_35 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_36 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_37 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_38 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+| front | left | FromMin 0.0mm |
+
+### shelf_board_39 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | left | FromMin 0.0mm |
+
+## Pilot Holes
+
+*No pilot holes in this project.*
+
+## Shopping List
+
+### Lumber Required:
+
+- **1x4**: 40 pieces, total 12.0 meters
+
+
+## Purchase Recommendations
+
+Saw kerf: 3mm per cut
+
+### 1x4 Lumber (Available: 1820mm, 2440mm, 3050mm, 3650mm)
+Optimal purchase:
+- 4 × 3050mm boards
+Total waste: 80mm (0.7%)
+
+## Optimized Cut List
+
+### 1x4 Boards
+
+**Board 1** (3050mm):
+- Cut 300mm → shelf_board_00
+- Cut 300mm → shelf_board_01
+- Cut 300mm → shelf_board_02
+- Cut 300mm → shelf_board_03
+- Cut 300mm → shelf_board_04
+- Cut 300mm → shelf_board_05
+- Cut 300mm → shelf_board_06
+- Cut 300mm → shelf_board_07
+- Cut 300mm → shelf_board_08
+- Cut 300mm → shelf_board_09
+- Waste: 20mm
+
+**Board 2** (3050mm):
+- Cut 300mm → shelf_board_10
+- Cut 300mm → shelf_board_11
+- Cut 300mm → shelf_board_12
+- Cut 300mm → shelf_board_13
+- Cut 300mm → shelf_board_14
+- Cut 300mm → shelf_board_15
+- Cut 300mm → shelf_board_16
+- Cut 300mm → shelf_board_17
+- Cut 300mm → shelf_board_18
+- Cut 300mm → shelf_board_19
+- Waste: 20mm
+
+**Board 3** (3050mm):
+- Cut 300mm → shelf_board_20
+- Cut 300mm → shelf_board_21
+- Cut 300mm → shelf_board_22
+- Cut 300mm → shelf_board_23
+- Cut 300mm → shelf_board_24
+- Cut 300mm → shelf_board_25
+- Cut 300mm → shelf_board_26
+- Cut 300mm → shelf_board_27
+- Cut 300mm → shelf_board_28
+- Cut 300mm → shelf_board_29
+- Waste: 20mm
+
+**Board 4** (3050mm):
+- Cut 300mm → shelf_board_30
+- Cut 300mm → shelf_board_31
+- Cut 300mm → shelf_board_32
+- Cut 300mm → shelf_board_33
+- Cut 300mm → shelf_board_34
+- Cut 300mm → shelf_board_35
+- Cut 300mm → shelf_board_36
+- Cut 300mm → shelf_board_37
+- Cut 300mm → shelf_board_38
+- Cut 300mm → shelf_board_39
+- Waste: 20mm
+
+---
+*Report generated by nichiyou-daiku*
+--- stderr

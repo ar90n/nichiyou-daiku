@@ -1,0 +1,431 @@
+exit: 0
+--- stdout
+# Woodworking Project Report
+
+*Generated on DATE*
+
+## Project Overview
+
+- **Overall Size (X × Y × Z)**: 127 × 300 × 2000 mm (Z is the length direction of 'rail')
+- **Total Pieces**: 40
+- **Lumber Types**: 2 (2x2, 2x4)
+- **Total Volume**: 23,658,800 mm³
+- **Estimated Weight**: ~11.8 kg (assuming pine density)
+
+
+## Bill of Materials
+
+| ID | Type | Length (mm) | Width (mm) | Height (mm) | Volume (mm³) |
+|----|------|------------|-----------|------------|-------------|
+| s0 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s1 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s2 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s3 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s4 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s5 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s6 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s7 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s8 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s9 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s10 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s11 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s12 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s13 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s14 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s15 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s16 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s17 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s18 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s19 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s20 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s21 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s22 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s23 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s24 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s25 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s26 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s27 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s28 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s29 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s30 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s31 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s32 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s33 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s34 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s35 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s36 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s37 | 2x2 | 300 | 38 | 38 | 433,200 |
+| s38 | 2x2 | 300 | 38 | 38 | 433,200 |
+| rail | 2x4 | 2000 | 89 | 38 | 6,764,000 |
+
+
+## Anchor Details
+
+### rail (2x4, 2000mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| right | front | FromMin 0.0mm |
+| right | front | FromMin 50.5mm |
+| right | front | FromMin 101.0mm |
+| right | front | FromMin 151.5mm |
+| right | front | FromMin 202.0mm |
+| right | front | FromMin 252.5mm |
+| right | front | FromMin 303.0mm |
+| right | front | FromMin 353.5mm |
+| right | front | FromMin 404.0mm |
+| right | front | FromMin 454.5mm |
+| right | front | FromMin 505.0mm |
+| right | front | FromMin 555.5mm |
+| right | front | FromMin 606.0mm |
+| right | front | FromMin 656.5mm |
+| right | front | FromMin 707.0mm |
+| right | front | FromMin 757.5mm |
+| right | front | FromMin 808.0mm |
+| right | front | FromMin 858.5mm |
+| right | front | FromMin 909.0mm |
+| right | front | FromMin 959.5mm |
+| right | front | FromMin 1010.0mm |
+| right | front | FromMin 1060.5mm |
+| right | front | FromMin 1111.0mm |
+| right | front | FromMin 1161.5mm |
+| right | front | FromMin 1212.0mm |
+| right | front | FromMin 1262.5mm |
+| right | front | FromMin 1313.0mm |
+| right | front | FromMin 1363.5mm |
+| right | front | FromMin 1414.0mm |
+| right | front | FromMin 1464.5mm |
+| right | front | FromMin 1515.0mm |
+| right | front | FromMin 1565.5mm |
+| right | front | FromMin 1616.0mm |
+| right | front | FromMin 1666.5mm |
+| right | front | FromMin 1717.0mm |
+| right | front | FromMin 1767.5mm |
+| right | front | FromMin 1818.0mm |
+| right | front | FromMin 1868.5mm |
+| right | front | FromMin 1919.0mm |
+
+### s0 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s1 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s10 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s11 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s12 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s13 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s14 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s15 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s16 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s17 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s18 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s19 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s2 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s20 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s21 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s22 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s23 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s24 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s25 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s26 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s27 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s28 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s29 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s3 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s30 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s31 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s32 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s33 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s34 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s35 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s36 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s37 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s38 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s4 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s5 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s6 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s7 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s8 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### s9 (2x2, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+## Pilot Holes
+
+*No pilot holes in this project.*
+
+## Shopping List
+
+### Lumber Required:
+
+- **2x2**: 39 pieces, total 11.7 meters
+- **2x4**: 1 pieces, total 2.0 meters
+
+
+## Purchase Recommendations
+
+Saw kerf: 3mm per cut
+
+### 2x2 Lumber (Available: 1820mm, 2440mm, 3050mm, 3650mm)
+Optimal purchase:
+- 4 × 3050mm boards
+Total waste: 383mm (3.1%)
+
+### 2x4 Lumber (Available: 1820mm, 2440mm, 3050mm, 3650mm)
+Optimal purchase:
+- 1 × 2440mm boards
+Total waste: 437mm (17.9%)
+
+## Optimized Cut List
+
+### 2x2 Boards
+
+**Board 1** (3050mm):
+- Cut 300mm → s0
+- Cut 300mm → s1
+- Cut 300mm → s2
+- Cut 300mm → s3
+- Cut 300mm → s4
+- Cut 300mm → s5
+- Cut 300mm → s6
+- Cut 300mm → s7
+- Cut 300mm → s8
+- Cut 300mm → s9
+- Waste: 20mm
+
+**Board 2** (3050mm):
+- Cut 300mm → s10
+- Cut 300mm → s11
+- Cut 300mm → s12
+- Cut 300mm → s13
+- Cut 300mm → s14
+- Cut 300mm → s15
+- Cut 300mm → s16
+- Cut 300mm → s17
+- Cut 300mm → s18
+- Cut 300mm → s19
+- Waste: 20mm
+
+**Board 3** (3050mm):
+- Cut 300mm → s20
+- Cut 300mm → s21
+- Cut 300mm → s22
+- Cut 300mm → s23
+- Cut 300mm → s24
+- Cut 300mm → s25
+- Cut 300mm → s26
+- Cut 300mm → s27
+- Cut 300mm → s28
+- Cut 300mm → s29
+- Waste: 20mm
+
+**Board 4** (3050mm):
+- Cut 300mm → s30
+- Cut 300mm → s31
+- Cut 300mm → s32
+- Cut 300mm → s33
+- Cut 300mm → s34
+- Cut 300mm → s35
+- Cut 300mm → s36
+- Cut 300mm → s37
+- Cut 300mm → s38
+- Waste: 323mm
+
+### 2x4 Boards
+
+**Board 1** (2440mm):
+- Cut 2000mm → rail
+- Waste: 437mm
+
+---
+*Report generated by nichiyou-daiku*
+--- stderr

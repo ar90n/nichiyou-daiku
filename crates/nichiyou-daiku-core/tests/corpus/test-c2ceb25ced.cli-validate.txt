@@ -1,0 +1,6 @@
+exit: 1
+--- stdout
+--- stderr
+✗ Validation error
+
+line 2, column 1: 'b' can slide along z (axes of 'a'): its connections with unknown offsets (a -> b) leave its position open

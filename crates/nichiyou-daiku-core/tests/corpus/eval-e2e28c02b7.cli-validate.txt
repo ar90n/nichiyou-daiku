@@ -1,0 +1,7 @@
+exit: 1
+--- stdout
+✓ DSL syntax is valid
+--- stderr
+✗ Model has problems
+  - Connection apron_right -> leg_fr: pieces do not share a contact area
+  - Connection apron_right -> leg_br: pieces do not share a contact area

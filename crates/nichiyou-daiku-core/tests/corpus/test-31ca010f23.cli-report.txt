@@ -1,0 +1,4 @@
+exit: 1
+--- stdout
+--- stderr
+DSL Error: line 3, column 17: Undefined variable 'R' (define it before it is used)

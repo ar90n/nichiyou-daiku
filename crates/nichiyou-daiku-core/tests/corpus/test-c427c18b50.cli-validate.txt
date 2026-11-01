@@ -1,0 +1,6 @@
+exit: 1
+--- stdout
+--- stderr
+✗ Validation error
+
+line 8, column 1: 'q' and 'r' slide along a shared edge (?) but their edges do not meet

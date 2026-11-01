@@ -1,0 +1,6 @@
+exit: 1
+--- stdout
+--- stderr
+✗ Syntax error
+
+Syntax error at line 1, column 9: Unexpected token 'dsl'. Expected one of: '-[', '='

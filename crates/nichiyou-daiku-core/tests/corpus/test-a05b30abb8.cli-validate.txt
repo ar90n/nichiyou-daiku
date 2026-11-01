@@ -1,0 +1,6 @@
+exit: 1
+--- stdout
+✓ DSL syntax is valid
+--- stderr
+✗ Model has problems
+  - Connection a -> b: contact area 19.0 x 89.0mm is too narrow for a 10.0mm dowel (needs 20.0mm)

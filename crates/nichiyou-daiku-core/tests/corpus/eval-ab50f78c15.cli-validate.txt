@@ -1,0 +1,6 @@
+exit: 1
+--- stdout
+--- stderr
+✗ Validation error
+
+line 5, column 1: Offset 911.0mm exceeds piece dimension 89.0mm (piece 'apron_front', edge back/down)

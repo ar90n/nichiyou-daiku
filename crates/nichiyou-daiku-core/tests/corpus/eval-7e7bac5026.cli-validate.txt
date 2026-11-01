@@ -1,0 +1,15 @@
+exit: 1
+--- stdout
+✓ DSL syntax is valid
+--- stderr
+✗ Model has problems
+  - Connection leg_fl -> top_1: pieces do not share a contact area
+  - Connection leg_fl -> apron_left: dowel hole in 'leg_fl' runs into a dowel hole of connection leg_fl -> apron_front
+  - Connection leg_fl -> apron_lower_left: dowel hole in 'leg_fl' runs into a dowel hole of connection leg_fl -> apron_lower_front
+  - Connection leg_fr -> apron_right: dowel hole in 'leg_fr' runs into a dowel hole of connection leg_fr -> apron_front
+  - Connection leg_fr -> apron_lower_right: dowel hole in 'leg_fr' runs into a dowel hole of connection leg_fr -> apron_lower_front
+  - Connection leg_bl -> apron_left: dowel hole in 'leg_bl' runs into a dowel hole of connection leg_bl -> apron_back
+  - Connection leg_bl -> apron_lower_left: dowel hole in 'leg_bl' runs into a dowel hole of connection leg_bl -> apron_lower_back
+  - Connection leg_br -> apron_right: dowel hole in 'leg_br' runs into a dowel hole of connection leg_br -> apron_back
+  - Connection leg_br -> apron_lower_right: dowel hole in 'leg_br' runs into a dowel hole of connection leg_br -> apron_lower_back
+  - Pieces 'top_1' and 'top_2' overlap (133000mm³)

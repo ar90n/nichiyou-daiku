@@ -1,0 +1,27 @@
+exit: 0
+--- stdout
+✓ DSL syntax is valid
+✓ Model is valid
+--- stderr
+
+Model summary:
+  Pieces: 16
+  Connections: 16
+
+Pieces:
+  - leg_1: 2x4 @ 720.0mm
+  - leg_2: 2x4 @ 720.0mm
+  - leg_3: 2x4 @ 720.0mm
+  - leg_4: 2x4 @ 720.0mm
+  - apron_front: 2x4 @ 622.0mm
+  - apron_back: 2x4 @ 622.0mm
+  - apron_left: 2x4 @ 524.0mm
+  - apron_right: 2x4 @ 524.0mm
+  - table_top_1: 2x4 @ 600.0mm
+  - table_top_2: 2x4 @ 600.0mm
+  - table_top_3: 2x4 @ 600.0mm
+  - table_top_4: 2x4 @ 600.0mm
+  - table_top_5: 2x4 @ 600.0mm
+  - table_top_6: 2x4 @ 600.0mm
+  - table_top_7: 2x4 @ 600.0mm
+  - table_top_8: 2x4 @ 600.0mm

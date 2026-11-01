@@ -1,0 +1,6 @@
+exit: 1
+--- stdout
+--- stderr
+✗ Validation error
+
+line 3, column 12: contact_face 'back' and edge_shared_face 'back' must be adjacent faces

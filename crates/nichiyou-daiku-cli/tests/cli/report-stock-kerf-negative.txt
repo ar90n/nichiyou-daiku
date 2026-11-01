@@ -1,0 +1,4 @@
+exit: 1
+--- stdout
+--- stderr
+Error: stock/kerf-negative.toml: kerf must be 0 or more, got -1

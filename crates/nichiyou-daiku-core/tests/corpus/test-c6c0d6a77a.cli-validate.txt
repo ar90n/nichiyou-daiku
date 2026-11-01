@@ -1,0 +1,6 @@
+exit: 1
+--- stdout
+--- stderr
+✗ Validation error
+
+line 4, column 28: Unknown Coarse screw preset: 9.9x999

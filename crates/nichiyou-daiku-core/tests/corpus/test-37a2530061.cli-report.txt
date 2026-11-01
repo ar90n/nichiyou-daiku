@@ -1,0 +1,4 @@
+exit: 1
+--- stdout
+--- stderr
+DSL Error: Syntax error at line 1, column 13: Unexpected token '600'. Expected one of: ')', '*', '+', '-', '/'

@@ -1,0 +1,4 @@
+exit: 1
+--- stdout
+--- stderr
+Error: stock/not-list.toml: '2x4' must be a list of lengths in mm, e.g. "2x4" = [1820, 2440]

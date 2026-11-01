@@ -1,0 +1,6 @@
+exit: 1
+--- stdout
+--- stderr
+✗ Validation error
+
+line 7, column 1: Offset 681.0mm exceeds piece dimension 89.0mm (piece 'leg_fr', edge back/down)

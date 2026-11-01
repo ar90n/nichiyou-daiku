@@ -1,0 +1,6 @@
+exit: 1
+--- stdout
+--- stderr
+✗ Validation error
+
+line 4, column 28: Unknown Slim screw preset: 3.3x50.9

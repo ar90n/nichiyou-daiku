@@ -1,0 +1,6 @@
+exit: 1
+--- stdout
+--- stderr
+✗ Validation error
+
+line 1, column 8: Unknown piece property 'lenght' (allowed: length, note)

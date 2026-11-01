@@ -1,0 +1,1240 @@
+exit: 0
+--- stdout
+# Woodworking Project Report
+
+*Generated on DATE*
+
+## Project Overview
+
+- **Overall Size (X × Y × Z)**: 600 × 300 × 500 mm (Z is the length direction of 'leg_1')
+- **Total Pieces**: 31
+- **Lumber Types**: 2 (1x4, 2x2)
+- **Total Volume**: 16,868,428 mm³
+- **Estimated Weight**: ~8.4 kg (assuming pine density)
+
+
+## Bill of Materials
+
+| ID | Type | Length (mm) | Width (mm) | Height (mm) | Volume (mm³) |
+|----|------|------------|-----------|------------|-------------|
+| board_t_1 | 1x4 | 300 | 89 | 19 | 507,300 |
+| board_t_2 | 1x4 | 300 | 89 | 19 | 507,300 |
+| board_t_3 | 1x4 | 300 | 89 | 19 | 507,300 |
+| board_t_4 | 1x4 | 300 | 89 | 19 | 507,300 |
+| board_t_5 | 1x4 | 300 | 89 | 19 | 507,300 |
+| board_m_1 | 1x4 | 300 | 89 | 19 | 507,300 |
+| board_m_2 | 1x4 | 300 | 89 | 19 | 507,300 |
+| board_m_3 | 1x4 | 300 | 89 | 19 | 507,300 |
+| board_m_4 | 1x4 | 300 | 89 | 19 | 507,300 |
+| board_m_5 | 1x4 | 300 | 89 | 19 | 507,300 |
+| board_b_1 | 1x4 | 300 | 89 | 19 | 507,300 |
+| board_b_2 | 1x4 | 300 | 89 | 19 | 507,300 |
+| board_b_3 | 1x4 | 300 | 89 | 19 | 507,300 |
+| board_b_4 | 1x4 | 300 | 89 | 19 | 507,300 |
+| board_b_5 | 1x4 | 300 | 89 | 19 | 507,300 |
+| rail_t_left | 2x2 | 224 | 38 | 38 | 323,456 |
+| rail_t_right | 2x2 | 224 | 38 | 38 | 323,456 |
+| rail_m_left | 2x2 | 224 | 38 | 38 | 323,456 |
+| rail_m_right | 2x2 | 224 | 38 | 38 | 323,456 |
+| rail_b_left | 2x2 | 224 | 38 | 38 | 323,456 |
+| rail_b_right | 2x2 | 224 | 38 | 38 | 323,456 |
+| leg_1 | 2x2 | 481 | 38 | 38 | 694,564 |
+| leg_2 | 2x2 | 481 | 38 | 38 | 694,564 |
+| leg_3 | 2x2 | 481 | 38 | 38 | 694,564 |
+| leg_4 | 2x2 | 481 | 38 | 38 | 694,564 |
+| rail_t_front | 2x2 | 524 | 38 | 38 | 756,656 |
+| rail_t_back | 2x2 | 524 | 38 | 38 | 756,656 |
+| rail_m_front | 2x2 | 524 | 38 | 38 | 756,656 |
+| rail_m_back | 2x2 | 524 | 38 | 38 | 756,656 |
+| rail_b_front | 2x2 | 524 | 38 | 38 | 756,656 |
+| rail_b_back | 2x2 | 524 | 38 | 38 | 756,656 |
+
+
+## Anchor Details
+
+### board_b_1 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### board_b_2 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### board_b_3 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### board_b_4 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### board_b_5 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### board_m_1 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### board_m_2 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### board_m_3 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### board_m_4 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### board_m_5 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### board_t_1 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### board_t_2 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### board_t_3 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### board_t_4 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### board_t_5 (1x4, 300mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| back | top | FromMin 0.0mm |
+
+### leg_1 (2x2, 481mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| left | back | FromMax 0.0mm |
+| back | right | FromMin 424.0mm |
+| left | back | FromMax 200.0mm |
+| back | right | FromMin 224.0mm |
+| left | back | FromMax 400.0mm |
+| back | right | FromMin 24.0mm |
+
+### leg_2 (2x2, 481mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| right | front | FromMax 0.0mm |
+| back | left | FromMin 424.0mm |
+| right | front | FromMax 200.0mm |
+| back | left | FromMin 224.0mm |
+| right | front | FromMax 400.0mm |
+| back | left | FromMin 24.0mm |
+
+### leg_3 (2x2, 481mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| left | back | FromMax 0.0mm |
+| front | right | FromMin 424.0mm |
+| left | back | FromMax 200.0mm |
+| front | right | FromMin 224.0mm |
+| left | back | FromMax 400.0mm |
+| front | right | FromMin 24.0mm |
+
+### leg_4 (2x2, 481mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| right | front | FromMax 0.0mm |
+| front | left | FromMin 424.0mm |
+| right | front | FromMax 200.0mm |
+| front | left | FromMin 224.0mm |
+| right | front | FromMax 400.0mm |
+| front | left | FromMin 24.0mm |
+
+### rail_b_back (2x2, 524mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| down | back | FromMax 0.0mm |
+| top | front | FromMax 0.0mm |
+
+### rail_b_front (2x2, 524mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| down | back | FromMax 0.0mm |
+| top | front | FromMax 0.0mm |
+| right | front | FromMin 435.0mm |
+| right | front | FromMin 326.2mm |
+| right | front | FromMin 217.5mm |
+| right | front | FromMin 108.8mm |
+| right | front | FromMin 0.0mm |
+
+### rail_b_left (2x2, 224mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| down | back | FromMin 0.0mm |
+| top | back | FromMin 0.0mm |
+
+### rail_b_right (2x2, 224mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| down | front | FromMin 0.0mm |
+| top | front | FromMin 0.0mm |
+
+### rail_m_back (2x2, 524mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| down | back | FromMax 0.0mm |
+| top | front | FromMax 0.0mm |
+
+### rail_m_front (2x2, 524mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| down | back | FromMax 0.0mm |
+| top | front | FromMax 0.0mm |
+| right | front | FromMin 435.0mm |
+| right | front | FromMin 326.2mm |
+| right | front | FromMin 217.5mm |
+| right | front | FromMin 108.8mm |
+| right | front | FromMin 0.0mm |
+
+### rail_m_left (2x2, 224mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| down | back | FromMin 0.0mm |
+| top | back | FromMin 0.0mm |
+
+### rail_m_right (2x2, 224mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| down | front | FromMin 0.0mm |
+| top | front | FromMin 0.0mm |
+
+### rail_t_back (2x2, 524mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| down | back | FromMax 0.0mm |
+| top | front | FromMax 0.0mm |
+
+### rail_t_front (2x2, 524mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| down | back | FromMax 0.0mm |
+| top | front | FromMax 0.0mm |
+| right | front | FromMin 435.0mm |
+| right | front | FromMin 326.2mm |
+| right | front | FromMin 217.5mm |
+| right | front | FromMin 108.8mm |
+| right | front | FromMin 0.0mm |
+
+### rail_t_left (2x2, 224mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| down | back | FromMin 0.0mm |
+| top | back | FromMin 0.0mm |
+
+### rail_t_right (2x2, 224mm)
+
+| Contact Face | Edge Face | Offset |
+|--------------|-----------|--------|
+| down | front | FromMin 0.0mm |
+| top | front | FromMin 0.0mm |
+
+## Pilot Holes
+
+Distances are measured on the face the hole is drilled into:
+- front/back faces: *From Length Edge* from the down end, *From Width Edge* from the left side
+- left/right faces: *From Length Edge* from the down end, *From Width Edge* from the back side
+- top/down (end) faces: *From Length Edge* from the left side, *From Width Edge* from the back side
+
+### board_b_1 (1x4, 300mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 281.0mm | 22.2mm | φ2.0mm | through |
+| back | 281.0mm | 66.8mm | φ2.0mm | through |
+
+```
+back (300mm x 89mm):
++----------------------------------------+
+|                                        |
+|                                     o  |
+|                                        |
+|                                     o  |
+|                                        |
++----------------------------------------+
+```
+
+### board_b_2 (1x4, 300mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 281.0mm | 22.2mm | φ2.0mm | through |
+| back | 281.0mm | 66.8mm | φ2.0mm | through |
+
+```
+back (300mm x 89mm):
++----------------------------------------+
+|                                        |
+|                                     o  |
+|                                        |
+|                                     o  |
+|                                        |
++----------------------------------------+
+```
+
+### board_b_3 (1x4, 300mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 281.0mm | 22.2mm | φ2.0mm | through |
+| back | 281.0mm | 66.8mm | φ2.0mm | through |
+
+```
+back (300mm x 89mm):
++----------------------------------------+
+|                                        |
+|                                     o  |
+|                                        |
+|                                     o  |
+|                                        |
++----------------------------------------+
+```
+
+### board_b_4 (1x4, 300mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 281.0mm | 22.2mm | φ2.0mm | through |
+| back | 281.0mm | 66.8mm | φ2.0mm | through |
+
+```
+back (300mm x 89mm):
++----------------------------------------+
+|                                        |
+|                                     o  |
+|                                        |
+|                                     o  |
+|                                        |
++----------------------------------------+
+```
+
+### board_b_5 (1x4, 300mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 281.0mm | 22.2mm | φ2.0mm | through |
+| back | 281.0mm | 66.8mm | φ2.0mm | through |
+
+```
+back (300mm x 89mm):
++----------------------------------------+
+|                                        |
+|                                     o  |
+|                                        |
+|                                     o  |
+|                                        |
++----------------------------------------+
+```
+
+### board_m_1 (1x4, 300mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 281.0mm | 22.2mm | φ2.0mm | through |
+| back | 281.0mm | 66.8mm | φ2.0mm | through |
+
+```
+back (300mm x 89mm):
++----------------------------------------+
+|                                        |
+|                                     o  |
+|                                        |
+|                                     o  |
+|                                        |
++----------------------------------------+
+```
+
+### board_m_2 (1x4, 300mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 281.0mm | 22.2mm | φ2.0mm | through |
+| back | 281.0mm | 66.8mm | φ2.0mm | through |
+
+```
+back (300mm x 89mm):
++----------------------------------------+
+|                                        |
+|                                     o  |
+|                                        |
+|                                     o  |
+|                                        |
++----------------------------------------+
+```
+
+### board_m_3 (1x4, 300mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 281.0mm | 22.2mm | φ2.0mm | through |
+| back | 281.0mm | 66.8mm | φ2.0mm | through |
+
+```
+back (300mm x 89mm):
++----------------------------------------+
+|                                        |
+|                                     o  |
+|                                        |
+|                                     o  |
+|                                        |
++----------------------------------------+
+```
+
+### board_m_4 (1x4, 300mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 281.0mm | 22.2mm | φ2.0mm | through |
+| back | 281.0mm | 66.8mm | φ2.0mm | through |
+
+```
+back (300mm x 89mm):
++----------------------------------------+
+|                                        |
+|                                     o  |
+|                                        |
+|                                     o  |
+|                                        |
++----------------------------------------+
+```
+
+### board_m_5 (1x4, 300mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 281.0mm | 22.2mm | φ2.0mm | through |
+| back | 281.0mm | 66.8mm | φ2.0mm | through |
+
+```
+back (300mm x 89mm):
++----------------------------------------+
+|                                        |
+|                                     o  |
+|                                        |
+|                                     o  |
+|                                        |
++----------------------------------------+
+```
+
+### board_t_1 (1x4, 300mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 281.0mm | 22.2mm | φ2.0mm | through |
+| back | 281.0mm | 66.8mm | φ2.0mm | through |
+
+```
+back (300mm x 89mm):
++----------------------------------------+
+|                                        |
+|                                     o  |
+|                                        |
+|                                     o  |
+|                                        |
++----------------------------------------+
+```
+
+### board_t_2 (1x4, 300mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 281.0mm | 22.2mm | φ2.0mm | through |
+| back | 281.0mm | 66.8mm | φ2.0mm | through |
+
+```
+back (300mm x 89mm):
++----------------------------------------+
+|                                        |
+|                                     o  |
+|                                        |
+|                                     o  |
+|                                        |
++----------------------------------------+
+```
+
+### board_t_3 (1x4, 300mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 281.0mm | 22.2mm | φ2.0mm | through |
+| back | 281.0mm | 66.8mm | φ2.0mm | through |
+
+```
+back (300mm x 89mm):
++----------------------------------------+
+|                                        |
+|                                     o  |
+|                                        |
+|                                     o  |
+|                                        |
++----------------------------------------+
+```
+
+### board_t_4 (1x4, 300mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 281.0mm | 22.2mm | φ2.0mm | through |
+| back | 281.0mm | 66.8mm | φ2.0mm | through |
+
+```
+back (300mm x 89mm):
++----------------------------------------+
+|                                        |
+|                                     o  |
+|                                        |
+|                                     o  |
+|                                        |
++----------------------------------------+
+```
+
+### board_t_5 (1x4, 300mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| back | 281.0mm | 22.2mm | φ2.0mm | through |
+| back | 281.0mm | 66.8mm | φ2.0mm | through |
+
+```
+back (300mm x 89mm):
++----------------------------------------+
+|                                        |
+|                                     o  |
+|                                        |
+|                                     o  |
+|                                        |
++----------------------------------------+
+```
+
+### leg_1 (2x2, 481mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| left | 462.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| left | 462.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| back | 443.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| back | 443.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| left | 262.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| left | 262.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| back | 243.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| back | 243.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| left | 62.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| left | 62.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| back | 43.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| back | 43.0mm | 28.5mm | φ8.0mm | 15.0mm |
+
+```
+back (481mm x 38mm):
++----------------------------------------+
+|                                        |
+|   o                o               o   |
+|                                        |
+|   o                o               o   |
+|                                        |
++----------------------------------------+
+```
+
+```
+left (481mm x 38mm):
++----------------------------------------+
+|                                        |
+|     o               o                o |
+|                                        |
+|     o               o                o |
+|                                        |
++----------------------------------------+
+```
+
+### leg_2 (2x2, 481mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| right | 462.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| right | 462.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| back | 443.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| back | 443.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| right | 262.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| right | 262.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| back | 243.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| back | 243.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| right | 62.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| right | 62.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| back | 43.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| back | 43.0mm | 28.5mm | φ8.0mm | 15.0mm |
+
+```
+back (481mm x 38mm):
++----------------------------------------+
+|                                        |
+|   o                o               o   |
+|                                        |
+|   o                o               o   |
+|                                        |
++----------------------------------------+
+```
+
+```
+right (481mm x 38mm):
++----------------------------------------+
+|                                        |
+|     o               o                o |
+|                                        |
+|     o               o                o |
+|                                        |
++----------------------------------------+
+```
+
+### leg_3 (2x2, 481mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| left | 462.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| left | 462.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| front | 443.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| front | 443.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| left | 262.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| left | 262.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| front | 243.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| front | 243.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| left | 62.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| left | 62.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| front | 43.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| front | 43.0mm | 28.5mm | φ8.0mm | 15.0mm |
+
+```
+front (481mm x 38mm):
++----------------------------------------+
+|                                        |
+|   o                o               o   |
+|                                        |
+|   o                o               o   |
+|                                        |
++----------------------------------------+
+```
+
+```
+left (481mm x 38mm):
++----------------------------------------+
+|                                        |
+|     o               o                o |
+|                                        |
+|     o               o                o |
+|                                        |
++----------------------------------------+
+```
+
+### leg_4 (2x2, 481mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| right | 462.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| right | 462.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| front | 443.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| front | 443.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| right | 262.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| right | 262.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| front | 243.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| front | 243.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| right | 62.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| right | 62.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| front | 43.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| front | 43.0mm | 28.5mm | φ8.0mm | 15.0mm |
+
+```
+front (481mm x 38mm):
++----------------------------------------+
+|                                        |
+|   o                o               o   |
+|                                        |
+|   o                o               o   |
+|                                        |
++----------------------------------------+
+```
+
+```
+right (481mm x 38mm):
++----------------------------------------+
+|                                        |
+|     o               o                o |
+|                                        |
+|     o               o                o |
+|                                        |
++----------------------------------------+
+```
+
+### rail_b_back (2x2, 524mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| down | 19.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| down | 19.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| top | 19.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| top | 19.0mm | 28.5mm | φ8.0mm | 15.0mm |
+
+```
+down (38mm x 38mm):
++----------------------------------------+
+|                                        |
+|                    o                   |
+|                                        |
+|                    o                   |
+|                                        |
++----------------------------------------+
+```
+
+```
+top (38mm x 38mm):
++----------------------------------------+
+|                                        |
+|                    o                   |
+|                                        |
+|                    o                   |
+|                                        |
++----------------------------------------+
+```
+
+### rail_b_front (2x2, 524mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| down | 19.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| down | 19.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| top | 19.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| top | 19.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| right | 457.2mm | 19.0mm | φ2.0mm | 26.0mm |
+| right | 501.8mm | 19.0mm | φ2.0mm | 26.0mm |
+| right | 348.5mm | 19.0mm | φ2.0mm | 26.0mm |
+| right | 393.0mm | 19.0mm | φ2.0mm | 26.0mm |
+| right | 239.8mm | 19.0mm | φ2.0mm | 26.0mm |
+| right | 284.2mm | 19.0mm | φ2.0mm | 26.0mm |
+| right | 131.0mm | 19.0mm | φ2.0mm | 26.0mm |
+| right | 175.5mm | 19.0mm | φ2.0mm | 26.0mm |
+| right | 22.2mm | 19.0mm | φ2.0mm | 26.0mm |
+| right | 66.8mm | 19.0mm | φ2.0mm | 26.0mm |
+
+```
+down (38mm x 38mm):
++----------------------------------------+
+|                                        |
+|                    o                   |
+|                                        |
+|                    o                   |
+|                                        |
++----------------------------------------+
+```
+
+```
+right (524mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+| o   o    o  o    o  o    o   o   o   o |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+```
+top (38mm x 38mm):
++----------------------------------------+
+|                                        |
+|                    o                   |
+|                                        |
+|                    o                   |
+|                                        |
++----------------------------------------+
+```
+
+### rail_b_left (2x2, 224mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| down | 19.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| down | 19.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| top | 19.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| top | 19.0mm | 9.5mm | φ8.0mm | 15.0mm |
+
+```
+down (38mm x 38mm):
++----------------------------------------+
+|                                        |
+|                    o                   |
+|                                        |
+|                    o                   |
+|                                        |
++----------------------------------------+
+```
+
+```
+top (38mm x 38mm):
++----------------------------------------+
+|                                        |
+|                    o                   |
+|                                        |
+|                    o                   |
+|                                        |
++----------------------------------------+
+```
+
+### rail_b_right (2x2, 224mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| down | 19.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| down | 19.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| top | 19.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| top | 19.0mm | 9.5mm | φ8.0mm | 15.0mm |
+
+```
+down (38mm x 38mm):
++----------------------------------------+
+|                                        |
+|                    o                   |
+|                                        |
+|                    o                   |
+|                                        |
++----------------------------------------+
+```
+
+```
+top (38mm x 38mm):
++----------------------------------------+
+|                                        |
+|                    o                   |
+|                                        |
+|                    o                   |
+|                                        |
++----------------------------------------+
+```
+
+### rail_m_back (2x2, 524mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| down | 19.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| down | 19.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| top | 19.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| top | 19.0mm | 28.5mm | φ8.0mm | 15.0mm |
+
+```
+down (38mm x 38mm):
++----------------------------------------+
+|                                        |
+|                    o                   |
+|                                        |
+|                    o                   |
+|                                        |
++----------------------------------------+
+```
+
+```
+top (38mm x 38mm):
++----------------------------------------+
+|                                        |
+|                    o                   |
+|                                        |
+|                    o                   |
+|                                        |
++----------------------------------------+
+```
+
+### rail_m_front (2x2, 524mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| down | 19.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| down | 19.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| top | 19.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| top | 19.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| right | 457.2mm | 19.0mm | φ2.0mm | 26.0mm |
+| right | 501.8mm | 19.0mm | φ2.0mm | 26.0mm |
+| right | 348.5mm | 19.0mm | φ2.0mm | 26.0mm |
+| right | 393.0mm | 19.0mm | φ2.0mm | 26.0mm |
+| right | 239.8mm | 19.0mm | φ2.0mm | 26.0mm |
+| right | 284.2mm | 19.0mm | φ2.0mm | 26.0mm |
+| right | 131.0mm | 19.0mm | φ2.0mm | 26.0mm |
+| right | 175.5mm | 19.0mm | φ2.0mm | 26.0mm |
+| right | 22.2mm | 19.0mm | φ2.0mm | 26.0mm |
+| right | 66.8mm | 19.0mm | φ2.0mm | 26.0mm |
+
+```
+down (38mm x 38mm):
++----------------------------------------+
+|                                        |
+|                    o                   |
+|                                        |
+|                    o                   |
+|                                        |
++----------------------------------------+
+```
+
+```
+right (524mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+| o   o    o  o    o  o    o   o   o   o |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+```
+top (38mm x 38mm):
++----------------------------------------+
+|                                        |
+|                    o                   |
+|                                        |
+|                    o                   |
+|                                        |
++----------------------------------------+
+```
+
+### rail_m_left (2x2, 224mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| down | 19.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| down | 19.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| top | 19.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| top | 19.0mm | 9.5mm | φ8.0mm | 15.0mm |
+
+```
+down (38mm x 38mm):
++----------------------------------------+
+|                                        |
+|                    o                   |
+|                                        |
+|                    o                   |
+|                                        |
++----------------------------------------+
+```
+
+```
+top (38mm x 38mm):
++----------------------------------------+
+|                                        |
+|                    o                   |
+|                                        |
+|                    o                   |
+|                                        |
++----------------------------------------+
+```
+
+### rail_m_right (2x2, 224mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| down | 19.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| down | 19.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| top | 19.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| top | 19.0mm | 9.5mm | φ8.0mm | 15.0mm |
+
+```
+down (38mm x 38mm):
++----------------------------------------+
+|                                        |
+|                    o                   |
+|                                        |
+|                    o                   |
+|                                        |
++----------------------------------------+
+```
+
+```
+top (38mm x 38mm):
++----------------------------------------+
+|                                        |
+|                    o                   |
+|                                        |
+|                    o                   |
+|                                        |
++----------------------------------------+
+```
+
+### rail_t_back (2x2, 524mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| down | 19.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| down | 19.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| top | 19.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| top | 19.0mm | 28.5mm | φ8.0mm | 15.0mm |
+
+```
+down (38mm x 38mm):
++----------------------------------------+
+|                                        |
+|                    o                   |
+|                                        |
+|                    o                   |
+|                                        |
++----------------------------------------+
+```
+
+```
+top (38mm x 38mm):
++----------------------------------------+
+|                                        |
+|                    o                   |
+|                                        |
+|                    o                   |
+|                                        |
++----------------------------------------+
+```
+
+### rail_t_front (2x2, 524mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| down | 19.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| down | 19.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| top | 19.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| top | 19.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| right | 457.2mm | 19.0mm | φ2.0mm | 26.0mm |
+| right | 501.8mm | 19.0mm | φ2.0mm | 26.0mm |
+| right | 348.5mm | 19.0mm | φ2.0mm | 26.0mm |
+| right | 393.0mm | 19.0mm | φ2.0mm | 26.0mm |
+| right | 239.8mm | 19.0mm | φ2.0mm | 26.0mm |
+| right | 284.2mm | 19.0mm | φ2.0mm | 26.0mm |
+| right | 131.0mm | 19.0mm | φ2.0mm | 26.0mm |
+| right | 175.5mm | 19.0mm | φ2.0mm | 26.0mm |
+| right | 22.2mm | 19.0mm | φ2.0mm | 26.0mm |
+| right | 66.8mm | 19.0mm | φ2.0mm | 26.0mm |
+
+```
+down (38mm x 38mm):
++----------------------------------------+
+|                                        |
+|                    o                   |
+|                                        |
+|                    o                   |
+|                                        |
++----------------------------------------+
+```
+
+```
+right (524mm x 38mm):
++----------------------------------------+
+|                                        |
+|                                        |
+| o   o    o  o    o  o    o   o   o   o |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+```
+top (38mm x 38mm):
++----------------------------------------+
+|                                        |
+|                    o                   |
+|                                        |
+|                    o                   |
+|                                        |
++----------------------------------------+
+```
+
+### rail_t_left (2x2, 224mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| down | 19.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| down | 19.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| top | 19.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| top | 19.0mm | 9.5mm | φ8.0mm | 15.0mm |
+
+```
+down (38mm x 38mm):
++----------------------------------------+
+|                                        |
+|                    o                   |
+|                                        |
+|                    o                   |
+|                                        |
++----------------------------------------+
+```
+
+```
+top (38mm x 38mm):
++----------------------------------------+
+|                                        |
+|                    o                   |
+|                                        |
+|                    o                   |
+|                                        |
++----------------------------------------+
+```
+
+### rail_t_right (2x2, 224mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| down | 19.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| down | 19.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| top | 19.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| top | 19.0mm | 9.5mm | φ8.0mm | 15.0mm |
+
+```
+down (38mm x 38mm):
++----------------------------------------+
+|                                        |
+|                    o                   |
+|                                        |
+|                    o                   |
+|                                        |
++----------------------------------------+
+```
+
+```
+top (38mm x 38mm):
++----------------------------------------+
+|                                        |
+|                    o                   |
+|                                        |
+|                    o                   |
+|                                        |
++----------------------------------------+
+```
+
+## Shopping List
+
+### Lumber Required:
+
+- **1x4**: 15 pieces, total 4.5 meters
+- **2x2**: 16 pieces, total 6.4 meters
+
+### Hardware Required:
+
+- **Dowel 8x30**: 48
+- **Slim screw 3.3x45**: 30
+
+### Drill Bits:
+
+- **2mm**: 60 holes, deepest: through
+- **8mm**: 96 holes, deepest 15mm
+
+
+## Purchase Recommendations
+
+Saw kerf: 3mm per cut
+
+### 1x4 Lumber (Available: 1820mm, 2440mm, 3050mm, 3650mm)
+Optimal purchase:
+- 2 × 2440mm boards
+Total waste: 335mm (6.9%)
+
+### 2x2 Lumber (Available: 1820mm, 2440mm, 3050mm, 3650mm)
+Optimal purchase:
+- 1 × 3050mm boards
+- 1 × 3650mm boards
+Total waste: 240mm (3.6%)
+
+## Optimized Cut List
+
+### 1x4 Boards
+
+**Board 1** (2440mm):
+- Cut 300mm → board_t_1
+- Cut 300mm → board_t_2
+- Cut 300mm → board_t_3
+- Cut 300mm → board_t_4
+- Cut 300mm → board_t_5
+- Cut 300mm → board_m_1
+- Cut 300mm → board_m_2
+- Cut 300mm → board_m_3
+- Waste: 16mm
+
+**Board 2** (2440mm):
+- Cut 300mm → board_m_4
+- Cut 300mm → board_m_5
+- Cut 300mm → board_b_1
+- Cut 300mm → board_b_2
+- Cut 300mm → board_b_3
+- Cut 300mm → board_b_4
+- Cut 300mm → board_b_5
+- Waste: 319mm
+
+### 2x2 Boards
+
+**Board 1** (3650mm):
+- Cut 524mm → rail_t_front
+- Cut 524mm → rail_t_back
+- Cut 524mm → rail_m_front
+- Cut 524mm → rail_m_back
+- Cut 524mm → rail_b_front
+- Cut 524mm → rail_b_back
+- Cut 481mm → leg_1
+- Waste: 4mm
+
+**Board 2** (3050mm):
+- Cut 481mm → leg_2
+- Cut 481mm → leg_3
+- Cut 481mm → leg_4
+- Cut 224mm → rail_t_left
+- Cut 224mm → rail_t_right
+- Cut 224mm → rail_m_left
+- Cut 224mm → rail_m_right
+- Cut 224mm → rail_b_left
+- Cut 224mm → rail_b_right
+- Waste: 236mm
+
+---
+*Report generated by nichiyou-daiku*
+--- stderr

@@ -1,0 +1,6 @@
+exit: 1
+--- stdout
+--- stderr
+✗ Syntax error
+
+Syntax error at line 1, column 7: Unexpected token '='. Expected: '{'. 'steps' starts the steps block, so it cannot name a piece or a variable: rename it, or write a block such as steps { "Frame": a, b }

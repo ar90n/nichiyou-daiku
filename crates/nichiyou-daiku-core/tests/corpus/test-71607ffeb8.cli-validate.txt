@@ -1,0 +1,6 @@
+exit: 1
+--- stdout
+--- stderr
+✗ Syntax error
+
+Syntax error at line 1, column 19: Unexpected token '?'. Expected one of: '(', '-', 'FromMax', 'FromMin', identifier, number, string. '?' (unknown) works in compact notation only, e.g. (x:2x4 =?) or RB? BD?

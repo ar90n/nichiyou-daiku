@@ -1,0 +1,6 @@
+exit: 1
+--- stdout
+--- stderr
+✗ Semantic error
+
+line 1, column 9: Undefined variable 'W' (define it before it is used)

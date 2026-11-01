@@ -1,0 +1,6 @@
+exit: 1
+--- stdout
+--- stderr
+✗ Validation error
+
+line 1, column 1: Piece property 'length' must be a number, got FromMin(value=720.0)

@@ -1,0 +1,4 @@
+exit: 1
+--- stdout
+--- stderr
+Error: stock/kerf-in-lengths.toml: kerf is inside [lengths]. Move kerf = 2 above the [lengths] line

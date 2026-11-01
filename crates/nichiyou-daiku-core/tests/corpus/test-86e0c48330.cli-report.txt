@@ -1,0 +1,4 @@
+exit: 1
+--- stdout
+--- stderr
+DSL Error: Syntax error at line 3, column 19: Unexpected token '30'. Expected one of: '*', '+', ',', '-', '/'

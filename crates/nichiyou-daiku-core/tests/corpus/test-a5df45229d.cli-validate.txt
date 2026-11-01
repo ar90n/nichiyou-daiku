@@ -1,0 +1,6 @@
+exit: 1
+--- stdout
+--- stderr
+✗ Semantic error
+
+line 8, column 1: Step 'Frame' names unknown piece 'rial'; did you mean 'rail'?
