@@ -2,6 +2,7 @@
 
 pub mod chain;
 pub mod hidden;
+pub mod labels;
 pub mod part_sheet;
 pub mod solid;
 pub mod svg;
