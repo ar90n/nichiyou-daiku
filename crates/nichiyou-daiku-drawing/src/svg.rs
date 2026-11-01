@@ -13,6 +13,31 @@ pub enum Stroke {
     Hidden,
     /// Dimension, extension and leader lines
     Thin,
+    /// A step's earlier pieces, grey
+    Before,
+    /// A step's own pieces, bold
+    New,
+    /// A step's own pieces where they are hidden, dashed
+    NewHidden,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Ink {
+    Black,
+    /// What orients and is not built: the cue and reference names
+    Grey,
+    /// The ground under a name
+    White,
+}
+
+impl Ink {
+    fn css(self) -> &'static str {
+        match self {
+            Ink::Black => "#000",
+            Ink::Grey => "#969696",
+            Ink::White => "#fff",
+        }
+    }
 }
 
 enum Item {
@@ -21,11 +46,15 @@ enum Item {
         closed: bool,
         stroke: Stroke,
     },
-    Fill(Vec<Point>),
+    Fill {
+        points: Vec<Point>,
+        ink: Ink,
+    },
     Text {
         text: String,
         centre: Point,
         vertical: bool,
+        ink: Ink,
     },
 }
 
@@ -78,21 +107,33 @@ impl Svg {
 
     /// A filled polygon: arrowheads and marks.
     pub fn fill(&mut self, points: &[Point]) {
-        self.items.push(Item::Fill(points.to_vec()));
+        self.fill_ink(points, Ink::Black);
+    }
+
+    pub fn fill_ink(&mut self, points: &[Point], ink: Ink) {
+        self.items.push(Item::Fill {
+            points: points.to_vec(),
+            ink,
+        });
     }
 
     /// Text centred on `centre`; vertical text reads from the bottom up.
     pub fn text(&mut self, text: &str, centre: Point, vertical: bool) {
+        self.text_ink(text, centre, vertical, Ink::Black);
+    }
+
+    pub fn text_ink(&mut self, text: &str, centre: Point, vertical: bool, ink: Ink) {
         self.items.push(Item::Text {
             text: text.to_string(),
             centre,
             vertical,
+            ink,
         });
     }
 
     pub fn render(&self, height: f64) -> String {
         let y = |v: f64| height - v;
-        let path = |points: &[Point], closed: bool| {
+        let shape = |points: &[Point], closed: bool| {
             let mut d = String::new();
             for (i, &(px, py)) in points.iter().enumerate() {
                 d.push_str(if i == 0 { "M" } else { "L" });
@@ -101,20 +142,40 @@ impl Svg {
             if closed {
                 d.push('Z');
             }
-            format!("<path d=\"{d}\"/>")
+            d
         };
+        let path =
+            |points: &[Point], closed: bool| format!("<path d=\"{}\"/>", shape(points, closed));
         let mut out = format!(
             "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"{w}mm\" height=\"{h}mm\" viewBox=\"0 0 {w} {h}\">",
             w = n(self.width),
             h = n(height)
         );
         let layers = [
-            (Stroke::Outline, "stroke=\"#000\" stroke-width=\"0.35\""),
+            (
+                Stroke::Before,
+                "class=\"before\" stroke=\"#a0a0a0\" stroke-width=\"0.18\"",
+            ),
+            (
+                Stroke::New,
+                "class=\"new\" stroke=\"#000\" stroke-width=\"0.5\"",
+            ),
+            (
+                Stroke::NewHidden,
+                "class=\"new-hidden\" stroke=\"#000\" stroke-width=\"0.25\" stroke-dasharray=\"1.2 0.6\"",
+            ),
+            (
+                Stroke::Outline,
+                "class=\"outline\" stroke=\"#000\" stroke-width=\"0.35\"",
+            ),
             (
                 Stroke::Hidden,
-                "stroke=\"#787878\" stroke-width=\"0.15\" stroke-dasharray=\"1.2 0.6\"",
+                "class=\"hidden\" stroke=\"#787878\" stroke-width=\"0.15\" stroke-dasharray=\"1.2 0.6\"",
             ),
-            (Stroke::Thin, "stroke=\"#000\" stroke-width=\"0.13\""),
+            (
+                Stroke::Thin,
+                "class=\"thin\" stroke=\"#000\" stroke-width=\"0.13\"",
+            ),
         ];
         for (stroke, style) in layers {
             out.push_str(&format!(
@@ -133,10 +194,15 @@ impl Svg {
             }
             out.push_str("</g>");
         }
-        out.push_str("<g fill=\"#000\" stroke=\"none\">");
+        // Fills keep their order: a name's ground goes under what follows it
+        out.push_str("<g stroke=\"none\">");
         for item in &self.items {
-            if let Item::Fill(points) = item {
-                out.push_str(&path(points, true));
+            if let Item::Fill { points, ink } = item {
+                out.push_str(&format!(
+                    "<path d=\"{}\" fill=\"{}\"/>",
+                    shape(points, true),
+                    ink.css()
+                ));
             }
         }
         out.push_str("</g>");
@@ -151,16 +217,23 @@ impl Svg {
                 text,
                 centre,
                 vertical,
+                ink,
             } = item
             {
                 let (x, yy) = (n(centre.0), n(y(centre.1)));
+                // Black text takes the group's fill
+                let colour = if *ink == Ink::Black {
+                    String::new()
+                } else {
+                    format!(" fill=\"{}\"", ink.css())
+                };
                 let turn = if *vertical {
                     format!(" transform=\"rotate(-90 {x} {yy})\"")
                 } else {
                     String::new()
                 };
                 out.push_str(&format!(
-                    "<text x=\"{x}\" y=\"{yy}\" dominant-baseline=\"central\"{turn}>{}</text>",
+                    "<text x=\"{x}\" y=\"{yy}\" dominant-baseline=\"central\"{colour}{turn}>{}</text>",
                     escape(text)
                 ));
             }
@@ -196,6 +269,33 @@ mod tests {
         let out = svg.render(10.0);
         assert!(out.contains("xml:space=\"preserve\"") && out.contains("white-space:pre"));
         assert!(out.contains(">a   b</text>"));
+    }
+
+    #[test]
+    fn steps_draw_earlier_pieces_grey_and_new_ones_bold() {
+        let mut svg = Svg::new(10.0);
+        svg.line((0.0, 0.0), (1.0, 0.0), Stroke::Before);
+        svg.line((0.0, 1.0), (1.0, 1.0), Stroke::New);
+        svg.line((0.0, 2.0), (1.0, 2.0), Stroke::NewHidden);
+        let out = svg.render(10.0);
+        assert!(out.contains("<g fill=\"none\" stroke-linecap=\"round\" class=\"before\" stroke=\"#a0a0a0\" stroke-width=\"0.18\"><path d=\"M0 10L1 10\"/></g>"));
+        assert!(out.contains(
+            "class=\"new\" stroke=\"#000\" stroke-width=\"0.5\"><path d=\"M0 9L1 9\"/></g>"
+        ));
+        assert!(out.contains("class=\"new-hidden\" stroke=\"#000\" stroke-width=\"0.25\" stroke-dasharray=\"1.2 0.6\"><path d=\"M0 8L1 8\"/></g>"));
+        assert!(out.find("class=\"before\"").unwrap() < out.find("class=\"new\"").unwrap());
+    }
+
+    #[test]
+    fn grounds_are_white_and_cues_grey() {
+        let mut svg = Svg::new(10.0);
+        svg.fill_ink(&[(0.0, 0.0), (1.0, 0.0), (1.0, 1.0)], Ink::White);
+        svg.text_ink("leg", (5.0, 5.0), false, Ink::Grey);
+        let out = svg.render(10.0);
+        assert!(out.contains("<path d=\"M0 10L1 10L1 9Z\" fill=\"#fff\"/>"));
+        assert!(out.contains(
+            "<text x=\"5\" y=\"5\" dominant-baseline=\"central\" fill=\"#969696\">leg</text>"
+        ));
     }
 
     #[test]

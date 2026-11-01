@@ -40,8 +40,14 @@ pub struct Projection {
 impl Projection {
     /// Looking from `direction` at `centre`, with z up.
     pub fn new(direction: [f64; 3], centre: [f64; 3]) -> Projection {
+        Projection::looking(direction, [0.0, 0.0, 1.0], centre)
+    }
+
+    /// Looking from `direction` at `centre`, `up` (made square to the
+    /// direction) up the page.
+    pub fn looking(direction: [f64; 3], up: [f64; 3], centre: [f64; 3]) -> Projection {
         let toward = unit(direction);
-        let up = unit(add([0.0, 0.0, 1.0], toward, -toward[2]));
+        let up = unit(add(up, toward, -dot(up, toward)));
         Projection {
             toward,
             up,
@@ -74,7 +80,8 @@ fn normal(face: Face) -> [f64; 3] {
     face.normal().map(f64::from)
 }
 
-fn circle(view: &Projection, centre: [f64; 3], axis: usize, radius: f64) -> Vec<Point> {
+/// A circle across `axis`, closed: its first point again at the end.
+pub(crate) fn ring(centre: [f64; 3], axis: usize, radius: f64) -> Vec<[f64; 3]> {
     let (u, v) = match axis {
         0 => (1, 2),
         1 => (0, 2),
@@ -86,8 +93,15 @@ fn circle(view: &Projection, centre: [f64; 3], axis: usize, radius: f64) -> Vec<
             let mut p = centre;
             p[u] += radius * angle.cos();
             p[v] += radius * angle.sin();
-            view.project(p)
+            p
         })
+        .collect()
+}
+
+fn circle(view: &Projection, centre: [f64; 3], axis: usize, radius: f64) -> Vec<Point> {
+    ring(centre, axis, radius)
+        .into_iter()
+        .map(|p| view.project(p))
         .collect()
 }
 
