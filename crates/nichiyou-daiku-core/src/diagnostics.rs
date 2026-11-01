@@ -342,6 +342,7 @@ pub fn view_report(
                 "type": first.kind.as_str(),
                 "length": round_mm(group.size[2]),
                 "count": group.pieces.len(),
+                "drilled": !group.holes.is_empty(),
             })
         })
         .collect();

@@ -1,0 +1,1 @@
+{"parts": [{"index": 0, "title": "a   2x4   1000   φ2.5 ↧12 ×2", "letters": {"front": "A"}, "faces": [{"face": "front", "right": [0.0, 200.0, 600.0, 1000.0], "up": [0.0, 44.5, 89.0]}]}, {"index": 1, "title": "b   2x4   800   φ2.5 ×2", "letters": {"back": "A"}, "faces": [{"face": "back", "right": [0.0, 200.0, 600.0, 800.0], "up": [0.0, 44.5, 89.0]}]}]}
