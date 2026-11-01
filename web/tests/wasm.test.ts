@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { expect, it } from "vitest";
-import { initSync, part_drawing, view } from "../src/wasm/nichiyou_daiku_wasm.js";
+import { initSync, part_drawing, step_drawing, view } from "../src/wasm/nichiyou_daiku_wasm.js";
 import { parseView } from "../src/model";
 
 initSync({ module: readFileSync(new URL("../src/wasm/nichiyou_daiku_wasm_bg.wasm", import.meta.url)) });
@@ -19,4 +19,9 @@ it("the built WebAssembly draws a part", () => {
     "left_side -[BL<300 DL<0 D(:8x30)]- shelf\nright_side -[FL<300 TL<0 D(:8x30)]- shelf\n";
   const answer = JSON.parse(part_drawing(shelf, 0));
   expect(answer.svg.startsWith("<svg")).toBe(true);
+});
+
+it("the built WebAssembly draws a step", () => {
+  const three = "(a:2x4 =400)\n(b:2x4 =400)\na -[TF<0 BD<0]- b\n(c:2x4 =400)\nb -[TF<0 BD<0]- c\n";
+  expect(JSON.parse(step_drawing(three, 1)).svg.startsWith("<svg")).toBe(true);
 });
