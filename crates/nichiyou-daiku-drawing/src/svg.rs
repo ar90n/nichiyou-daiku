@@ -142,7 +142,8 @@ impl Svg {
         out.push_str("</g>");
         out.push_str(&format!(
             "<g fill=\"#000\" font-family=\"DejaVu Sans, Verdana, Arial, sans-serif\" font-size=\"{}\" \
-             text-anchor=\"middle\" dominant-baseline=\"central\">",
+             text-anchor=\"middle\" dominant-baseline=\"central\" \
+             xml:space=\"preserve\" style=\"white-space:pre\">",
             n(font_size())
         ));
         for item in &self.items {
@@ -184,6 +185,16 @@ mod tests {
         assert!(out.contains("<path d=\"M0 100L10 100\"/>"));
         assert!(out.contains("<text x=\"5\" y=\"10\">A</text>"));
         assert!(out.ends_with("</svg>"));
+    }
+
+    #[test]
+    fn runs_of_spaces_stay_apart() {
+        // A title's fields are three spaces apart; SVG would collapse them
+        let mut svg = Svg::new(10.0);
+        svg.text("a   b", (1.0, 1.0), false);
+        let out = svg.render(10.0);
+        assert!(out.contains("xml:space=\"preserve\"") && out.contains("white-space:pre"));
+        assert!(out.contains(">a   b</text>"));
     }
 
     #[test]
