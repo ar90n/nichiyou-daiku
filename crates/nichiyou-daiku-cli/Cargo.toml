@@ -8,3 +8,10 @@ license.workspace = true
 [[bin]]
 name = "nichiyou-daiku"
 path = "src/main.rs"
+
+[dependencies]
+nichiyou-daiku-core = { path = "../nichiyou-daiku-core" }
+clap = { version = "4", features = ["derive"] }
+jiff = "0.2"
+serde_json = { version = "1", features = ["preserve_order"] }
+toml = { version = "0.9", features = ["preserve_order"] }

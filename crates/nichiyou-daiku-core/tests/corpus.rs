@@ -11,56 +11,9 @@ use std::path::{Path, PathBuf};
 use serde_json::Value;
 
 mod common;
-use common::normalize;
+use common::{normalize, split_syntax};
 
 const DIR: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/corpus");
-
-/// The descriptions a syntax error lists, as Python prints them.
-const DESCRIPTIONS: &[&str] = &[
-    "end of input",
-    "identifier",
-    "number",
-    "string",
-    "piece type (1x4, 1x6, 1x8, 2x2, 2x4, 2x6)",
-    "face letter (T, D, L, R, F, B)",
-    "screw type (Slim, Coarse)",
-    "'?' (unknown)",
-    "':'",
-    "','",
-    "'>'",
-    "'<'",
-    "'V'",
-    "'D('",
-    "'='",
-    "'FromMax'",
-    "'FromMin'",
-    "'{'",
-    "'('",
-    "'-'",
-    "'+'",
-    "'}'",
-    "')'",
-    "'S('",
-    "'/'",
-    "'*'",
-    "'steps'",
-    "'x'",
-    "'-['",
-    "']-'",
-    "'\"type\"'",
-    "'\"vanilla\"'",
-    "'\"dowel\"'",
-    "'\"radius\"'",
-    "'\"depth\"'",
-    "'\"screw\"'",
-    "'\"diameter\"'",
-    "'\"length\"'",
-];
-const HINTS: &[&str] = &[
-    ". '?' (unknown) works",
-    ". 'steps' starts the steps block",
-    ". A compact offset",
-];
 
 struct Case {
     name: String,
@@ -136,52 +89,6 @@ fn compare(path: &str, expected: &Value, actual: &Value) -> Result<(), String> {
         }
         (e, a) if e == a => Ok(()),
         (e, a) => Err(format!("{path}: expected {e}, got {a}")),
-    }
-}
-
-struct SyntaxMessage {
-    prefix: String,
-    found: String,
-    expected: BTreeSet<String>,
-    rest: String,
-}
-
-fn split_syntax(message: &str) -> SyntaxMessage {
-    let (prefix, body) = match message.find(": ") {
-        Some(i) if message.starts_with("Syntax error") => (&message[..i + 2], &message[i + 2..]),
-        _ => ("", message),
-    };
-    let mut end = body.len();
-    for marker in [". Expected"].iter().chain(HINTS) {
-        if let Some(i) = body.find(marker) {
-            end = end.min(i);
-        }
-    }
-    let (found, mut rest) = (&body[..end], &body[end..]);
-    let mut expected = BTreeSet::new();
-    for label in [". Expected one of: ", ". Expected: "] {
-        if let Some(mut list) = rest.strip_prefix(label) {
-            while let Some(item) = DESCRIPTIONS
-                .iter()
-                .filter(|d| list.starts_with(**d))
-                .max_by_key(|d| d.len())
-            {
-                expected.insert(item.to_string());
-                list = &list[item.len()..];
-                match list.strip_prefix(", ") {
-                    Some(more) => list = more,
-                    None => break,
-                }
-            }
-            rest = list;
-            break;
-        }
-    }
-    SyntaxMessage {
-        prefix: prefix.into(),
-        found: found.into(),
-        expected,
-        rest: rest.into(),
     }
 }
 
