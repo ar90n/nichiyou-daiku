@@ -18,7 +18,7 @@ type Key = (u8, u8, f64, f64, &'static str);
 
 /// A size at the 0.1mm the list prints, so sizes that print the same count
 /// together (Python's round(value, 1)).
-fn tenth(value: f64) -> f64 {
+pub(crate) fn tenth(value: f64) -> f64 {
     format!("{value:.1}").parse::<f64>().expect("a number") + 0.0
 }
 
