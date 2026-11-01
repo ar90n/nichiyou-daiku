@@ -1,6 +1,7 @@
 //! Line drawings of nichiyou-daiku designs, as SVG in page mm.
 
 pub mod chain;
+pub mod hidden;
 pub mod part_sheet;
 pub mod solid;
 pub mod svg;
