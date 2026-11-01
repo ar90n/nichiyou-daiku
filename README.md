@@ -84,6 +84,8 @@ On a step, the 3D shows its dimensions as the CLI's step images do: where the st
 
 In the parts list, **Drawing** opens a drilled part's drawing in place of the 3D, as the CLI's part drawings show it: the isometric view with the drilled faces lettered, and each face with its holes dimensioned from the reference end (▲). Zoom with the wheel or two fingers, drag to move; **3D** goes back.
 
+An open step has a **Drawing** too: the step image the CLI writes, the part it leaves seen from the isometric (the step's pieces in black, earlier ones grey) beside the dimension view. With it open, **◀ Prev** / **Next ▶** move to the next step's drawing.
+
 ## Documentation
 
 - [DSL specification](docs/dsl-specification.md): pieces, faces and offsets, connections, variables, unknowns, fasteners, CLI, grammar, errors

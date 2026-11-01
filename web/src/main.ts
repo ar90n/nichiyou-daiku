@@ -2,6 +2,7 @@ import "./style.css";
 import { dimensionDirection, layoutDimensions } from "./dimensions";
 import { atLine, forPiece, forProblem, NONE, type Highlight, type Paint } from "./highlight";
 import { fetchSource, readFile, sourceUrl, takeFile, withSourceUrl, type Source } from "./load";
+import { shownAfterStep, type Shown } from "./drawing";
 import { DrawingPane } from "./drawingPane";
 import { failedView, loadCore, safeDrawing, safeView, type DrawingAnswer } from "./model";
 import { markLine, renderHeader, renderPiece, renderProblems, renderSource } from "./panels";
@@ -31,9 +32,12 @@ let part: number | null = null;
 let dims = true;
 
 const core = loadCore();
-// The source on screen, and its part drawings once made
+// The source on screen, and its part and step drawings once made
 let currentText = "";
 const drawings = new Map<number, DrawingAnswer>();
+const stepDrawings = new Map<number, DrawingAnswer>();
+// What the drawing pane shows in place of the 3D, if anything
+let shown: Shown | null = null;
 const drawingPane = new DrawingPane(byId("drawing"), () => closeDrawing());
 
 async function openDrawing(index: number): Promise<void> {
@@ -48,10 +52,27 @@ async function openDrawing(index: number): Promise<void> {
     drawings.set(index, answer);
   }
   drawingPane.show(answer);
+  shown = { kind: "part", part: index };
+}
+
+async function openStepDrawing(number: number): Promise<void> {
+  let answer = stepDrawings.get(number);
+  if (!answer) {
+    try {
+      answer = safeDrawing((await core).stepDrawing, currentText, number);
+    } catch (error) {
+      const reason = error instanceof Error ? error.message : String(error);
+      answer = { svg: null, notes: [], error: `Could not load the core (WebAssembly): ${reason}. Reload the page.` };
+    }
+    stepDrawings.set(number, answer);
+  }
+  drawingPane.show(answer);
+  shown = { kind: "step", step: number };
 }
 
 function closeDrawing(): void {
   drawingPane.hide();
+  shown = null;
 }
 
 function showLine(line: number): void {
@@ -84,6 +105,7 @@ function render(name: string | null, text: string, view: View): void {
   current = view;
   currentText = text;
   drawings.clear();
+  stepDrawings.clear();
   renderHeader(status, name, view);
   renderSource(sourceEl, text, selectLine);
   problemsTitle.textContent = view.problems.length ? `Problems (${view.problems.length})` : "Problems";
@@ -126,17 +148,23 @@ function openStepsTab(wanted: number): void {
 }
 
 function showStep(next: number, picked: number | null = null): void {
-  closeDrawing();
-  if (!current || !stepsTab(current).enabled) return;
+  if (!current || !stepsTab(current).enabled) {
+    closeDrawing();
+    return;
+  }
   step = clampStep(current, next);
   part = step === 0 ? picked : null;
+  // A step's drawing stays open and follows the steps
+  const keep = shownAfterStep(shown, step);
+  if (keep?.kind === "step") void openStepDrawing(keep.step);
+  else closeDrawing();
   const scene = step === 0 ? partScene(current, part) : stepScene(current, step);
   viewer.showOnly(scene.visible);
   viewer.apply(stepHighlight(scene));
   // Drawn first, so that the camera frames the dimension rows too
   drawDimensions();
   viewer.fit(scene.bounds);
-  renderSteps(stepsEl, current, step, part, { onStep: (n) => showStep(n), onPart: (i) => showStep(0, i), onDrawing: (i) => void openDrawing(i), onStepDrawing: () => {} });
+  renderSteps(stepsEl, current, step, part, { onStep: (n) => showStep(n), onPart: (i) => showStep(0, i), onDrawing: (i) => void openDrawing(i), onStepDrawing: (n) => void openStepDrawing(n) });
   setTab("steps");
   history.replaceState(null, "", withStep(location.href, step));
 }
