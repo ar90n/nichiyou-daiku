@@ -7,7 +7,8 @@ license.workspace = true
 
 [dependencies]
 serde = { version = "1", features = ["derive"] }
-serde_json = "1"
+# Keys keep the order they are put in, as the Python version prints them
+serde_json = { version = "1", features = ["preserve_order"] }
 
 [dev-dependencies]
 toml = "0.9"

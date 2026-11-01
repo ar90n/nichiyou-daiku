@@ -243,6 +243,70 @@ fn known_differences() -> BTreeSet<String> {
         .unwrap_or_default()
 }
 
+/// Every object's keys in order, by where the object is.
+fn key_order(value: &Value, path: &str, out: &mut Vec<String>) {
+    match value {
+        Value::Object(map) => {
+            let keys: Vec<&str> = map.keys().map(String::as_str).collect();
+            out.push(format!("{path}: {}", keys.join(",")));
+            for (key, item) in map {
+                key_order(item, &format!("{path}.{key}"), out);
+            }
+        }
+        Value::Array(items) => {
+            for (i, item) in items.iter().enumerate() {
+                key_order(item, &format!("{path}[{i}]"), out);
+            }
+        }
+        _ => {}
+    }
+}
+
+#[test]
+fn a_report_starts_with_whether_it_is_valid() {
+    let report = nichiyou_daiku_core::validate("(a:2x4 =100)");
+    let keys: Vec<&str> = report
+        .as_object()
+        .unwrap()
+        .keys()
+        .map(String::as_str)
+        .collect();
+    assert_eq!(
+        keys,
+        [
+            "valid",
+            "error",
+            "overall_size",
+            "size_reference",
+            "pieces",
+            "problems"
+        ]
+    );
+}
+
+#[test]
+fn validate_keys_come_in_the_python_order() {
+    let mut failures = Vec::new();
+    for case in cases() {
+        let (mut expected, mut actual) = (Vec::new(), Vec::new());
+        key_order(&case.validate, "", &mut expected);
+        key_order(
+            &nichiyou_daiku_core::validate(&case.source),
+            "",
+            &mut actual,
+        );
+        if let Some((e, a)) = expected.iter().zip(&actual).find(|(e, a)| e != a) {
+            failures.push(format!("{}: {e} != {a}", case.name));
+        }
+    }
+    assert!(
+        failures.is_empty(),
+        "{} cases:\n{}",
+        failures.len(),
+        failures[..failures.len().min(10)].join("\n")
+    );
+}
+
 #[test]
 fn corpus_matches_the_python_version() {
     let known = known_differences();
