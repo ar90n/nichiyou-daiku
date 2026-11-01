@@ -31,20 +31,23 @@ afterEach(() => {
   document.body.className = "";
 });
 
-/** The values print gives `el` for `property`: the @media print rules whose selectors match it. */
-function printed(el: Element, property: string): string[] {
+/** The values the rules under an @media matching `media` give `el` for `property`. */
+function declared(el: Element, property: string, media: string): string[] {
   const values: string[] = [];
   for (const sheet of Array.from(document.styleSheets)) {
     for (const rule of Array.from(sheet.cssRules)) {
-      const media = rule as CSSMediaRule;
-      if (!media.media?.mediaText.includes("print")) continue;
-      for (const inner of Array.from(media.cssRules) as CSSStyleRule[]) {
+      const group = rule as CSSMediaRule;
+      if (!group.media?.mediaText.includes(media)) continue;
+      for (const inner of Array.from(group.cssRules) as CSSStyleRule[]) {
         if (inner.selectorText && el.matches(inner.selectorText)) values.push(inner.style.getPropertyValue(property));
       }
     }
   }
   return values.filter(Boolean);
 }
+
+const printed = (el: Element, property: string) => declared(el, property, "print");
+const onPhones = (el: Element, property: string) => declared(el, property, "max-width: 759px");
 
 const at = (selector: string) => document.querySelector(selector)!;
 
@@ -75,4 +78,19 @@ it("print rules hold only in the manual", () => {
     expect(printed(at(selector), "break-before")).toEqual([]);
     expect(printed(at(selector), "page")).toEqual([]);
   }
+});
+
+it("a drawing leaves room on its page for its caption and two lines of notes", () => {
+  document.body.className = "manual-mode";
+  const heights = printed(at("figure.part svg"), "max-height").map((h) => parseFloat(h));
+  expect(heights.length).toBeGreaterThan(0);
+  // 190mm of page, less the caption (about 6mm) and two notes (about 12mm)
+  for (const height of heights) expect(height).toBeLessThanOrEqual(190 - 6 - 12);
+});
+
+it("on a phone the sheets keep narrow margins and long names wrap, so the tables stay on the paper", () => {
+  document.body.className = "manual-mode";
+  expect(onPhones(at("#manual"), "padding")).toContain("6px");
+  expect(onPhones(at(".sheet.cover"), "padding")).toContain("12px");
+  expect(onPhones(at("table.parts td"), "overflow-wrap")).toContain("anywhere");
 });

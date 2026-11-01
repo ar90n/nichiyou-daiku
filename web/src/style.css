@@ -121,6 +121,13 @@ body.manual-mode #manual { display: block; }
 .sheet figure svg { display: block; width: 100%; height: auto; }
 .sheet .notes, .sheet .error, .sheet .problems { color: #c0392b; font-size: 12px; }
 .step-tables { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 0 12mm; }
+@media (max-width: 759px) {
+  #manual { padding: 6px; }
+  .sheet { padding: 12px; }
+  .sheet th, .sheet td { padding: 2px 4px; }
+  /* Long piece names break, so the tables stay on the paper */
+  .sheet td { overflow-wrap: anywhere; }
+}
 /* A named page, so that printing the Model or the Steps keeps the browser's paper */
 @page manual { size: A4 landscape; margin: 10mm; }
 @media print {
@@ -131,6 +138,7 @@ body.manual-mode #manual { display: block; }
   body.manual-mode .sheet { max-width: none; margin: 0; padding: 0; box-shadow: none; }
   body.manual-mode .sheet + .sheet { break-before: page; }
   body.manual-mode figure { break-inside: avoid; }
-  /* A drawing taller than the page shrinks to it */
-  body.manual-mode figure svg { max-height: 180mm; }
+  /* A drawing taller than the page shrinks to it, leaving its caption and
+     notes room beside it on the page */
+  body.manual-mode figure svg { max-height: 165mm; }
 }
