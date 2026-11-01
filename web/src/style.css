@@ -95,3 +95,9 @@ body.on-step .steps-only { display: inline-flex; align-items: center; gap: 4px; 
 }
 .dim-label.overall { font-weight: 600; }
 .dim-label.lumber { color: #7a8ca3; }
+.drawing { position: absolute; inset: 0; display: flex; flex-direction: column; background: #fff; z-index: 2; }
+.drawing[hidden] { display: none; }
+.drawing-tools { display: flex; gap: 6px; padding: 6px 10px; border-bottom: 1px solid #ddd5c8; }
+.drawing-page { flex: 1; min-height: 0; touch-action: none; overflow: hidden; }
+.drawing-page svg { width: 100%; height: 100%; display: block; }
+.drawing-error { margin: 24px; color: #c0392b; }

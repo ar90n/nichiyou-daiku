@@ -82,6 +82,8 @@ The **Steps** tab walks through the assembly: the parts list, then one step at a
 
 On a step, the 3D shows its dimensions as the CLI's step images do: where the step's pieces go, stopping at both ends of them and of the pieces they join, and the part's overall size. **Dimensions** turns the camera to the view they read best from; the checkbox hides them. Values that would overlap are hidden, lumber sizes first; zoom in to see them.
 
+In the parts list, **Drawing** opens a drilled part's drawing in place of the 3D, as the CLI's part drawings show it: the isometric view with the drilled faces lettered, and each face with its holes dimensioned from the reference end (▲). Zoom with the wheel or two fingers, drag to move; **3D** goes back.
+
 ## Documentation
 
 - [DSL specification](docs/dsl-specification.md): pieces, faces and offsets, connections, variables, unknowns, fasteners, CLI, grammar, errors
