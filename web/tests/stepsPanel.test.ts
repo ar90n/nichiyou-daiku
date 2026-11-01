@@ -15,7 +15,7 @@ const v = (over: Partial<View> = {}): View => ({
   ],
   steps_declared: true, steps_hint: null, ...over,
 });
-const none = { onStep: () => {}, onPart: () => {}, onDrawing: () => {} };
+const none = { onStep: () => {}, onPart: () => {}, onDrawing: () => {}, onStepDrawing: () => {} };
 
 it("lists the parts and every step, the current one open", () => {
   const root = document.createElement("div");
@@ -84,4 +84,15 @@ it("only drilled parts have a drawing", () => {
   buttons[0].click();
   expect(onDrawing).toHaveBeenCalledWith(0);
   expect(onPart).not.toHaveBeenCalled();
+});
+
+it("an open step has a drawing", () => {
+  const root = document.createElement("div");
+  const onStepDrawing = vi.fn();
+  renderSteps(root, v(), 2, null, { ...none, onStepDrawing });
+  const button = root.querySelector<HTMLButtonElement>('.card[data-step="2"] button.step-drawing')!;
+  button.click();
+  expect(onStepDrawing).toHaveBeenCalledWith(2);
+  renderSteps(root, v(), 0, null, none);
+  expect(root.querySelector("button.step-drawing")).toBeNull();
 });

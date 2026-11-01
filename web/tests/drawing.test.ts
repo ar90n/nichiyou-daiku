@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { fitBox, panBy, zoomAt } from "../src/drawing";
+import { fitBox, panBy, shownAfterStep, zoomAt } from "../src/drawing";
 
 it("fits the page into the pane, centred, keeping the pane's shape", () => {
   const box = fitBox({ width: 280, height: 100 }, { width: 560, height: 400 });
@@ -18,4 +18,11 @@ it("zooms about the pointer", () => {
 it("drags the page with the pointer", () => {
   const box = { x: 0, y: 0, width: 200, height: 100 };
   expect(panBy(box, 50, -20, { width: 400, height: 200 })).toEqual({ x: -25, y: 10, width: 200, height: 100 });
+});
+
+it("a step's drawing follows the steps; a part's closes", () => {
+  expect(shownAfterStep({ kind: "step", step: 2 }, 3)).toEqual({ kind: "step", step: 3 });
+  expect(shownAfterStep({ kind: "step", step: 1 }, 0)).toBeNull();
+  expect(shownAfterStep({ kind: "part", part: 0 }, 1)).toBeNull();
+  expect(shownAfterStep(null, 2)).toBeNull();
 });

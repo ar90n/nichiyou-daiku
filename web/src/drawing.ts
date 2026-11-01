@@ -24,3 +24,11 @@ export function zoomAt(box: ViewBox, factor: number, at: { x: number; y: number 
 export function panBy(box: ViewBox, dx: number, dy: number, pane: Size): ViewBox {
   return { ...box, x: box.x - (dx * box.width) / pane.width, y: box.y - (dy * box.height) / pane.height };
 }
+
+export type Shown = { kind: "part"; part: number } | { kind: "step"; step: number };
+
+/** What the drawing pane shows after moving to `step`: a step's drawing
+ * follows the steps (none for the parts list); a part's closes. */
+export function shownAfterStep(shown: Shown | null, step: number): Shown | null {
+  return shown?.kind === "step" && step >= 1 ? { kind: "step", step } : null;
+}

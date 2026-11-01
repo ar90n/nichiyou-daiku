@@ -6,6 +6,7 @@ export interface StepsHandlers {
   onStep(step: number): void;
   onPart(part: number | null): void;
   onDrawing(part: number): void;
+  onStepDrawing(step: number): void;
 }
 
 function table(head: string[], rows: string[][], onRow?: (row: number) => void, picked?: number | null): HTMLTableElement {
@@ -81,6 +82,10 @@ export function renderSteps(root: HTMLElement, view: View, step: number, part: n
       if (planned.hardware.length > 0) {
         section.append(table(["Fastener", "Count"], planned.hardware.map((h) => [h.name, String(h.count)])));
       }
+      const drawing = element("button", "Drawing", "step-drawing");
+      drawing.type = "button";
+      drawing.addEventListener("click", () => on.onStepDrawing(planned.number));
+      section.append(drawing);
     }
     cards.append(section);
   }
