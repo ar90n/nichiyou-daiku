@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { readFileSync } from "node:fs";
 import { describe, expect, it, vi } from "vitest";
 import { renderSteps, renderUnavailable } from "../src/stepsPanel";
 import type { PieceView, View } from "../src/types";
@@ -79,7 +80,7 @@ it("only drilled parts have a drawing", () => {
   const onDrawing = vi.fn();
   const onPart = vi.fn();
   renderSteps(root, v(), 0, null, { ...none, onDrawing, onPart });
-  const buttons = root.querySelectorAll<HTMLButtonElement>("button.drawing");
+  const buttons = root.querySelectorAll<HTMLButtonElement>("button.part-drawing");
   expect(buttons).toHaveLength(1);
   buttons[0].click();
   expect(onDrawing).toHaveBeenCalledWith(0);
@@ -95,4 +96,22 @@ it("an open step has a drawing", () => {
   expect(onStepDrawing).toHaveBeenCalledWith(2);
   renderSteps(root, v(), 0, null, none);
   expect(root.querySelector("button.step-drawing")).toBeNull();
+});
+
+it("the Drawing buttons stay in the panel, apart from the drawing pane", () => {
+  const style = document.createElement("style");
+  // Vitest empties imported CSS, so the sheet is read as text
+  style.textContent = readFileSync("src/style.css", "utf8");
+  document.head.append(style);
+  const root = document.createElement("div");
+  root.id = "steps";
+  document.body.append(root);
+  renderSteps(root, v(), 0, null, none);
+  const part = root.querySelector<HTMLButtonElement>("tr.pickable button")!;
+  expect(getComputedStyle(part).position).not.toBe("absolute");
+  renderSteps(root, v(), 2, null, none);
+  const step = root.querySelector<HTMLButtonElement>(".card.open button")!;
+  expect(getComputedStyle(step).position).not.toBe("absolute");
+  root.remove();
+  style.remove();
 });

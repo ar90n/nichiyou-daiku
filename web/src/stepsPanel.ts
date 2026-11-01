@@ -57,7 +57,7 @@ export function renderSteps(root: HTMLElement, view: View, step: number, part: n
     list.querySelectorAll("tr.pickable").forEach((row, i) => {
       const cell = document.createElement("td");
       if (view.parts[i].drilled) {
-        const button = element("button", "Drawing", "drawing");
+        const button = element("button", "Drawing", "part-drawing");
         button.type = "button";
         button.addEventListener("click", (e) => {
           e.stopPropagation();
