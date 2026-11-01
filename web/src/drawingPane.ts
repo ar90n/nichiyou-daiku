@@ -1,6 +1,16 @@
 import { fitBox, panBy, zoomAt, type ViewBox } from "./drawing";
 import type { DrawingAnswer } from "./model";
 
+/** An SVG drawing as an element, parsed as SVG, never as HTML (it carries the
+ * design's names); without its fixed size it fits whatever box holds it. */
+export function importSvg(text: string): SVGSVGElement {
+  const parsed = new DOMParser().parseFromString(text, "image/svg+xml");
+  const svg = document.importNode(parsed.documentElement, true) as unknown as SVGSVGElement;
+  svg.removeAttribute("width");
+  svg.removeAttribute("height");
+  return svg;
+}
+
 /** The part drawing in place of the 3D: zoom with the wheel or two fingers, drag to move. */
 export class DrawingPane {
   private readonly page: HTMLElement;
@@ -49,11 +59,7 @@ export class DrawingPane {
       this.page.append(p);
       return;
     }
-    // Parsed as SVG, never as HTML: the drawing carries the design's names
-    const parsed = new DOMParser().parseFromString(answer.svg, "image/svg+xml");
-    const svg = document.importNode(parsed.documentElement, true) as unknown as SVGSVGElement;
-    svg.removeAttribute("width");
-    svg.removeAttribute("height");
+    const svg = importSvg(answer.svg);
     this.page.append(svg);
     this.svg = svg;
     this.fit();
