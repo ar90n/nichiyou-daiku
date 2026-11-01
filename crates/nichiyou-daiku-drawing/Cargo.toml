@@ -1,0 +1,9 @@
+[package]
+name = "nichiyou-daiku-drawing"
+description = "Line drawings of nichiyou-daiku designs as SVG"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+[dependencies]
+nichiyou-daiku-core = { path = "../nichiyou-daiku-core" }

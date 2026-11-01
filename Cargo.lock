@@ -58,6 +58,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "nichiyou-daiku-drawing"
+version = "0.2.0"
+dependencies = [
+ "nichiyou-daiku-core",
+]
+
+[[package]]
 name = "nichiyou-daiku-wasm"
 version = "0.2.0"
 dependencies = [
