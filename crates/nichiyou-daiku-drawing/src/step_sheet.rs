@@ -5,10 +5,12 @@
 use nichiyou_daiku_core::assembly::Assembly;
 use nichiyou_daiku_core::dimensioning::{Side, step_dimensions};
 use nichiyou_daiku_core::parts::piece_holes;
+use nichiyou_daiku_core::placement::Bounds;
 use nichiyou_daiku_core::steps::{PlannedStep, StepKind};
 
 use crate::chain::{Drawn, Placement, arrow_points, dimension_levels, draw_chain};
 use crate::hidden::{Sorted, board_body, sort_lines};
+use crate::labels::label_at;
 use crate::solid::Projection;
 use crate::svg::{Ink, Point, Stroke, Svg};
 use crate::text::text_size;
@@ -30,11 +32,15 @@ const CUE_HEAD: f64 = 10.0;
 const CUE_HEAD_WIDTH: f64 = 12.0;
 /// A drawing nearer the arrow than this would seem pushed by it
 const CUE_CLEARANCE: f64 = 6.0;
+/// Grey names closer than this across the view do not tell it which way round
+const APART: f64 = 10.0;
 const AXES: [&str; 3] = ["x", "y", "z"];
 pub const SPLIT_ADVICE: &str = "Split the step into steps that add fewer pieces";
 pub const ONE_PIECE_ADVICE: &str = "The report's Anchor Details give where each connection is";
 
 pub type Rect = (f64, f64, f64, f64);
+/// A piece's visible lines on the page, and points along them
+type Seen = (String, Vec<(Point, Point)>, Vec<Point>);
 
 pub struct StepSheet {
     pub heading: String,
@@ -179,6 +185,19 @@ fn samples(segments: &[(Point, Point)]) -> Vec<Point> {
         .collect()
 }
 
+/// Whether `p` lies on the segment, but for rounding.
+fn on_segment(p: Point, (a, b): (Point, Point)) -> bool {
+    let (dx, dy) = (b.0 - a.0, b.1 - a.1);
+    let length = dx * dx + dy * dy;
+    let t = if length > 0.0 {
+        (((p.0 - a.0) * dx + (p.1 - a.1) * dy) / length).clamp(0.0, 1.0)
+    } else {
+        0.0
+    };
+    let (x, y) = (a.0 + dx * t - p.0, a.1 + dy * t - p.1);
+    x * x + y * y < 1e-12
+}
+
 fn inside(p: Point, r: Rect) -> bool {
     r.0 < p.0 && p.0 < r.2 && r.1 < p.1 && p.1 < r.3
 }
@@ -215,6 +234,64 @@ fn clear_fit(lines: &[(String, Sorted)], area: Rect, keep_out: Rect) -> (f64, Po
         }
         fill *= 0.95;
     }
+}
+
+fn free(r: Rect, taken: &[Rect]) -> bool {
+    taken
+        .iter()
+        .all(|b| r.2 <= b.0 || b.2 <= r.0 || r.3 <= b.1 || b.3 <= r.1)
+}
+
+/// Whether a segment passes through the inside of a box (Liang-Barsky).
+fn crosses(r: Rect, (a, b): (Point, Point)) -> bool {
+    let (dx, dy) = (b.0 - a.0, b.1 - a.1);
+    let (mut start, mut end) = (0.0_f64, 1.0_f64);
+    for (p, q) in [
+        (-dx, a.0 - r.0),
+        (dx, r.2 - a.0),
+        (-dy, a.1 - r.1),
+        (dy, r.3 - a.1),
+    ] {
+        if p == 0.0 {
+            if q <= 0.0 {
+                return false;
+            }
+        } else if p < 0.0 {
+            start = start.max(q / p);
+        } else {
+            end = end.min(q / p);
+        }
+    }
+    start < end
+}
+
+fn named(
+    world: &[(String, Bounds)],
+    view: &Projection,
+    pieces: &[String],
+    scale: f64,
+    offset: Point,
+    taken: &[Rect],
+    segments: &[(Point, Point)],
+) -> Vec<(String, Rect)> {
+    let mut boxes: Vec<(String, Rect)> = Vec::new();
+    for id in pieces {
+        let Some(point) = label_at(world, id, view) else {
+            continue;
+        };
+        let (x, y) = place(point, scale, offset);
+        let (w, h) = text_size(id);
+        let r = (x - w / 2.0, y - h / 2.0, x + w / 2.0, y + h / 2.0);
+        let others: Vec<Rect> = taken
+            .iter()
+            .copied()
+            .chain(boxes.iter().map(|(_, b)| *b))
+            .collect();
+        if free(r, &others) && !segments.iter().any(|s| crosses(r, *s)) {
+            boxes.push((id.clone(), r));
+        }
+    }
+    boxes
 }
 
 pub fn step_sheet(assembly: &Assembly, step: &PlannedStep) -> StepSheet {
@@ -323,6 +400,205 @@ pub fn step_sheet(assembly: &Assembly, step: &PlannedStep) -> StepSheet {
         svg.line(a, b, Stroke::Thin);
     }
 
+    let world: Vec<(String, Bounds)> = step
+        .shown
+        .iter()
+        .map(|id| {
+            let piece = assembly.model.piece(id).expect("a piece of the model");
+            (
+                id.clone(),
+                assembly.placement.pose(id).bounds(piece.shape()),
+            )
+        })
+        .collect();
+    let mut labels = named(&world, &iso, &step.pieces, factor, offset, &[keep_out], &[]);
+    let values: Vec<Rect> = drawn
+        .labels
+        .iter()
+        .map(|label| {
+            let (w, h) = text_size(&label.text);
+            let (w, h) = if label.vertical { (h, w) } else { (w, h) };
+            (
+                label.centre.0 - w / 2.0,
+                label.centre.1 - h / 2.0,
+                label.centre.0 + w / 2.0,
+                label.centre.1 + h / 2.0,
+            )
+        })
+        .collect();
+    let mut segments = drawn.lines.clone();
+    for &(tip, direction) in &drawn.arrows {
+        let [a, b, c] = arrow_points(tip, direction);
+        segments.extend([(a, b), (b, c), (c, a)]);
+    }
+    let mut dimension_labels = named(
+        &world,
+        &view,
+        &step.pieces,
+        scale,
+        shift,
+        &values,
+        &segments,
+    );
+    let placed = |raw: &[(String, Sorted)], k: f64, at: Point| -> Vec<Seen> {
+        raw.iter()
+            .map(|(id, sorted)| {
+                let lines: Vec<(Point, Point)> = sorted
+                    .visible
+                    .iter()
+                    .map(|&(a, b)| (place(a, k, at), place(b, k, at)))
+                    .collect();
+                let points = samples(&lines);
+                (id.clone(), lines, points)
+            })
+            .collect()
+    };
+    let iso_seen = placed(&iso_raw, factor, offset);
+    let dim_seen = placed(&dim_raw, scale, shift);
+    // A grey name stands on its own piece: on another it would hide that
+    // one's lines and seem to name it. A line of another along one of its
+    // own, as an edge straight behind its outline is, is its line too
+    let on_others = |r: Rect, seen: &[Seen], id: &str| {
+        let own = &seen
+            .iter()
+            .find(|(p, _, _)| p == id)
+            .expect("a shown piece")
+            .1;
+        seen.iter()
+            .filter(|(p, _, _)| p != id)
+            .any(|(_, _, points)| {
+                points
+                    .iter()
+                    .any(|&q| inside(q, r) && !own.iter().any(|&line| on_segment(q, line)))
+            })
+    };
+    let name_left = |id: &String, left: &[(String, Rect)]| -> Option<Rect> {
+        let taken: Vec<Rect> = std::iter::once(keep_out)
+            .chain(left.iter().map(|(_, r)| *r))
+            .collect();
+        let r = named(
+            &world,
+            &iso,
+            std::slice::from_ref(id),
+            factor,
+            offset,
+            &taken,
+            &[],
+        )
+        .pop()?
+        .1;
+        (!on_others(r, &iso_seen, id)).then_some(r)
+    };
+    let name_right = |id: &String, right: &[(String, Rect)]| -> Option<Rect> {
+        let taken: Vec<Rect> = values
+            .iter()
+            .copied()
+            .chain(right.iter().map(|(_, r)| *r))
+            .collect();
+        let r = named(
+            &world,
+            &view,
+            std::slice::from_ref(id),
+            scale,
+            shift,
+            &taken,
+            &segments,
+        )
+        .pop()?
+        .1;
+        (!on_others(r, &dim_seen, id)).then_some(r)
+    };
+    let centre = |id: &str| {
+        let (_, (low, high)) = world.iter().find(|(p, _)| p == id).expect("a shown piece");
+        std::array::from_fn::<f64, 3, _>(|i| (low[i] + high[i]) / 2.0)
+    };
+    let mut both: Vec<Rect> = step
+        .pieces
+        .iter()
+        .filter(|p| labels.iter().any(|(id, _)| id == *p))
+        .filter_map(|p| {
+            dimension_labels
+                .iter()
+                .find(|(id, _)| id == p)
+                .map(|(_, r)| *r)
+        })
+        .collect();
+    // A view from the side can be mirrored left to right; from above or below
+    // the names tie it down whichever way they sit apart
+    let across_only = step.view.0 != 2;
+    let apart = |a: Rect, b: Rect| {
+        let dx = ((a.0 + a.2) / 2.0 - (b.0 + b.2) / 2.0).abs();
+        let dy = ((a.1 + a.3) / 2.0 - (b.1 + b.3) / 2.0).abs();
+        (if across_only { dx } else { dx.max(dy) }) >= APART
+    };
+    let told = |both: &[Rect]| {
+        both.iter()
+            .enumerate()
+            .any(|(i, a)| both[i + 1..].iter().any(|b| apart(*a, *b)))
+    };
+    let count = step.pieces.len() as f64;
+    let middle: [f64; 3] =
+        std::array::from_fn(|i| step.pieces.iter().map(|p| centre(p)[i]).sum::<f64>() / count);
+    let partners: Vec<&String> = step
+        .connections
+        .iter()
+        .flat_map(|(a, b)| [a, b])
+        .filter(|p| !step.pieces.contains(p))
+        .collect();
+    let distance = |id: &str| {
+        let c = centre(id);
+        (0..3)
+            .map(|i| (c[i] - middle[i]).powi(2))
+            .sum::<f64>()
+            .sqrt()
+    };
+    let mut earlier: Vec<&String> = step
+        .shown
+        .iter()
+        .filter(|p| !step.pieces.contains(p))
+        .collect();
+    earlier.sort_by(|a, b| {
+        (!partners.contains(a))
+            .cmp(&!partners.contains(b))
+            .then(distance(a).total_cmp(&distance(b)))
+    });
+    let mut references: Vec<String> = Vec::new();
+    for id in earlier {
+        if told(&both) {
+            break;
+        }
+        let (Some(l), Some(r)) = (name_left(id, &labels), name_right(id, &dimension_labels)) else {
+            continue;
+        };
+        if both.iter().all(|b| apart(r, *b)) {
+            labels.push((id.clone(), l));
+            dimension_labels.push((id.clone(), r));
+            both.push(r);
+            references.push(id.clone());
+        }
+    }
+    if !told(&both) {
+        // Names that cannot tell which way round it is only add to read
+        labels.retain(|(id, _)| !references.contains(id));
+        dimension_labels.retain(|(id, _)| !references.contains(id));
+        references.clear();
+    }
+
+    // A white ground under each name keeps it readable over the lines
+    for (_, r) in labels.iter().chain(&dimension_labels) {
+        svg.fill_ink(
+            &[(r.0, r.1), (r.2, r.1), (r.2, r.3), (r.0, r.3)],
+            Ink::White,
+        );
+    }
+    for (id, r) in labels.iter().chain(&dimension_labels) {
+        let ink = if references.contains(id) {
+            Ink::Grey
+        } else {
+            Ink::Black
+        };
+        svg.text_ink(id, ((r.0 + r.2) / 2.0, (r.1 + r.3) / 2.0), false, ink);
+    }
     let title = heading(step);
     svg.text(
         &title,
@@ -342,9 +618,9 @@ pub fn step_sheet(assembly: &Assembly, step: &PlannedStep) -> StepSheet {
     svg.fill_ink(&cue, Ink::Grey);
     StepSheet {
         heading: title,
-        labels: Vec::new(),
-        dimension_labels: Vec::new(),
-        references: Vec::new(),
+        labels,
+        dimension_labels,
+        references,
         cue,
         iso_lines,
         new_hidden,
@@ -461,5 +737,58 @@ mod tests {
         let sheet = &sheets(&source)[0];
         assert!(!sheet.notes.is_empty());
         assert!(sheet.notes[0].contains("in step 1") && sheet.notes[0].ends_with(SPLIT_ADVICE));
+    }
+
+    #[test]
+    fn the_frame_is_named_without_grey_names() {
+        // leg_1 and leg_3 sit apart in both halves: they tell left from right
+        let frame = &sheets(&read("skills/design/examples/two-tier-shelf.nd"))[0];
+        let names: Vec<&str> = frame
+            .dimension_labels
+            .iter()
+            .map(|(id, _)| id.as_str())
+            .collect();
+        assert!(names.contains(&"leg_1") && names.contains(&"leg_3"));
+        assert!(frame.references.is_empty());
+    }
+
+    #[test]
+    fn names_are_this_steps_pieces_or_grey_references() {
+        let assembly =
+            Assembly::of(parse(&read("skills/design/examples/two-tier-shelf.nd")).unwrap())
+                .unwrap();
+        for step in &plan_steps(&assembly).steps {
+            let sheet = step_sheet(&assembly, step);
+            for (id, _) in sheet.labels.iter().chain(&sheet.dimension_labels) {
+                assert!(
+                    step.pieces.contains(id) || sheet.references.contains(id),
+                    "{}: {id}",
+                    sheet.heading
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn a_reference_tells_left_from_right_when_the_step_cannot() {
+        // Step 4 of the table adds leg_3 at the back alone
+        let table = sheets(&read("examples/nd_files/simple_table_compact.nd"));
+        let step = &table[3];
+        assert_eq!(step.references.len(), 1);
+        let reference = &step.references[0];
+        assert!(step.labels.iter().any(|(id, _)| id == reference));
+        assert!(step.dimension_labels.iter().any(|(id, _)| id == reference));
+    }
+
+    #[test]
+    fn grey_names_sit_apart_and_on_their_own_piece() {
+        // The side table's joining aprons hide behind the legs seen from the side
+        let join = &sheets(&read("skills/design/examples/side-table.nd"))[2];
+        assert_eq!(join.references.len(), 2);
+        let centre = |id: &str| {
+            let (_, r) = join.dimension_labels.iter().find(|(p, _)| p == id).unwrap();
+            (r.0 + r.2) / 2.0
+        };
+        assert!((centre(&join.references[0]) - centre(&join.references[1])).abs() >= 10.0);
     }
 }
