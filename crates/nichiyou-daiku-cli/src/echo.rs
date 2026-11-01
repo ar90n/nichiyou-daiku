@@ -8,7 +8,6 @@ use std::io::{IsTerminal, Write};
 pub enum Colour {
     Green,
     Red,
-    #[cfg_attr(not(test), expect(dead_code, reason = "the report's warnings use it"))]
     Yellow,
 }
 

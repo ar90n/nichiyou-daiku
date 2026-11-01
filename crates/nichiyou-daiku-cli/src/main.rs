@@ -2,6 +2,8 @@
 
 mod echo;
 mod input;
+mod markdown;
+mod report;
 mod validate;
 
 use std::process::ExitCode;
@@ -33,6 +35,8 @@ struct Cli {
 enum Commands {
     /// Validate a DSL file and the model it describes.
     Validate(validate::Args),
+    /// Generate a markdown report from DSL file.
+    Report(report::Args),
 }
 
 fn main() -> ExitCode {
@@ -42,5 +46,6 @@ fn main() -> ExitCode {
     let echo = Echo::new(cli.quiet, cli.verbose);
     ExitCode::from(match &cli.command {
         Commands::Validate(args) => validate::run(args, &echo),
+        Commands::Report(args) => report::run(args, &echo),
     })
 }

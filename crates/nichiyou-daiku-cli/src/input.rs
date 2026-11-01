@@ -30,7 +30,6 @@ pub fn read_source(file: &str) -> Result<String, String> {
 
 /// The path as Python's pathlib prints it: no empty or '.' parts, no
 /// trailing slash.
-#[cfg_attr(not(test), expect(dead_code, reason = "the report uses it"))]
 pub fn python_path(text: &str) -> String {
     let parts: Vec<&str> = text
         .split('/')

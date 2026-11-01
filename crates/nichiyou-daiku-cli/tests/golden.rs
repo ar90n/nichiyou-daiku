@@ -143,3 +143,10 @@ fn validate_json_is_the_text_the_python_cli_prints() {
         |name| golden(name, "cli-validate-json.txt"),
     );
 }
+
+#[test]
+fn report_prints_what_the_python_version_prints() {
+    check_corpus(&["report", "-"], "cli-report.txt", |name| {
+        golden(name, "cli-report.txt")
+    });
+}
