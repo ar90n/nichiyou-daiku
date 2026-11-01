@@ -252,6 +252,41 @@
     "text": null
   },
   {
+    "name": "validate-verbose-twice",
+    "args": [
+      "-v",
+      "-v",
+      "validate",
+      "-"
+    ],
+    "file": "examples/nd_files/simple_table_compact.nd",
+    "text": null
+  },
+  {
+    "name": "report-flag-twice",
+    "args": [
+      "report",
+      "--no-cut-diagram",
+      "--no-cut-diagram",
+      "-"
+    ],
+    "file": "examples/nd_files/simple_table_compact.nd",
+    "text": null
+  },
+  {
+    "name": "report-project-name-twice",
+    "args": [
+      "report",
+      "--project-name",
+      "A",
+      "--project-name",
+      "B",
+      "-"
+    ],
+    "file": "examples/nd_files/simple_table_compact.nd",
+    "text": null
+  },
+  {
     "name": "validate-quiet",
     "args": [
       "-q",

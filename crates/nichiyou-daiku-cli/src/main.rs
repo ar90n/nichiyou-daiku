@@ -17,7 +17,8 @@ use crate::echo::Echo;
 ///
 /// Process .nd files to generate 3D models, reports, and more.
 #[derive(Parser)]
-#[command(name = "nichiyou-daiku")]
+// click keeps the last of a repeated option, as wrappers adding to defaults expect
+#[command(name = "nichiyou-daiku", args_override_self = true)]
 struct Cli {
     /// Show tracebacks for unexpected errors
     #[arg(short, long)]
@@ -35,8 +36,10 @@ struct Cli {
 #[derive(Subcommand)]
 enum Commands {
     /// Validate a DSL file and the model it describes.
+    #[command(args_override_self = true)]
     Validate(validate::Args),
     /// Generate a markdown report from DSL file.
+    #[command(args_override_self = true)]
     Report(report::Args),
 }
 

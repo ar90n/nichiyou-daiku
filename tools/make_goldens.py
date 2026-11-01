@@ -300,6 +300,20 @@ OPTION_CASES: list[tuple[str, list[str], str | None, str | None]] = [
         if name != "ok.toml"
     ),
     ("validate-verbose", ["-v", "validate", "-"], TABLE, None),
+    # click keeps the last of a repeated option; agents add theirs to defaults
+    ("validate-verbose-twice", ["-v", "-v", "validate", "-"], TABLE, None),
+    (
+        "report-flag-twice",
+        ["report", "--no-cut-diagram", "--no-cut-diagram", "-"],
+        TABLE,
+        None,
+    ),
+    (
+        "report-project-name-twice",
+        ["report", "--project-name", "A", "--project-name", "B", "-"],
+        TABLE,
+        None,
+    ),
     ("validate-quiet", ["-q", "validate", "-"], None, UNCONNECTED),
     ("validate-missing-file", ["validate", "missing.nd"], None, None),
     ("validate-json-missing-file", ["validate", "--json", "missing.nd"], None, None),
