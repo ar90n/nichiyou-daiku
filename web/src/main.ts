@@ -4,12 +4,13 @@ import { atLine, forPiece, forProblem, NONE, type Highlight, type Paint } from "
 import { fetchSource, readFile, sourceUrl, takeFile, withSourceUrl, type Source } from "./load";
 import { shownAfterStep, type Shown } from "./drawing";
 import { DrawingPane } from "./drawingPane";
-import { failedView, loadCore, safeDrawing, safeView, type DrawingAnswer } from "./model";
-import { markLine, renderHeader, renderPiece, renderProblems, renderSource } from "./panels";
+import { renderManual, type Drawings } from "./manual";
+import { failedView, loadCore, safeDrawing, safeView, type Core, type DrawingAnswer } from "./model";
+import { element, markLine, renderHeader, renderPiece, renderProblems, renderSource } from "./panels";
 import {
   clampStep, partScene, stepFromSearch, stepHighlight, stepKey, stepScene, stepsTab, withStep,
 } from "./steps";
-import { renderSteps, renderUnavailable } from "./stepsPanel";
+import { markTabs, renderSteps, renderUnavailable } from "./stepsPanel";
 import type { View } from "./types";
 import { openViewer, VIEWS, type ViewName } from "./viewer";
 
@@ -22,9 +23,11 @@ const pieceEl = byId("piece");
 const stepsEl = byId("steps");
 const modelTab = byId<HTMLButtonElement>("tab-model");
 const stepsTabButton = byId<HTMLButtonElement>("tab-steps");
+const manualTab = byId<HTMLButtonElement>("tab-manual");
+const manualPages = byId("manual-pages");
 const viewer = openViewer(byId("scene"));
 let current: View | null = null;
-let tab: "model" | "steps" = "model";
+let tab: "model" | "steps" | "manual" = "model";
 // The Steps tab's step (0: the parts list); null on the Model tab, or when
 // the Steps tab only says why it cannot show the steps
 let step: number | null = null;
@@ -32,39 +35,47 @@ let part: number | null = null;
 let dims = true;
 
 const core = loadCore();
-// The source on screen, and its part and step drawings once made
+// The source on screen, its name, and its part and step drawings once made
 let currentText = "";
+let currentName: string | null = null;
 const drawings = new Map<number, DrawingAnswer>();
 const stepDrawings = new Map<number, DrawingAnswer>();
 // What the drawing pane shows in place of the 3D, if anything
 let shown: Shown | null = null;
 const drawingPane = new DrawingPane(byId("drawing"), () => closeDrawing());
 
-async function openDrawing(index: number): Promise<void> {
-  let answer = drawings.get(index);
+function coreFailed(error: unknown): DrawingAnswer {
+  const reason = error instanceof Error ? error.message : String(error);
+  return { svg: null, notes: [], error: `Could not load the core (WebAssembly): ${reason}. Reload the page.` };
+}
+
+/** A drawing made once per file. */
+function cached(cache: Map<number, DrawingAnswer>, index: number, make: Core["partDrawing"]): DrawingAnswer {
+  let answer = cache.get(index);
   if (!answer) {
-    try {
-      answer = safeDrawing((await core).partDrawing, currentText, index);
-    } catch (error) {
-      const reason = error instanceof Error ? error.message : String(error);
-      answer = { svg: null, notes: [], error: `Could not load the core (WebAssembly): ${reason}. Reload the page.` };
-    }
-    drawings.set(index, answer);
+    answer = safeDrawing(make, currentText, index);
+    cache.set(index, answer);
+  }
+  return answer;
+}
+
+async function openDrawing(index: number): Promise<void> {
+  let answer: DrawingAnswer;
+  try {
+    answer = cached(drawings, index, (await core).partDrawing);
+  } catch (error) {
+    answer = coreFailed(error);
   }
   drawingPane.show(answer);
   shown = { kind: "part", part: index };
 }
 
 async function openStepDrawing(number: number): Promise<void> {
-  let answer = stepDrawings.get(number);
-  if (!answer) {
-    try {
-      answer = safeDrawing((await core).stepDrawing, currentText, number);
-    } catch (error) {
-      const reason = error instanceof Error ? error.message : String(error);
-      answer = { svg: null, notes: [], error: `Could not load the core (WebAssembly): ${reason}. Reload the page.` };
-    }
-    stepDrawings.set(number, answer);
+  let answer: DrawingAnswer;
+  try {
+    answer = cached(stepDrawings, number, (await core).stepDrawing);
+  } catch (error) {
+    answer = coreFailed(error);
   }
   drawingPane.show(answer);
   shown = { kind: "step", step: number };
@@ -104,6 +115,7 @@ function render(name: string | null, text: string, view: View): void {
   closeDrawing();
   current = view;
   currentText = text;
+  currentName = name;
   drawings.clear();
   stepDrawings.clear();
   renderHeader(status, name, view);
@@ -113,16 +125,16 @@ function render(name: string | null, text: string, view: View): void {
   renderPiece(pieceEl, view, null, showLine);
   viewer.show(view.error ? null : view);
   if (view.error) markLine(sourceEl, view.error.line, true);
-  const state = stepsTab(view);
-  stepsTabButton.classList.toggle("unavailable", !state.enabled);
-  stepsTabButton.title = state.reason ?? "";
+  markTabs([stepsTabButton, manualTab], view);
 }
 
-function setTab(next: "model" | "steps"): void {
+function setTab(next: "model" | "steps" | "manual"): void {
   tab = next;
   document.body.classList.toggle("steps-mode", next === "steps");
+  document.body.classList.toggle("manual-mode", next === "manual");
   modelTab.classList.toggle("active", next === "model");
   stepsTabButton.classList.toggle("active", next === "steps");
+  manualTab.classList.toggle("active", next === "manual");
 }
 
 /** The current step's dimensions, when the Steps tab shows a step and they are on. */
@@ -182,13 +194,46 @@ function showModel(): void {
   history.replaceState(null, "", withStep(location.href, null));
 }
 
+async function openManual(): Promise<void> {
+  closeDrawing();
+  step = null;
+  part = null;
+  viewer.showDimensions(null);
+  document.body.classList.remove("on-step");
+  setTab("manual");
+  history.replaceState(null, "", withStep(location.href, null));
+  const state = stepsTab(current);
+  if (!current || !state.enabled) {
+    renderUnavailable(manualPages, state.reason ?? "");
+    return;
+  }
+  const view = current;
+  manualPages.replaceChildren(element("p", "Making the drawings…", "hint"));
+  let loaded: Core;
+  try {
+    loaded = await core;
+    // Let the page show the message before the drawings hold it up
+    await new Promise((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
+  } catch (error) {
+    manualPages.replaceChildren(element("p", coreFailed(error).error ?? "", "error"));
+    return;
+  }
+  // A file opened or a tab chosen meanwhile has the page now
+  if (current !== view || tab !== "manual") return;
+  const draw: Drawings = {
+    part: (index) => cached(drawings, index, loaded.partDrawing),
+    step: (number) => cached(stepDrawings, number, loaded.stepDrawing),
+  };
+  renderManual(manualPages, view, currentName, draw);
+}
+
 async function open(load: () => Promise<Source>, name: string | null, wanted: number | null = step): Promise<void> {
   let source: Source;
   try {
     source = await load();
   } catch (error) {
     render(name, "", failedView("file", error instanceof Error ? error.message : String(error)));
-    if (tab === "steps") showModel();
+    if (tab !== "model") showModel();
     return;
   }
   let viewOf;
@@ -198,7 +243,7 @@ async function open(load: () => Promise<Source>, name: string | null, wanted: nu
     const reason = error instanceof Error ? error.message : String(error);
     render(source.name, source.text, failedView("internal",
       `Could not load the core (WebAssembly): ${reason}. Use a browser with WebAssembly, or rebuild it (make wasm).`));
-    if (tab === "steps") showModel();
+    if (tab !== "model") showModel();
     return;
   }
   render(source.name, source.text, safeView(viewOf, source.text));
@@ -206,7 +251,8 @@ async function open(load: () => Promise<Source>, name: string | null, wanted: nu
   const page = source.url ? withSourceUrl(location.href, source.url) : withoutSource(location.href);
   history.replaceState(null, "", page);
   // Reopened, a file keeps its step; one with fewer steps goes to its last
-  if ((wanted !== null || tab === "steps") && stepsTab(current).enabled) showStep(wanted ?? 0);
+  if (tab === "manual") void openManual();
+  else if ((wanted !== null || tab === "steps") && stepsTab(current).enabled) showStep(wanted ?? 0);
   else if (tab === "steps") showModel();
 }
 
@@ -276,6 +322,8 @@ document.addEventListener("drop", (e) => {
 
 modelTab.addEventListener("click", () => showModel());
 stepsTabButton.addEventListener("click", () => openStepsTab(step ?? 0));
+manualTab.addEventListener("click", () => void openManual());
+byId<HTMLButtonElement>("print").addEventListener("click", () => window.print());
 document.addEventListener("keydown", (e) => {
   if (step === null) return;
   const move = stepKey(e.key, (e.target as HTMLElement | null)?.tagName);

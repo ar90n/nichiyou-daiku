@@ -86,6 +86,8 @@ In the parts list, **Drawing** opens a drilled part's drawing in place of the 3D
 
 An open step has a **Drawing** too: the step image the CLI writes, the part it leaves seen from the isometric (the step's pieces in black, earlier ones grey) beside the dimension view. With it open, **◀ Prev** / **Next ▶** move to the next step's drawing.
 
+The **Manual** tab lays the whole manual out as A4 landscape pages: what to get (the parts, numbered as their drawings, and every fastener the steps use), each drilled part's drawing, and a page per step with its drawing, pieces and fasteners. **Print** puts just those pages on paper.
+
 ## Documentation
 
 - [DSL specification](docs/dsl-specification.md): pieces, faces and offsets, connections, variables, unknowns, fasteners, CLI, grammar, errors
