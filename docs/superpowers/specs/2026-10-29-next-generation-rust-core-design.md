@@ -35,7 +35,7 @@
    3. R3 組み立てマニュアル（2026-10-31 に入れ替え、ユーザー承認。R2 を確かめたあと、ビューアーで組み立て
       マニュアルを見たいという要望から。CLI より先にする）: A 手順送り（部品表と、手順を送って 3D で見る。
       手順の計画を含む）→ B 寸法（新しい部材の位置の寸法線）→ C 紙のマニュアル（自前の隠れ線処理で部品図と
-      手順の図、印刷。元の R4 の図面の描き方を取り込む）。A は `2026-10-31-r3a-assembly-steps-design.md`、B は `2026-10-31-r3b-step-dimensions-design.md`。C は C1 部品図 → C2 手順の図 → C3 マニュアルと印刷に分ける（2026-11-01、ユーザー承認。C1 は `2026-11-01-r3c1-part-drawings-design.md`）。
+      手順の図、印刷。元の R4 の図面の描き方を取り込む）。A は `2026-10-31-r3a-assembly-steps-design.md`、B は `2026-10-31-r3b-step-dimensions-design.md`。C は C1 部品図 → C2 手順の図 → C3 マニュアルと印刷に分ける（2026-11-01、ユーザー承認。C1 は `2026-11-01-r3c1-part-drawings-design.md`、C2 は `2026-11-01-r3c2-step-drawings-design.md`、C3 は `2026-11-01-r3c3-manual-design.md`）。
    4. R4 CLI: `validate` と `report`（材料表・買い物リスト・木取り・ビス・ドリル）、R3 の描き方を使う
       `render`・`drawing`・`steps`。プラグインの `bin/nichiyou-daiku` を Rust 版に替える（配り方はビルド済みの
       バイナリ）。
