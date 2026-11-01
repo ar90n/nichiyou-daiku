@@ -69,6 +69,7 @@ name = "nichiyou-daiku-wasm"
 version = "0.2.0"
 dependencies = [
  "nichiyou-daiku-core",
+ "nichiyou-daiku-drawing",
  "serde_json",
  "wasm-bindgen",
 ]
