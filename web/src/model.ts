@@ -20,6 +20,8 @@ export type ViewFn = (source: string) => View;
 
 export interface DrawingAnswer {
   svg: string | null;
+  /** Values that do not fit, as the CLI warns */
+  notes: string[];
   error: string | null;
 }
 export type DrawingFn = (source: string, part: number) => DrawingAnswer;
@@ -43,7 +45,7 @@ export function safeDrawing(fn: DrawingFn, source: string, part: number): Drawin
     return fn(source, part);
   } catch (error) {
     const reason = error instanceof Error ? error.message : String(error);
-    return { svg: null, error: `Internal error in the core while drawing: ${reason}. Please report it with the .nd file.` };
+    return { svg: null, notes: [], error: `Internal error in the core while drawing: ${reason}. Please report it with the .nd file.` };
   }
 }
 

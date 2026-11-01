@@ -43,7 +43,7 @@ async function openDrawing(index: number): Promise<void> {
       answer = safeDrawing((await core).partDrawing, currentText, index);
     } catch (error) {
       const reason = error instanceof Error ? error.message : String(error);
-      answer = { svg: null, error: `Could not load the core (WebAssembly): ${reason}. Reload the page.` };
+      answer = { svg: null, notes: [], error: `Could not load the core (WebAssembly): ${reason}. Reload the page.` };
     }
     drawings.set(index, answer);
   }

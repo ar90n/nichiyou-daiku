@@ -13,8 +13,10 @@ pub fn view(source: &str) -> String {
 #[wasm_bindgen]
 pub fn part_drawing(source: &str, part: usize) -> String {
     match nichiyou_daiku_drawing::part_drawing(source, part) {
-        Ok(svg) => serde_json::json!({"svg": svg, "error": null}),
-        Err(error) => serde_json::json!({"svg": null, "error": error}),
+        Ok(drawing) => {
+            serde_json::json!({"svg": drawing.svg, "notes": drawing.notes, "error": null})
+        }
+        Err(error) => serde_json::json!({"svg": null, "notes": [], "error": error}),
     }
     .to_string()
 }
@@ -28,6 +30,7 @@ mod tests {
         let answer: serde_json::Value =
             serde_json::from_str(&super::part_drawing(shelf, 0)).unwrap();
         assert!(answer["svg"].as_str().unwrap().starts_with("<svg") && answer["error"].is_null());
+        assert_eq!(answer["notes"], serde_json::json!([]));
         let missing: serde_json::Value =
             serde_json::from_str(&super::part_drawing(shelf, 7)).unwrap();
         assert!(

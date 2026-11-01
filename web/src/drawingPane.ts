@@ -4,6 +4,7 @@ import type { DrawingAnswer } from "./model";
 /** The part drawing in place of the 3D: zoom with the wheel or two fingers, drag to move. */
 export class DrawingPane {
   private readonly page: HTMLElement;
+  private readonly notes: HTMLElement | null;
   private svg: SVGSVGElement | null = null;
   private box: ViewBox | null = null;
   private size = { width: 1, height: 1 };
@@ -11,6 +12,7 @@ export class DrawingPane {
 
   constructor(private readonly root: HTMLElement, onClose: () => void) {
     this.page = root.querySelector<HTMLElement>(".drawing-page")!;
+    this.notes = root.querySelector<HTMLElement>(".drawing-notes");
     root.querySelector<HTMLButtonElement>(".close")!.addEventListener("click", onClose);
     root.querySelector<HTMLButtonElement>(".fit")!.addEventListener("click", () => this.fit());
     this.page.addEventListener("wheel", (e) => {
@@ -19,6 +21,8 @@ export class DrawingPane {
       this.zoom(e.deltaY < 0 ? 1.2 : 1 / 1.2, (e.clientX - rect.left) / Math.max(rect.width, 1), (e.clientY - rect.top) / Math.max(rect.height, 1));
     }, { passive: false });
     this.page.addEventListener("pointerdown", (e) => {
+      // A drag moves the page; it must not select the drawing's text
+      e.preventDefault();
       this.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
       this.page.setPointerCapture?.(e.pointerId);
     });
@@ -31,6 +35,11 @@ export class DrawingPane {
 
   show(answer: DrawingAnswer): void {
     this.page.replaceChildren();
+    this.notes?.replaceChildren(...answer.notes.map((note) => {
+      const line = document.createElement("span");
+      line.textContent = note;
+      return line;
+    }));
     this.svg = null;
     this.root.hidden = false;
     if (!answer.svg) {
@@ -52,6 +61,7 @@ export class DrawingPane {
 
   hide(): void {
     this.root.hidden = true;
+    this.notes?.replaceChildren();
     this.page.replaceChildren();
     this.svg = null;
   }

@@ -9,8 +9,16 @@ pub mod text;
 use nichiyou_daiku_core::assembly::Assembly;
 use nichiyou_daiku_core::parts::{part_groups, part_name};
 
-/// The SVG drawing of the parts list's part `part`, or what is wrong.
-pub fn part_drawing(source: &str, part: usize) -> Result<String, String> {
+/// A part's drawing, and what to tell about it: values that do not fit, as
+/// the CLI warns.
+#[derive(Debug)]
+pub struct PartDrawing {
+    pub svg: String,
+    pub notes: Vec<String>,
+}
+
+/// The drawing of the parts list's part `part`, or what is wrong.
+pub fn part_drawing(source: &str, part: usize) -> Result<PartDrawing, String> {
     let model = nichiyou_daiku_core::dsl::parse(source)
         .map_err(|e| format!("The design does not read: {e}. Fix it in the source first"))?;
     let assembly = Assembly::of(model)?;
@@ -27,5 +35,9 @@ pub fn part_drawing(source: &str, part: usize) -> Result<String, String> {
             part_name(group)
         ));
     }
-    Ok(part_sheet::part_sheet(&assembly, group).svg)
+    let sheet = part_sheet::part_sheet(&assembly, group);
+    Ok(PartDrawing {
+        svg: sheet.svg,
+        notes: sheet.crowded,
+    })
 }

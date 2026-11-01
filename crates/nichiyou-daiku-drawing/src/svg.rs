@@ -142,7 +142,7 @@ impl Svg {
         out.push_str("</g>");
         out.push_str(&format!(
             "<g fill=\"#000\" font-family=\"DejaVu Sans, Verdana, Arial, sans-serif\" font-size=\"{}\" \
-             text-anchor=\"middle\" dominant-baseline=\"central\" \
+             text-anchor=\"middle\" \
              xml:space=\"preserve\" style=\"white-space:pre\">",
             n(font_size())
         ));
@@ -160,7 +160,7 @@ impl Svg {
                     String::new()
                 };
                 out.push_str(&format!(
-                    "<text x=\"{x}\" y=\"{yy}\"{turn}>{}</text>",
+                    "<text x=\"{x}\" y=\"{yy}\" dominant-baseline=\"central\"{turn}>{}</text>",
                     escape(text)
                 ));
             }
@@ -183,7 +183,8 @@ mod tests {
         assert!(out.starts_with("<svg xmlns=\"http://www.w3.org/2000/svg\""));
         assert!(out.contains("viewBox=\"0 0 280 100\""));
         assert!(out.contains("<path d=\"M0 100L10 100\"/>"));
-        assert!(out.contains("<text x=\"5\" y=\"10\">A</text>"));
+        // On each text: older WebKit does not inherit it from the group
+        assert!(out.contains("<text x=\"5\" y=\"10\" dominant-baseline=\"central\">A</text>"));
         assert!(out.ends_with("</svg>"));
     }
 

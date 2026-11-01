@@ -471,6 +471,29 @@ mod tests {
                 .unwrap_err()
                 .starts_with("The design does not read")
         );
-        assert!(crate::part_drawing(SHELF, 0).unwrap().starts_with("<svg"));
+        let drawing = crate::part_drawing(SHELF, 0).unwrap();
+        assert!(drawing.svg.starts_with("<svg") && drawing.notes.is_empty());
+    }
+
+    #[test]
+    fn crowded_values_come_with_a_note() {
+        let path = concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/../nichiyou-daiku-core/tests/corpus/eval-d67d59496f.nd"
+        );
+        let source = std::fs::read_to_string(path).unwrap();
+        let assembly = Assembly::of(parse(&source).unwrap()).unwrap();
+        let part = part_groups(&assembly)
+            .iter()
+            .position(|g| g.pieces.contains(&"apron_front".to_string()))
+            .unwrap();
+        let drawing = crate::part_drawing(&source, part).unwrap();
+        assert_eq!(
+            drawing.notes,
+            [
+                "4 vertical dimension values in face A (back) of apron_front do not fit beside their chain without \
+              crossing its lines. The report's Pilot Holes table lists the same holes"
+            ]
+        );
     }
 }
