@@ -109,7 +109,7 @@ function showStep(next: number, picked: number | null = null): void {
   // Drawn first, so that the camera frames the dimension rows too
   drawDimensions();
   viewer.fit(scene.bounds);
-  renderSteps(stepsEl, current, step, part, { onStep: (n) => showStep(n), onPart: (i) => showStep(0, i) });
+  renderSteps(stepsEl, current, step, part, { onStep: (n) => showStep(n), onPart: (i) => showStep(0, i), onDrawing: () => {} });
   setTab("steps");
   history.replaceState(null, "", withStep(location.href, step));
 }
@@ -137,7 +137,7 @@ async function open(load: () => Promise<Source>, name: string | null, wanted: nu
   }
   let viewOf;
   try {
-    viewOf = await core;
+    viewOf = (await core).view;
   } catch (error) {
     const reason = error instanceof Error ? error.message : String(error);
     render(source.name, source.text, failedView("internal",

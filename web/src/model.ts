@@ -18,11 +18,33 @@ export function parseView(json: string): View {
 
 export type ViewFn = (source: string) => View;
 
-/** Load the core's WebAssembly; the function it gives views an .nd source. */
-export async function loadCore(): Promise<ViewFn> {
+export interface DrawingAnswer {
+  svg: string | null;
+  error: string | null;
+}
+export type DrawingFn = (source: string, part: number) => DrawingAnswer;
+export interface Core {
+  view: ViewFn;
+  partDrawing: DrawingFn;
+}
+
+/** Load the core's WebAssembly: views and part drawings of an .nd source. */
+export async function loadCore(): Promise<Core> {
   const core = await import("./wasm/nichiyou_daiku_wasm.js");
   await core.default();
-  return (source) => parseView(core.view(source));
+  return {
+    view: (source) => parseView(core.view(source)),
+    partDrawing: (source, part) => JSON.parse(core.part_drawing(source, part)) as DrawingAnswer,
+  };
+}
+
+export function safeDrawing(fn: DrawingFn, source: string, part: number): DrawingAnswer {
+  try {
+    return fn(source, part);
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error);
+    return { svg: null, error: `Internal error in the core while drawing: ${reason}. Please report it with the .nd file.` };
+  }
 }
 
 /** A view with nothing to draw but an error. */

@@ -7,7 +7,7 @@ const v = (over: Partial<View> = {}): View => ({
   valid: true, error: null, overall_size: null, size_reference: null,
   pieces: [{ id: "leg", type: "2x4", length: 750, line: 1 } as PieceView, { id: "rail", type: "1x4", length: 364.5, line: 2 } as PieceView],
   problems: [], connections: [], holes: [],
-  parts: [{ pieces: ["leg"], type: "2x4", length: 750, count: 1 }, { pieces: ["rail"], type: "1x4", length: 364.5, count: 1 }],
+  parts: [{ pieces: ["leg"], type: "2x4", length: 750, count: 1, drilled: true }, { pieces: ["rail"], type: "1x4", length: 364.5, count: 1, drilled: false }],
   steps: [
     { number: 1, name: "Leg", kind: "first", pieces: ["leg"], connections: [], shown: ["leg"], view: { axis: "z", side: 1 }, hardware: [], dimensions: [] },
     { number: 2, name: null, kind: "attach", pieces: ["rail"], connections: [["rail", "leg"]], shown: ["leg", "rail"],
@@ -15,7 +15,7 @@ const v = (over: Partial<View> = {}): View => ({
   ],
   steps_declared: true, steps_hint: null, ...over,
 });
-const none = { onStep: () => {}, onPart: () => {} };
+const none = { onStep: () => {}, onPart: () => {}, onDrawing: () => {} };
 
 it("lists the parts and every step, the current one open", () => {
   const root = document.createElement("div");
@@ -31,7 +31,7 @@ it("the parts list picks a part, and lets it go", () => {
   const onPart = vi.fn();
   renderSteps(root, v(), 0, 1, { ...none, onPart });
   const rows = root.querySelectorAll<HTMLElement>("tr.pickable");
-  expect([...rows[0].querySelectorAll("td")].map((td) => td.textContent)).toEqual(["leg", "2x4", "750", "1"]);
+  expect([...rows[0].querySelectorAll("td")].map((td) => td.textContent)).toEqual(["leg", "2x4", "750", "1", "Drawing"]);
   expect(rows[1].className).toBe("pickable picked");
   rows[0].click();
   rows[1].click();
@@ -72,4 +72,16 @@ it("says why the steps cannot be shown, where a phone shows it", () => {
   const root = document.createElement("div");
   renderUnavailable(root, "Fix the error first: the steps need a design that reads");
   expect(root.querySelector(".unavailable")?.textContent).toBe("Fix the error first: the steps need a design that reads");
+});
+
+it("only drilled parts have a drawing", () => {
+  const root = document.createElement("div");
+  const onDrawing = vi.fn();
+  const onPart = vi.fn();
+  renderSteps(root, v(), 0, null, { ...none, onDrawing, onPart });
+  const buttons = root.querySelectorAll<HTMLButtonElement>("button.drawing");
+  expect(buttons).toHaveLength(1);
+  buttons[0].click();
+  expect(onDrawing).toHaveBeenCalledWith(0);
+  expect(onPart).not.toHaveBeenCalled();
 });

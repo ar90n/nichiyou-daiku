@@ -10,7 +10,7 @@ const step = (number: number, pieces: string[], shown: string[], over: Partial<S
 const v: View = {
   valid: true, error: null, overall_size: [389, 38, 400], size_reference: "a",
   pieces: [piece("a", 0), piece("b", 100), piece("c", 300)], problems: [], connections: [], holes: [],
-  parts: [{ pieces: ["a", "b", "c"], type: "2x4", length: 400, count: 3 }],
+  parts: [{ pieces: ["a", "b", "c"], type: "2x4", length: 400, count: 3, drilled: false }],
   steps: [step(1, ["a", "b"], ["a", "b"], { kind: "first", name: "Frame" }), step(2, ["c"], ["c"], { kind: "sub-assembly" })],
   steps_declared: true, steps_hint: null,
 };

@@ -5,6 +5,7 @@ import type { View } from "./types";
 export interface StepsHandlers {
   onStep(step: number): void;
   onPart(part: number | null): void;
+  onDrawing(part: number): void;
 }
 
 function table(head: string[], rows: string[][], onRow?: (row: number) => void, picked?: number | null): HTMLTableElement {
@@ -50,7 +51,22 @@ export function renderSteps(root: HTMLElement, view: View, step: number, part: n
   const parts = card(0, "Parts", step === 0, on);
   if (step === 0) {
     const rows = view.parts.map((p) => [p.pieces.join(", "), p.type, mm(p.length), String(p.count)]);
-    parts.append(table(["Pieces", "Lumber", "Length (mm)", "Count"], rows, (i) => on.onPart(i === part ? null : i), part));
+    const list = table(["Pieces", "Lumber", "Length (mm)", "Count", ""], rows, (i) => on.onPart(i === part ? null : i), part);
+    // Only a drilled part has a drawing: the others are only cut to length
+    list.querySelectorAll("tr.pickable").forEach((row, i) => {
+      const cell = document.createElement("td");
+      if (view.parts[i].drilled) {
+        const button = element("button", "Drawing", "drawing");
+        button.type = "button";
+        button.addEventListener("click", (e) => {
+          e.stopPropagation();
+          on.onDrawing(i);
+        });
+        cell.append(button);
+      }
+      row.append(cell);
+    });
+    parts.append(list);
   }
   cards.append(parts);
   for (const planned of view.steps) {
