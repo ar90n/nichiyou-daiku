@@ -4,6 +4,7 @@ mod echo;
 mod input;
 mod markdown;
 mod report;
+mod stock;
 mod validate;
 
 use std::process::ExitCode;

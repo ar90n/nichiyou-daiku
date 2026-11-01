@@ -12,6 +12,7 @@ use nichiyou_daiku_core::resources::extract_resources;
 use crate::echo::{Colour, Echo};
 use crate::input::{python_path, read_source};
 use crate::markdown::{Options, report};
+use crate::stock::load_stock;
 
 #[derive(clap::Args)]
 pub struct Args {
@@ -69,7 +70,17 @@ fn write_report(output: &str, text: &str, echo: &Echo) -> u8 {
 }
 
 pub fn run(args: &Args, echo: &Echo) -> u8 {
-    let (lengths, kerf) = (Vec::new(), DEFAULT_KERF_MM);
+    // Read the stock file first, so a mistake in it stops before any work
+    let (lengths, kerf) = match &args.stock {
+        None => (Vec::new(), DEFAULT_KERF_MM),
+        Some(file) => match load_stock(file) {
+            Ok(stock) => (stock.lengths, stock.kerf),
+            Err(message) => {
+                echo.error(&format!("Error: {message}"), None);
+                return 1;
+            }
+        },
+    };
     let source = match read_source(&args.file) {
         Ok(source) => source,
         Err(message) => {

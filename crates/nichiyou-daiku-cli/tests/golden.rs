@@ -11,6 +11,7 @@ use std::process::{Command, Stdio};
 #[path = "../../nichiyou-daiku-core/tests/common/mod.rs"]
 mod common;
 
+const CLI_DIR: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/cli");
 const CORPUS: &str = concat!(
     env!("CARGO_MANIFEST_DIR"),
     "/../nichiyou-daiku-core/tests/corpus"
@@ -149,4 +150,81 @@ fn report_prints_what_the_python_version_prints() {
     check_corpus(&["report", "-"], "cli-report.txt", |name| {
         golden(name, "cli-report.txt")
     });
+}
+
+#[derive(serde::Deserialize)]
+struct OptionCase {
+    name: String,
+    args: Vec<String>,
+    file: Option<String>,
+    text: Option<String>,
+}
+
+/// TOML parsers word their errors differently: the words in the brackets
+/// are the parser's.
+fn toml_reason_hidden(text: &str) -> String {
+    match (text.find("not valid TOML ("), text.find("). Write e.g.")) {
+        (Some(start), Some(end)) if start < end => {
+            format!("{}not valid TOML (…{}", &text[..start], &text[end..])
+        }
+        _ => text.to_string(),
+    }
+}
+
+#[test]
+fn options_print_what_the_python_version_prints() {
+    let cases: Vec<OptionCase> =
+        serde_json::from_str(&fs::read_to_string(Path::new(CLI_DIR).join("cases.json")).unwrap())
+            .unwrap();
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+    let mut failures = Vec::new();
+    for case in &cases {
+        let stdin = match (&case.file, &case.text) {
+            (Some(file), _) => fs::read_to_string(root.join(file)).unwrap(),
+            (None, Some(text)) => text.clone(),
+            (None, None) => String::new(),
+        };
+        let args: Vec<&str> = case.args.iter().map(String::as_str).collect();
+        let want =
+            fs::read_to_string(Path::new(CLI_DIR).join(format!("{}.txt", case.name))).unwrap();
+        let got = run(&args, &stdin, Path::new(CLI_DIR));
+        if !same_output(&toml_reason_hidden(&want), &toml_reason_hidden(&got)) {
+            failures.push(format!("--- {}\n{want}\n+++\n{got}", case.name));
+        }
+    }
+    assert!(
+        failures.is_empty(),
+        "{} option cases differ:\n{}",
+        failures.len(),
+        failures.join("\n")
+    );
+}
+
+#[test]
+fn a_report_written_to_a_file_is_the_one_printed() {
+    let dir = std::env::temp_dir().join(format!("nd-cli-{}", std::process::id()));
+    fs::create_dir_all(&dir).unwrap();
+    let table = fs::read_to_string(
+        Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../../examples/nd_files/simple_table_compact.nd"),
+    )
+    .unwrap();
+    let printed = run(&["report", "-"], &table, &dir);
+    let written = run(&["report", "-o", "out/report.md", "-"], &table, &dir);
+    assert_eq!(
+        written,
+        "exit: 0\n--- stdout\n--- stderr\nReport written to: out/report.md\n"
+    );
+    let report = fixed_date(&fs::read_to_string(dir.join("out/report.md")).unwrap());
+    // Python's write_text adds no final newline; click.echo does
+    assert_eq!(
+        format!("exit: 0\n--- stdout\n{report}\n--- stderr\n"),
+        printed
+    );
+    let refused = run(&["report", "-o", "out", "-"], &table, &dir);
+    assert_eq!(
+        refused,
+        "exit: 1\n--- stdout\n--- stderr\nError: Output path is not a file: out\n"
+    );
+    fs::remove_dir_all(&dir).unwrap();
 }
