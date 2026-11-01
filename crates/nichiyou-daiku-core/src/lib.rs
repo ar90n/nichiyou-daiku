@@ -4,6 +4,7 @@
 pub mod anchor;
 pub mod assembly;
 pub mod connection;
+pub mod cutting;
 pub mod diagnostics;
 pub mod difflib;
 pub mod dimensioning;
