@@ -7,6 +7,7 @@ mod markdown;
 mod png;
 mod render;
 mod report;
+mod steps;
 mod stock;
 mod validate;
 
@@ -53,6 +54,16 @@ enum Commands {
     /// hidden in every view are listed in the note.
     #[command(args_override_self = true)]
     Render(render::Args),
+    /// Write assembly instructions: steps.md, a drawing of each drilled part
+    /// and one image per step.
+    ///
+    /// The parts come first: what to cut, and where to drill each face, from
+    /// the reference end marked with a triangle. The steps come from the
+    /// file's steps block; without one, each step adds one piece. Each step
+    /// image shows what is built so far in grey and the step's pieces in
+    /// black, beside a view dimensioning where they go.
+    #[command(args_override_self = true)]
+    Steps(steps::Args),
 }
 
 fn main() -> ExitCode {
@@ -64,5 +75,6 @@ fn main() -> ExitCode {
         Commands::Validate(args) => validate::run(args, &echo),
         Commands::Report(args) => report::run(args, &echo),
         Commands::Render(args) => render::run(args, &echo),
+        Commands::Steps(args) => steps::run(args, &echo),
     })
 }

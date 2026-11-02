@@ -9,10 +9,11 @@ use resvg::tiny_skia::Pixmap;
 
 const TABLE: &str = concat!(
     env!("CARGO_MANIFEST_DIR"),
-    "/../../examples/nd_files/simple_table_compact.nd"
+    "/../../examples/nd_files/simple_table_unknowns.nd"
 );
 
-/// A fresh folder with the table in it, as t.nd.
+/// A fresh folder with the table (screwed, so it has part drawings) in it,
+/// as t.nd.
 fn folder(name: &str) -> PathBuf {
     let dir = std::env::temp_dir().join(format!("nd-images-{}-{name}", std::process::id()));
     let _ = fs::remove_dir_all(&dir);
@@ -86,5 +87,104 @@ fn render_does_not_write_over_its_input() {
             "Error: Refusing to overwrite the input file: t.nd. Choose a different output path with -o.\n"
                 .into()
         )
+    );
+}
+
+fn listed(dir: &Path) -> Vec<String> {
+    let mut names: Vec<String> = fs::read_dir(dir)
+        .unwrap()
+        .map(|e| e.unwrap().file_name().to_string_lossy().into_owned())
+        .collect();
+    names.sort();
+    names
+}
+
+#[test]
+fn steps_writes_the_page_and_its_images() {
+    let dir = folder("steps");
+    let (code, err) = run(&["steps", "t.nd", "--size", "500"], "", &dir);
+    assert_eq!(code, 0, "{err}");
+    let out = dir.join("t-steps");
+    let names = listed(&out);
+    let parts = names.iter().filter(|n| n.starts_with("part-")).count();
+    let steps = names.iter().filter(|n| n.starts_with("step-")).count();
+    assert!(parts > 0 && steps > 0 && names.contains(&"steps.md".to_string()));
+    assert!(
+        err.ends_with(&format!(
+            "Successfully wrote steps.md, {parts} part drawings and {steps} step images to t-steps\n"
+        )),
+        "{err}"
+    );
+    assert_eq!(size_of(&out.join("step-01.png")).0, 500);
+    assert!(
+        fs::read_to_string(out.join("steps.md"))
+            .unwrap()
+            .starts_with("# t: assembly steps\n")
+    );
+}
+
+#[test]
+fn old_images_go_and_other_files_stay() {
+    let dir = folder("steps-old");
+    let out = dir.join("t-steps");
+    fs::create_dir_all(&out).unwrap();
+    for name in ["step-99.png", "part-77.png", "notes.txt"] {
+        fs::write(out.join(name), "old").unwrap();
+    }
+    assert_eq!(run(&["steps", "t.nd", "--size", "400"], "", &dir).0, 0);
+    let names = listed(&out);
+    assert!(!names.contains(&"step-99.png".to_string()));
+    assert!(!names.contains(&"part-77.png".to_string()));
+    assert!(names.contains(&"notes.txt".to_string()));
+}
+
+#[test]
+fn steps_wants_a_folder() {
+    let dir = folder("steps-file");
+    fs::write(dir.join("taken"), "").unwrap();
+    assert_eq!(
+        run(&["steps", "t.nd", "-o", "taken"], "", &dir),
+        (
+            1,
+            "taken is a file; give -o a directory for the steps\n".into()
+        )
+    );
+    let table = fs::read_to_string(TABLE).unwrap();
+    assert_eq!(
+        run(&["steps", "-"], &table, &dir),
+        (
+            1,
+            "Error: An output file (-o) is required when reading from stdin ('-').\n".into()
+        )
+    );
+    assert_eq!(
+        run(
+            &["steps", "-", "-o", "piped", "--size", "400"],
+            &table,
+            &dir
+        )
+        .0,
+        0
+    );
+    assert!(
+        fs::read_to_string(dir.join("piped/steps.md"))
+            .unwrap()
+            .starts_with("# piped: assembly steps\n")
+    );
+}
+
+#[test]
+fn a_design_without_holes_has_no_part_drawings() {
+    let dir = folder("steps-plain");
+    fs::write(
+        dir.join("plain.nd"),
+        "(a:2x4 =400)\n(b:2x4 =400)\na -[TF<0 BD<0]- b\n",
+    )
+    .unwrap();
+    let (code, err) = run(&["steps", "plain.nd", "--size", "400"], "", &dir);
+    assert_eq!(code, 0, "{err}");
+    assert!(
+        err.ends_with("Successfully wrote steps.md and 1 step image to plain-steps\n"),
+        "{err}"
     );
 }
