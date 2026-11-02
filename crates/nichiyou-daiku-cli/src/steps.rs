@@ -57,9 +57,14 @@ fn write(assembly: &Assembly, directory: &Path, title: &str, size: u32) -> Resul
     let drawn: Vec<usize> = (0..groups.len())
         .filter(|&i| !groups[i].holes.is_empty())
         .collect();
-    std::fs::create_dir_all(directory).map_err(|e| e.to_string())?;
+    // Each failure names its file: the input is fine by now, the output is not
+    let shown = |path: &Path| python_path(&path.to_string_lossy());
+    std::fs::create_dir_all(directory)
+        .map_err(|e| format!("cannot create {}: {e}", shown(directory)))?;
     let save = |name: &str, svg: &str| {
-        std::fs::write(directory.join(name), png(svg, size)?).map_err(|e| e.to_string())
+        let path = directory.join(name);
+        std::fs::write(&path, png(svg, size)?)
+            .map_err(|e| format!("cannot write {}: {e}", shown(&path)))
     };
     let (mut files, mut crowded) = (Vec::new(), Vec::new());
     for (number, &index) in drawn.iter().enumerate() {
@@ -76,20 +81,21 @@ fn write(assembly: &Assembly, directory: &Path, title: &str, size: u32) -> Resul
         crowded.extend(sheet.notes);
         files.push(name);
     }
-    std::fs::write(
-        directory.join("steps.md"),
-        steps_markdown(assembly, &plan, title),
-    )
-    .map_err(|e| e.to_string())?;
+    let page = directory.join("steps.md");
+    std::fs::write(&page, steps_markdown(assembly, &plan, title))
+        .map_err(|e| format!("cannot write {}: {e}", shown(&page)))?;
     // An old image would pass for a part or a step of this design
-    for entry in std::fs::read_dir(directory).map_err(|e| e.to_string())? {
+    let unread = |e: std::io::Error| format!("cannot read {}: {e}", shown(directory));
+    for entry in std::fs::read_dir(directory).map_err(unread)? {
         let name = entry
-            .map_err(|e| e.to_string())?
+            .map_err(unread)?
             .file_name()
             .to_string_lossy()
             .into_owned();
         if is_image(&name) && !files.contains(&name) {
-            std::fs::remove_file(directory.join(&name)).map_err(|e| e.to_string())?;
+            let old = directory.join(&name);
+            std::fs::remove_file(&old)
+                .map_err(|e| format!("cannot remove {}: {e}", shown(&old)))?;
         }
     }
     Ok(Written {

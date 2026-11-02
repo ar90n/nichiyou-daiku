@@ -66,9 +66,12 @@ fn render_from_stdin_needs_an_output() {
             "Error: An output file (-o) is required when reading from stdin ('-').\n".into()
         )
     );
-    assert_eq!(
-        run(&["render", "-", "-o", "out/check.png"], &table, &dir).0,
-        1
+    // Which file could not be written, so the user knows what to fix
+    let (code, err) = run(&["render", "-", "-o", "out/check.png"], &table, &dir);
+    assert_eq!(code, 1);
+    assert!(
+        err.starts_with("Error rendering the image: cannot write out/check.png: "),
+        "{err}"
     );
     fs::create_dir_all(dir.join("out")).unwrap();
     assert_eq!(
@@ -185,6 +188,17 @@ fn a_design_without_holes_has_no_part_drawings() {
     assert_eq!(code, 0, "{err}");
     assert!(
         err.ends_with("Successfully wrote steps.md and 1 step image to plain-steps\n"),
+        "{err}"
+    );
+}
+
+#[test]
+fn steps_says_which_folder_it_could_not_make() {
+    let dir = folder("steps-unwritable");
+    let (code, err) = run(&["steps", "t.nd", "-o", "t.nd/steps"], "", &dir);
+    assert_eq!(code, 1);
+    assert!(
+        err.starts_with("Error writing the steps: cannot create t.nd/steps: "),
         "{err}"
     );
 }

@@ -53,8 +53,10 @@ pub fn run(args: &Args, echo: &Echo) -> u8 {
         Err(code) => return code,
     };
     let sheet = render_sheet(&assembly, &title, args.size);
-    let written = png(&sheet.svg, args.size)
-        .and_then(|image| std::fs::write(&output, image).map_err(|e| e.to_string()));
+    let written = png(&sheet.svg, args.size).and_then(|image| {
+        std::fs::write(&output, image)
+            .map_err(|e| format!("cannot write {}: {e}", python_path(&output)))
+    });
     if let Err(message) = written {
         echo.error(&format!("Error rendering the image: {message}"), None);
         return 1;
