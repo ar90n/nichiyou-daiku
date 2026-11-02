@@ -1,0 +1,108 @@
+# case: assembly steps
+
+## Parts
+
+| Pieces | Lumber | Length (mm) | Count | Drawing |
+|--------|--------|-------------|-------|---------|
+| leg_fl | 2x4 | 401 | 1 | [part-01.png](part-01.png) |
+| leg_fr | 2x4 | 401 | 1 | [part-02.png](part-02.png) |
+| leg_bl | 2x4 | 401 | 1 | [part-03.png](part-03.png) |
+| leg_br | 2x4 | 401 | 1 | [part-04.png](part-04.png) |
+| apron_front | 2x4 | 722 | 1 | [part-05.png](part-05.png) |
+| apron_back | 2x4 | 722 | 1 | [part-06.png](part-06.png) |
+| apron_left, apron_right | 2x4 | 224 | 2 | [part-07.png](part-07.png) |
+| top_1, top_2, top_3, top_4, top_5, top_6, top_7, top_8, top_9, top_10 | 1x4 | 300 | 10 | [part-08.png](part-08.png) |
+
+### leg_fl
+
+![Part 1](part-01.png)
+
+### leg_fr
+
+![Part 2](part-02.png)
+
+### leg_bl
+
+![Part 3](part-03.png)
+
+### leg_br
+
+![Part 4](part-04.png)
+
+### apron_front
+
+![Part 5](part-05.png)
+
+### apron_back
+
+![Part 6](part-06.png)
+
+### apron_left, apron_right ×2
+
+![Part 7](part-07.png)
+
+### top_1, top_2, top_3, top_4, top_5, top_6, top_7, top_8, top_9, top_10 ×10
+
+![Part 8](part-08.png)
+
+## Step 1 - Left frame
+
+![Step 1](step-01.png)
+
+| Piece | Lumber | Length (mm) |
+|-------|--------|-------------|
+| leg_fl | 2x4 | 401 |
+| leg_bl | 2x4 | 401 |
+| apron_left | 2x4 | 224 |
+
+| Fastener | Count |
+|----------|-------|
+| Dowel 8x30 | 4 |
+
+## Step 2 - Right frame (sub-assembly)
+
+![Step 2](step-02.png)
+
+| Piece | Lumber | Length (mm) |
+|-------|--------|-------------|
+| leg_fr | 2x4 | 401 |
+| leg_br | 2x4 | 401 |
+| apron_right | 2x4 | 224 |
+
+| Fastener | Count |
+|----------|-------|
+| Dowel 8x30 | 4 |
+
+## Step 3 - Join (join)
+
+![Step 3](step-03.png)
+
+| Piece | Lumber | Length (mm) |
+|-------|--------|-------------|
+| apron_front | 2x4 | 722 |
+| apron_back | 2x4 | 722 |
+
+| Fastener | Count |
+|----------|-------|
+| Dowel 8x30 | 8 |
+
+## Step 4 - Seat boards
+
+![Step 4](step-04.png)
+
+| Piece | Lumber | Length (mm) |
+|-------|--------|-------------|
+| top_1 | 1x4 | 300 |
+| top_2 | 1x4 | 300 |
+| top_3 | 1x4 | 300 |
+| top_4 | 1x4 | 300 |
+| top_5 | 1x4 | 300 |
+| top_6 | 1x4 | 300 |
+| top_7 | 1x4 | 300 |
+| top_8 | 1x4 | 300 |
+| top_9 | 1x4 | 300 |
+| top_10 | 1x4 | 300 |
+
+| Fastener | Count |
+|----------|-------|
+| Slim screw 3.3x45 | 20 |

@@ -1,0 +1,17 @@
+# case: assembly steps
+
+## Parts
+
+| Pieces | Lumber | Length (mm) | Count | Drawing |
+|--------|--------|-------------|-------|---------|
+| leg | 2x4 | 720 | 1 |  |
+| apron | 2x4 | 600 | 1 |  |
+
+## Step 1
+
+![Step 1](step-01.png)
+
+| Piece | Lumber | Length (mm) |
+|-------|--------|-------------|
+| leg | 2x4 | 720 |
+| apron | 2x4 | 600 |

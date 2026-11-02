@@ -1,0 +1,169 @@
+# case: assembly steps
+
+No steps block: each step adds one piece. Group pieces with a steps block, e.g. `steps { "Frame": leg_fl, apron_front, ... }`.
+
+## Parts
+
+| Pieces | Lumber | Length (mm) | Count | Drawing |
+|--------|--------|-------------|-------|---------|
+| leg_fl | 2x4 | 701 | 1 | [part-01.png](part-01.png) |
+| leg_fr | 2x4 | 701 | 1 | [part-02.png](part-02.png) |
+| leg_bl | 2x4 | 701 | 1 | [part-03.png](part-03.png) |
+| leg_br | 2x4 | 701 | 1 | [part-04.png](part-04.png) |
+| apron_front | 2x4 | 622 | 1 | [part-05.png](part-05.png) |
+| apron_back | 2x4 | 622 | 1 | [part-06.png](part-06.png) |
+| apron_left, apron_right | 2x4 | 424 | 2 | [part-07.png](part-07.png) |
+| top_1, top_2, top_8 | 1x4 | 500 | 3 | [part-08.png](part-08.png) |
+
+### leg_fl
+
+![Part 1](part-01.png)
+
+### leg_fr
+
+![Part 2](part-02.png)
+
+### leg_bl
+
+![Part 3](part-03.png)
+
+### leg_br
+
+![Part 4](part-04.png)
+
+### apron_front
+
+![Part 5](part-05.png)
+
+### apron_back
+
+![Part 6](part-06.png)
+
+### apron_left, apron_right ×2
+
+![Part 7](part-07.png)
+
+### top_1, top_2, top_8 ×3
+
+![Part 8](part-08.png)
+
+## Step 1
+
+![Step 1](step-01.png)
+
+| Piece | Lumber | Length (mm) |
+|-------|--------|-------------|
+| leg_fl | 2x4 | 701 |
+| apron_front | 2x4 | 622 |
+
+| Fastener | Count |
+|----------|-------|
+| Dowel 8x30 | 2 |
+
+## Step 2
+
+![Step 2](step-02.png)
+
+| Piece | Lumber | Length (mm) |
+|-------|--------|-------------|
+| leg_fr | 2x4 | 701 |
+
+| Fastener | Count |
+|----------|-------|
+| Dowel 8x30 | 2 |
+
+## Step 3
+
+![Step 3](step-03.png)
+
+| Piece | Lumber | Length (mm) |
+|-------|--------|-------------|
+| apron_left | 2x4 | 424 |
+
+| Fastener | Count |
+|----------|-------|
+| Dowel 8x30 | 2 |
+
+## Step 4
+
+![Step 4](step-04.png)
+
+| Piece | Lumber | Length (mm) |
+|-------|--------|-------------|
+| leg_bl | 2x4 | 701 |
+
+| Fastener | Count |
+|----------|-------|
+| Dowel 8x30 | 2 |
+
+## Step 5
+
+![Step 5](step-05.png)
+
+| Piece | Lumber | Length (mm) |
+|-------|--------|-------------|
+| apron_back | 2x4 | 622 |
+
+| Fastener | Count |
+|----------|-------|
+| Dowel 8x30 | 2 |
+
+## Step 6
+
+![Step 6](step-06.png)
+
+| Piece | Lumber | Length (mm) |
+|-------|--------|-------------|
+| leg_br | 2x4 | 701 |
+
+| Fastener | Count |
+|----------|-------|
+| Dowel 8x30 | 2 |
+
+## Step 7
+
+![Step 7](step-07.png)
+
+| Piece | Lumber | Length (mm) |
+|-------|--------|-------------|
+| apron_right | 2x4 | 424 |
+
+| Fastener | Count |
+|----------|-------|
+| Dowel 8x30 | 4 |
+
+## Step 8
+
+![Step 8](step-08.png)
+
+| Piece | Lumber | Length (mm) |
+|-------|--------|-------------|
+| top_1 | 1x4 | 500 |
+
+| Fastener | Count |
+|----------|-------|
+| Slim screw 3.3x45 | 2 |
+
+## Step 9
+
+![Step 9](step-09.png)
+
+| Piece | Lumber | Length (mm) |
+|-------|--------|-------------|
+| top_2 | 1x4 | 500 |
+
+| Fastener | Count |
+|----------|-------|
+| Slim screw 3.3x45 | 2 |
+
+## Step 10
+
+![Step 10](step-10.png)
+
+| Piece | Lumber | Length (mm) |
+|-------|--------|-------------|
+| top_8 | 1x4 | 500 |
+
+| Fastener | Count |
+|----------|-------|
+| Slim screw 3.3x45 | 2 |

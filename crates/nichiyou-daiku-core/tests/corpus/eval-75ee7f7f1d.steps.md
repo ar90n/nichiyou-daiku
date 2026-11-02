@@ -1,0 +1,66 @@
+# case: assembly steps
+
+## Parts
+
+| Pieces | Lumber | Length (mm) | Count | Drawing |
+|--------|--------|-------------|-------|---------|
+| side_l, side_r | 1x8 | 900 | 2 | [part-01.png](part-01.png) |
+| shelf_1, shelf_2, shelf_3, shelf_4 | 1x8 | 562 | 4 | [part-02.png](part-02.png) |
+
+### side_l, side_r ×2
+
+![Part 1](part-01.png)
+
+### shelf_1, shelf_2, shelf_3, shelf_4 ×4
+
+![Part 2](part-02.png)
+
+## Step 1 - Bottom shelf
+
+![Step 1](step-01.png)
+
+| Piece | Lumber | Length (mm) |
+|-------|--------|-------------|
+| side_l | 1x8 | 900 |
+| side_r | 1x8 | 900 |
+| shelf_1 | 1x8 | 562 |
+
+| Fastener | Count |
+|----------|-------|
+| Slim screw 3.3x30 | 4 |
+
+## Step 2 - Lower-middle shelf
+
+![Step 2](step-02.png)
+
+| Piece | Lumber | Length (mm) |
+|-------|--------|-------------|
+| shelf_2 | 1x8 | 562 |
+
+| Fastener | Count |
+|----------|-------|
+| Slim screw 3.3x30 | 4 |
+
+## Step 3 - Upper-middle shelf
+
+![Step 3](step-03.png)
+
+| Piece | Lumber | Length (mm) |
+|-------|--------|-------------|
+| shelf_3 | 1x8 | 562 |
+
+| Fastener | Count |
+|----------|-------|
+| Slim screw 3.3x30 | 4 |
+
+## Step 4 - Top shelf
+
+![Step 4](step-04.png)
+
+| Piece | Lumber | Length (mm) |
+|-------|--------|-------------|
+| shelf_4 | 1x8 | 562 |
+
+| Fastener | Count |
+|----------|-------|
+| Slim screw 3.3x30 | 4 |

@@ -1,0 +1,79 @@
+# case: assembly steps
+
+## Parts
+
+| Pieces | Lumber | Length (mm) | Count | Drawing |
+|--------|--------|-------------|-------|---------|
+| leg_fl, leg_fr, leg_bl, leg_br | 2x2 | 481 | 4 | [part-01.png](part-01.png) |
+| rail_f_1, rail_f_2, rail_f_3, rail_b_1, rail_b_2, rail_b_3 | 2x2 | 524 | 6 | [part-02.png](part-02.png) |
+| shelf_1_1, shelf_1_2, shelf_1_3, shelf_1_4, shelf_1_5, shelf_2_1, shelf_2_2, shelf_2_3, shelf_2_4, shelf_2_5, shelf_3_1, shelf_3_2, shelf_3_3, shelf_3_4, shelf_3_5 | 1x4 | 300 | 15 | [part-03.png](part-03.png) |
+
+### leg_fl, leg_fr, leg_bl, leg_br ×4
+
+![Part 1](part-01.png)
+
+### rail_f_1, rail_f_2, rail_f_3, rail_b_1, rail_b_2, rail_b_3 ×6
+
+![Part 2](part-02.png)
+
+### shelf_1_1, shelf_1_2, shelf_1_3, shelf_1_4, shelf_1_5, shelf_2_1, shelf_2_2, shelf_2_3, shelf_2_4, shelf_2_5, shelf_3_1, shelf_3_2, shelf_3_3, shelf_3_4, shelf_3_5 ×15
+
+![Part 3](part-03.png)
+
+## Step 1 - Front frame
+
+![Step 1](step-01.png)
+
+| Piece | Lumber | Length (mm) |
+|-------|--------|-------------|
+| leg_fl | 2x2 | 481 |
+| leg_fr | 2x2 | 481 |
+| rail_f_1 | 2x2 | 524 |
+| rail_f_2 | 2x2 | 524 |
+| rail_f_3 | 2x2 | 524 |
+
+| Fastener | Count |
+|----------|-------|
+| Dowel 8x30 | 12 |
+
+## Step 2 - Back frame (sub-assembly)
+
+![Step 2](step-02.png)
+
+| Piece | Lumber | Length (mm) |
+|-------|--------|-------------|
+| leg_bl | 2x2 | 481 |
+| leg_br | 2x2 | 481 |
+| rail_b_1 | 2x2 | 524 |
+| rail_b_2 | 2x2 | 524 |
+| rail_b_3 | 2x2 | 524 |
+
+| Fastener | Count |
+|----------|-------|
+| Dowel 8x30 | 12 |
+
+## Step 3 - Shelves (join)
+
+![Step 3](step-03.png)
+
+| Piece | Lumber | Length (mm) |
+|-------|--------|-------------|
+| shelf_1_1 | 1x4 | 300 |
+| shelf_1_2 | 1x4 | 300 |
+| shelf_1_3 | 1x4 | 300 |
+| shelf_1_4 | 1x4 | 300 |
+| shelf_1_5 | 1x4 | 300 |
+| shelf_2_1 | 1x4 | 300 |
+| shelf_2_2 | 1x4 | 300 |
+| shelf_2_3 | 1x4 | 300 |
+| shelf_2_4 | 1x4 | 300 |
+| shelf_2_5 | 1x4 | 300 |
+| shelf_3_1 | 1x4 | 300 |
+| shelf_3_2 | 1x4 | 300 |
+| shelf_3_3 | 1x4 | 300 |
+| shelf_3_4 | 1x4 | 300 |
+| shelf_3_5 | 1x4 | 300 |
+
+| Fastener | Count |
+|----------|-------|
+| Slim screw 3.3x45 | 60 |

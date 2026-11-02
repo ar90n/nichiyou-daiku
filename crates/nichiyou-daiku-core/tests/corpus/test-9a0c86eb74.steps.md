@@ -1,0 +1,79 @@
+# case: assembly steps
+
+No steps block: each step adds one piece. Group pieces with a steps block, e.g. `steps { "Frame": left_side, bottom, ... }`.
+
+## Parts
+
+| Pieces | Lumber | Length (mm) | Count | Drawing |
+|--------|--------|-------------|-------|---------|
+| left_side, right_side | 1x8 | 900 | 2 | [part-01.png](part-01.png) |
+| bottom, shelf_1, shelf_2, top | 1x8 | 562 | 4 | [part-02.png](part-02.png) |
+
+### left_side, right_side ×2
+
+![Part 1](part-01.png)
+
+### bottom, shelf_1, shelf_2, top ×4
+
+![Part 2](part-02.png)
+
+## Step 1
+
+![Step 1](step-01.png)
+
+| Piece | Lumber | Length (mm) |
+|-------|--------|-------------|
+| left_side | 1x8 | 900 |
+| bottom | 1x8 | 562 |
+
+| Fastener | Count |
+|----------|-------|
+| Dowel 8x30 | 2 |
+
+## Step 2
+
+![Step 2](step-02.png)
+
+| Piece | Lumber | Length (mm) |
+|-------|--------|-------------|
+| right_side | 1x8 | 900 |
+
+| Fastener | Count |
+|----------|-------|
+| Dowel 8x30 | 2 |
+
+## Step 3
+
+![Step 3](step-03.png)
+
+| Piece | Lumber | Length (mm) |
+|-------|--------|-------------|
+| shelf_1 | 1x8 | 562 |
+
+| Fastener | Count |
+|----------|-------|
+| Dowel 8x30 | 4 |
+
+## Step 4
+
+![Step 4](step-04.png)
+
+| Piece | Lumber | Length (mm) |
+|-------|--------|-------------|
+| shelf_2 | 1x8 | 562 |
+
+| Fastener | Count |
+|----------|-------|
+| Dowel 8x30 | 4 |
+
+## Step 5
+
+![Step 5](step-05.png)
+
+| Piece | Lumber | Length (mm) |
+|-------|--------|-------------|
+| top | 1x8 | 562 |
+
+| Fastener | Count |
+|----------|-------|
+| Dowel 8x30 | 4 |

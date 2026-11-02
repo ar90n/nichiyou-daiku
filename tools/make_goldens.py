@@ -12,7 +12,9 @@ dimensions) and NAME.parts.json (what each drilled part's drawing says); the
 last three only when the source assembles. `--steps-only` writes the steps and
 parts files again for the corpus that is there. `--cli` writes what the CLI
 prints (NAME.cli-validate.txt and, for examples,
-NAME.cli-validate-json.txt) and the option cases in
+NAME.cli-validate-json.txt), NAME.steps.md (the steps command's page) and,
+for the examples and the documents' examples, NAME.render.json (what the
+check image labels and notes), and the option cases in
 crates/nichiyou-daiku-cli/tests/cli. The report's golden files are the Rust CLI's own
 since countersinks (2026-11-02): ND_BLESS=1 cargo test -p nichiyou-daiku-cli
 writes them.
@@ -52,7 +54,7 @@ from nichiyou_daiku.shell.diagnostics import (  # noqa: E402
 )
 from nichiyou_daiku.shell.dimensioning import chain_for, chain_from_stops  # noqa: E402
 from nichiyou_daiku.shell.parts import part_title  # noqa: E402
-from nichiyou_daiku.shell.instructions import grouping_hint  # noqa: E402
+from nichiyou_daiku.shell.instructions import grouping_hint, steps_markdown  # noqa: E402
 from nichiyou_daiku.shell.resources import count_hardware  # noqa: E402
 from nichiyou_daiku.shell.views import axis_view, project  # noqa: E402
 from tests.test_docs import ND_BLOCKS, ND_FILES  # noqa: E402
@@ -240,7 +242,15 @@ def write(path: Path, value) -> None:
 CLI_DIR = ROOT / "crates" / "nichiyou-daiku-cli" / "tests" / "cli"
 # The report's golden files are the Rust CLI's own since countersinks
 # (2026-11-02): ND_BLESS=1 cargo test -p nichiyou-daiku-cli writes them
-CLI_GENERATED = ("*.cli-validate.txt", "*.cli-validate-json.txt")
+CLI_GENERATED = (
+    "*.cli-validate.txt",
+    "*.cli-validate-json.txt",
+    "*.steps.md",
+    "*.render.json",
+)
+RENDERED = ("example-", "doc-")
+"""Cases whose check image's labels and note are recorded: drawing them in
+Python takes build123d's hidden lines, too slow for every case."""
 GENERATED_ON = re.compile(r"^\*Generated on \d{4}-\d{2}-\d{2} \d{2}:\d{2}\*$", re.M)
 
 # A design with a problem (an unconnected piece) and one with a piece longer
@@ -334,6 +344,24 @@ def run_cli(args: list[str], source: str | None = None) -> str:
     return GENERATED_ON.sub("*Generated on DATE*", text)
 
 
+def render_facts(assembly: Assembly) -> dict:
+    """What the check image says (shell/render.py), drawn with square edges
+    as the Rust version draws them."""
+    from nichiyou_daiku.shell.build123d_export import assembly_to_build123d
+    from nichiyou_daiku.shell.render import render_sheet
+
+    part = assembly_to_build123d(assembly, fillet_radius=0)
+    sheet = render_sheet(part, assembly, title="case.nd")
+    labels: dict[str, list[str]] = {}
+    for label in sheet.labels:
+        labels.setdefault(label.caption, []).append(label.piece_id)
+    return {
+        "labels": labels,
+        "unlabelled": list(sheet.unlabelled),
+        "note": list(sheet.note),
+    }
+
+
 def write_cli_goldens() -> None:
     for pattern in CLI_GENERATED:
         for old in CORPUS.glob(pattern):
@@ -348,6 +376,15 @@ def write_cli_goldens() -> None:
             (CORPUS / f"{name}.cli-validate-json.txt").write_text(
                 run_cli(["validate", "--json", "-"], source), encoding="utf-8"
             )
+        try:
+            assembly = Assembly.of(parse_dsl(source))
+        except Exception:
+            continue  # Nothing to draw or plan
+        (CORPUS / f"{name}.steps.md").write_text(
+            steps_markdown(assembly, plan_steps(assembly), "case"), encoding="utf-8"
+        )
+        if name.startswith(RENDERED):
+            write(CORPUS / f"{name}.render.json", render_facts(assembly))
     stock = CLI_DIR / "stock"
     stock.mkdir(parents=True, exist_ok=True)
     for old in CLI_DIR.glob("*.txt"):
