@@ -60,10 +60,10 @@ Distances are measured on the face the hole is drilled into:
 
 ### beam2 (2x4, 800mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| left | 350.0mm | 19.0mm | φ10.0mm | 12.5mm |
-| left | 650.0mm | 19.0mm | φ10.0mm | 12.5mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| left | 350.0mm | 19.0mm | φ10.0mm | 12.5mm | - |
+| left | 650.0mm | 19.0mm | φ10.0mm | 12.5mm | - |
 
 ```
 left (800mm x 38mm):
@@ -78,12 +78,12 @@ left (800mm x 38mm):
 
 ### beam3 (2x4, 600mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| right | 150.0mm | 19.0mm | φ10.0mm | 12.5mm |
-| right | 450.0mm | 19.0mm | φ10.0mm | 12.5mm |
-| front | 225.0mm | 44.5mm | φ2.5mm | 12.0mm |
-| front | 475.0mm | 44.5mm | φ2.5mm | 12.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| right | 150.0mm | 19.0mm | φ10.0mm | 12.5mm | - |
+| right | 450.0mm | 19.0mm | φ10.0mm | 12.5mm | - |
+| front | 225.0mm | 44.5mm | φ2.5mm | 12.0mm | - |
+| front | 475.0mm | 44.5mm | φ2.5mm | 12.0mm | - |
 
 ```
 front (600mm x 89mm):
@@ -109,10 +109,10 @@ right (600mm x 38mm):
 
 ### beam4 (2x4, 500mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| front | 125.0mm | 44.5mm | φ2.5mm | through |
-| front | 375.0mm | 44.5mm | φ2.5mm | through |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| front | 125.0mm | 44.5mm | φ2.5mm | through | φ7.0mm |
+| front | 375.0mm | 44.5mm | φ2.5mm | through | φ7.0mm |
 
 ```
 front (500mm x 89mm):
@@ -140,6 +140,7 @@ front (500mm x 89mm):
 
 - **2.5mm**: 4 holes, deepest: through
 - **10mm**: 4 holes, deepest 12.5mm
+- **Countersink φ7mm**: 2 holes
 
 
 ## Purchase Recommendations

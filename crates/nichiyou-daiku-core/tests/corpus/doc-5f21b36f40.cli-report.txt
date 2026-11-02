@@ -68,10 +68,10 @@ Distances are measured on the face the hole is drilled into:
 
 ### cleat (2x4, 400mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| back | 100.0mm | 44.5mm | φ2.5mm | through |
-| back | 300.0mm | 44.5mm | φ2.5mm | through |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| back | 100.0mm | 44.5mm | φ2.5mm | through | φ7.5mm |
+| back | 300.0mm | 44.5mm | φ2.5mm | through | φ7.5mm |
 
 ```
 back (400mm x 89mm):
@@ -86,18 +86,18 @@ back (400mm x 89mm):
 
 ### post (2x4, 600mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| front | 344.5mm | 22.2mm | φ2.0mm | 12.0mm |
-| front | 344.5mm | 66.8mm | φ2.0mm | 12.0mm |
-| front | 144.5mm | 22.2mm | φ2.5mm | 12.0mm |
-| front | 144.5mm | 66.8mm | φ2.5mm | 12.0mm |
-| back | 300.0mm | 44.5mm | φ2.5mm | 19.0mm |
-| back | 500.0mm | 44.5mm | φ2.5mm | 19.0mm |
-| right | 277.8mm | 19.0mm | φ2.5mm | through |
-| left | 277.8mm | 19.0mm | φ10.0mm | 51.0mm |
-| right | 233.2mm | 19.0mm | φ2.5mm | through |
-| left | 233.2mm | 19.0mm | φ10.0mm | 51.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| front | 344.5mm | 22.2mm | φ2.0mm | 12.0mm | - |
+| front | 344.5mm | 66.8mm | φ2.0mm | 12.0mm | - |
+| front | 144.5mm | 22.2mm | φ2.5mm | 12.0mm | - |
+| front | 144.5mm | 66.8mm | φ2.5mm | 12.0mm | - |
+| back | 300.0mm | 44.5mm | φ2.5mm | 19.0mm | - |
+| back | 500.0mm | 44.5mm | φ2.5mm | 19.0mm | - |
+| right | 277.8mm | 19.0mm | φ2.5mm | through | - |
+| left | 277.8mm | 19.0mm | φ10.0mm | 51.0mm | - |
+| right | 233.2mm | 19.0mm | φ2.5mm | through | - |
+| left | 233.2mm | 19.0mm | φ10.0mm | 51.0mm | - |
 
 ```
 back (600mm x 89mm):
@@ -145,10 +145,10 @@ right (600mm x 38mm):
 
 ### rail (2x4, 400mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| front | 377.8mm | 44.5mm | φ2.0mm | through |
-| front | 333.2mm | 44.5mm | φ2.0mm | through |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| front | 377.8mm | 44.5mm | φ2.0mm | through | φ6.5mm |
+| front | 333.2mm | 44.5mm | φ2.0mm | through | φ6.5mm |
 
 ```
 front (400mm x 89mm):
@@ -163,10 +163,10 @@ front (400mm x 89mm):
 
 ### rail_low (2x4, 400mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| front | 377.8mm | 44.5mm | φ2.5mm | through |
-| front | 333.2mm | 44.5mm | φ2.5mm | through |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| front | 377.8mm | 44.5mm | φ2.5mm | through | φ7.0mm |
+| front | 333.2mm | 44.5mm | φ2.5mm | through | φ7.0mm |
 
 ```
 front (400mm x 89mm):
@@ -181,10 +181,10 @@ front (400mm x 89mm):
 
 ### rail_side (2x4, 400mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| down | 22.2mm | 19.0mm | φ2.5mm | 27.0mm |
-| down | 66.8mm | 19.0mm | φ2.5mm | 27.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| down | 22.2mm | 19.0mm | φ2.5mm | 27.0mm | - |
+| down | 66.8mm | 19.0mm | φ2.5mm | 27.0mm | - |
 
 ```
 down (89mm x 38mm):
@@ -215,6 +215,9 @@ down (89mm x 38mm):
 - **2mm**: 4 holes, deepest: through
 - **2.5mm**: 12 holes, deepest: through
 - **10mm**: 2 holes, deepest 51mm
+- **Countersink φ6.5mm**: 2 holes
+- **Countersink φ7mm**: 2 holes
+- **Countersink φ7.5mm**: 2 holes
 
 
 ## Purchase Recommendations

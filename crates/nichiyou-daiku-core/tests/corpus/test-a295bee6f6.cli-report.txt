@@ -58,10 +58,10 @@ Distances are measured on the face the hole is drilled into:
 
 ### front (2x4, 300mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| front | 22.2mm | 44.5mm | φ2.5mm | through |
-| front | 66.8mm | 44.5mm | φ2.5mm | through |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| front | 22.2mm | 44.5mm | φ2.5mm | through | φ7.5mm |
+| front | 66.8mm | 44.5mm | φ2.5mm | through | φ7.5mm |
 
 ```
 front (300mm x 89mm):
@@ -76,10 +76,10 @@ front (300mm x 89mm):
 
 ### other (2x4, 300mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| back | 22.2mm | 44.5mm | φ2.5mm | through |
-| back | 66.8mm | 44.5mm | φ2.5mm | through |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| back | 22.2mm | 44.5mm | φ2.5mm | through | φ7.5mm |
+| back | 66.8mm | 44.5mm | φ2.5mm | through | φ7.5mm |
 
 ```
 back (300mm x 89mm):
@@ -94,12 +94,12 @@ back (300mm x 89mm):
 
 ### post (2x4, 600mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| front | 255.5mm | 22.2mm | φ2.5mm | 27.0mm |
-| front | 255.5mm | 66.8mm | φ2.5mm | 27.0mm |
-| back | 255.5mm | 22.2mm | φ2.5mm | 27.0mm |
-| back | 255.5mm | 66.8mm | φ2.5mm | 27.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| front | 255.5mm | 22.2mm | φ2.5mm | 27.0mm | - |
+| front | 255.5mm | 66.8mm | φ2.5mm | 27.0mm | - |
+| back | 255.5mm | 22.2mm | φ2.5mm | 27.0mm | - |
+| back | 255.5mm | 66.8mm | φ2.5mm | 27.0mm | - |
 
 ```
 back (600mm x 89mm):
@@ -136,6 +136,7 @@ front (600mm x 89mm):
 ### Drill Bits:
 
 - **2.5mm**: 8 holes, deepest: through
+- **Countersink φ7.5mm**: 4 holes
 
 
 ## Purchase Recommendations

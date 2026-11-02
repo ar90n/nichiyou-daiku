@@ -44,12 +44,12 @@ Distances are measured on the face the hole is drilled into:
 
 ### post (2x4, 600mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| right | 277.8mm | 19.0mm | φ2.5mm | through |
-| left | 277.8mm | 19.0mm | φ10.0mm | 51.0mm |
-| right | 233.2mm | 19.0mm | φ2.5mm | through |
-| left | 233.2mm | 19.0mm | φ10.0mm | 51.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| right | 277.8mm | 19.0mm | φ2.5mm | through | - |
+| left | 277.8mm | 19.0mm | φ10.0mm | 51.0mm | - |
+| right | 233.2mm | 19.0mm | φ2.5mm | through | - |
+| left | 233.2mm | 19.0mm | φ10.0mm | 51.0mm | - |
 
 ```
 left (600mm x 38mm):
@@ -75,10 +75,10 @@ right (600mm x 38mm):
 
 ### rail (2x4, 300mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| down | 22.2mm | 19.0mm | φ2.5mm | 27.0mm |
-| down | 66.8mm | 19.0mm | φ2.5mm | 27.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| down | 22.2mm | 19.0mm | φ2.5mm | 27.0mm | - |
+| down | 66.8mm | 19.0mm | φ2.5mm | 27.0mm | - |
 
 ```
 down (89mm x 38mm):

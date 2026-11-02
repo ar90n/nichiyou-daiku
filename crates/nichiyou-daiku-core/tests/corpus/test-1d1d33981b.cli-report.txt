@@ -44,10 +44,10 @@ Distances are measured on the face the hole is drilled into:
 
 ### beam1 (2x4, 1000mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| front | 981.0mm | 14.8mm | φ8.0mm | 10.0mm |
-| front | 981.0mm | 44.2mm | φ8.0mm | 10.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| front | 981.0mm | 14.8mm | φ8.0mm | 10.0mm | - |
+| front | 981.0mm | 44.2mm | φ8.0mm | 10.0mm | - |
 
 ```
 front (1000mm x 89mm):
@@ -62,10 +62,10 @@ front (1000mm x 89mm):
 
 ### beam2 (2x4, 800mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| down | 44.2mm | 19.0mm | φ8.0mm | 10.0mm |
-| down | 14.8mm | 19.0mm | φ8.0mm | 10.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| down | 44.2mm | 19.0mm | φ8.0mm | 10.0mm | - |
+| down | 14.8mm | 19.0mm | φ8.0mm | 10.0mm | - |
 
 ```
 down (89mm x 38mm):

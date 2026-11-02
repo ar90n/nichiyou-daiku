@@ -44,10 +44,10 @@ Distances are measured on the face the hole is drilled into:
 
 ### base (2x4, 600mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| down | 22.2mm | 19.0mm | φ2.5mm | 51.0mm |
-| down | 66.8mm | 19.0mm | φ2.5mm | 51.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| down | 22.2mm | 19.0mm | φ2.5mm | 51.0mm | - |
+| down | 66.8mm | 19.0mm | φ2.5mm | 51.0mm | - |
 
 ```
 down (89mm x 38mm):
@@ -62,10 +62,10 @@ down (89mm x 38mm):
 
 ### target (1x4, 300mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| front | 281.0mm | 22.2mm | φ2.5mm | through |
-| front | 281.0mm | 66.8mm | φ2.5mm | through |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| front | 281.0mm | 22.2mm | φ2.5mm | through | φ7.5mm |
+| front | 281.0mm | 66.8mm | φ2.5mm | through | φ7.5mm |
 
 ```
 front (300mm x 89mm):
@@ -92,6 +92,7 @@ front (300mm x 89mm):
 ### Drill Bits:
 
 - **2.5mm**: 4 holes, deepest: through
+- **Countersink φ7.5mm**: 2 holes
 
 
 ## Purchase Recommendations

@@ -82,12 +82,12 @@ Distances are measured on the face the hole is drilled into:
 
 ### back_spacer (1x6, 271.5mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| down | 35.0mm | 9.5mm | φ8.0mm | 15.0mm |
-| down | 105.0mm | 9.5mm | φ8.0mm | 15.0mm |
-| top | 35.0mm | 9.5mm | φ8.0mm | 15.0mm |
-| top | 105.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| down | 35.0mm | 9.5mm | φ8.0mm | 15.0mm | - |
+| down | 105.0mm | 9.5mm | φ8.0mm | 15.0mm | - |
+| top | 35.0mm | 9.5mm | φ8.0mm | 15.0mm | - |
+| top | 105.0mm | 9.5mm | φ8.0mm | 15.0mm | - |
 
 ```
 down (140mm x 19mm):
@@ -113,14 +113,14 @@ top (140mm x 19mm):
 
 ### shelf_bottom (1x6, 412mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| front | 171.0mm | 9.5mm | φ8.0mm | 15.0mm |
-| front | 241.0mm | 9.5mm | φ8.0mm | 15.0mm |
-| down | 35.0mm | 9.5mm | φ2.0mm | 26.0mm |
-| down | 105.0mm | 9.5mm | φ2.0mm | 26.0mm |
-| top | 35.0mm | 9.5mm | φ2.0mm | 26.0mm |
-| top | 105.0mm | 9.5mm | φ2.0mm | 26.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| front | 171.0mm | 9.5mm | φ8.0mm | 15.0mm | - |
+| front | 241.0mm | 9.5mm | φ8.0mm | 15.0mm | - |
+| down | 35.0mm | 9.5mm | φ2.0mm | 26.0mm | - |
+| down | 105.0mm | 9.5mm | φ2.0mm | 26.0mm | - |
+| top | 35.0mm | 9.5mm | φ2.0mm | 26.0mm | - |
+| top | 105.0mm | 9.5mm | φ2.0mm | 26.0mm | - |
 
 ```
 down (140mm x 19mm):
@@ -157,14 +157,14 @@ top (140mm x 19mm):
 
 ### shelf_middle (1x6, 412mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| back | 171.0mm | 9.5mm | φ8.0mm | 15.0mm |
-| back | 241.0mm | 9.5mm | φ8.0mm | 15.0mm |
-| down | 35.0mm | 9.5mm | φ2.0mm | 26.0mm |
-| down | 105.0mm | 9.5mm | φ2.0mm | 26.0mm |
-| top | 35.0mm | 9.5mm | φ2.0mm | 26.0mm |
-| top | 105.0mm | 9.5mm | φ2.0mm | 26.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| back | 171.0mm | 9.5mm | φ8.0mm | 15.0mm | - |
+| back | 241.0mm | 9.5mm | φ8.0mm | 15.0mm | - |
+| down | 35.0mm | 9.5mm | φ2.0mm | 26.0mm | - |
+| down | 105.0mm | 9.5mm | φ2.0mm | 26.0mm | - |
+| top | 35.0mm | 9.5mm | φ2.0mm | 26.0mm | - |
+| top | 105.0mm | 9.5mm | φ2.0mm | 26.0mm | - |
 
 ```
 back (412mm x 140mm):
@@ -201,12 +201,12 @@ top (140mm x 19mm):
 
 ### shelf_top (1x6, 412mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| down | 35.0mm | 9.5mm | φ2.0mm | 26.0mm |
-| down | 105.0mm | 9.5mm | φ2.0mm | 26.0mm |
-| top | 35.0mm | 9.5mm | φ2.0mm | 26.0mm |
-| top | 105.0mm | 9.5mm | φ2.0mm | 26.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| down | 35.0mm | 9.5mm | φ2.0mm | 26.0mm | - |
+| down | 105.0mm | 9.5mm | φ2.0mm | 26.0mm | - |
+| top | 35.0mm | 9.5mm | φ2.0mm | 26.0mm | - |
+| top | 105.0mm | 9.5mm | φ2.0mm | 26.0mm | - |
 
 ```
 down (140mm x 19mm):
@@ -232,14 +232,14 @@ top (140mm x 19mm):
 
 ### side_l (1x6, 600mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| back | 9.5mm | 105.0mm | φ2.0mm | through |
-| back | 9.5mm | 35.0mm | φ2.0mm | through |
-| back | 300.0mm | 105.0mm | φ2.0mm | through |
-| back | 300.0mm | 35.0mm | φ2.0mm | through |
-| back | 590.5mm | 105.0mm | φ2.0mm | through |
-| back | 590.5mm | 35.0mm | φ2.0mm | through |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| back | 9.5mm | 105.0mm | φ2.0mm | through | φ6.5mm |
+| back | 9.5mm | 35.0mm | φ2.0mm | through | φ6.5mm |
+| back | 300.0mm | 105.0mm | φ2.0mm | through | φ6.5mm |
+| back | 300.0mm | 35.0mm | φ2.0mm | through | φ6.5mm |
+| back | 590.5mm | 105.0mm | φ2.0mm | through | φ6.5mm |
+| back | 590.5mm | 35.0mm | φ2.0mm | through | φ6.5mm |
 
 ```
 back (600mm x 140mm):
@@ -254,14 +254,14 @@ back (600mm x 140mm):
 
 ### side_r (1x6, 600mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| front | 9.5mm | 105.0mm | φ2.0mm | through |
-| front | 9.5mm | 35.0mm | φ2.0mm | through |
-| front | 300.0mm | 105.0mm | φ2.0mm | through |
-| front | 300.0mm | 35.0mm | φ2.0mm | through |
-| front | 590.5mm | 105.0mm | φ2.0mm | through |
-| front | 590.5mm | 35.0mm | φ2.0mm | through |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| front | 9.5mm | 105.0mm | φ2.0mm | through | φ6.5mm |
+| front | 9.5mm | 35.0mm | φ2.0mm | through | φ6.5mm |
+| front | 300.0mm | 105.0mm | φ2.0mm | through | φ6.5mm |
+| front | 300.0mm | 35.0mm | φ2.0mm | through | φ6.5mm |
+| front | 590.5mm | 105.0mm | φ2.0mm | through | φ6.5mm |
+| front | 590.5mm | 35.0mm | φ2.0mm | through | φ6.5mm |
 
 ```
 front (600mm x 140mm):
@@ -289,6 +289,7 @@ front (600mm x 140mm):
 
 - **2mm**: 24 holes, deepest: through
 - **8mm**: 8 holes, deepest 15mm
+- **Countersink φ6.5mm**: 12 holes
 
 
 ## Purchase Recommendations

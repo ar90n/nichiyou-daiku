@@ -67,10 +67,10 @@ Distances are measured on the face the hole is drilled into:
 
 ### back_stiffener (1x8, 274.7mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| down | 46.0mm | 9.5mm | φ8.0mm | 15.0mm |
-| down | 138.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| down | 46.0mm | 9.5mm | φ8.0mm | 15.0mm | - |
+| down | 138.0mm | 9.5mm | φ8.0mm | 15.0mm | - |
 
 ```
 down (184mm x 19mm):
@@ -85,10 +85,10 @@ down (184mm x 19mm):
 
 ### shelf_1 (1x8, 562mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| front | 424.0mm | 9.5mm | φ8.0mm | 15.0mm |
-| front | 516.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| front | 424.0mm | 9.5mm | φ8.0mm | 15.0mm | - |
+| front | 516.0mm | 9.5mm | φ8.0mm | 15.0mm | - |
 
 ```
 front (562mm x 184mm):

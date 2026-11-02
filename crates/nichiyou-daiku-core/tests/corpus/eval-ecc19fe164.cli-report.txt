@@ -58,10 +58,10 @@ Distances are measured on the face the hole is drilled into:
 
 ### af (2x2, 324mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| down | 19.0mm | 9.5mm | φ8.0mm | 15.0mm |
-| down | 19.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| down | 19.0mm | 9.5mm | φ8.0mm | 15.0mm | - |
+| down | 19.0mm | 28.5mm | φ8.0mm | 15.0mm | - |
 
 ```
 down (38mm x 38mm):
@@ -76,10 +76,10 @@ down (38mm x 38mm):
 
 ### al (2x2, 224mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| down | 19.0mm | 28.5mm | φ8.0mm | 15.0mm |
-| down | 19.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| down | 19.0mm | 28.5mm | φ8.0mm | 15.0mm | - |
+| down | 19.0mm | 9.5mm | φ8.0mm | 15.0mm | - |
 
 ```
 down (38mm x 38mm):
@@ -94,12 +94,12 @@ down (38mm x 38mm):
 
 ### leg (2x2, 681mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| left | 662.0mm | 9.5mm | φ8.0mm | 15.0mm |
-| left | 662.0mm | 28.5mm | φ8.0mm | 15.0mm |
-| back | 662.0mm | 9.5mm | φ8.0mm | 15.0mm |
-| back | 662.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| left | 662.0mm | 9.5mm | φ8.0mm | 15.0mm | - |
+| left | 662.0mm | 28.5mm | φ8.0mm | 15.0mm | - |
+| back | 662.0mm | 9.5mm | φ8.0mm | 15.0mm | - |
+| back | 662.0mm | 28.5mm | φ8.0mm | 15.0mm | - |
 
 ```
 back (681mm x 38mm):

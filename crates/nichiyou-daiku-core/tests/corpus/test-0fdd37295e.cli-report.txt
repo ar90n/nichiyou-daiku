@@ -87,12 +87,12 @@ Distances are measured on the face the hole is drilled into:
 
 ### a (2x4, 500mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| front | 33.2mm | 19.0mm | φ8.0mm | 15.0mm |
-| front | 77.8mm | 19.0mm | φ8.0mm | 15.0mm |
-| back | 33.2mm | 19.0mm | φ8.0mm | 20.0mm |
-| back | 77.8mm | 19.0mm | φ8.0mm | 20.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| front | 33.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| front | 77.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| back | 33.2mm | 19.0mm | φ8.0mm | 20.0mm | - |
+| back | 77.8mm | 19.0mm | φ8.0mm | 20.0mm | - |
 
 ```
 back (500mm x 89mm):
@@ -118,10 +118,10 @@ front (500mm x 89mm):
 
 ### b (2x4, 300mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| down | 66.8mm | 19.0mm | φ8.0mm | 15.0mm |
-| down | 22.2mm | 19.0mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| down | 66.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| down | 22.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
 
 ```
 down (89mm x 38mm):
@@ -136,10 +136,10 @@ down (89mm x 38mm):
 
 ### c (2x4, 300mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| down | 66.8mm | 19.0mm | φ8.0mm | 20.0mm |
-| down | 22.2mm | 19.0mm | φ8.0mm | 20.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| down | 66.8mm | 19.0mm | φ8.0mm | 20.0mm | - |
+| down | 22.2mm | 19.0mm | φ8.0mm | 20.0mm | - |
 
 ```
 down (89mm x 38mm):
@@ -154,10 +154,10 @@ down (89mm x 38mm):
 
 ### shelf (2x4, 600mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| down | 22.2mm | 19.0mm | φ2.0mm | 7.0mm |
-| down | 66.8mm | 19.0mm | φ2.0mm | 7.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| down | 22.2mm | 19.0mm | φ2.0mm | 7.0mm | - |
+| down | 66.8mm | 19.0mm | φ2.0mm | 7.0mm | - |
 
 ```
 down (89mm x 38mm):
@@ -172,10 +172,10 @@ down (89mm x 38mm):
 
 ### shelf2 (2x4, 600mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| down | 22.2mm | 19.0mm | φ2.5mm | 19.0mm |
-| down | 66.8mm | 19.0mm | φ2.5mm | 19.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| down | 22.2mm | 19.0mm | φ2.5mm | 19.0mm | - |
+| down | 66.8mm | 19.0mm | φ2.5mm | 19.0mm | - |
 
 ```
 down (89mm x 38mm):
@@ -190,10 +190,10 @@ down (89mm x 38mm):
 
 ### shelf3 (2x4, 600mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| down | 22.2mm | 19.0mm | φ2.5mm | 2.0mm |
-| down | 66.8mm | 19.0mm | φ2.5mm | 2.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| down | 22.2mm | 19.0mm | φ2.5mm | 2.0mm | - |
+| down | 66.8mm | 19.0mm | φ2.5mm | 2.0mm | - |
 
 ```
 down (89mm x 38mm):
@@ -208,14 +208,14 @@ down (89mm x 38mm):
 
 ### side (2x4, 800mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| front | 119.0mm | 22.2mm | φ2.0mm | through |
-| front | 119.0mm | 66.8mm | φ2.0mm | through |
-| front | 319.0mm | 22.2mm | φ2.5mm | through |
-| front | 319.0mm | 66.8mm | φ2.5mm | through |
-| front | 519.0mm | 22.2mm | φ2.5mm | through |
-| front | 519.0mm | 66.8mm | φ2.5mm | through |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| front | 119.0mm | 22.2mm | φ2.0mm | through | φ6.5mm |
+| front | 119.0mm | 66.8mm | φ2.0mm | through | φ6.5mm |
+| front | 319.0mm | 22.2mm | φ2.5mm | through | φ7.5mm |
+| front | 319.0mm | 66.8mm | φ2.5mm | through | φ7.5mm |
+| front | 519.0mm | 22.2mm | φ2.5mm | through | φ7.0mm |
+| front | 519.0mm | 66.8mm | φ2.5mm | through | φ7.0mm |
 
 ```
 front (800mm x 89mm):
@@ -247,6 +247,9 @@ front (800mm x 89mm):
 - **2mm**: 4 holes, deepest: through
 - **2.5mm**: 8 holes, deepest: through
 - **8mm**: 8 holes, deepest 20mm
+- **Countersink φ6.5mm**: 2 holes
+- **Countersink φ7mm**: 2 holes
+- **Countersink φ7.5mm**: 2 holes
 
 
 ## Purchase Recommendations

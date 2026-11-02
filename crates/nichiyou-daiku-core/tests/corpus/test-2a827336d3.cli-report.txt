@@ -132,32 +132,32 @@ Distances are measured on the face the hole is drilled into:
 
 ### rail (2x4, 1200mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| right | 19.0mm | 9.5mm | φ8.0mm | 15.0mm |
-| right | 19.0mm | 28.5mm | φ8.0mm | 15.0mm |
-| right | 109.0mm | 9.5mm | φ8.0mm | 15.0mm |
-| right | 109.0mm | 28.5mm | φ8.0mm | 15.0mm |
-| right | 199.0mm | 9.5mm | φ8.0mm | 15.0mm |
-| right | 199.0mm | 28.5mm | φ8.0mm | 15.0mm |
-| right | 289.0mm | 9.5mm | φ8.0mm | 15.0mm |
-| right | 289.0mm | 28.5mm | φ8.0mm | 15.0mm |
-| right | 379.0mm | 9.5mm | φ8.0mm | 15.0mm |
-| right | 379.0mm | 28.5mm | φ8.0mm | 15.0mm |
-| right | 469.0mm | 9.5mm | φ8.0mm | 15.0mm |
-| right | 469.0mm | 28.5mm | φ8.0mm | 15.0mm |
-| right | 559.0mm | 9.5mm | φ8.0mm | 15.0mm |
-| right | 559.0mm | 28.5mm | φ8.0mm | 15.0mm |
-| right | 649.0mm | 9.5mm | φ8.0mm | 15.0mm |
-| right | 649.0mm | 28.5mm | φ8.0mm | 15.0mm |
-| right | 739.0mm | 9.5mm | φ8.0mm | 15.0mm |
-| right | 739.0mm | 28.5mm | φ8.0mm | 15.0mm |
-| right | 829.0mm | 9.5mm | φ8.0mm | 15.0mm |
-| right | 829.0mm | 28.5mm | φ8.0mm | 15.0mm |
-| right | 919.0mm | 9.5mm | φ8.0mm | 15.0mm |
-| right | 919.0mm | 28.5mm | φ8.0mm | 15.0mm |
-| right | 1009.0mm | 9.5mm | φ8.0mm | 15.0mm |
-| right | 1009.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| right | 19.0mm | 9.5mm | φ8.0mm | 15.0mm | - |
+| right | 19.0mm | 28.5mm | φ8.0mm | 15.0mm | - |
+| right | 109.0mm | 9.5mm | φ8.0mm | 15.0mm | - |
+| right | 109.0mm | 28.5mm | φ8.0mm | 15.0mm | - |
+| right | 199.0mm | 9.5mm | φ8.0mm | 15.0mm | - |
+| right | 199.0mm | 28.5mm | φ8.0mm | 15.0mm | - |
+| right | 289.0mm | 9.5mm | φ8.0mm | 15.0mm | - |
+| right | 289.0mm | 28.5mm | φ8.0mm | 15.0mm | - |
+| right | 379.0mm | 9.5mm | φ8.0mm | 15.0mm | - |
+| right | 379.0mm | 28.5mm | φ8.0mm | 15.0mm | - |
+| right | 469.0mm | 9.5mm | φ8.0mm | 15.0mm | - |
+| right | 469.0mm | 28.5mm | φ8.0mm | 15.0mm | - |
+| right | 559.0mm | 9.5mm | φ8.0mm | 15.0mm | - |
+| right | 559.0mm | 28.5mm | φ8.0mm | 15.0mm | - |
+| right | 649.0mm | 9.5mm | φ8.0mm | 15.0mm | - |
+| right | 649.0mm | 28.5mm | φ8.0mm | 15.0mm | - |
+| right | 739.0mm | 9.5mm | φ8.0mm | 15.0mm | - |
+| right | 739.0mm | 28.5mm | φ8.0mm | 15.0mm | - |
+| right | 829.0mm | 9.5mm | φ8.0mm | 15.0mm | - |
+| right | 829.0mm | 28.5mm | φ8.0mm | 15.0mm | - |
+| right | 919.0mm | 9.5mm | φ8.0mm | 15.0mm | - |
+| right | 919.0mm | 28.5mm | φ8.0mm | 15.0mm | - |
+| right | 1009.0mm | 9.5mm | φ8.0mm | 15.0mm | - |
+| right | 1009.0mm | 28.5mm | φ8.0mm | 15.0mm | - |
 
 ```
 right (1200mm x 38mm):
@@ -172,10 +172,10 @@ right (1200mm x 38mm):
 
 ### slat_with_a_long_name_00 (2x2, 300mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| back | 271.5mm | 19.0mm | φ8.0mm | 15.0mm |
-| back | 290.5mm | 19.0mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| back | 271.5mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| back | 290.5mm | 19.0mm | φ8.0mm | 15.0mm | - |
 
 ```
 back (300mm x 38mm):
@@ -190,10 +190,10 @@ back (300mm x 38mm):
 
 ### slat_with_a_long_name_01 (2x2, 300mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| back | 271.5mm | 19.0mm | φ8.0mm | 15.0mm |
-| back | 290.5mm | 19.0mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| back | 271.5mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| back | 290.5mm | 19.0mm | φ8.0mm | 15.0mm | - |
 
 ```
 back (300mm x 38mm):
@@ -208,10 +208,10 @@ back (300mm x 38mm):
 
 ### slat_with_a_long_name_02 (2x2, 300mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| back | 271.5mm | 19.0mm | φ8.0mm | 15.0mm |
-| back | 290.5mm | 19.0mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| back | 271.5mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| back | 290.5mm | 19.0mm | φ8.0mm | 15.0mm | - |
 
 ```
 back (300mm x 38mm):
@@ -226,10 +226,10 @@ back (300mm x 38mm):
 
 ### slat_with_a_long_name_03 (2x2, 300mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| back | 271.5mm | 19.0mm | φ8.0mm | 15.0mm |
-| back | 290.5mm | 19.0mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| back | 271.5mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| back | 290.5mm | 19.0mm | φ8.0mm | 15.0mm | - |
 
 ```
 back (300mm x 38mm):
@@ -244,10 +244,10 @@ back (300mm x 38mm):
 
 ### slat_with_a_long_name_04 (2x2, 300mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| back | 271.5mm | 19.0mm | φ8.0mm | 15.0mm |
-| back | 290.5mm | 19.0mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| back | 271.5mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| back | 290.5mm | 19.0mm | φ8.0mm | 15.0mm | - |
 
 ```
 back (300mm x 38mm):
@@ -262,10 +262,10 @@ back (300mm x 38mm):
 
 ### slat_with_a_long_name_05 (2x2, 300mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| back | 271.5mm | 19.0mm | φ8.0mm | 15.0mm |
-| back | 290.5mm | 19.0mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| back | 271.5mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| back | 290.5mm | 19.0mm | φ8.0mm | 15.0mm | - |
 
 ```
 back (300mm x 38mm):
@@ -280,10 +280,10 @@ back (300mm x 38mm):
 
 ### slat_with_a_long_name_06 (2x2, 300mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| back | 271.5mm | 19.0mm | φ8.0mm | 15.0mm |
-| back | 290.5mm | 19.0mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| back | 271.5mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| back | 290.5mm | 19.0mm | φ8.0mm | 15.0mm | - |
 
 ```
 back (300mm x 38mm):
@@ -298,10 +298,10 @@ back (300mm x 38mm):
 
 ### slat_with_a_long_name_07 (2x2, 300mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| back | 271.5mm | 19.0mm | φ8.0mm | 15.0mm |
-| back | 290.5mm | 19.0mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| back | 271.5mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| back | 290.5mm | 19.0mm | φ8.0mm | 15.0mm | - |
 
 ```
 back (300mm x 38mm):
@@ -316,10 +316,10 @@ back (300mm x 38mm):
 
 ### slat_with_a_long_name_08 (2x2, 300mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| back | 271.5mm | 19.0mm | φ8.0mm | 15.0mm |
-| back | 290.5mm | 19.0mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| back | 271.5mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| back | 290.5mm | 19.0mm | φ8.0mm | 15.0mm | - |
 
 ```
 back (300mm x 38mm):
@@ -334,10 +334,10 @@ back (300mm x 38mm):
 
 ### slat_with_a_long_name_09 (2x2, 300mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| back | 271.5mm | 19.0mm | φ8.0mm | 15.0mm |
-| back | 290.5mm | 19.0mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| back | 271.5mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| back | 290.5mm | 19.0mm | φ8.0mm | 15.0mm | - |
 
 ```
 back (300mm x 38mm):
@@ -352,10 +352,10 @@ back (300mm x 38mm):
 
 ### slat_with_a_long_name_10 (2x2, 300mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| back | 271.5mm | 19.0mm | φ8.0mm | 15.0mm |
-| back | 290.5mm | 19.0mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| back | 271.5mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| back | 290.5mm | 19.0mm | φ8.0mm | 15.0mm | - |
 
 ```
 back (300mm x 38mm):
@@ -370,10 +370,10 @@ back (300mm x 38mm):
 
 ### slat_with_a_long_name_11 (2x2, 300mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| back | 271.5mm | 19.0mm | φ8.0mm | 15.0mm |
-| back | 290.5mm | 19.0mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| back | 271.5mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| back | 290.5mm | 19.0mm | φ8.0mm | 15.0mm | - |
 
 ```
 back (300mm x 38mm):

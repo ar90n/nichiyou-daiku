@@ -44,10 +44,10 @@ Distances are measured on the face the hole is drilled into:
 
 ### a (2x4, 1000mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| front | 15.0mm | 9.5mm | φ8.0mm | 15.0mm |
-| front | 15.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| front | 15.0mm | 9.5mm | φ8.0mm | 15.0mm | - |
+| front | 15.0mm | 28.5mm | φ8.0mm | 15.0mm | - |
 
 ```
 front (1000mm x 89mm):
@@ -62,10 +62,10 @@ front (1000mm x 89mm):
 
 ### b (2x4, 800mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| down | 15.0mm | 28.5mm | φ8.0mm | 15.0mm |
-| down | 15.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| down | 15.0mm | 28.5mm | φ8.0mm | 15.0mm | - |
+| down | 15.0mm | 9.5mm | φ8.0mm | 15.0mm | - |
 
 ```
 down (89mm x 38mm):

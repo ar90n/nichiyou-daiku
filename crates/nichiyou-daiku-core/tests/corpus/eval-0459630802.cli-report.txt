@@ -84,16 +84,16 @@ Distances are measured on the face the hole is drilled into:
 
 ### apron_uf_l (2x4, 466.5mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| top | 22.2mm | 19.0mm | φ8.0mm | 15.0mm |
-| top | 66.8mm | 19.0mm | φ8.0mm | 15.0mm |
-| down | 22.2mm | 19.0mm | φ8.0mm | 15.0mm |
-| down | 66.8mm | 19.0mm | φ8.0mm | 15.0mm |
-| right | 299.1mm | 19.0mm | φ8.0mm | 15.0mm |
-| right | 369.1mm | 19.0mm | φ8.0mm | 15.0mm |
-| right | 25.3mm | 19.0mm | φ8.0mm | 15.0mm |
-| right | 75.9mm | 19.0mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| top | 22.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| top | 66.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| down | 22.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| down | 66.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| right | 299.1mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| right | 369.1mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| right | 25.3mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| right | 75.9mm | 19.0mm | φ8.0mm | 15.0mm | - |
 
 ```
 down (89mm x 38mm):
@@ -130,12 +130,12 @@ top (89mm x 38mm):
 
 ### apron_uf_r (2x4, 466.5mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| down | 22.2mm | 19.0mm | φ8.0mm | 15.0mm |
-| down | 66.8mm | 19.0mm | φ8.0mm | 15.0mm |
-| top | 22.2mm | 19.0mm | φ8.0mm | 15.0mm |
-| top | 66.8mm | 19.0mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| down | 22.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| down | 66.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| top | 22.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| top | 66.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
 
 ```
 down (89mm x 38mm):
@@ -161,10 +161,10 @@ top (89mm x 38mm):
 
 ### leg_fl (2x4, 362mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| right | 295.2mm | 19.0mm | φ8.0mm | 15.0mm |
-| right | 339.8mm | 19.0mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| right | 295.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| right | 339.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
 
 ```
 right (362mm x 38mm):
@@ -179,12 +179,12 @@ right (362mm x 38mm):
 
 ### leg_fm (2x4, 362mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| left | 295.2mm | 19.0mm | φ8.0mm | 15.0mm |
-| left | 339.8mm | 19.0mm | φ8.0mm | 15.0mm |
-| right | 295.2mm | 19.0mm | φ8.0mm | 15.0mm |
-| right | 339.8mm | 19.0mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| left | 295.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| left | 339.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| right | 295.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| right | 339.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
 
 ```
 left (362mm x 38mm):
@@ -210,10 +210,10 @@ right (362mm x 38mm):
 
 ### leg_fr (2x4, 362mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| left | 295.2mm | 19.0mm | φ8.0mm | 15.0mm |
-| left | 339.8mm | 19.0mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| left | 295.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| left | 339.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
 
 ```
 left (362mm x 38mm):
@@ -228,10 +228,10 @@ left (362mm x 38mm):
 
 ### top_2 (2x6, 350mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| back | 331.0mm | 35.0mm | φ8.0mm | 15.0mm |
-| back | 331.0mm | 105.0mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| back | 331.0mm | 35.0mm | φ8.0mm | 15.0mm | - |
+| back | 331.0mm | 105.0mm | φ8.0mm | 15.0mm | - |
 
 ```
 back (350mm x 140mm):
@@ -246,10 +246,10 @@ back (350mm x 140mm):
 
 ### top_4 (2x6, 350mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| back | 331.0mm | 64.1mm | φ8.0mm | 15.0mm |
-| back | 331.0mm | 114.7mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| back | 331.0mm | 64.1mm | φ8.0mm | 15.0mm | - |
+| back | 331.0mm | 114.7mm | φ8.0mm | 15.0mm | - |
 
 ```
 back (350mm x 140mm):

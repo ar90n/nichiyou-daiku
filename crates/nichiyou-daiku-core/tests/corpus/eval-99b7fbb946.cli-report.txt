@@ -44,10 +44,10 @@ Distances are measured on the face the hole is drilled into:
 
 ### apron_side (2x4, 348mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| down | 22.2mm | 19.0mm | φ2.5mm | 27.0mm |
-| down | 66.8mm | 19.0mm | φ2.5mm | 27.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| down | 22.2mm | 19.0mm | φ2.5mm | 27.0mm | - |
+| down | 66.8mm | 19.0mm | φ2.5mm | 27.0mm | - |
 
 ```
 down (89mm x 38mm):
@@ -62,10 +62,10 @@ down (89mm x 38mm):
 
 ### leg (2x4, 681mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| front | 614.2mm | 19.0mm | φ2.5mm | through |
-| front | 658.8mm | 19.0mm | φ2.5mm | through |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| front | 614.2mm | 19.0mm | φ2.5mm | through | φ7.5mm |
+| front | 658.8mm | 19.0mm | φ2.5mm | through | φ7.5mm |
 
 ```
 front (681mm x 89mm):
@@ -91,6 +91,7 @@ front (681mm x 89mm):
 ### Drill Bits:
 
 - **2.5mm**: 4 holes, deepest: through
+- **Countersink φ7.5mm**: 2 holes
 
 
 ## Purchase Recommendations

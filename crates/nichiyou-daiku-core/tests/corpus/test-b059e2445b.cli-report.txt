@@ -52,12 +52,12 @@ Distances are measured on the face the hole is drilled into:
 
 ### shelf (2x4, 600mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| down | 22.2mm | 19.0mm | φ2.5mm | 27.0mm |
-| down | 66.8mm | 19.0mm | φ2.5mm | 27.0mm |
-| top | 22.2mm | 19.0mm | φ2.5mm | 27.0mm |
-| top | 66.8mm | 19.0mm | φ2.5mm | 27.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| down | 22.2mm | 19.0mm | φ2.5mm | 27.0mm | - |
+| down | 66.8mm | 19.0mm | φ2.5mm | 27.0mm | - |
+| top | 22.2mm | 19.0mm | φ2.5mm | 27.0mm | - |
+| top | 66.8mm | 19.0mm | φ2.5mm | 27.0mm | - |
 
 ```
 down (89mm x 38mm):
@@ -83,10 +83,10 @@ top (89mm x 38mm):
 
 ### side_l (2x4, 800mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| front | 119.0mm | 22.2mm | φ2.5mm | through |
-| front | 119.0mm | 66.8mm | φ2.5mm | through |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| front | 119.0mm | 22.2mm | φ2.5mm | through | φ7.5mm |
+| front | 119.0mm | 66.8mm | φ2.5mm | through | φ7.5mm |
 
 ```
 front (800mm x 89mm):
@@ -101,10 +101,10 @@ front (800mm x 89mm):
 
 ### side_r (2x4, 800mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| back | 119.0mm | 22.2mm | φ2.5mm | through |
-| back | 119.0mm | 66.8mm | φ2.5mm | through |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| back | 119.0mm | 22.2mm | φ2.5mm | through | φ7.5mm |
+| back | 119.0mm | 66.8mm | φ2.5mm | through | φ7.5mm |
 
 ```
 back (800mm x 89mm):
@@ -130,6 +130,7 @@ back (800mm x 89mm):
 ### Drill Bits:
 
 - **2.5mm**: 8 holes, deepest: through
+- **Countersink φ7.5mm**: 4 holes
 
 
 ## Purchase Recommendations

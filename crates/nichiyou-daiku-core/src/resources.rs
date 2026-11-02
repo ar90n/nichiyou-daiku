@@ -27,6 +27,7 @@ pub struct PilotHoleInfo {
     pub from_width_edge: f64,
     pub diameter: f64,
     pub depth: Option<f64>,
+    pub countersink: Option<f64>,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -61,6 +62,8 @@ pub struct ResourceSummary {
     pub issues: Vec<String>,
     pub hardware: Vec<HardwareItem>,
     pub drill_bits: Vec<DrillBit>,
+    /// Countersinks by the width of their mouth, narrowest first, with how many
+    pub countersinks: Vec<(f64, usize)>,
 }
 
 fn pilot_hole_info(position: SurfacePoint, hole: Hole, shape: Shape3D) -> PilotHoleInfo {
@@ -77,6 +80,7 @@ fn pilot_hole_info(position: SurfacePoint, hole: Hole, shape: Shape3D) -> PilotH
         from_width_edge: across,
         diameter: hole.diameter,
         depth: hole.depth,
+        countersink: hole.countersink,
     }
 }
 
@@ -171,6 +175,18 @@ pub fn extract_resources(assembly: &Assembly) -> ResourceSummary {
         }
         total_volume += volume;
     }
+    let mut countersinks: Vec<(f64, usize)> = Vec::new();
+    for (_, holes) in &assembly.pilot_holes {
+        for (_, hole) in holes {
+            if let Some(sink) = hole.countersink.map(tenth) {
+                match countersinks.iter_mut().find(|(d, _)| *d == sink) {
+                    Some((_, n)) => *n += 1,
+                    None => countersinks.push((sink, 1)),
+                }
+            }
+        }
+    }
+    countersinks.sort_by(|a, b| a.0.total_cmp(&b.0));
     let (overall_size, size_reference) = if assembly.placement.groups.len() == 1 {
         let (low, high) = overall_bounds(model, &assembly.placement);
         (
@@ -194,6 +210,7 @@ pub fn extract_resources(assembly: &Assembly) -> ResourceSummary {
         issues,
         hardware: count_hardware(assembly, None),
         drill_bits: drill_bits(assembly),
+        countersinks,
     }
 }
 
@@ -257,5 +274,23 @@ mod tests {
             (8.0, holes.len())
         );
         assert_eq!(s.hardware[0].name, "Dowel 8x30");
+    }
+
+    #[test]
+    fn countersinks_are_counted_by_their_mouth() {
+        let s = summary(
+            "(base:2x4 =500)\n(target:1x4 =300)\nbase -[FL<100 BL<0 S(Slim:3.3x25)]- target\n",
+        );
+        assert_eq!(s.countersinks, [(6.5, 2)]);
+        let target = s.pieces.iter().find(|p| p.id == "target").unwrap();
+        assert!(
+            target
+                .pilot_holes
+                .iter()
+                .all(|h| h.face == "front" && h.countersink == Some(6.5))
+        );
+        let dowels =
+            summary("(left:2x4 =800)\n(shelf:2x4 =600)\nleft -[BL<300 DL<0 D(:8x30)]- shelf\n");
+        assert!(dowels.countersinks.is_empty());
     }
 }

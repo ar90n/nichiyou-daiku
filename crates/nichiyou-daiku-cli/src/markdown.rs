@@ -193,6 +193,22 @@ fn face_diagram(holes: &[&PilotHoleInfo], face: &str, width: f64, height: f64) -
     lines
 }
 
+fn pilot_hole_row(hole: &PilotHoleInfo) -> String {
+    let depth = hole
+        .depth
+        .map_or("through".into(), |d| format!("{}mm", format_fixed(d, 1)));
+    let sink = hole
+        .countersink
+        .map_or("-".into(), |c| format!("φ{}mm", format_fixed(c, 1)));
+    format!(
+        "| {} | {}mm | {}mm | φ{}mm | {depth} | {sink} |",
+        hole.face,
+        format_fixed(hole.from_length_edge, 1),
+        format_fixed(hole.from_width_edge, 1),
+        format_fixed(hole.diameter, 1)
+    )
+}
+
 fn pilot_holes(summary: &ResourceSummary) -> String {
     let mut lines = strings(&["## Pilot Holes", ""]);
     let pieces = by_id(summary, |p| !p.pilot_holes.is_empty());
@@ -210,21 +226,12 @@ fn pilot_holes(summary: &ResourceSummary) -> String {
     for piece in pieces {
         lines.extend([heading(piece), String::new()]);
         lines.extend(strings(&[
-            "| Face | From Length Edge | From Width Edge | Diameter | Depth |",
-            "|---|---|---|---|---|",
+            "| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |",
+            "|---|---|---|---|---|---|",
         ]));
         let mut faces: Vec<(&str, Vec<&PilotHoleInfo>)> = Vec::new();
         for hole in &piece.pilot_holes {
-            let depth = hole
-                .depth
-                .map_or("through".into(), |d| format!("{}mm", format_fixed(d, 1)));
-            lines.push(format!(
-                "| {} | {}mm | {}mm | φ{}mm | {depth} |",
-                hole.face,
-                format_fixed(hole.from_length_edge, 1),
-                format_fixed(hole.from_width_edge, 1),
-                format_fixed(hole.diameter, 1)
-            ));
+            lines.push(pilot_hole_row(hole));
             match faces.iter_mut().find(|(face, _)| *face == hole.face) {
                 Some((_, list)) => list.push(hole),
                 None => faces.push((hole.face, vec![hole])),
@@ -275,6 +282,12 @@ fn shopping_list(summary: &ResourceSummary) -> String {
                 "- **{}mm**: {} holes, {deepest}",
                 format_mm(bit.diameter),
                 bit.holes
+            ));
+        }
+        for (diameter, holes) in &summary.countersinks {
+            lines.push(format!(
+                "- **Countersink φ{}mm**: {holes} holes",
+                format_mm(*diameter)
             ));
         }
     }
@@ -410,11 +423,28 @@ mod tests {
             from_width_edge: 44.5,
             diameter: 2.5,
             depth: None,
+            countersink: None,
         };
         let lines = face_diagram(&[&hole], "back", 440.0, 89.0);
         assert_eq!(lines[1], "back (440mm x 89mm):");
         assert_eq!(lines[2], format!("+{}+", "-".repeat(40)));
         // 220/440 of 40 is 20, then one for the border; 44.5/89 of 5 is 2 (int), plus one
         assert_eq!(lines[2 + 3].chars().nth(21), Some('o'));
+    }
+
+    #[test]
+    fn the_pilot_holes_table_gives_each_countersink() {
+        let line = pilot_hole_row(&PilotHoleInfo {
+            face: "front",
+            from_length_edge: 75.0,
+            from_width_edge: 44.5,
+            diameter: 2.0,
+            depth: None,
+            countersink: Some(6.5),
+        });
+        assert_eq!(
+            line,
+            "| front | 75.0mm | 44.5mm | φ2.0mm | through | φ6.5mm |"
+        );
     }
 }

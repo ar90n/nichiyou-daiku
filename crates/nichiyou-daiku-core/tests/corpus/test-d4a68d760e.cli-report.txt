@@ -58,14 +58,14 @@ Distances are measured on the face the hole is drilled into:
 
 ### post (2x4, 600mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| front | 233.2mm | 19.0mm | φ2.5mm | through |
-| front | 277.8mm | 19.0mm | φ2.5mm | through |
-| right | 277.8mm | 19.0mm | φ2.5mm | through |
-| left | 277.8mm | 19.0mm | φ10.0mm | 51.0mm |
-| right | 233.2mm | 19.0mm | φ2.5mm | through |
-| left | 233.2mm | 19.0mm | φ10.0mm | 51.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| front | 233.2mm | 19.0mm | φ2.5mm | through | φ7.5mm |
+| front | 277.8mm | 19.0mm | φ2.5mm | through | φ7.5mm |
+| right | 277.8mm | 19.0mm | φ2.5mm | through | - |
+| left | 277.8mm | 19.0mm | φ10.0mm | 51.0mm | - |
+| right | 233.2mm | 19.0mm | φ2.5mm | through | - |
+| left | 233.2mm | 19.0mm | φ10.0mm | 51.0mm | - |
 
 ```
 front (600mm x 89mm):
@@ -102,10 +102,10 @@ right (600mm x 38mm):
 
 ### rail_a (2x4, 300mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| down | 22.2mm | 19.0mm | φ2.5mm | 27.0mm |
-| down | 66.8mm | 19.0mm | φ2.5mm | 27.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| down | 22.2mm | 19.0mm | φ2.5mm | 27.0mm | - |
+| down | 66.8mm | 19.0mm | φ2.5mm | 27.0mm | - |
 
 ```
 down (89mm x 38mm):
@@ -120,10 +120,10 @@ down (89mm x 38mm):
 
 ### rail_b (2x4, 300mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| down | 22.2mm | 19.0mm | φ2.5mm | 27.0mm |
-| down | 66.8mm | 19.0mm | φ2.5mm | 27.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| down | 22.2mm | 19.0mm | φ2.5mm | 27.0mm | - |
+| down | 66.8mm | 19.0mm | φ2.5mm | 27.0mm | - |
 
 ```
 down (89mm x 38mm):
@@ -150,6 +150,7 @@ down (89mm x 38mm):
 
 - **2.5mm**: 8 holes, deepest: through
 - **10mm**: 2 holes, deepest 51mm
+- **Countersink φ7.5mm**: 2 holes
 
 
 ## Purchase Recommendations

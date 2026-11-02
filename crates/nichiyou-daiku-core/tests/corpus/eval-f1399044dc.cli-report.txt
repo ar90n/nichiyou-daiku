@@ -222,12 +222,12 @@ Distances are measured on the face the hole is drilled into:
 
 ### apron_lower_back (2x4, 722mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| down | 22.2mm | 19.0mm | φ8.0mm | 15.0mm |
-| down | 66.8mm | 19.0mm | φ8.0mm | 15.0mm |
-| top | 22.2mm | 19.0mm | φ8.0mm | 15.0mm |
-| top | 66.8mm | 19.0mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| down | 22.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| down | 66.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| top | 22.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| top | 66.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
 
 ```
 down (89mm x 38mm):
@@ -253,22 +253,22 @@ top (89mm x 38mm):
 
 ### apron_lower_front (2x4, 722mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| down | 22.2mm | 19.0mm | φ8.0mm | 15.0mm |
-| down | 66.8mm | 19.0mm | φ8.0mm | 15.0mm |
-| top | 22.2mm | 19.0mm | φ8.0mm | 15.0mm |
-| top | 66.8mm | 19.0mm | φ8.0mm | 15.0mm |
-| right | 35.0mm | 19.0mm | φ2.0mm | 26.0mm |
-| right | 105.0mm | 19.0mm | φ2.0mm | 26.0mm |
-| right | 180.5mm | 19.0mm | φ2.0mm | 26.0mm |
-| right | 250.5mm | 19.0mm | φ2.0mm | 26.0mm |
-| right | 326.0mm | 19.0mm | φ2.0mm | 26.0mm |
-| right | 396.0mm | 19.0mm | φ2.0mm | 26.0mm |
-| right | 471.5mm | 19.0mm | φ2.0mm | 26.0mm |
-| right | 541.5mm | 19.0mm | φ2.0mm | 26.0mm |
-| right | 617.0mm | 19.0mm | φ2.0mm | 26.0mm |
-| right | 687.0mm | 19.0mm | φ2.0mm | 26.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| down | 22.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| down | 66.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| top | 22.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| top | 66.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| right | 35.0mm | 19.0mm | φ2.0mm | 26.0mm | - |
+| right | 105.0mm | 19.0mm | φ2.0mm | 26.0mm | - |
+| right | 180.5mm | 19.0mm | φ2.0mm | 26.0mm | - |
+| right | 250.5mm | 19.0mm | φ2.0mm | 26.0mm | - |
+| right | 326.0mm | 19.0mm | φ2.0mm | 26.0mm | - |
+| right | 396.0mm | 19.0mm | φ2.0mm | 26.0mm | - |
+| right | 471.5mm | 19.0mm | φ2.0mm | 26.0mm | - |
+| right | 541.5mm | 19.0mm | φ2.0mm | 26.0mm | - |
+| right | 617.0mm | 19.0mm | φ2.0mm | 26.0mm | - |
+| right | 687.0mm | 19.0mm | φ2.0mm | 26.0mm | - |
 
 ```
 down (89mm x 38mm):
@@ -305,12 +305,12 @@ top (89mm x 38mm):
 
 ### apron_lower_left (2x4, 374mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| down | 22.2mm | 19.0mm | φ8.0mm | 15.0mm |
-| down | 66.8mm | 19.0mm | φ8.0mm | 15.0mm |
-| top | 22.2mm | 19.0mm | φ8.0mm | 15.0mm |
-| top | 66.8mm | 19.0mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| down | 22.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| down | 66.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| top | 22.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| top | 66.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
 
 ```
 down (89mm x 38mm):
@@ -336,12 +336,12 @@ top (89mm x 38mm):
 
 ### apron_lower_right (2x4, 374mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| down | 22.2mm | 19.0mm | φ8.0mm | 15.0mm |
-| down | 66.8mm | 19.0mm | φ8.0mm | 15.0mm |
-| top | 22.2mm | 19.0mm | φ8.0mm | 15.0mm |
-| top | 66.8mm | 19.0mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| down | 22.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| down | 66.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| top | 22.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| top | 66.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
 
 ```
 down (89mm x 38mm):
@@ -367,12 +367,12 @@ top (89mm x 38mm):
 
 ### apron_upper_back (2x4, 722mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| down | 22.2mm | 19.0mm | φ8.0mm | 15.0mm |
-| down | 66.8mm | 19.0mm | φ8.0mm | 15.0mm |
-| top | 22.2mm | 19.0mm | φ8.0mm | 15.0mm |
-| top | 66.8mm | 19.0mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| down | 22.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| down | 66.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| top | 22.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| top | 66.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
 
 ```
 down (89mm x 38mm):
@@ -398,20 +398,20 @@ top (89mm x 38mm):
 
 ### apron_upper_front (2x4, 722mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| down | 22.2mm | 19.0mm | φ8.0mm | 15.0mm |
-| down | 66.8mm | 19.0mm | φ8.0mm | 15.0mm |
-| top | 22.2mm | 19.0mm | φ8.0mm | 15.0mm |
-| top | 66.8mm | 19.0mm | φ8.0mm | 15.0mm |
-| right | 554.0mm | 19.0mm | φ2.0mm | 26.0mm |
-| right | 624.0mm | 19.0mm | φ2.0mm | 26.0mm |
-| right | 402.0mm | 19.0mm | φ2.0mm | 26.0mm |
-| right | 472.0mm | 19.0mm | φ2.0mm | 26.0mm |
-| right | 250.0mm | 19.0mm | φ2.0mm | 26.0mm |
-| right | 320.0mm | 19.0mm | φ2.0mm | 26.0mm |
-| right | 98.0mm | 19.0mm | φ2.0mm | 26.0mm |
-| right | 168.0mm | 19.0mm | φ2.0mm | 26.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| down | 22.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| down | 66.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| top | 22.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| top | 66.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| right | 554.0mm | 19.0mm | φ2.0mm | 26.0mm | - |
+| right | 624.0mm | 19.0mm | φ2.0mm | 26.0mm | - |
+| right | 402.0mm | 19.0mm | φ2.0mm | 26.0mm | - |
+| right | 472.0mm | 19.0mm | φ2.0mm | 26.0mm | - |
+| right | 250.0mm | 19.0mm | φ2.0mm | 26.0mm | - |
+| right | 320.0mm | 19.0mm | φ2.0mm | 26.0mm | - |
+| right | 98.0mm | 19.0mm | φ2.0mm | 26.0mm | - |
+| right | 168.0mm | 19.0mm | φ2.0mm | 26.0mm | - |
 
 ```
 down (89mm x 38mm):
@@ -448,12 +448,12 @@ top (89mm x 38mm):
 
 ### apron_upper_left (2x4, 374mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| down | 22.2mm | 19.0mm | φ8.0mm | 15.0mm |
-| down | 66.8mm | 19.0mm | φ8.0mm | 15.0mm |
-| top | 22.2mm | 19.0mm | φ8.0mm | 15.0mm |
-| top | 66.8mm | 19.0mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| down | 22.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| down | 66.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| top | 22.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| top | 66.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
 
 ```
 down (89mm x 38mm):
@@ -479,12 +479,12 @@ top (89mm x 38mm):
 
 ### apron_upper_right (2x4, 374mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| down | 22.2mm | 19.0mm | φ8.0mm | 15.0mm |
-| down | 66.8mm | 19.0mm | φ8.0mm | 15.0mm |
-| top | 22.2mm | 19.0mm | φ8.0mm | 15.0mm |
-| top | 66.8mm | 19.0mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| down | 22.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| down | 66.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| top | 22.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| top | 66.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
 
 ```
 down (89mm x 38mm):
@@ -510,18 +510,18 @@ top (89mm x 38mm):
 
 ### leg_1 (2x4, 381mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| left | 314.2mm | 19.0mm | φ8.0mm | 15.0mm |
-| left | 358.8mm | 19.0mm | φ8.0mm | 15.0mm |
-| back | 314.2mm | 70.0mm | φ8.0mm | 15.0mm |
-| back | 358.8mm | 70.0mm | φ8.0mm | 15.0mm |
-| left | 122.2mm | 19.0mm | φ8.0mm | 15.0mm |
-| left | 166.8mm | 19.0mm | φ8.0mm | 15.0mm |
-| back | 122.2mm | 70.0mm | φ8.0mm | 15.0mm |
-| back | 166.8mm | 70.0mm | φ8.0mm | 15.0mm |
-| top | 22.2mm | 19.0mm | φ2.0mm | 26.0mm |
-| top | 66.8mm | 19.0mm | φ2.0mm | 26.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| left | 314.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| left | 358.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| back | 314.2mm | 70.0mm | φ8.0mm | 15.0mm | - |
+| back | 358.8mm | 70.0mm | φ8.0mm | 15.0mm | - |
+| left | 122.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| left | 166.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| back | 122.2mm | 70.0mm | φ8.0mm | 15.0mm | - |
+| back | 166.8mm | 70.0mm | φ8.0mm | 15.0mm | - |
+| top | 22.2mm | 19.0mm | φ2.0mm | 26.0mm | - |
+| top | 66.8mm | 19.0mm | φ2.0mm | 26.0mm | - |
 
 ```
 back (381mm x 89mm):
@@ -558,18 +558,18 @@ top (89mm x 38mm):
 
 ### leg_2 (2x4, 381mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| right | 314.2mm | 19.0mm | φ8.0mm | 15.0mm |
-| right | 358.8mm | 19.0mm | φ8.0mm | 15.0mm |
-| back | 314.2mm | 19.0mm | φ8.0mm | 15.0mm |
-| back | 358.8mm | 19.0mm | φ8.0mm | 15.0mm |
-| right | 122.2mm | 19.0mm | φ8.0mm | 15.0mm |
-| right | 166.8mm | 19.0mm | φ8.0mm | 15.0mm |
-| back | 122.2mm | 19.0mm | φ8.0mm | 15.0mm |
-| back | 166.8mm | 19.0mm | φ8.0mm | 15.0mm |
-| top | 22.2mm | 19.0mm | φ2.0mm | 26.0mm |
-| top | 66.8mm | 19.0mm | φ2.0mm | 26.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| right | 314.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| right | 358.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| back | 314.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| back | 358.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| right | 122.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| right | 166.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| back | 122.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| back | 166.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| top | 22.2mm | 19.0mm | φ2.0mm | 26.0mm | - |
+| top | 66.8mm | 19.0mm | φ2.0mm | 26.0mm | - |
 
 ```
 back (381mm x 89mm):
@@ -606,16 +606,16 @@ top (89mm x 38mm):
 
 ### leg_3 (2x4, 381mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| left | 314.2mm | 19.0mm | φ8.0mm | 15.0mm |
-| left | 358.8mm | 19.0mm | φ8.0mm | 15.0mm |
-| front | 314.2mm | 70.0mm | φ8.0mm | 15.0mm |
-| front | 358.8mm | 70.0mm | φ8.0mm | 15.0mm |
-| left | 122.2mm | 19.0mm | φ8.0mm | 15.0mm |
-| left | 166.8mm | 19.0mm | φ8.0mm | 15.0mm |
-| front | 122.2mm | 70.0mm | φ8.0mm | 15.0mm |
-| front | 166.8mm | 70.0mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| left | 314.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| left | 358.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| front | 314.2mm | 70.0mm | φ8.0mm | 15.0mm | - |
+| front | 358.8mm | 70.0mm | φ8.0mm | 15.0mm | - |
+| left | 122.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| left | 166.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| front | 122.2mm | 70.0mm | φ8.0mm | 15.0mm | - |
+| front | 166.8mm | 70.0mm | φ8.0mm | 15.0mm | - |
 
 ```
 front (381mm x 89mm):
@@ -641,16 +641,16 @@ left (381mm x 38mm):
 
 ### leg_4 (2x4, 381mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| right | 314.2mm | 19.0mm | φ8.0mm | 15.0mm |
-| right | 358.8mm | 19.0mm | φ8.0mm | 15.0mm |
-| front | 314.2mm | 19.0mm | φ8.0mm | 15.0mm |
-| front | 358.8mm | 19.0mm | φ8.0mm | 15.0mm |
-| right | 122.2mm | 19.0mm | φ8.0mm | 15.0mm |
-| right | 166.8mm | 19.0mm | φ8.0mm | 15.0mm |
-| front | 122.2mm | 19.0mm | φ8.0mm | 15.0mm |
-| front | 166.8mm | 19.0mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| right | 314.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| right | 358.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| front | 314.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| front | 358.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| right | 122.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| right | 166.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| front | 122.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| front | 166.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
 
 ```
 front (381mm x 89mm):
@@ -676,10 +676,10 @@ right (381mm x 38mm):
 
 ### shelf_1 (1x6, 450mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| front | 431.0mm | 35.0mm | φ2.0mm | through |
-| front | 431.0mm | 105.0mm | φ2.0mm | through |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| front | 431.0mm | 35.0mm | φ2.0mm | through | φ6.5mm |
+| front | 431.0mm | 105.0mm | φ2.0mm | through | φ6.5mm |
 
 ```
 front (450mm x 140mm):
@@ -694,10 +694,10 @@ front (450mm x 140mm):
 
 ### shelf_2 (1x6, 450mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| front | 431.0mm | 35.0mm | φ2.0mm | through |
-| front | 431.0mm | 105.0mm | φ2.0mm | through |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| front | 431.0mm | 35.0mm | φ2.0mm | through | φ6.5mm |
+| front | 431.0mm | 105.0mm | φ2.0mm | through | φ6.5mm |
 
 ```
 front (450mm x 140mm):
@@ -712,10 +712,10 @@ front (450mm x 140mm):
 
 ### shelf_3 (1x6, 450mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| front | 431.0mm | 35.0mm | φ2.0mm | through |
-| front | 431.0mm | 105.0mm | φ2.0mm | through |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| front | 431.0mm | 35.0mm | φ2.0mm | through | φ6.5mm |
+| front | 431.0mm | 105.0mm | φ2.0mm | through | φ6.5mm |
 
 ```
 front (450mm x 140mm):
@@ -730,10 +730,10 @@ front (450mm x 140mm):
 
 ### shelf_4 (1x6, 450mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| front | 431.0mm | 35.0mm | φ2.0mm | through |
-| front | 431.0mm | 105.0mm | φ2.0mm | through |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| front | 431.0mm | 35.0mm | φ2.0mm | through | φ6.5mm |
+| front | 431.0mm | 105.0mm | φ2.0mm | through | φ6.5mm |
 
 ```
 front (450mm x 140mm):
@@ -748,10 +748,10 @@ front (450mm x 140mm):
 
 ### shelf_5 (1x6, 450mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| front | 431.0mm | 35.0mm | φ2.0mm | through |
-| front | 431.0mm | 105.0mm | φ2.0mm | through |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| front | 431.0mm | 35.0mm | φ2.0mm | through | φ6.5mm |
+| front | 431.0mm | 105.0mm | φ2.0mm | through | φ6.5mm |
 
 ```
 front (450mm x 140mm):
@@ -766,10 +766,10 @@ front (450mm x 140mm):
 
 ### top_1 (1x6, 450mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| front | 19.0mm | 22.2mm | φ2.0mm | through |
-| front | 19.0mm | 66.8mm | φ2.0mm | through |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| front | 19.0mm | 22.2mm | φ2.0mm | through | φ6.5mm |
+| front | 19.0mm | 66.8mm | φ2.0mm | through | φ6.5mm |
 
 ```
 front (450mm x 140mm):
@@ -784,10 +784,10 @@ front (450mm x 140mm):
 
 ### top_2 (1x6, 450mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| front | 431.0mm | 35.0mm | φ2.0mm | through |
-| front | 431.0mm | 105.0mm | φ2.0mm | through |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| front | 431.0mm | 35.0mm | φ2.0mm | through | φ6.5mm |
+| front | 431.0mm | 105.0mm | φ2.0mm | through | φ6.5mm |
 
 ```
 front (450mm x 140mm):
@@ -802,10 +802,10 @@ front (450mm x 140mm):
 
 ### top_3 (1x6, 450mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| front | 431.0mm | 35.0mm | φ2.0mm | through |
-| front | 431.0mm | 105.0mm | φ2.0mm | through |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| front | 431.0mm | 35.0mm | φ2.0mm | through | φ6.5mm |
+| front | 431.0mm | 105.0mm | φ2.0mm | through | φ6.5mm |
 
 ```
 front (450mm x 140mm):
@@ -820,10 +820,10 @@ front (450mm x 140mm):
 
 ### top_4 (1x6, 450mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| front | 431.0mm | 35.0mm | φ2.0mm | through |
-| front | 431.0mm | 105.0mm | φ2.0mm | through |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| front | 431.0mm | 35.0mm | φ2.0mm | through | φ6.5mm |
+| front | 431.0mm | 105.0mm | φ2.0mm | through | φ6.5mm |
 
 ```
 front (450mm x 140mm):
@@ -838,10 +838,10 @@ front (450mm x 140mm):
 
 ### top_5 (1x6, 450mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| front | 431.0mm | 35.0mm | φ2.0mm | through |
-| front | 431.0mm | 105.0mm | φ2.0mm | through |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| front | 431.0mm | 35.0mm | φ2.0mm | through | φ6.5mm |
+| front | 431.0mm | 105.0mm | φ2.0mm | through | φ6.5mm |
 
 ```
 front (450mm x 140mm):
@@ -856,10 +856,10 @@ front (450mm x 140mm):
 
 ### top_6 (1x6, 450mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| front | 19.0mm | 73.2mm | φ2.0mm | through |
-| front | 19.0mm | 117.8mm | φ2.0mm | through |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| front | 19.0mm | 73.2mm | φ2.0mm | through | φ6.5mm |
+| front | 19.0mm | 117.8mm | φ2.0mm | through | φ6.5mm |
 
 ```
 front (450mm x 140mm):
@@ -888,6 +888,7 @@ front (450mm x 140mm):
 
 - **2mm**: 44 holes, deepest: through
 - **8mm**: 64 holes, deepest 15mm
+- **Countersink φ6.5mm**: 22 holes
 
 
 ## Purchase Recommendations

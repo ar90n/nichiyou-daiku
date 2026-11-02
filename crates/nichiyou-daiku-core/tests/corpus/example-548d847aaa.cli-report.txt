@@ -170,20 +170,20 @@ Distances are measured on the face the hole is drilled into:
 
 ### apron_back (2x4, 622mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| right | 34.8mm | 19.0mm | φ8.0mm | 15.0mm |
-| right | 79.3mm | 19.0mm | φ8.0mm | 15.0mm |
-| right | 136.4mm | 19.0mm | φ8.0mm | 15.0mm |
-| right | 180.9mm | 19.0mm | φ8.0mm | 15.0mm |
-| right | 238.0mm | 19.0mm | φ8.0mm | 15.0mm |
-| right | 282.5mm | 19.0mm | φ8.0mm | 15.0mm |
-| right | 339.5mm | 19.0mm | φ8.0mm | 15.0mm |
-| right | 384.0mm | 19.0mm | φ8.0mm | 15.0mm |
-| right | 441.1mm | 19.0mm | φ8.0mm | 15.0mm |
-| right | 485.6mm | 19.0mm | φ8.0mm | 15.0mm |
-| right | 542.7mm | 19.0mm | φ8.0mm | 15.0mm |
-| right | 587.2mm | 19.0mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| right | 34.8mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| right | 79.3mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| right | 136.4mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| right | 180.9mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| right | 238.0mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| right | 282.5mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| right | 339.5mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| right | 384.0mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| right | 441.1mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| right | 485.6mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| right | 542.7mm | 19.0mm | φ8.0mm | 15.0mm | - |
+| right | 587.2mm | 19.0mm | φ8.0mm | 15.0mm | - |
 
 ```
 right (622mm x 38mm):
@@ -198,10 +198,10 @@ right (622mm x 38mm):
 
 ### table_top_2 (2x4, 600mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| back | 19.0mm | 22.2mm | φ8.0mm | 15.0mm |
-| back | 19.0mm | 66.8mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| back | 19.0mm | 22.2mm | φ8.0mm | 15.0mm | - |
+| back | 19.0mm | 66.8mm | φ8.0mm | 15.0mm | - |
 
 ```
 back (600mm x 89mm):
@@ -216,10 +216,10 @@ back (600mm x 89mm):
 
 ### table_top_3 (2x4, 600mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| back | 19.0mm | 22.2mm | φ8.0mm | 15.0mm |
-| back | 19.0mm | 66.8mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| back | 19.0mm | 22.2mm | φ8.0mm | 15.0mm | - |
+| back | 19.0mm | 66.8mm | φ8.0mm | 15.0mm | - |
 
 ```
 back (600mm x 89mm):
@@ -234,10 +234,10 @@ back (600mm x 89mm):
 
 ### table_top_4 (2x4, 600mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| back | 19.0mm | 22.2mm | φ8.0mm | 15.0mm |
-| back | 19.0mm | 66.7mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| back | 19.0mm | 22.2mm | φ8.0mm | 15.0mm | - |
+| back | 19.0mm | 66.7mm | φ8.0mm | 15.0mm | - |
 
 ```
 back (600mm x 89mm):
@@ -252,10 +252,10 @@ back (600mm x 89mm):
 
 ### table_top_5 (2x4, 600mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| back | 19.0mm | 22.2mm | φ8.0mm | 15.0mm |
-| back | 19.0mm | 66.8mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| back | 19.0mm | 22.2mm | φ8.0mm | 15.0mm | - |
+| back | 19.0mm | 66.8mm | φ8.0mm | 15.0mm | - |
 
 ```
 back (600mm x 89mm):
@@ -270,10 +270,10 @@ back (600mm x 89mm):
 
 ### table_top_6 (2x4, 600mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| back | 19.0mm | 22.2mm | φ8.0mm | 15.0mm |
-| back | 19.0mm | 66.8mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| back | 19.0mm | 22.2mm | φ8.0mm | 15.0mm | - |
+| back | 19.0mm | 66.8mm | φ8.0mm | 15.0mm | - |
 
 ```
 back (600mm x 89mm):
@@ -288,10 +288,10 @@ back (600mm x 89mm):
 
 ### table_top_7 (2x4, 600mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| back | 19.0mm | 22.2mm | φ8.0mm | 15.0mm |
-| back | 19.0mm | 66.8mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| back | 19.0mm | 22.2mm | φ8.0mm | 15.0mm | - |
+| back | 19.0mm | 66.8mm | φ8.0mm | 15.0mm | - |
 
 ```
 back (600mm x 89mm):

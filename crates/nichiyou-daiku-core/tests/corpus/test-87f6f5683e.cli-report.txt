@@ -52,10 +52,10 @@ Distances are measured on the face the hole is drilled into:
 
 ### post_l (2x4, 600mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| right | 281.0mm | 9.5mm | φ8.0mm | 15.0mm |
-| right | 281.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| right | 281.0mm | 9.5mm | φ8.0mm | 15.0mm | - |
+| right | 281.0mm | 28.5mm | φ8.0mm | 15.0mm | - |
 
 ```
 right (600mm x 38mm):
@@ -70,10 +70,10 @@ right (600mm x 38mm):
 
 ### post_r (2x4, 600mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| left | 281.0mm | 9.5mm | φ8.0mm | 15.0mm |
-| left | 281.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| left | 281.0mm | 9.5mm | φ8.0mm | 15.0mm | - |
+| left | 281.0mm | 28.5mm | φ8.0mm | 15.0mm | - |
 
 ```
 left (600mm x 38mm):
@@ -88,12 +88,12 @@ left (600mm x 38mm):
 
 ### rung (2x2, 400mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| down | 19.0mm | 9.5mm | φ8.0mm | 15.0mm |
-| down | 19.0mm | 28.5mm | φ8.0mm | 15.0mm |
-| top | 19.0mm | 9.5mm | φ8.0mm | 15.0mm |
-| top | 19.0mm | 28.5mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| down | 19.0mm | 9.5mm | φ8.0mm | 15.0mm | - |
+| down | 19.0mm | 28.5mm | φ8.0mm | 15.0mm | - |
+| top | 19.0mm | 9.5mm | φ8.0mm | 15.0mm | - |
+| top | 19.0mm | 28.5mm | φ8.0mm | 15.0mm | - |
 
 ```
 down (38mm x 38mm):

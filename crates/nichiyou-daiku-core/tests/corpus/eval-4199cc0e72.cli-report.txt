@@ -79,12 +79,12 @@ Distances are measured on the face the hole is drilled into:
 
 ### apron_left (2x4, 500mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| front | 57.0mm | 22.2mm | φ2.5mm | through |
-| front | 57.0mm | 66.8mm | φ2.5mm | through |
-| front | 443.0mm | 22.2mm | φ2.5mm | through |
-| front | 443.0mm | 66.8mm | φ2.5mm | through |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| front | 57.0mm | 22.2mm | φ2.5mm | through | φ7.5mm |
+| front | 57.0mm | 66.8mm | φ2.5mm | through | φ7.5mm |
+| front | 443.0mm | 22.2mm | φ2.5mm | through | φ7.5mm |
+| front | 443.0mm | 66.8mm | φ2.5mm | through | φ7.5mm |
 
 ```
 front (500mm x 89mm):
@@ -99,12 +99,12 @@ front (500mm x 89mm):
 
 ### apron_right (2x4, 500mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| back | 57.0mm | 22.2mm | φ2.5mm | through |
-| back | 57.0mm | 66.8mm | φ2.5mm | through |
-| back | 443.0mm | 22.2mm | φ2.5mm | through |
-| back | 443.0mm | 66.8mm | φ2.5mm | through |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| back | 57.0mm | 22.2mm | φ2.5mm | through | φ7.5mm |
+| back | 57.0mm | 66.8mm | φ2.5mm | through | φ7.5mm |
+| back | 443.0mm | 22.2mm | φ2.5mm | through | φ7.5mm |
+| back | 443.0mm | 66.8mm | φ2.5mm | through | φ7.5mm |
 
 ```
 back (500mm x 89mm):
@@ -119,10 +119,10 @@ back (500mm x 89mm):
 
 ### leg_bl (2x4, 681mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| left | 614.2mm | 19.0mm | φ2.5mm | 27.0mm |
-| left | 658.8mm | 19.0mm | φ2.5mm | 27.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| left | 614.2mm | 19.0mm | φ2.5mm | 27.0mm | - |
+| left | 658.8mm | 19.0mm | φ2.5mm | 27.0mm | - |
 
 ```
 left (681mm x 38mm):
@@ -137,10 +137,10 @@ left (681mm x 38mm):
 
 ### leg_br (2x4, 681mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| right | 614.2mm | 19.0mm | φ2.5mm | 27.0mm |
-| right | 658.8mm | 19.0mm | φ2.5mm | 27.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| right | 614.2mm | 19.0mm | φ2.5mm | 27.0mm | - |
+| right | 658.8mm | 19.0mm | φ2.5mm | 27.0mm | - |
 
 ```
 right (681mm x 38mm):
@@ -155,10 +155,10 @@ right (681mm x 38mm):
 
 ### leg_fl (2x4, 681mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| left | 614.2mm | 19.0mm | φ2.5mm | 27.0mm |
-| left | 658.8mm | 19.0mm | φ2.5mm | 27.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| left | 614.2mm | 19.0mm | φ2.5mm | 27.0mm | - |
+| left | 658.8mm | 19.0mm | φ2.5mm | 27.0mm | - |
 
 ```
 left (681mm x 38mm):
@@ -173,10 +173,10 @@ left (681mm x 38mm):
 
 ### leg_fr (2x4, 681mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| right | 614.2mm | 19.0mm | φ2.5mm | 27.0mm |
-| right | 658.8mm | 19.0mm | φ2.5mm | 27.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| right | 614.2mm | 19.0mm | φ2.5mm | 27.0mm | - |
+| right | 658.8mm | 19.0mm | φ2.5mm | 27.0mm | - |
 
 ```
 right (681mm x 38mm):
@@ -202,6 +202,7 @@ right (681mm x 38mm):
 ### Drill Bits:
 
 - **2.5mm**: 16 holes, deepest: through
+- **Countersink φ7.5mm**: 8 holes
 
 
 ## Purchase Recommendations

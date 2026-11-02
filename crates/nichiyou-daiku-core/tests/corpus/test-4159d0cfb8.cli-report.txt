@@ -44,10 +44,10 @@ Distances are measured on the face the hole is drilled into:
 
 ### beam1 (2x4, 1000mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| front | 400.0mm | 44.5mm | φ2.5mm | 12.0mm |
-| front | 800.0mm | 44.5mm | φ2.5mm | 12.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| front | 400.0mm | 44.5mm | φ2.5mm | 12.0mm | - |
+| front | 800.0mm | 44.5mm | φ2.5mm | 12.0mm | - |
 
 ```
 front (1000mm x 89mm):
@@ -62,10 +62,10 @@ front (1000mm x 89mm):
 
 ### beam2 (2x4, 800mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| front | 200.0mm | 44.5mm | φ2.5mm | through |
-| front | 600.0mm | 44.5mm | φ2.5mm | through |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| front | 200.0mm | 44.5mm | φ2.5mm | through | φ7.0mm |
+| front | 600.0mm | 44.5mm | φ2.5mm | through | φ7.0mm |
 
 ```
 front (800mm x 89mm):
@@ -91,6 +91,7 @@ front (800mm x 89mm):
 ### Drill Bits:
 
 - **2.5mm**: 4 holes, deepest: through
+- **Countersink φ7mm**: 2 holes
 
 
 ## Purchase Recommendations

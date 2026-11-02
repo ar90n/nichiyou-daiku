@@ -44,10 +44,10 @@ Distances are measured on the face the hole is drilled into:
 
 ### shelf (1x6, 412mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| down | 35.0mm | 9.5mm | φ8.0mm | 15.0mm |
-| down | 105.0mm | 9.5mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| down | 35.0mm | 9.5mm | φ8.0mm | 15.0mm | - |
+| down | 105.0mm | 9.5mm | φ8.0mm | 15.0mm | - |
 
 ```
 down (140mm x 19mm):
@@ -62,10 +62,10 @@ down (140mm x 19mm):
 
 ### side_l (1x6, 600mm)
 
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
-| back | 309.5mm | 35.0mm | φ8.0mm | 15.0mm |
-| back | 309.5mm | 105.0mm | φ8.0mm | 15.0mm |
+| Face | From Length Edge | From Width Edge | Diameter | Depth | Countersink |
+|---|---|---|---|---|---|
+| back | 309.5mm | 35.0mm | φ8.0mm | 15.0mm | - |
+| back | 309.5mm | 105.0mm | φ8.0mm | 15.0mm | - |
 
 ```
 back (600mm x 140mm):
