@@ -187,6 +187,16 @@ fn positions(assembly: &Assembly, origin: [f64; 3]) -> Vec<Value> {
         .collect()
 }
 
+/// Every problem but overlaps, as text: the warnings the commands print and
+/// the report lists (diagnostics.py: describe_assembly_issues).
+pub fn describe_assembly_issues(assembly: &Assembly) -> Vec<String> {
+    collect_problems(assembly)
+        .iter()
+        .filter(|problem| problem["kind"] != "overlap")
+        .map(|problem| problem["message"].as_str().unwrap_or_default().to_string())
+        .collect()
+}
+
 /// What `validate --json` prints for a model that assembles.
 pub fn validation_report(assembly: &Assembly) -> Value {
     let problems = collect_problems(assembly);
@@ -473,6 +483,19 @@ pub fn holes_report(assembly: &Assembly) -> Value {
 mod tests {
     use crate::{holes, validate};
     use serde_json::json;
+
+    #[test]
+    fn issues_are_every_problem_but_overlaps() {
+        let source =
+            "(a:2x4 =500)\n(b:2x4 =300)\n(c:2x4 =300)\na -[FL<100 DF<0]- b\na -[FL<150 DF<0]- c\n";
+        let assembly = crate::assembly::Assembly::of(crate::dsl::parse(source).unwrap()).unwrap();
+        assert!(
+            super::collect_problems(&assembly)
+                .iter()
+                .any(|p| p["kind"] == "overlap")
+        );
+        assert!(super::describe_assembly_issues(&assembly).is_empty());
+    }
 
     #[test]
     fn conflicts_are_problems_with_their_loop() {

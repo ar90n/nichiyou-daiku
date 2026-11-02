@@ -3,7 +3,7 @@
 //! connection meets a piece and where each hole is drilled.
 
 use crate::assembly::{Assembly, Hole};
-use crate::diagnostics::collect_problems;
+use crate::diagnostics::describe_assembly_issues;
 use crate::geometry::{Face, Offset, SurfacePoint};
 use crate::hardware::{HardwareItem, count_hardware, tenth};
 use crate::piece::{PieceType, Shape3D};
@@ -196,11 +196,7 @@ pub fn extract_resources(assembly: &Assembly) -> ResourceSummary {
     } else {
         (None, None)
     };
-    let issues = collect_problems(assembly)
-        .iter()
-        .filter(|problem| problem["kind"] != "overlap")
-        .map(|problem| problem["message"].as_str().unwrap_or_default().to_string())
-        .collect();
+    let issues = describe_assembly_issues(assembly);
     ResourceSummary {
         pieces,
         by_type,

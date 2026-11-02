@@ -2,7 +2,9 @@
 
 mod echo;
 mod input;
+mod load;
 mod markdown;
+mod png;
 mod report;
 mod stock;
 mod validate;

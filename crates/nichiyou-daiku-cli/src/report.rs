@@ -4,13 +4,12 @@
 use std::io::Write;
 use std::path::Path;
 
-use nichiyou_daiku_core::assembly::Assembly;
 use nichiyou_daiku_core::cutting::DEFAULT_KERF_MM;
-use nichiyou_daiku_core::dsl;
 use nichiyou_daiku_core::resources::extract_resources;
 
-use crate::echo::{Colour, Echo};
-use crate::input::{python_path, read_source};
+use crate::echo::Echo;
+use crate::input::python_path;
+use crate::load;
 use crate::markdown::{Options, report};
 use crate::stock::load_stock;
 
@@ -81,38 +80,11 @@ pub fn run(args: &Args, echo: &Echo) -> u8 {
             }
         },
     };
-    let source = match read_source(&args.file) {
-        Ok(source) => source,
-        Err(message) => {
-            echo.error(&format!("Error: {message}"), None);
-            return 1;
-        }
-    };
-    echo.verbose("Parsing DSL file...");
-    let model = match dsl::parse(&source) {
-        Ok(model) => model,
-        Err(error) => {
-            echo.error(&format!("DSL Error: {error}"), None);
-            return 1;
-        }
-    };
-    echo.verbose(&format!(
-        "Found {} pieces and {} connections",
-        model.pieces.len(),
-        model.connections.len()
-    ));
-    echo.verbose("Creating assembly...");
-    let assembly = match Assembly::of(model) {
+    let assembly = match load::assembly(&args.file, echo) {
         Ok(assembly) => assembly,
-        Err(message) => {
-            echo.error(&format!("Error creating assembly: {message}"), None);
-            return 1;
-        }
+        Err(code) => return code,
     };
     let summary = extract_resources(&assembly);
-    for issue in &summary.issues {
-        echo.info(&format!("Warning: {issue}"), Some(Colour::Yellow));
-    }
     echo.verbose("Extracting resources...");
     echo.verbose("Generating report...");
     let generated_on = jiff::Zoned::now().strftime("%Y-%m-%d %H:%M").to_string();

@@ -1,6 +1,6 @@
 [package]
 name = "nichiyou-daiku-cli"
-description = "The nichiyou-daiku command line: validate and report on furniture designs (.nd)"
+description = "The nichiyou-daiku command line: validate, report on and draw furniture designs (.nd)"
 edition.workspace = true
 version.workspace = true
 license.workspace = true
@@ -11,8 +11,10 @@ path = "src/main.rs"
 
 [dependencies]
 nichiyou-daiku-core = { path = "../nichiyou-daiku-core" }
+nichiyou-daiku-drawing = { path = "../nichiyou-daiku-drawing" }
 clap = { version = "4", features = ["derive"] }
 jiff = "0.2"
+resvg = { version = "0.49", default-features = false, features = ["text"] }
 serde_json = { version = "1", features = ["preserve_order"] }
 toml = { version = "0.9", features = ["preserve_order"] }
 
