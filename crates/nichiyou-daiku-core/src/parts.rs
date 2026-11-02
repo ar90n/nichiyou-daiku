@@ -6,7 +6,6 @@ use crate::assembly::Assembly;
 use crate::dimensioning::{Side, chain_from_stops};
 use crate::geometry::Face;
 use crate::model::Model;
-use crate::pyfmt::format_mm;
 
 /// Holes this close are the same hole when pieces are compared.
 pub const TOLERANCE_MM: f64 = 0.05;
@@ -368,38 +367,68 @@ pub fn part_name(group: &PartGroup) -> String {
     }
 }
 
-/// Pieces, count, lumber, length and holes per piece, e.g.
-/// `shelf_1, shelf_2 ×2   2x4   300   φ8 ↧15 ×2`.
-pub fn part_title(model: &Model, group: &PartGroup) -> String {
+/// One kind of hole in a part, and how many each piece has.
+#[derive(Clone, Debug, PartialEq)]
+pub struct HoleKind {
+    pub diameter: f64,
+    pub depth: Option<f64>,
+    pub countersink: Option<f64>,
+    pub count: usize,
+}
+
+/// What a part drawing's title gives: the pieces, their lumber and length,
+/// and each piece's holes by kind.
+#[derive(Clone, Debug, PartialEq)]
+pub struct PartTitle {
+    pub pieces: Vec<String>,
+    pub lumber: &'static str,
+    pub length: f64,
+    pub holes: Vec<HoleKind>,
+}
+
+pub fn part_title(model: &Model, group: &PartGroup) -> PartTitle {
     let lumber = model
         .piece(&group.pieces[0])
         .expect("a piece of the model")
         .kind
         .as_str();
-    let mut kinds: Vec<((f64, Option<f64>), usize)> = Vec::new();
+    let mut holes: Vec<HoleKind> = Vec::new();
     for hole in &group.holes {
-        let key = (hole.diameter, hole.depth);
-        match kinds.iter_mut().find(|(k, _)| *k == key) {
-            Some((_, n)) => *n += 1,
-            None => kinds.push((key, 1)),
+        let same = |k: &&mut HoleKind| {
+            k.diameter == hole.diameter
+                && k.depth == hole.depth
+                && k.countersink == hole.countersink
+        };
+        match holes.iter_mut().find(same) {
+            Some(kind) => kind.count += 1,
+            None => holes.push(HoleKind {
+                diameter: hole.diameter,
+                depth: hole.depth,
+                countersink: hole.countersink,
+                count: 1,
+            }),
         }
     }
-    // By diameter; of one diameter, blind holes before through holes
-    kinds.sort_by(|((d1, p1), _), ((d2, p2), _)| {
-        d1.total_cmp(d2)
-            .then(p1.is_none().cmp(&p2.is_none()))
-            .then(p1.unwrap_or(0.0).total_cmp(&p2.unwrap_or(0.0)))
+    // By diameter; of one diameter, blind holes before through holes and
+    // plain ones before countersunk
+    holes.sort_by(|a, b| {
+        a.diameter
+            .total_cmp(&b.diameter)
+            .then(a.depth.is_none().cmp(&b.depth.is_none()))
+            .then(a.depth.unwrap_or(0.0).total_cmp(&b.depth.unwrap_or(0.0)))
+            .then(a.countersink.is_some().cmp(&b.countersink.is_some()))
+            .then(
+                a.countersink
+                    .unwrap_or(0.0)
+                    .total_cmp(&b.countersink.unwrap_or(0.0)),
+            )
     });
-    let mut fields = vec![
-        part_name(group),
-        lumber.to_string(),
-        format_mm(group.size[2]),
-    ];
-    for ((diameter, depth), n) in kinds {
-        let deep = depth.map_or(String::new(), |d| format!(" ↧{}", format_mm(d)));
-        fields.push(format!("φ{}{deep} ×{n}", format_mm(diameter)));
+    PartTitle {
+        pieces: group.pieces.clone(),
+        lumber,
+        length: group.size[2],
+        holes,
     }
-    fields.join("   ")
 }
 
 /// A drilled face's stops for its hole dimensions, along its right and up.
@@ -413,7 +442,7 @@ pub struct FaceStops {
 /// What a part drawing says, without where it is drawn.
 #[derive(Clone, Debug, PartialEq)]
 pub struct PartFacts {
-    pub title: String,
+    pub title: PartTitle,
     pub letters: Vec<(Face, char)>,
     /// The drilled faces, in the order of their letters
     pub faces: Vec<FaceStops>,
@@ -526,27 +555,48 @@ mod tests {
     }
 
     #[test]
-    fn titles_name_the_pieces_lumber_length_and_holes() {
+    fn titles_give_the_pieces_lumber_length_and_holes_by_kind() {
         let source = "(post:2x4 =600)\n(rail:2x4 =400)\n(rail_low:2x4 =400)\n(cleat:2x4 =400)\n(shelf:2x4 =400)\n\
             post -[FL<300 BT<0 S(Slim:3.3x50)]- rail\npost -[FL<100 BT<0 S(3.5, 50)]- rail_low\n\
             post -[BT<0 FT<0 S(Coarse:3.8x57)]- cleat\npost -[BL<300 DL<0 D(:8x30)]- shelf\n";
         let assembly = Assembly::of(parse(source).unwrap()).unwrap();
         let groups = part_groups(&assembly);
+        let post = part_title(&assembly.model, &groups[0]);
         assert_eq!(
-            part_title(&assembly.model, &groups[0]),
-            "post   2x4   600   φ2 ↧12 ×2   φ2.5 ↧12 ×2   φ2.5 ↧19 ×2   φ8 ↧15 ×2"
+            (post.pieces.clone(), post.lumber, post.length),
+            (vec!["post".to_string()], "2x4", 600.0)
         );
+        let kinds: Vec<(f64, Option<f64>, Option<f64>, usize)> = post
+            .holes
+            .iter()
+            .map(|k| (k.diameter, k.depth, k.countersink, k.count))
+            .collect();
         assert_eq!(
-            part_title(&assembly.model, &groups[1]),
-            "rail   2x4   400   φ2 ×2"
+            kinds,
+            [
+                (2.0, Some(12.0), None, 2),
+                (2.5, Some(12.0), None, 2),
+                (2.5, Some(19.0), None, 2),
+                (8.0, Some(15.0), None, 2)
+            ]
+        );
+        let rail = part_title(&assembly.model, &groups[1]);
+        assert_eq!(
+            rail.holes,
+            [HoleKind {
+                diameter: 2.0,
+                depth: None,
+                countersink: Some(6.5),
+                count: 2
+            }]
         );
         let shelf = "(left_side:2x4 =800)\n(right_side:2x4 =800)\n(shelf:2x4 =600)\n\
             left_side -[BL<300 DL<0 D(:8x30)]- shelf\nright_side -[FL<300 TL<0 D(:8x30)]- shelf\n";
         let assembly = Assembly::of(parse(shelf).unwrap()).unwrap();
         let groups = part_groups(&assembly);
         assert_eq!(
-            part_title(&assembly.model, &groups[0]),
-            "left_side, right_side ×2   2x4   800   φ8 ↧15 ×2"
+            part_title(&assembly.model, &groups[0]).pieces,
+            ["left_side", "right_side"]
         );
         let facts = part_facts(&assembly.model, &groups[0]);
         assert_eq!(facts.letters, [(Face::Back, 'A')]);

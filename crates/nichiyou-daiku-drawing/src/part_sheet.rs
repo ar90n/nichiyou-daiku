@@ -7,8 +7,10 @@ use nichiyou_daiku_core::assembly::Assembly;
 use nichiyou_daiku_core::dimensioning::{Side, chain_from_stops};
 use nichiyou_daiku_core::geometry::Face;
 use nichiyou_daiku_core::parts::{
-    PartGroup, edge_neighbours, face_letters, face_point, face_size, part_title, view_direction,
+    HoleKind, PartGroup, PartTitle, edge_neighbours, face_letters, face_point, face_size,
+    part_title, view_direction,
 };
+use nichiyou_daiku_core::pyfmt::format_mm;
 
 use crate::chain::{Drawn, Placement, arrow_points, dimension_levels, draw_chain};
 use crate::solid::{Projection, board_lines};
@@ -32,7 +34,7 @@ const ADVICE: &str = "The report's Pilot Holes table lists the same holes";
 pub type Rect = (f64, f64, f64, f64);
 
 pub struct PartSheet {
-    pub title_lines: Vec<String>,
+    pub title_rows: Vec<TitleRow>,
     pub letters: Vec<(Face, char)>,
     /// Each drilled face's outline
     pub faces: Vec<(Face, Rect)>,
@@ -89,22 +91,41 @@ fn letter_of(letters: &[(Face, char)], face: Face) -> Option<char> {
     letters.iter().find(|(f, _)| *f == face).map(|&(_, l)| l)
 }
 
-/// The title in lines as wide as the page allows, broken after a comma or
-/// between its fields.
-pub fn title_lines(title: &str) -> Vec<String> {
-    let mut words = vec![String::new()];
-    for c in title.chars() {
-        let word = words.last_mut().expect("a word");
-        word.push(c);
-        if word.ends_with(", ") || word.ends_with("   ") {
-            words.push(String::new());
-        }
-    }
+/// A row of the title: the attribute (empty on a continued line), its value
+/// and, for holes, how many each piece has.
+#[derive(Clone, Debug, PartialEq)]
+pub struct TitleRow {
+    pub label: &'static str,
+    pub value: String,
+    pub count: String,
+}
+
+const LABELS: [&str; 5] = ["Pieces:", "Count:", "Lumber:", "Length:", "Holes:"];
+/// DejaVu Sans Bold runs about this much wider than the regular face
+const BOLD_WIDTH: f64 = 1.12;
+const COLUMN_GAP: f64 = 2.5;
+
+pub fn hole_text(kind: &HoleKind) -> String {
+    let depth = kind.depth.map_or(" through".to_string(), |d| {
+        format!(", {}mm deep", format_mm(d))
+    });
+    let sink = kind.countersink.map_or(String::new(), |c| {
+        format!(", countersunk φ{}", format_mm(c))
+    });
+    format!("φ{}{depth}{sink}", format_mm(kind.diameter))
+}
+
+/// The names joined by ", ", broken after a comma to stay within `width`.
+fn wrapped(names: &[String], width: f64) -> Vec<String> {
     let mut lines = vec![String::new()];
-    for word in words.into_iter().filter(|w| !w.is_empty()) {
+    for (i, name) in names.iter().enumerate() {
+        let word = if i + 1 < names.len() {
+            format!("{name}, ")
+        } else {
+            name.clone()
+        };
         let last = lines.last_mut().expect("a line");
-        let wider = text_size(format!("{last}{word}").trim_end()).0 > PAGE_WIDTH - 2.0 * MARGIN;
-        if !last.is_empty() && wider {
+        if !last.is_empty() && text_size(format!("{last}{word}").trim_end()).0 > width {
             lines.push(word);
         } else {
             last.push_str(&word);
@@ -114,6 +135,31 @@ pub fn title_lines(title: &str) -> Vec<String> {
         .into_iter()
         .map(|line| line.trim_end().to_string())
         .collect()
+}
+
+/// The title as attribute: value rows, the pieces wrapped to `width`.
+pub fn title_rows(title: &PartTitle, width: f64) -> Vec<TitleRow> {
+    let row = |label: &'static str, value: String| TitleRow {
+        label,
+        value,
+        count: String::new(),
+    };
+    let mut rows: Vec<TitleRow> = wrapped(&title.pieces, width)
+        .into_iter()
+        .enumerate()
+        .map(|(i, line)| row(if i == 0 { "Pieces:" } else { "" }, line))
+        .collect();
+    rows.push(row("Count:", title.pieces.len().to_string()));
+    rows.push(row("Lumber:", title.lumber.to_string()));
+    rows.push(row("Length:", format!("{}mm", format_mm(title.length))));
+    for (i, kind) in title.holes.iter().enumerate() {
+        rows.push(TitleRow {
+            label: if i == 0 { "Holes:" } else { "" },
+            value: hole_text(kind),
+            count: format!("×{}", kind.count),
+        });
+    }
+    rows
 }
 
 /// Where the reference end's triangle goes on a face's left edge: the
@@ -340,13 +386,41 @@ pub fn part_sheet(assembly: &Assembly, group: &PartGroup) -> PartSheet {
     faces.reverse();
     let top = y - below + ISO_HEIGHT;
     isometric(group, &letters, &mut page, top);
-    let lines = title_lines(&part_title(&assembly.model, group));
+    let label_width = LABELS
+        .iter()
+        .map(|l| text_size(l).0 * BOLD_WIDTH)
+        .fold(0.0, f64::max);
+    let value_x = MARGIN + label_width + COLUMN_GAP;
+    let rows = title_rows(
+        &part_title(&assembly.model, group),
+        PAGE_WIDTH - MARGIN - value_x,
+    );
+    let widest_hole = rows
+        .iter()
+        .filter(|r| !r.count.is_empty())
+        .map(|r| text_size(&r.value).0)
+        .fold(0.0, f64::max);
+    let widest_count = rows
+        .iter()
+        .map(|r| text_size(&r.count).0)
+        .fold(0.0, f64::max);
+    // Counts line up on their right, a gap past the longest hole
+    let count_right = value_x + widest_hole + 2.0 * COLUMN_GAP + widest_count;
     let spacing = line_height() * 1.6;
-    for (i, line) in lines.iter().rev().enumerate() {
-        let width = text_size(line).0;
-        page.text(line, MARGIN + width / 2.0, top + 8.0 + i as f64 * spacing);
+    for (i, row) in rows.iter().enumerate() {
+        let y = top + 8.0 + (rows.len() - 1 - i) as f64 * spacing;
+        if !row.label.is_empty() {
+            page.svg.text_bold(
+                row.label,
+                (MARGIN + text_size(row.label).0 * BOLD_WIDTH / 2.0, y),
+            );
+        }
+        page.text(&row.value, value_x + text_size(&row.value).0 / 2.0, y);
+        if !row.count.is_empty() {
+            page.text(&row.count, count_right - text_size(&row.count).0 / 2.0, y);
+        }
     }
-    let height = top + 14.0 + (lines.len() as f64 - 1.0) * spacing;
+    let height = top + 14.0 + (rows.len() as f64 - 1.0) * spacing;
     page.svg.polyline(
         &[
             (0.0, 0.0),
@@ -367,7 +441,7 @@ pub fn part_sheet(assembly: &Assembly, group: &PartGroup) -> PartSheet {
         page.svg.fill(&arrow_points(tip, direction));
     }
     PartSheet {
-        title_lines: lines,
+        title_rows: rows,
         letters,
         faces,
         marks: page.marks,
@@ -383,6 +457,15 @@ mod tests {
     use super::*;
     use nichiyou_daiku_core::dsl::parse;
     use nichiyou_daiku_core::parts::part_groups;
+    use nichiyou_daiku_core::parts::{HoleKind, PartTitle};
+
+    fn row(label: &'static str, value: &str, count: &str) -> TitleRow {
+        TitleRow {
+            label,
+            value: value.into(),
+            count: count.into(),
+        }
+    }
 
     const SHELF: &str = "(left_side:2x4 =800)\n(right_side:2x4 =800)\n(shelf:2x4 =600)\n\
         left_side -[BL<300 DL<0 D(:8x30)]- shelf\nright_side -[FL<300 TL<0 D(:8x30)]- shelf\n";
@@ -402,15 +485,17 @@ mod tests {
         assert!((rect.0 - 53.0).abs() < 1e-9 && (rect.2 - 274.0).abs() < 1e-9);
         assert!((rect.3 - rect.1 - 89.0 * 221.0 / 800.0).abs() < 1e-9);
         assert_eq!(
-            sheet.title_lines,
-            ["left_side, right_side ×2   2x4   800   φ8 ↧15 ×2"]
+            sheet.title_rows,
+            [
+                row("Pieces:", "left_side, right_side", ""),
+                row("Count:", "2", ""),
+                row("Lumber:", "2x4", ""),
+                row("Length:", "800mm", ""),
+                row("Holes:", "φ8, 15mm deep", "×2"),
+            ]
         );
-        assert!(sheet.svg.starts_with("<svg"));
-        assert!(
-            sheet
-                .svg
-                .contains("left_side, right_side ×2   2x4   800   φ8 ↧15 ×2")
-        );
+        assert!(sheet.svg.contains("left_side, right_side"));
+        assert!(sheet.svg.contains("font-weight=\"bold\""));
         assert_eq!(sheet.width, 280.0);
     }
 
@@ -437,20 +522,62 @@ mod tests {
     }
 
     #[test]
-    fn long_titles_break_after_a_comma_or_between_fields() {
-        let names: Vec<String> = (1..=8)
+    fn long_piece_lists_wrap_inside_the_value_column() {
+        let pieces: Vec<String> = (1..=8)
             .map(|i| format!("a_rather_long_piece_name_{i}"))
             .collect();
-        let title = format!("{} ×8   2x4   750   φ2.5 ×12", names.join(", "));
-        let lines = title_lines(&title);
-        assert!(lines.len() >= 2);
+        let title = PartTitle {
+            pieces: pieces.clone(),
+            lumber: "2x4",
+            length: 750.0,
+            holes: Vec::new(),
+        };
+        let rows = title_rows(&title, 150.0);
+        let names: Vec<&TitleRow> = rows.iter().take_while(|r| r.label != "Count:").collect();
+        assert!(names.len() >= 2);
+        assert_eq!(names[0].label, "Pieces:");
+        assert!(names[1..].iter().all(|r| r.label.is_empty()));
         assert!(
-            lines
+            names
                 .iter()
-                .all(|line| crate::text::text_size(line).0 <= 268.0)
+                .all(|r| crate::text::text_size(&r.value).0 <= 150.0)
         );
-        // Only the spaces at a break go
-        assert_eq!(lines.concat().replace(' ', ""), title.replace(' ', ""));
+        let joined: String = names
+            .iter()
+            .map(|r| r.value.as_str())
+            .collect::<Vec<_>>()
+            .join(" ");
+        assert_eq!(joined, pieces.join(", "));
+    }
+
+    #[test]
+    fn holes_are_a_row_each_with_their_count_apart() {
+        let title = PartTitle {
+            pieces: vec!["leg".into()],
+            lumber: "2x4",
+            length: 750.0,
+            holes: vec![
+                HoleKind {
+                    diameter: 2.5,
+                    depth: None,
+                    countersink: Some(7.5),
+                    count: 12,
+                },
+                HoleKind {
+                    diameter: 10.0,
+                    depth: Some(51.0),
+                    countersink: None,
+                    count: 6,
+                },
+            ],
+        };
+        let rows = title_rows(&title, 200.0);
+        assert_eq!(rows[1], row("Count:", "1", ""));
+        assert_eq!(
+            rows[4],
+            row("Holes:", "φ2.5 through, countersunk φ7.5", "×12")
+        );
+        assert_eq!(rows[5], row("", "φ10, 51mm deep", "×6"));
     }
 
     #[test]

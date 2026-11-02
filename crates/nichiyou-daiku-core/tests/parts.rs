@@ -6,14 +6,40 @@ use std::fs;
 use std::path::PathBuf;
 
 use nichiyou_daiku_core::assembly::Assembly;
-use nichiyou_daiku_core::parts::{part_facts, part_groups};
-use nichiyou_daiku_core::pyfmt::round_mm;
+use nichiyou_daiku_core::parts::{PartTitle, part_facts, part_groups};
+use nichiyou_daiku_core::pyfmt::{format_mm, round_mm};
 use serde_json::{Value, json};
 
 mod common;
 use common::normalize;
 
 const DIR: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/corpus");
+
+/// The title as the Python version wrote it on one line.
+fn one_line(title: &PartTitle) -> String {
+    let count = title.pieces.len();
+    let names = title.pieces.join(", ");
+    let mut fields = vec![
+        if count > 1 {
+            format!("{names} ×{count}")
+        } else {
+            names
+        },
+        title.lumber.to_string(),
+        format_mm(title.length),
+    ];
+    for kind in &title.holes {
+        let deep = kind
+            .depth
+            .map_or(String::new(), |d| format!(" ↧{}", format_mm(d)));
+        fields.push(format!(
+            "φ{}{deep} ×{}",
+            format_mm(kind.diameter),
+            kind.count
+        ));
+    }
+    fields.join("   ")
+}
 
 fn facts(source: &str) -> Value {
     let model = nichiyou_daiku_core::dsl::parse(source).expect("a source that assembles");
@@ -41,7 +67,7 @@ fn facts(source: &str) -> Value {
                     })
                 })
                 .collect();
-            json!({"index": index, "title": facts.title, "letters": letters, "faces": faces})
+            json!({"index": index, "title": one_line(&facts.title), "letters": letters, "faces": faces})
         })
         .collect();
     json!({"parts": parts})

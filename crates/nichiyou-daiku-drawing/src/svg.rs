@@ -55,6 +55,7 @@ enum Item {
         centre: Point,
         vertical: bool,
         ink: Ink,
+        bold: bool,
     },
 }
 
@@ -128,6 +129,18 @@ impl Svg {
             centre,
             vertical,
             ink,
+            bold: false,
+        });
+    }
+
+    /// Bold text centred on `centre`, for a title's attribute names.
+    pub fn text_bold(&mut self, text: &str, centre: Point) {
+        self.items.push(Item::Text {
+            text: text.to_string(),
+            centre,
+            vertical: false,
+            ink: Ink::Black,
+            bold: true,
         });
     }
 
@@ -218,6 +231,7 @@ impl Svg {
                 centre,
                 vertical,
                 ink,
+                bold,
             } = item
             {
                 let (x, yy) = (n(centre.0), n(y(centre.1)));
@@ -227,13 +241,14 @@ impl Svg {
                 } else {
                     format!(" fill=\"{}\"", ink.css())
                 };
+                let weight = if *bold { " font-weight=\"bold\"" } else { "" };
                 let turn = if *vertical {
                     format!(" transform=\"rotate(-90 {x} {yy})\"")
                 } else {
                     String::new()
                 };
                 out.push_str(&format!(
-                    "<text x=\"{x}\" y=\"{yy}\" dominant-baseline=\"central\"{colour}{turn}>{}</text>",
+                    "<text x=\"{x}\" y=\"{yy}\" dominant-baseline=\"central\"{colour}{weight}{turn}>{}</text>",
                     escape(text)
                 ));
             }
@@ -305,5 +320,15 @@ mod tests {
         let out = svg.render(10.0);
         assert!(out.contains(">a&lt;b &amp; &quot;c&quot;</text>"));
         assert!(out.contains("transform=\"rotate(-90 1 9)\""));
+    }
+
+    #[test]
+    fn bold_text_is_bold() {
+        let mut svg = Svg::new(100.0);
+        svg.text_bold("Pieces:", (10.0, 10.0));
+        svg.text("leg", (40.0, 10.0), false);
+        let out = svg.render(20.0);
+        assert!(out.contains("font-weight=\"bold\">Pieces:</text>"));
+        assert!(!out.contains("font-weight=\"bold\">leg"));
     }
 }
