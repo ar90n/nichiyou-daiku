@@ -285,6 +285,7 @@ name = "nichiyou-daiku-drawing"
 version = "0.2.0"
 dependencies = [
  "nichiyou-daiku-core",
+ "serde_json",
 ]
 
 [[package]]
