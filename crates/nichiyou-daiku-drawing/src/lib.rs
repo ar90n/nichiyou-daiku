@@ -9,6 +9,7 @@ pub mod render;
 pub mod solid;
 pub mod step_sheet;
 pub mod svg;
+pub mod technical;
 pub mod text;
 pub mod views;
 

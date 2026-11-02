@@ -11,6 +11,10 @@ const FIGURE_HEIGHT: f64 = 1549.0;
 /// A figure's width, for characters the table does not have
 const DEFAULT_WIDTH: u16 = 1303;
 
+/// Kana, kanji, hangul and full-width forms: a full em in the fonts that
+/// draw them (DejaVu Sans has none of them)
+const WIDE_WIDTH: u16 = 2048;
+
 /// DejaVu Sans advance widths in font units.
 const WIDTHS: &[(char, u16)] = &[
     (' ', 651),
@@ -125,7 +129,25 @@ pub fn line_height() -> f64 {
     TEXT_SIZE
 }
 
+fn is_wide(c: char) -> bool {
+    matches!(c,
+        '\u{1100}'..='\u{115F}'
+        | '\u{2E80}'..='\u{303E}'
+        | '\u{3041}'..='\u{33FF}'
+        | '\u{3400}'..='\u{4DBF}'
+        | '\u{4E00}'..='\u{9FFF}'
+        | '\u{A000}'..='\u{A4CF}'
+        | '\u{AC00}'..='\u{D7A3}'
+        | '\u{F900}'..='\u{FAFF}'
+        | '\u{FE30}'..='\u{FE4F}'
+        | '\u{FF00}'..='\u{FF60}'
+        | '\u{FFE0}'..='\u{FFE6}')
+}
+
 fn advance(c: char) -> u16 {
+    if is_wide(c) {
+        return WIDE_WIDTH;
+    }
     WIDTHS
         .iter()
         .find(|(ch, _)| *ch == c)
@@ -151,5 +173,12 @@ mod tests {
         assert!((text_size("397.5").0 - 9.4625).abs() < 1e-3);
         assert_eq!(text_size("397.5").1, TEXT_SIZE);
         assert!(text_size("φ8 ↧15 ×2").0 > text_size("8 15 2").0);
+    }
+
+    #[test]
+    fn wide_characters_take_a_full_em() {
+        // Kana, kanji and full-width forms are a full em in the fonts that draw them
+        assert_eq!(text_size("左の枠").0, 3.0 * font_size());
+        assert_eq!(text_size("ＡＢ").0, 2.0 * font_size());
     }
 }

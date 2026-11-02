@@ -19,6 +19,8 @@ pub enum Stroke {
     New,
     /// A step's own pieces where they are hidden, dashed
     NewHidden,
+    /// The drawing's frame, the thickest line
+    Frame,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -165,6 +167,10 @@ impl Svg {
             h = n(height)
         );
         let layers = [
+            (
+                Stroke::Frame,
+                "class=\"frame\" stroke=\"#000\" stroke-width=\"0.5\"",
+            ),
             (
                 Stroke::Before,
                 "class=\"before\" stroke=\"#a0a0a0\" stroke-width=\"0.18\"",
@@ -336,5 +342,15 @@ mod tests {
         // Its width is only estimated, so it is anchored at its start
         assert!(out.contains("<text x=\"10\" y=\"10\" dominant-baseline=\"central\" text-anchor=\"start\" font-weight=\"bold\">Pieces:</text>"));
         assert!(!out.contains("font-weight=\"bold\">leg"));
+    }
+
+    #[test]
+    fn frames_are_the_thickest_lines() {
+        let mut svg = Svg::new(10.0);
+        svg.line((0.0, 0.0), (1.0, 0.0), Stroke::Frame);
+        let out = svg.render(10.0);
+        assert!(out.contains(
+            "class=\"frame\" stroke=\"#000\" stroke-width=\"0.5\"><path d=\"M0 10L1 10\"/></g>"
+        ));
     }
 }
