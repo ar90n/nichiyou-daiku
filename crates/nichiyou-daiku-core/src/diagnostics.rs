@@ -603,4 +603,28 @@ mod tests {
             (json!([]), json!([]), json!(false), json!(null))
         );
     }
+
+    #[test]
+    fn the_view_draws_a_countersunk_hole_from_the_head_side() {
+        let report = crate::view(
+            "(base:2x4 =500)\n(target:1x4 =300)\nbase -[FL<100 BL<0 S(Slim:3.3x25)]- target\n",
+        );
+        let sunk: Vec<&serde_json::Value> = report["holes"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter(|h| !h["countersink"].is_null())
+            .collect();
+        assert_eq!(sunk.len(), 2);
+        for hole in sunk {
+            assert_eq!(hole["piece"], "target");
+            assert_eq!(hole["countersink"], 6.5);
+            assert!(hole["depth"].is_null());
+            // On the 1x4's far face, 38 + 19 up, drilled down into it
+            assert_eq!(
+                (hole["center"][1].as_f64(), hole["direction"].as_str()),
+                (Some(57.0), Some("-y"))
+            );
+        }
+    }
 }

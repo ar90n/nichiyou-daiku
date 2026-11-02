@@ -11,7 +11,9 @@ use common::normalize;
 const DIR: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/corpus");
 const KEYS: [&str; 4] = ["parts", "steps", "steps_declared", "steps_hint"];
 
-/// The view with the holes as the Python version records them.
+/// The view with the pieces' holes as the Python version records them: the
+/// parts and steps compared here come from those, while the view's own hole
+/// list stays countersunk (diagnostics' tests cover it).
 fn python_form_view(source: &str) -> serde_json::Value {
     let located = nichiyou_daiku_core::dsl::parse_located(source).expect("a source that assembles");
     let mut assembly = nichiyou_daiku_core::assembly::Assembly::of(located.model.clone())

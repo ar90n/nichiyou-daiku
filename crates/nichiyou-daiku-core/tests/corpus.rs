@@ -308,3 +308,41 @@ fn ids_without_names_are_compared_by_order() {
     );
     assert_eq!(v, serde_json::json!(["anon-1 x", "anon-1"]));
 }
+
+/// Which screws are countersunk, which python_holes takes away before the
+/// comparisons with the Python version.
+#[test]
+fn screws_without_a_counterbore_and_only_they_are_countersunk_on_the_head_side() {
+    use nichiyou_daiku_core::assembly::{Assembly, FastenerKind, countersink_diameter};
+    let mut checked = 0;
+    for case in cases() {
+        let Ok(model) = nichiyou_daiku_core::dsl::parse(&case.source) else {
+            continue;
+        };
+        let Ok(assembly) = Assembly::of(model) else {
+            continue;
+        };
+        for f in &assembly.fasteners {
+            let expected = f.kind == FastenerKind::Screw && f.counterbore.is_none();
+            assert_eq!(
+                f.countersunk.is_some(),
+                expected,
+                "{}: {} -> {}",
+                case.name,
+                f.base_id,
+                f.target_id
+            );
+            if let Some((at, hole)) = f.countersunk {
+                assert_eq!(at.face, f.target_position.face.opposite(), "{}", case.name);
+                assert_eq!(
+                    hole.countersink,
+                    Some(countersink_diameter(f.diameter)),
+                    "{}",
+                    case.name
+                );
+            }
+            checked += 1;
+        }
+    }
+    assert!(checked > 1000, "only {checked} fasteners");
+}
