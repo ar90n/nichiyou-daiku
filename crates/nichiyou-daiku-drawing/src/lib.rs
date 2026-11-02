@@ -5,6 +5,7 @@ pub mod hidden;
 pub mod instructions;
 pub mod labels;
 pub mod part_sheet;
+pub mod render;
 pub mod solid;
 pub mod step_sheet;
 pub mod svg;
