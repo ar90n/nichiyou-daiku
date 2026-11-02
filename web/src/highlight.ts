@@ -60,6 +60,8 @@ export function forProblem(view: View, problem: Problem): Highlight {
           direction: hole.direction,
           diameter: hole.diameter,
           depth: hole.depth,
+          // Colliding bores show as plain cylinders
+          countersink: null,
         })),
         line: connectionLine(view, problem.connection),
       };

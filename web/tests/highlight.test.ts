@@ -37,7 +37,7 @@ describe("problems", () => {
     const hole = { entry: [0, 0, 0], direction: "+x", depth: 10, diameter: 3.8 } as const;
     const h = forProblem(v, { kind: "hole_collision", message: "", connection: ["a", "b"], other_connection: ["b", "c"], piece: "b", fastener: "screw", holes: [{ ...hole, entry: [0, 0, 0] }, { ...hole, entry: [1, 0, 0] }] });
     expect([...h.faded]).toEqual(["b"]);
-    expect(h.holes[1]).toEqual({ piece: "b", center: [1, 0, 0], direction: "+x", diameter: 3.8, depth: 10 });
+    expect(h.holes[1]).toEqual({ piece: "b", center: [1, 0, 0], direction: "+x", diameter: 3.8, depth: 10, countersink: null });
     expect(h.line).toBe(5);
   });
 

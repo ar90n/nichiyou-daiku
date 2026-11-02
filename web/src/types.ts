@@ -40,6 +40,8 @@ export interface HoleShape {
   direction: string;
   diameter: number;
   depth: number | null;
+  /** The mouth of a countersink for a screw head, if any */
+  countersink: number | null;
 }
 
 export interface HoleView extends HoleShape {

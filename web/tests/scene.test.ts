@@ -28,15 +28,27 @@ describe("pieces", () => {
 
 describe("holes", () => {
   it("run from their entry the way they point", () => {
-    const mesh = holeMesh(view(), { piece: "b", center: [10, 0, 50], direction: "+y", diameter: 2.5, depth: 27 }, 0);
+    const mesh = holeMesh(view(), { piece: "b", center: [10, 0, 50], direction: "+y", diameter: 2.5, depth: 27, countersink: null }, 0);
     mesh.updateMatrixWorld();
     const box = new THREE.Box3().setFromObject(mesh);
     expect(box.min.y).toBeCloseTo(-0.2);
     expect(box.max.y).toBeCloseTo(27.2);
   });
 
+  it("a countersunk hole has a cone at its mouth", () => {
+    const sunk = holeMesh(view(), { piece: "b", center: [10, 0, 50], direction: "+y", diameter: 2.5, depth: null, countersink: 7.5 }, 0);
+    expect(sunk.children).toHaveLength(1);
+    const cone = sunk.children[0] as THREE.Mesh;
+    const { radiusTop, radiusBottom, height } = (cone.geometry as THREE.CylinderGeometry).parameters;
+    // Wide at the face, the hole's width at its tip, 2.5mm deep and standing proud
+    expect([radiusTop, radiusBottom]).toEqual([1.25, 3.75]);
+    expect(height).toBeGreaterThan(2.5);
+    const plain = holeMesh(view(), { piece: "b", center: [10, 0, 50], direction: "+y", diameter: 2.5, depth: null, countersink: null }, 0);
+    expect(plain.children).toHaveLength(0);
+  });
+
   it("go through the whole piece when they have no depth", () => {
-    const parts = buildScene(view({ holes: [{ piece: "b", kind: "pilot", center: [19, 38, 50], direction: "+y", diameter: 2.5, depth: null }] }));
+    const parts = buildScene(view({ holes: [{ piece: "b", kind: "pilot", center: [19, 38, 50], direction: "+y", diameter: 2.5, depth: null, countersink: null }] }));
     parts.holes[0].updateMatrixWorld();
     const box = new THREE.Box3().setFromObject(parts.holes[0]);
     expect(box.max.y - box.min.y).toBeCloseTo(300.4);

@@ -70,6 +70,17 @@ export function holeMesh(view: View, hole: HoleShape, color: number): THREE.Mesh
   const mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ color }));
   mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), along);
   mesh.position.fromArray(hole.center).addScaledVector(along, depth / 2);
+  if (hole.countersink) {
+    // The cone a screw head sits in: as wide as the countersink at the face,
+    // narrowing to the hole; its parent's visibility and colour carry over
+    const sink = (hole.countersink - hole.diameter) / 2;
+    const cone = new THREE.Mesh(
+      new THREE.CylinderGeometry(radius, hole.countersink / 2, sink + PROUD_MM, 20),
+      mesh.material,
+    );
+    cone.position.y = -depth / 2 + (sink - PROUD_MM) / 2;
+    mesh.add(cone);
+  }
   mesh.userData.piece = hole.piece;
   return mesh;
 }
