@@ -193,6 +193,66 @@ pub fn step_dimensions(assembly: &Assembly, step: &PlannedStep) -> Vec<Chain> {
         .collect()
 }
 
+/// A piece whose top is this close to the model's top is in its top layer.
+const TOP_TOLERANCE_MM: f64 = 1e-6;
+
+/// The technical drawing's chains (dimensioning.py: chains), with the view
+/// each goes beside; none when the pieces are not all connected, since then
+/// the overall size means nothing. Heights in the front view stop at every
+/// piece; widths in the front view and depths in the side view at the
+/// upright pieces; the top view's at its top layer.
+pub fn drawing_chains(assembly: &Assembly) -> Vec<(&'static str, Chain)> {
+    if assembly.placement.groups.len() != 1 {
+        return Vec::new();
+    }
+    let model = &assembly.model;
+    let bounds: Vec<(String, Bounds)> = model
+        .pieces
+        .iter()
+        .map(|p| {
+            (
+                p.id.clone(),
+                assembly.placement.pose(&p.id).bounds(p.shape()),
+            )
+        })
+        .collect();
+    let all: Vec<String> = model.pieces.iter().map(|p| p.id.clone()).collect();
+    let upright: Vec<String> = model
+        .pieces
+        .iter()
+        .filter(|p| assembly.placement.pose(&p.id).rotation[2][2].abs() == 1)
+        .map(|p| p.id.clone())
+        .collect();
+    let top = bounds
+        .iter()
+        .map(|(_, b)| b.1[2])
+        .fold(f64::NEG_INFINITY, f64::max);
+    let top_layer: Vec<String> = bounds
+        .iter()
+        .filter(|(_, b)| b.1[2] >= top - TOP_TOLERANCE_MM)
+        .map(|(id, _)| id.clone())
+        .collect();
+    vec![
+        ("from +y", chain_for(2, Side::Left, &bounds, model, &all)),
+        (
+            "from +y",
+            chain_for(0, Side::Below, &bounds, model, &upright),
+        ),
+        (
+            "from -x",
+            chain_for(1, Side::Below, &bounds, model, &upright),
+        ),
+        (
+            "from +z",
+            chain_for(0, Side::Below, &bounds, model, &top_layer),
+        ),
+        (
+            "from +z",
+            chain_for(1, Side::Left, &bounds, model, &top_layer),
+        ),
+    ]
+}
+
 /// Chain dimensions through given stops, such as hole centres, between the
 /// lowest and the highest; none of its stretches is a lumber size.
 pub fn chain_from_stops(axis: usize, side: Side, stops: &[f64]) -> Chain {
@@ -336,5 +396,12 @@ mod tests {
         assert_eq!(chain_sides((2, 1)), [(0, Side::Below), (1, Side::Left)]);
         assert_eq!(chain_sides((0, -1)), [(1, Side::Below), (2, Side::Left)]);
         assert_eq!(Side::Below.as_str(), "below");
+    }
+
+    #[test]
+    fn unconnected_pieces_have_no_drawing_chains() {
+        let model = crate::dsl::parse("(a:2x4 =400)\n(b:2x4 =400)\n").unwrap();
+        let assembly = crate::assembly::Assembly::of(model).unwrap();
+        assert!(super::drawing_chains(&assembly).is_empty());
     }
 }

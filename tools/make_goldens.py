@@ -8,9 +8,10 @@
 Each source becomes NAME.nd, NAME.validate.json (what `validate --json` prints),
 NAME.holes.json (every piece's holes and each connection's fasteners),
 NAME.steps.json (the parts, the assembly steps with their fasteners and
-dimensions) and NAME.parts.json (what each drilled part's drawing says); the
-last three only when the source assembles. `--steps-only` writes the steps and
-parts files again for the corpus that is there. `--cli` writes what the CLI
+dimensions), NAME.parts.json (what each drilled part's drawing says) and
+NAME.chains.json (the technical drawing's chain dimensions); the last four
+only when the source assembles. `--steps-only` writes the steps, parts and
+chains files again for the corpus that is there. `--cli` writes what the CLI
 prints (NAME.cli-validate.txt and, for examples,
 NAME.cli-validate-json.txt), NAME.steps.md (the steps command's page) and,
 for the examples and the documents' examples, NAME.render.json (what the
@@ -52,7 +53,11 @@ from nichiyou_daiku.shell.diagnostics import (  # noqa: E402
     failure_report,
     validation_report,
 )
-from nichiyou_daiku.shell.dimensioning import chain_for, chain_from_stops  # noqa: E402
+from nichiyou_daiku.shell.dimensioning import (  # noqa: E402
+    chain_for,
+    chain_from_stops,
+    chains,
+)
 from nichiyou_daiku.shell.parts import part_title  # noqa: E402
 from nichiyou_daiku.shell.instructions import grouping_hint, steps_markdown  # noqa: E402
 from nichiyou_daiku.shell.resources import count_hardware  # noqa: E402
@@ -60,7 +65,14 @@ from nichiyou_daiku.shell.views import axis_view, project  # noqa: E402
 from tests.test_docs import ND_BLOCKS, ND_FILES  # noqa: E402
 
 CORPUS = ROOT / "crates" / "nichiyou-daiku-core" / "tests" / "corpus"
-GENERATED = ("*.nd", "*.validate.json", "*.holes.json", "*.steps.json", "*.parts.json")
+GENERATED = (
+    "*.nd",
+    "*.validate.json",
+    "*.holes.json",
+    "*.steps.json",
+    "*.parts.json",
+    "*.chains.json",
+)
 
 
 def sources(captured: Path | None):
@@ -179,6 +191,35 @@ def steps_report(assembly: Assembly) -> dict:
     }
 
 
+def chains_report(assembly: Assembly) -> list[dict]:
+    """The technical drawing's chains (dimensioning.chains), moved to the
+    model's origin as the step dimensions are."""
+    found = chains(assembly)
+    if not found:
+        return []
+    origin = overall_bounds(assembly.model, assembly.placement)[0]
+    reports = []
+    for chain in found:
+        shift = getattr(origin, chain.axis)
+        reports.append(
+            {
+                "view": chain.view,
+                "axis": chain.axis,
+                "side": chain.side,
+                "stops": [round_mm(s - shift) for s in chain.stops],
+                "segments": [
+                    {
+                        "start": round_mm(s.start - shift),
+                        "end": round_mm(s.end - shift),
+                        "lumber": s.lumber,
+                    }
+                    for s in chain.segments
+                ],
+            }
+        )
+    return reports
+
+
 def parts_report(assembly: Assembly) -> dict:
     """What each drilled part's drawing says: its title, the letters of its
     faces and each drilled face's stops along its right and up."""
@@ -220,19 +261,27 @@ def parts_report(assembly: Assembly) -> dict:
     return {"parts": parts}
 
 
-def reports(source: str) -> tuple[dict, dict | None, dict | None, dict | None]:
+def reports(
+    source: str,
+) -> tuple[dict, dict | None, dict | None, dict | None, list | None]:
     try:
         model = parse_dsl(source)
     except Exception as error:
         report = failure_report(_classify(error)[0], error)
-        return report.model_dump(mode="json"), None, None, None
+        return report.model_dump(mode="json"), None, None, None, None
     try:
         assembly = Assembly.of(model)
     except Exception as error:
         failed = failure_report("assembly", error).model_dump(mode="json")
-        return failed, None, None, None
+        return failed, None, None, None, None
     report = validation_report(assembly).model_dump(mode="json")
-    return report, holes(assembly), steps_report(assembly), parts_report(assembly)
+    return (
+        report,
+        holes(assembly),
+        steps_report(assembly),
+        parts_report(assembly),
+        chains_report(assembly),
+    )
 
 
 def write(path: Path, value) -> None:
@@ -421,7 +470,7 @@ def main() -> None:
     parser.add_argument(
         "--steps-only",
         action="store_true",
-        help="write NAME.steps.json and NAME.parts.json for the .nd files already in the corpus",
+        help="write NAME.steps.json, NAME.parts.json and NAME.chains.json for the .nd files already in the corpus",
     )
     parser.add_argument(
         "--cli",
@@ -433,7 +482,7 @@ def main() -> None:
         write_cli_goldens()
         return
     if args.steps_only:
-        for pattern in ("*.steps.json", "*.parts.json"):
+        for pattern in ("*.steps.json", "*.parts.json", "*.chains.json"):
             for old in CORPUS.glob(pattern):
                 old.unlink()
         written = 0
@@ -444,8 +493,9 @@ def main() -> None:
                 continue  # No holes.json either: it does not assemble
             write(path.with_suffix(".steps.json"), steps_report(assembly))
             write(path.with_suffix(".parts.json"), parts_report(assembly))
+            write(path.with_suffix(".chains.json"), chains_report(assembly))
             written += 1
-        print(f"steps.json and parts.json {written}")
+        print(f"steps.json, parts.json and chains.json {written}")
         return
     CORPUS.mkdir(parents=True, exist_ok=True)
     for pattern in GENERATED:
@@ -460,7 +510,7 @@ def main() -> None:
         seen.add(digest)
         name = f"{origin}-{digest[:10]}"
         (CORPUS / f"{name}.nd").write_text(source, encoding="utf-8")
-        report, hole_list, steps, parts = reports(source)
+        report, hole_list, steps, parts, chain_list = reports(source)
         write(CORPUS / f"{name}.validate.json", report)
         if hole_list is not None:
             write(CORPUS / f"{name}.holes.json", hole_list)
@@ -468,6 +518,8 @@ def main() -> None:
             write(CORPUS / f"{name}.steps.json", steps)
         if parts is not None:
             write(CORPUS / f"{name}.parts.json", parts)
+        if chain_list is not None:
+            write(CORPUS / f"{name}.chains.json", chain_list)
         error = report["error"] or {}
         kind = error.get("kind") or ("problems" if report["problems"] else "valid")
         counts[f"{origin}/{kind}"] += 1
