@@ -1,5 +1,6 @@
 //! The nichiyou-daiku command line (the Python version's cli/dsl_cli.py).
 
+mod drawing;
 mod echo;
 mod fonts;
 mod input;
@@ -66,6 +67,14 @@ enum Commands {
     /// black, beside a view dimensioning where they go.
     #[command(args_override_self = true)]
     Steps(steps::Args),
+    /// Generate technical drawing (PDF) with orthographic views.
+    ///
+    /// Creates technical drawing with: the top view (plan), the front view
+    /// (elevation), the right side view and an isometric view, with the
+    /// overall size and where the pieces go dimensioned (omitted with
+    /// --no-dimensions).
+    #[command(args_override_self = true)]
+    Drawing(drawing::Args),
 }
 
 fn main() -> ExitCode {
@@ -78,5 +87,6 @@ fn main() -> ExitCode {
         Commands::Report(args) => report::run(args, &echo),
         Commands::Render(args) => render::run(args, &echo),
         Commands::Steps(args) => steps::run(args, &echo),
+        Commands::Drawing(args) => drawing::run(args, &echo),
     })
 }

@@ -202,3 +202,120 @@ fn steps_says_which_folder_it_could_not_make() {
         "{err}"
     );
 }
+
+/// The first page's MediaBox in pt.
+fn media_box(pdf: &[u8]) -> Vec<f64> {
+    let text = String::from_utf8_lossy(pdf);
+    let start = text.find("/MediaBox [").expect("a page size") + "/MediaBox [".len();
+    let end = start + text[start..].find(']').expect("a closed MediaBox");
+    text[start..end]
+        .split_whitespace()
+        .map(|n| n.parse().unwrap())
+        .collect()
+}
+
+#[test]
+fn drawing_writes_an_a3_pdf_beside_the_design() {
+    let dir = folder("drawing");
+    let (code, err) = run(&["drawing", "t.nd"], "", &dir);
+    assert_eq!(code, 0, "{err}");
+    assert!(
+        err.ends_with("Successfully created technical drawing: t.pdf\n"),
+        "{err}"
+    );
+    let pdf = fs::read(dir.join("t.pdf")).unwrap();
+    assert!(pdf.starts_with(b"%PDF-"));
+    let size = media_box(&pdf);
+    assert!(
+        (size[2] - 1190.55).abs() < 0.05 && (size[3] - 841.89).abs() < 0.05,
+        "{size:?}"
+    );
+}
+
+#[test]
+fn drawing_writes_svg_for_an_svg_name_on_the_page_asked() {
+    let dir = folder("drawing-svg");
+    let (code, err) = run(
+        &["drawing", "t.nd", "-o", "t.SVG", "--page-size", "a4"],
+        "",
+        &dir,
+    );
+    assert_eq!(code, 0, "{err}");
+    let svg = fs::read_to_string(dir.join("t.SVG")).unwrap();
+    assert!(
+        svg.starts_with(
+            "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"297mm\" height=\"210mm\""
+        )
+    );
+    assert!(svg.contains(">t</text>"), "the title is the design's name");
+}
+
+#[test]
+fn drawing_from_stdin_is_titled_by_its_output() {
+    let dir = folder("drawing-stdin");
+    let table = fs::read_to_string(TABLE).unwrap();
+    assert_eq!(
+        run(&["drawing", "-"], &table, &dir),
+        (
+            1,
+            "Error: An output file (-o) is required when reading from stdin ('-').\n".into()
+        )
+    );
+    assert_eq!(run(&["drawing", "-", "-o", "piped.svg"], &table, &dir).0, 0);
+    assert!(
+        fs::read_to_string(dir.join("piped.svg"))
+            .unwrap()
+            .contains(">piped</text>")
+    );
+}
+
+#[test]
+fn drawing_says_why_unconnected_pieces_have_no_dimensions() {
+    let dir = folder("drawing-apart");
+    fs::write(dir.join("apart.nd"), "(a:2x4 =400)\n(b:2x4 =400)\n").unwrap();
+    let (code, err) = run(&["drawing", "apart.nd", "-o", "apart.svg"], "", &dir);
+    assert_eq!(code, 0, "{err}");
+    assert!(
+        err.contains(
+            "Warning: the drawing has no dimensions: the pieces are in 2 separate parts. Connect them to dimension it\n"
+        ),
+        "{err}"
+    );
+    // Leaving the dimensions out says nothing about them
+    let (_, quiet) = run(
+        &["drawing", "apart.nd", "-o", "apart.svg", "--no-dimensions"],
+        "",
+        &dir,
+    );
+    assert!(!quiet.contains("has no dimensions"), "{quiet}");
+}
+
+#[test]
+fn drawing_says_which_file_it_could_not_write() {
+    let dir = folder("drawing-unwritable");
+    let (code, err) = run(&["drawing", "t.nd", "-o", "missing/d.pdf"], "", &dir);
+    assert_eq!(code, 1);
+    assert!(
+        err.starts_with("Error converting to PDF: cannot write missing/d.pdf: "),
+        "{err}"
+    );
+    let (code, err) = run(&["drawing", "t.nd", "-o", "missing/d.svg"], "", &dir);
+    assert_eq!(code, 1);
+    assert!(
+        err.starts_with("Error exporting SVG: cannot write missing/d.svg: "),
+        "{err}"
+    );
+}
+
+#[test]
+fn drawing_does_not_write_over_its_input() {
+    let dir = folder("drawing-overwrite");
+    assert_eq!(
+        run(&["drawing", "t.nd", "-o", "t.nd"], "", &dir),
+        (
+            1,
+            "Error: Refusing to overwrite the input file: t.nd. Choose a different output path with -o.\n"
+                .into()
+        )
+    );
+}

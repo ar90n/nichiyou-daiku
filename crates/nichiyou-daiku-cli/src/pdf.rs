@@ -6,7 +6,6 @@ use resvg::usvg;
 /// usvg reads mm at 96 dpi; at the same dpi the PDF page is the SVG's page
 const SVG_DPI: f32 = 96.0;
 
-#[cfg_attr(not(test), expect(dead_code, reason = "drawing uses it"))]
 pub fn pdf(svg: &str) -> Result<Vec<u8>, String> {
     let tree = usvg::Tree::from_str(svg, &crate::fonts::options()).map_err(|e| e.to_string())?;
     svg2pdf::to_pdf(
