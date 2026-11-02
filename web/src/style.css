@@ -42,7 +42,9 @@ li.none, li.hint, p.hint { color: #7a6e60; }
 .view { position: relative; display: flex; flex-direction: column; min-height: 0; }
 .toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px; padding: 6px 10px; }
 #views { display: flex; flex-wrap: wrap; gap: 6px; }
-#scene { position: relative; flex: 1; min-height: 0; overflow: hidden; }
+/* Its own stacking context: three's labels each get a z-index, which must not
+   rise over a drawing shown in the 3D's place */
+#scene { position: relative; flex: 1; min-height: 0; overflow: hidden; isolation: isolate; }
 #scene canvas, #scene .labels { position: absolute; inset: 0; }
 #scene .labels { pointer-events: none; }
 .label {
