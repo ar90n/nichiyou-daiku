@@ -1,7 +1,8 @@
 //! Writes a real design's drawings for a person to look at:
 //! `ND_DESIGN=path/to/design.nd cargo test -p nichiyou-daiku-drawing -- --ignored`
 //! writes /tmp/part-N.svg for each drilled part and /tmp/step-N.svg for each
-//! step, and /tmp/render.svg, the check image.
+//! step, /tmp/render.svg, the check image, and /tmp/drawing.svg, the
+//! technical drawing.
 
 use std::fs;
 
@@ -44,4 +45,22 @@ fn writes_the_check_image_to_look_at() {
     let assembly = nichiyou_daiku_core::assembly::Assembly::of(model).unwrap();
     let sheet = nichiyou_daiku_drawing::render::render_sheet(&assembly, "look.nd", 1400);
     fs::write("/tmp/render.svg", sheet.svg).unwrap();
+}
+
+#[test]
+#[ignore]
+fn writes_the_technical_drawing_to_look_at() {
+    let source = source();
+    let model = nichiyou_daiku_core::dsl::parse(&source).unwrap();
+    let assembly = nichiyou_daiku_core::assembly::Assembly::of(model).unwrap();
+    let titles = nichiyou_daiku_drawing::technical::Titles {
+        title: "look",
+        drawing_number: "ND-1",
+        designed_by: "nichiyou-daiku",
+        date: "2026-11-02",
+    };
+    let page = nichiyou_daiku_drawing::technical::Page::A3;
+    let sheet =
+        nichiyou_daiku_drawing::technical::technical_drawing(&assembly, page, &titles, true);
+    fs::write("/tmp/drawing.svg", sheet.svg).unwrap();
 }
