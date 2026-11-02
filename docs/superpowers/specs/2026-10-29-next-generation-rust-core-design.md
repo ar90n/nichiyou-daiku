@@ -38,7 +38,7 @@
       手順の図、印刷。元の R4 の図面の描き方を取り込む）。A は `2026-10-31-r3a-assembly-steps-design.md`、B は `2026-10-31-r3b-step-dimensions-design.md`。C は C1 部品図 → C2 手順の図 → C3 マニュアルと印刷に分ける（2026-11-01、ユーザー承認。C1 は `2026-11-01-r3c1-part-drawings-design.md`、C2 は `2026-11-01-r3c2-step-drawings-design.md`、C3 は `2026-11-01-r3c3-manual-design.md`）。
    4. R4 CLI: `validate` と `report`（材料表・買い物リスト・木取り・ビス・ドリル）、R3 の描き方を使う
       `render`・`drawing`・`steps`。プラグインの `bin/nichiyou-daiku` を Rust 版に替える（配り方はビルド済みの
-      バイナリ）。R4a 文字（CLI の骨組み・`validate`・`report`）→ R4b 絵（`render`・`steps`・`drawing`・`view`）→ R4c 配る に分ける（2026-11-01、ユーザー承認。R4a は `2026-11-01-r4a-cli-text-design.md`）。R4a の後に、皿取りと部品図の題名の見せ方を小さな仕様で入れる（ユーザー）。
+      バイナリ）。R4a 文字（CLI の骨組み・`validate`・`report`）→ R4b 絵（`render`・`steps`・`drawing`・`view`）→ R4c 配る に分ける（2026-11-01、ユーザー承認。R4a は `2026-11-01-r4a-cli-text-design.md`）。R4a の後に、皿取りと部品図の題名の見せ方を小さな仕様で入れる（ユーザー。`2026-11-02-countersinks-and-part-titles-design.md`）。
    5. R5 3D の書き出し: STL と STEP。
    6. R6 片付け: Python 版を消し、評価・ドキュメント・CLAUDE.md を Rust 版に合わせる。
 6. **評価の仕組み（`evals/design`）は Python のまま残す**（前提、ユーザー了承）。製品ではなく開発の道具なので、
