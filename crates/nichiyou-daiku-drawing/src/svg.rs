@@ -183,13 +183,14 @@ impl Svg {
                 Stroke::NewHidden,
                 "class=\"new-hidden\" stroke=\"#000\" stroke-width=\"0.25\" stroke-dasharray=\"1.2 0.6\"",
             ),
-            (
-                Stroke::Outline,
-                "class=\"outline\" stroke=\"#000\" stroke-width=\"0.35\"",
-            ),
+            // Under the outlines: back edges can fall on front ones
             (
                 Stroke::Hidden,
                 "class=\"hidden\" stroke=\"#787878\" stroke-width=\"0.15\" stroke-dasharray=\"1.2 0.6\"",
+            ),
+            (
+                Stroke::Outline,
+                "class=\"outline\" stroke=\"#000\" stroke-width=\"0.35\"",
             ),
             (
                 Stroke::Thin,
@@ -352,5 +353,16 @@ mod tests {
         assert!(out.contains(
             "class=\"frame\" stroke=\"#000\" stroke-width=\"0.5\"><path d=\"M0 10L1 10\"/></g>"
         ));
+    }
+
+    #[test]
+    fn hidden_lines_go_under_the_outlines() {
+        // A face-on view's back edges fall on its front edges: grey dashes
+        // painted over the outline would make it read as hidden
+        let mut svg = Svg::new(10.0);
+        svg.line((0.0, 0.0), (1.0, 0.0), Stroke::Outline);
+        svg.line((0.0, 0.0), (1.0, 0.0), Stroke::Hidden);
+        let out = svg.render(10.0);
+        assert!(out.find("class=\"hidden\"").unwrap() < out.find("class=\"outline\"").unwrap());
     }
 }
