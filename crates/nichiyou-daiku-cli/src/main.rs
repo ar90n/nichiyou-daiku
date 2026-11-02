@@ -1,9 +1,11 @@
 //! The nichiyou-daiku command line (the Python version's cli/dsl_cli.py).
 
 mod echo;
+mod fonts;
 mod input;
 mod load;
 mod markdown;
+mod pdf;
 mod png;
 mod render;
 mod report;

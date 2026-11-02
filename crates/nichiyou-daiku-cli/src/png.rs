@@ -1,34 +1,11 @@
-//! SVG to PNG with resvg, in the DejaVu Sans built in: the images look the
-//! same on every machine (agents read them), with no system library.
-
-use std::sync::{Arc, OnceLock};
+//! SVG to PNG with resvg, in the fonts of `fonts.rs`: the images look the
+//! same on every machine (agents read them), with no system library to draw.
 
 use resvg::{tiny_skia, usvg};
 
-static BOOK: &[u8] = include_bytes!("../fonts/DejaVuSans.ttf");
-static BOLD: &[u8] = include_bytes!("../fonts/DejaVuSans-Bold.ttf");
-
-fn fonts() -> Arc<usvg::fontdb::Database> {
-    static FONTS: OnceLock<Arc<usvg::fontdb::Database>> = OnceLock::new();
-    FONTS
-        .get_or_init(|| {
-            let mut fonts = usvg::fontdb::Database::new();
-            fonts.load_font_data(BOOK.to_vec());
-            fonts.load_font_data(BOLD.to_vec());
-            // The drawings ask for sans-serif after DejaVu Sans
-            fonts.set_sans_serif_family("DejaVu Sans");
-            Arc::new(fonts)
-        })
-        .clone()
-}
-
 /// The SVG as a PNG `width` px wide, its height to scale, on white.
 pub fn png(svg: &str, width: u32) -> Result<Vec<u8>, String> {
-    let options = usvg::Options {
-        fontdb: fonts(),
-        font_family: "DejaVu Sans".into(),
-        ..Default::default()
-    };
+    let options = crate::fonts::options();
     let tree = usvg::Tree::from_str(svg, &options).map_err(|e| e.to_string())?;
     let size = tree.size();
     let scale = width as f32 / size.width();
@@ -48,6 +25,50 @@ pub fn png(svg: &str, width: u32) -> Result<Vec<u8>, String> {
 mod tests {
     use super::*;
     use resvg::tiny_skia::Pixmap;
+    use resvg::usvg::fontdb::{Database, Source};
+
+    #[test]
+    fn only_the_built_in_dejavu_sans_draws_latin_text() {
+        // Passes before the machine's fonts come in; it fails if their
+        // DejaVu Sans, maybe another version, slips in with them
+        let fonts = crate::fonts::fonts();
+        let dejavu: Vec<_> = fonts
+            .faces()
+            .filter(|f| f.families.iter().any(|(name, _)| name == "DejaVu Sans"))
+            .collect();
+        assert_eq!(dejavu.len(), 2);
+        assert!(dejavu.iter().all(|f| matches!(f.source, Source::Binary(_))));
+    }
+
+    #[test]
+    fn what_dejavu_sans_lacks_comes_from_the_machine() {
+        let mut machine = Database::new();
+        machine.load_system_fonts();
+        let covered = machine.faces().any(|face| {
+            machine
+                .with_face_data(face.id, |data, index| {
+                    ttf_parser::Face::parse(data, index)
+                        .ok()
+                        .and_then(|f| f.glyph_index('左'))
+                        .is_some()
+                })
+                .unwrap_or(false)
+        });
+        if !covered {
+            return; // No Japanese font on this machine: nothing can draw it
+        }
+        let draw = |c: char| {
+            let svg = format!(
+                r##"<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"><text x="10" y="45" font-family="DejaVu Sans, sans-serif" font-size="40">{c}</text></svg>"##
+            );
+            Pixmap::decode_png(&png(&svg, 60).unwrap())
+                .unwrap()
+                .data()
+                .to_vec()
+        };
+        // A font without them draws both as the same missing-glyph box
+        assert_ne!(draw('左'), draw('右'), "左 and 右 were drawn as boxes");
+    }
 
     #[test]
     fn a_png_is_as_wide_as_asked_and_keeps_the_shape() {
