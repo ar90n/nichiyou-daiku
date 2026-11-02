@@ -138,6 +138,12 @@ pub fn board_lines(size: [f64; 3], holes: &[LocalHole], view: &Projection) -> Li
         let radius = hole.diameter / 2.0;
         let bottom = add(hole.point, n, -depth);
         put(circle(view, hole.point, axis, radius), view.faces_viewer(n));
+        if let Some(sink) = hole.countersink {
+            put(
+                circle(view, hole.point, axis, sink / 2.0),
+                view.faces_viewer(n),
+            );
+        }
         let out_back = hole.depth.is_none() && view.faces_viewer(n.map(|x| -x));
         put(circle(view, bottom, axis, radius), out_back);
         let across = cross(n, view.toward());
@@ -219,5 +225,27 @@ mod tests {
         let (top, bottom) = (p.project([44.5, 19.0, 300.0]), p.project([44.5, 19.0, 0.0]));
         assert!(top.1 > bottom.1 && (top.0 - bottom.0).abs() < 1e-9);
         assert!(p.faces_viewer([0.0, 1.0, 0.0]) && !p.faces_viewer([0.0, -1.0, 0.0]));
+    }
+
+    #[test]
+    fn a_countersunk_mouth_has_a_second_ring() {
+        let plain = hole(Face::Front, [44.5, 38.0, 150.0], None);
+        let sunk = LocalHole {
+            countersink: Some(7.5),
+            ..plain
+        };
+        let front = view([0.0, 1.0, 0.0]);
+        let (a, b) = (
+            board_lines(SIZE, &[plain], &front),
+            board_lines(SIZE, &[sunk], &front),
+        );
+        assert_eq!(b.visible.len(), a.visible.len() + 1);
+        // From behind the countersink is as hidden as the mouth
+        let back = view([0.0, -1.0, 0.0]);
+        let (a, b) = (
+            board_lines(SIZE, &[plain], &back),
+            board_lines(SIZE, &[sunk], &back),
+        );
+        assert_eq!(b.hidden.len(), a.hidden.len() + 1);
     }
 }

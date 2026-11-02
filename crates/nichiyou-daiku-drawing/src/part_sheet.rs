@@ -7,8 +7,8 @@ use nichiyou_daiku_core::assembly::Assembly;
 use nichiyou_daiku_core::dimensioning::{Side, chain_from_stops};
 use nichiyou_daiku_core::geometry::Face;
 use nichiyou_daiku_core::parts::{
-    HoleKind, PartGroup, PartTitle, edge_neighbours, face_letters, face_point, face_size,
-    part_title, view_direction,
+    HoleKind, LocalHole, PartGroup, PartTitle, edge_neighbours, face_letters, face_point,
+    face_size, part_title, view_direction,
 };
 use nichiyou_daiku_core::pyfmt::format_mm;
 
@@ -162,6 +162,17 @@ pub fn title_rows(title: &PartTitle, width: f64) -> Vec<TitleRow> {
     rows
 }
 
+/// The rings a face view draws for a hole at `scale`: the hole, at least 1mm
+/// across so it shows, and its countersink outside it.
+pub fn hole_radii(hole: &LocalHole, scale: f64) -> Vec<f64> {
+    let radius = (hole.diameter / 2.0 * scale).max(1.0);
+    let mut radii = vec![radius];
+    if let Some(sink) = hole.countersink {
+        radii.push((sink / 2.0 * scale).max(radius + 0.5));
+    }
+    radii
+}
+
 /// Where the reference end's triangle goes on a face's left edge: the
 /// middle, unless an extension line is there; then the widest gap.
 pub fn mark_height(stops: &[f64], bottom: f64, top: f64) -> f64 {
@@ -208,15 +219,16 @@ fn face_view(
         let (u, v) = face_point(face, hole.point, group.size);
         us.push(u);
         vs.push(v);
-        let radius = (hole.diameter / 2.0 * along.min(across)).max(1.0);
         let (cx, cy) = (left + u * along, bottom + v * across);
-        let ring: Vec<Point> = (0..=32)
-            .map(|k| {
-                let a = std::f64::consts::TAU * f64::from(k) / 32.0;
-                (cx + radius * a.cos(), cy + radius * a.sin())
-            })
-            .collect();
-        page.svg.polyline(&ring, false, Stroke::Outline);
+        for radius in hole_radii(hole, along.min(across)) {
+            let ring: Vec<Point> = (0..=32)
+                .map(|k| {
+                    let a = std::f64::consts::TAU * f64::from(k) / 32.0;
+                    (cx + radius * a.cos(), cy + radius * a.sin())
+                })
+                .collect();
+            page.svg.polyline(&ring, false, Stroke::Outline);
+        }
     }
     let letter = letter_of(letters, face).expect("a drilled face has a letter");
     let piece = &group.pieces[0];
@@ -456,6 +468,7 @@ pub fn part_sheet(assembly: &Assembly, group: &PartGroup) -> PartSheet {
 mod tests {
     use super::*;
     use nichiyou_daiku_core::dsl::parse;
+    use nichiyou_daiku_core::parts::LocalHole;
     use nichiyou_daiku_core::parts::part_groups;
     use nichiyou_daiku_core::parts::{HoleKind, PartTitle};
 
@@ -621,6 +634,32 @@ mod tests {
                 "4 vertical dimension values in face A (front) of apron_front do not fit beside their chain without \
               crossing its lines. The report's Pilot Holes table lists the same holes"
             ]
+        );
+    }
+
+    #[test]
+    fn a_countersink_ring_stays_outside_the_hole_ring() {
+        let hole = LocalHole {
+            face: Face::Front,
+            point: [44.5, 38.0, 150.0],
+            diameter: 2.5,
+            depth: None,
+            countersink: Some(7.5),
+        };
+        assert_eq!(hole_radii(&hole, 1.0), [1.25, 3.75]);
+        // Drawn small, the hole ring grows to 1mm and the countersink stays outside it
+        let small = hole_radii(&hole, 0.2);
+        assert_eq!(small[0], 1.0);
+        assert!(small[1] >= small[0] + 0.5);
+        assert_eq!(
+            hole_radii(
+                &LocalHole {
+                    countersink: None,
+                    ..hole
+                },
+                1.0
+            ),
+            [1.25]
         );
     }
 }

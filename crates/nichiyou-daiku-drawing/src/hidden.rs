@@ -159,6 +159,11 @@ pub fn board_body(shape: Shape3D, holes: &[LocalHole], pose: &Pose, view: &Proje
                 push(pair[0], pair[1], shown);
             }
         }
+        if let Some(sink) = hole.countersink {
+            for pair in ring(hole.point, axis, sink / 2.0).windows(2) {
+                push(pair[0], pair[1], mouth_shown);
+            }
+        }
         let across = cross(n, local_toward);
         if dot(across, across) > 1e-12 {
             let length = dot(across, across).sqrt();
@@ -314,5 +319,23 @@ mod tests {
         let sorted = sort_lines(&[board, blocker], &view);
         // The front face's 4 edges show; the other 8, the mouth and the bottom (32 each) are hidden
         assert_eq!((sorted[0].visible.len(), sorted[0].hidden.len()), (4, 72));
+    }
+
+    #[test]
+    fn a_countersink_adds_its_ring() {
+        let view = axis_view(1, 1);
+        let plain = LocalHole {
+            face: Face::Front,
+            point: [44.5, 38.0, 150.0],
+            diameter: 2.5,
+            depth: None,
+            countersink: None,
+        };
+        let sunk = LocalHole {
+            countersink: Some(7.5),
+            ..plain
+        };
+        let count = |hole: LocalHole| board_body(BOARD, &[hole], &STILL, &view).segments.len();
+        assert_eq!(count(sunk), count(plain) + 32);
     }
 }
