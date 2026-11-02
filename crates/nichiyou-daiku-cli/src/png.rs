@@ -23,7 +23,6 @@ fn fonts() -> Arc<usvg::fontdb::Database> {
 }
 
 /// The SVG as a PNG `width` px wide, its height to scale, on white.
-#[cfg_attr(not(test), expect(dead_code, reason = "render and steps use it"))]
 pub fn png(svg: &str, width: u32) -> Result<Vec<u8>, String> {
     let options = usvg::Options {
         fontdb: fonts(),

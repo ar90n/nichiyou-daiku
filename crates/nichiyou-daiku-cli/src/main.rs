@@ -5,6 +5,7 @@ mod input;
 mod load;
 mod markdown;
 mod png;
+mod render;
 mod report;
 mod stock;
 mod validate;
@@ -43,6 +44,15 @@ enum Commands {
     /// Generate a markdown report from DSL file.
     #[command(args_override_self = true)]
     Report(report::Args),
+    /// Render a check image (PNG): four labelled views of the model.
+    ///
+    /// The views look from +z, +y, -x and -x +y +z (the top, the front, the
+    /// right side and an isometric view; the furniture's front faces +y), in
+    /// the axes of the first piece declared (see validate --json). Each
+    /// piece's ID is written where the viewer can see its center; pieces
+    /// hidden in every view are listed in the note.
+    #[command(args_override_self = true)]
+    Render(render::Args),
 }
 
 fn main() -> ExitCode {
@@ -53,5 +63,6 @@ fn main() -> ExitCode {
     ExitCode::from(match &cli.command {
         Commands::Validate(args) => validate::run(args, &echo),
         Commands::Report(args) => report::run(args, &echo),
+        Commands::Render(args) => render::run(args, &echo),
     })
 }

@@ -28,6 +28,32 @@ pub fn read_source(file: &str) -> Result<String, String> {
         .map_err(|e| format!("Error reading file: {e}"))
 }
 
+/// stdin has no name to make the output's from (cli/utils.py:
+/// require_output_for_stdin).
+pub fn require_output(file: &str, output: &Option<String>) -> Result<(), String> {
+    if file == "-" && output.is_none() {
+        return Err("An output file (-o) is required when reading from stdin ('-').".into());
+    }
+    Ok(())
+}
+
+/// The output must not be the design (cli/utils.py:
+/// ensure_not_overwriting_input).
+pub fn refuse_overwrite(file: &str, output: &Path) -> Result<(), String> {
+    let same = file != "-"
+        && match (std::fs::canonicalize(file), std::fs::canonicalize(output)) {
+            (Ok(a), Ok(b)) => a == b,
+            // An output that is not there yet is not the design
+            _ => false,
+        };
+    if same {
+        return Err(format!(
+            "Refusing to overwrite the input file: {file}. Choose a different output path with -o."
+        ));
+    }
+    Ok(())
+}
+
 /// The path as Python's pathlib prints it: no empty or '.' parts, no
 /// trailing slash.
 pub fn python_path(text: &str) -> String {
