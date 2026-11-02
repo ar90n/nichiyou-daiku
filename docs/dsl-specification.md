@@ -421,7 +421,7 @@ piece1 -[anchor anchor S(Type:DIAMETERxLENGTH)]- piece2
 - Through a narrow face the target is counterbored: a hole for the screw head, 10mm wide (12mm for screws thicker than 4.5mm), drilled from the target's far face until the target's thickness is left (89 - 38 = 51mm deep on a 2x4). Either way the screw crosses the target's thickness (38 for 2x lumber, 19 for 1x lumber), so the same screws fit both.
 - Screw length must be greater than the target's thickness.
 - Screw length must be shorter than the base's depth along its contact normal (front/back → thickness, left/right → width, top/down → piece length) plus the target's thickness, so the tip stays inside the base.
-- Holes: pilot holes about 65% of the screw diameter, to the nearest 0.5mm and at least 0.5mm (3.3 → 2.0, 3.8 and 4.2 → 2.5, 5.2 → 3.5mm): through the target, and (length - the target's thickness) deep in the base; a counterbore is listed with them. Holes running into each other are judged on the screw's own diameter, a counterbore on its own.
+- Holes: pilot holes about 65% of the screw diameter, to the nearest 0.5mm and at least 0.5mm (3.3 → 2.0, 3.8 and 4.2 → 2.5, 5.2 → 3.5mm): through the target, and (length - the target's thickness) deep in the base; a counterbore is listed with them. Holes running into each other are judged on the screw's own diameter, a counterbore on its own. A screw whose head sits on the target's far face (no counterbore) is drilled from that face and countersunk there for its head, 90° and twice the screw's diameter to the nearest 0.5mm (3.3 → 6.5, 3.8 → 7.5, 4.2 → 8.5, 4.5 → 9, 5.2 → 10.5mm); the part drawings and the report measure those holes on that face.
 
 #### Choosing a Length
 
