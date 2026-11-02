@@ -81,13 +81,13 @@ Distances are measured on the face the hole is drilled into:
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 57.0mm | 22.2mm | φ2.5mm | through |
-| back | 57.0mm | 66.8mm | φ2.5mm | through |
-| back | 443.0mm | 22.2mm | φ2.5mm | through |
-| back | 443.0mm | 66.8mm | φ2.5mm | through |
+| front | 57.0mm | 22.2mm | φ2.5mm | through |
+| front | 57.0mm | 66.8mm | φ2.5mm | through |
+| front | 443.0mm | 22.2mm | φ2.5mm | through |
+| front | 443.0mm | 66.8mm | φ2.5mm | through |
 
 ```
-back (500mm x 89mm):
+front (500mm x 89mm):
 +----------------------------------------+
 |                                        |
 |    o                              o    |
@@ -101,13 +101,13 @@ back (500mm x 89mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| front | 57.0mm | 22.2mm | φ2.5mm | through |
-| front | 57.0mm | 66.8mm | φ2.5mm | through |
-| front | 443.0mm | 22.2mm | φ2.5mm | through |
-| front | 443.0mm | 66.8mm | φ2.5mm | through |
+| back | 57.0mm | 22.2mm | φ2.5mm | through |
+| back | 57.0mm | 66.8mm | φ2.5mm | through |
+| back | 443.0mm | 22.2mm | φ2.5mm | through |
+| back | 443.0mm | 66.8mm | φ2.5mm | through |
 
 ```
-front (500mm x 89mm):
+back (500mm x 89mm):
 +----------------------------------------+
 |                                        |
 |    o                              o    |

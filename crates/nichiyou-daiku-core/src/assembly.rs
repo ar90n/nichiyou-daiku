@@ -14,11 +14,18 @@ use crate::resolve::resolve_model;
 /// Holes closer than this do not meet.
 pub const CONTACT_TOLERANCE_MM: f64 = 1e-6;
 
-/// A hole: None depth goes through the piece.
+/// A hole: None depth goes through the piece. A countersunk hole has a 90°
+/// cone this wide at its mouth, for a screw head to sit flush.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Hole {
     pub diameter: f64,
     pub depth: Option<f64>,
+    pub countersink: Option<f64>,
+}
+
+/// The countersink for a screw head: about twice the screw, to the nearest 0.5mm.
+pub fn countersink_diameter(screw_diameter: f64) -> f64 {
+    (screw_diameter * 4.0).round_ties_even() / 2.0
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -53,6 +60,18 @@ pub struct Fastener {
     /// For a screw through the target's narrow face, the wider hole its head
     /// sinks into, from the far face down to the target's thickness
     pub counterbore: Option<(SurfacePoint, Hole)>,
+    /// For a screw whose head sits on the target's far face, the target's
+    /// hole as it is drilled: from that face, countersunk for the head
+    pub countersunk: Option<(SurfacePoint, Hole)>,
+}
+
+impl Fastener {
+    /// The target's hole as the builder drills it: from the head side when
+    /// countersunk, else from the contact face.
+    pub fn target_drilled(&self) -> (SurfacePoint, Hole) {
+        self.countersunk
+            .unwrap_or((self.target_position, self.target_hole))
+    }
 }
 
 /// A connection whose fasteners do not fit, or whose holes run into the
@@ -103,6 +122,7 @@ pub fn layout_fasteners(connection: &Connection) -> (Vec<Fastener>, Option<Layou
             let hole = Hole {
                 diameter: radius * 2.0,
                 depth: Some(depth / 2.0),
+                countersink: None,
             };
             (FastenerKind::Dowel, radius * 2.0, hole, hole, 0.0)
         }
@@ -120,10 +140,12 @@ pub fn layout_fasteners(connection: &Connection) -> (Vec<Fastener>, Option<Layou
                 Hole {
                     diameter: pilot,
                     depth: Some(length - thickness),
+                    countersink: None,
                 },
                 Hole {
                     diameter: pilot,
                     depth: None,
+                    countersink: None,
                 },
                 sunk,
             )
@@ -191,23 +213,31 @@ pub fn layout_fasteners(connection: &Connection) -> (Vec<Fastener>, Option<Layou
         point[short_axis] = low[short_axis] + short_size / 2.0;
         let shifted: [f64; 3] = std::array::from_fn(|i| point[i] - relative.translation[i]);
         let target_point = rotate(&to_target, shifted);
-        let counterbore = (sunk > 0.0).then(|| {
-            let far = target.anchor.contact.opposite();
-            let far_axis = far.axis();
-            let mut far_point = target_point;
-            far_point[far_axis] = if far.is_positive() {
-                target_size[far_axis]
-            } else {
-                0.0
-            };
-            (
-                SurfacePoint::from_point(target_shape, far, far_point),
-                Hole {
-                    diameter: counterbore_diameter(diameter),
-                    depth: Some(sunk),
-                },
-            )
-        });
+        let far = target.anchor.contact.opposite();
+        let mut far_point = target_point;
+        far_point[far.axis()] = if far.is_positive() {
+            target_size[far.axis()]
+        } else {
+            0.0
+        };
+        let head_side = SurfacePoint::from_point(target_shape, far, far_point);
+        let counterbore = (sunk > 0.0).then_some((
+            head_side,
+            Hole {
+                diameter: counterbore_diameter(diameter),
+                depth: Some(sunk),
+                countersink: None,
+            },
+        ));
+        // A head on the far face sits flush in a countersink; one in a
+        // counterbore needs none
+        let countersunk = (kind == FastenerKind::Screw && sunk <= 0.0).then_some((
+            head_side,
+            Hole {
+                countersink: Some(countersink_diameter(diameter)),
+                ..target_hole
+            },
+        ));
         fasteners.push(Fastener {
             base_id: base.piece.id.clone(),
             target_id: target.piece.id.clone(),
@@ -222,6 +252,7 @@ pub fn layout_fasteners(connection: &Connection) -> (Vec<Fastener>, Option<Layou
             base_hole,
             target_hole,
             counterbore,
+            countersunk,
         });
     }
     (fasteners, None)
@@ -307,6 +338,7 @@ pub fn find_hole_collisions(fasteners: &[Fastener], model: &Model) -> Vec<Layout
                 Hole {
                     diameter: fastener.diameter,
                     depth: fastener.base_hole.depth,
+                    countersink: None,
                 },
             ),
             (
@@ -315,6 +347,7 @@ pub fn find_hole_collisions(fasteners: &[Fastener], model: &Model) -> Vec<Layout
                 Hole {
                     diameter: fastener.diameter,
                     depth: fastener.target_hole.depth,
+                    countersink: None,
                 },
             ),
         ];
@@ -421,10 +454,7 @@ impl Assembly {
                 &fastener.base_id,
                 (fastener.base_position, fastener.base_hole),
             );
-            add(
-                &fastener.target_id,
-                (fastener.target_position, fastener.target_hole),
-            );
+            add(&fastener.target_id, fastener.target_drilled());
             if let Some(counterbore) = fastener.counterbore {
                 add(&fastener.target_id, counterbore);
             }
@@ -485,11 +515,13 @@ mod tests {
                 (
                     Hole {
                         diameter: 2.0,
-                        depth: None
+                        depth: None,
+                        countersink: None,
                     },
                     Hole {
                         diameter: 2.0,
-                        depth: Some(6.0)
+                        depth: Some(6.0),
+                        countersink: None,
                     }
                 )
             );
@@ -507,7 +539,8 @@ mod tests {
                 f.base_hole,
                 Hole {
                     diameter: 2.5,
-                    depth: Some(27.0)
+                    depth: Some(27.0),
+                    countersink: None,
                 }
             );
             let (at, hole) = f.counterbore.unwrap();
@@ -517,7 +550,8 @@ mod tests {
                     crate::geometry::Face::Left,
                     Hole {
                         diameter: 10.0,
-                        depth: Some(51.0)
+                        depth: Some(51.0),
+                        countersink: None,
                     }
                 )
             );
@@ -536,5 +570,62 @@ mod tests {
         assert!(issues(&CORNER.replace("{h}", "400")).is_empty());
         // 5mm apart the screws pass, but rail_b's 10mm counterbore reaches rail_a's screw
         assert_eq!(issues(&CORNER.replace("{h}", "305")), expected);
+    }
+
+    #[test]
+    fn a_screw_head_on_the_far_face_is_countersunk_there() {
+        assert_eq!(
+            [3.3, 3.8, 4.2, 4.5, 5.2].map(countersink_diameter),
+            [6.5, 7.5, 8.5, 9.0, 10.5]
+        );
+        let (fasteners, _) = layout(
+            "(base:2x4 =500)\n(target:1x4 =300)\nbase -[FL<100 BL<0 S(Slim:3.3x25)]- target\n",
+        );
+        assert_eq!(fasteners.len(), 2);
+        for f in &fasteners {
+            let (at, hole) = f.countersunk.expect("a countersunk screw hole");
+            assert_eq!(at.face, f.target_position.face.opposite());
+            assert_eq!(
+                hole,
+                Hole {
+                    diameter: 2.0,
+                    depth: None,
+                    countersink: Some(6.5)
+                }
+            );
+            assert_eq!(f.target_drilled(), (at, hole));
+        }
+        let (counterbored, _) =
+            layout("(post:2x4 =600)\n(rail:2x4 =300)\nrail -[DF<0 RF<300 S(Slim:3.8x65)]- post\n");
+        assert!(counterbored.iter().all(|f| f.countersunk.is_none()));
+        let (dowels, _) = layout("(a:2x4 =800)\n(b:2x4 =600)\na -[BL<300 DL<0 D(:8x30)]- b\n");
+        assert!(
+            dowels
+                .iter()
+                .all(|f| f.countersunk.is_none() && f.target_hole.countersink.is_none())
+        );
+    }
+
+    #[test]
+    fn the_target_is_drilled_from_the_head_side() {
+        let assembly = Assembly::of(
+            crate::dsl::parse(
+                "(base:2x4 =500)\n(target:1x4 =300)\nbase -[FL<100 BL<0 S(Slim:3.3x25)]- target\n",
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        let (_, holes) = assembly
+            .pilot_holes
+            .iter()
+            .find(|(id, _)| id == "target")
+            .unwrap();
+        assert_eq!(holes.len(), 2);
+        assert!(
+            holes
+                .iter()
+                .all(|(at, hole)| at.face == crate::geometry::Face::Front
+                    && hole.countersink == Some(6.5))
+        );
     }
 }

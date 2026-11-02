@@ -279,17 +279,17 @@ top (89mm x 38mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 57.0mm | 22.2mm | φ2.5mm | through |
-| back | 57.0mm | 66.8mm | φ2.5mm | through |
-| back | 443.0mm | 22.2mm | φ2.5mm | through |
-| back | 443.0mm | 66.8mm | φ2.5mm | through |
-| back | 19.0mm | 66.8mm | φ2.5mm | through |
-| back | 19.0mm | 22.2mm | φ2.5mm | through |
-| back | 481.0mm | 66.8mm | φ2.5mm | through |
-| back | 481.0mm | 22.2mm | φ2.5mm | through |
+| front | 57.0mm | 22.2mm | φ2.5mm | through |
+| front | 57.0mm | 66.8mm | φ2.5mm | through |
+| front | 443.0mm | 22.2mm | φ2.5mm | through |
+| front | 443.0mm | 66.8mm | φ2.5mm | through |
+| front | 19.0mm | 66.8mm | φ2.5mm | through |
+| front | 19.0mm | 22.2mm | φ2.5mm | through |
+| front | 481.0mm | 66.8mm | φ2.5mm | through |
+| front | 481.0mm | 22.2mm | φ2.5mm | through |
 
 ```
-back (500mm x 89mm):
+front (500mm x 89mm):
 +----------------------------------------+
 |                                        |
 | o  o                              o  o |
@@ -303,17 +303,17 @@ back (500mm x 89mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| front | 57.0mm | 22.2mm | φ2.5mm | through |
-| front | 57.0mm | 66.8mm | φ2.5mm | through |
-| front | 443.0mm | 22.2mm | φ2.5mm | through |
-| front | 443.0mm | 66.8mm | φ2.5mm | through |
-| front | 19.0mm | 66.8mm | φ2.5mm | through |
-| front | 19.0mm | 22.2mm | φ2.5mm | through |
-| front | 481.0mm | 66.8mm | φ2.5mm | through |
-| front | 481.0mm | 22.2mm | φ2.5mm | through |
+| back | 57.0mm | 22.2mm | φ2.5mm | through |
+| back | 57.0mm | 66.8mm | φ2.5mm | through |
+| back | 443.0mm | 22.2mm | φ2.5mm | through |
+| back | 443.0mm | 66.8mm | φ2.5mm | through |
+| back | 19.0mm | 66.8mm | φ2.5mm | through |
+| back | 19.0mm | 22.2mm | φ2.5mm | through |
+| back | 481.0mm | 66.8mm | φ2.5mm | through |
+| back | 481.0mm | 22.2mm | φ2.5mm | through |
 
 ```
-front (500mm x 89mm):
+back (500mm x 89mm):
 +----------------------------------------+
 |                                        |
 | o  o                              o  o |
@@ -399,11 +399,11 @@ right (681mm x 38mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 481.0mm | 114.5mm | φ2.0mm | through |
-| back | 481.0mm | 63.5mm | φ2.0mm | through |
+| front | 481.0mm | 114.5mm | φ2.0mm | through |
+| front | 481.0mm | 63.5mm | φ2.0mm | through |
 
 ```
-back (500mm x 140mm):
+front (500mm x 140mm):
 +----------------------------------------+
 |                                        |
 |                                        |
@@ -417,11 +417,11 @@ back (500mm x 140mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 481.0mm | 105.0mm | φ2.0mm | through |
-| back | 481.0mm | 35.0mm | φ2.0mm | through |
+| front | 481.0mm | 105.0mm | φ2.0mm | through |
+| front | 481.0mm | 35.0mm | φ2.0mm | through |
 
 ```
-back (500mm x 140mm):
+front (500mm x 140mm):
 +----------------------------------------+
 |                                        |
 |                                      o |
@@ -435,11 +435,11 @@ back (500mm x 140mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 481.0mm | 105.0mm | φ2.0mm | through |
-| back | 481.0mm | 35.0mm | φ2.0mm | through |
+| front | 481.0mm | 105.0mm | φ2.0mm | through |
+| front | 481.0mm | 35.0mm | φ2.0mm | through |
 
 ```
-back (500mm x 140mm):
+front (500mm x 140mm):
 +----------------------------------------+
 |                                        |
 |                                      o |
@@ -453,13 +453,13 @@ back (500mm x 140mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 481.0mm | 105.0mm | φ2.0mm | through |
-| back | 481.0mm | 35.0mm | φ2.0mm | through |
-| back | 19.0mm | 105.0mm | φ2.0mm | through |
-| back | 19.0mm | 35.0mm | φ2.0mm | through |
+| front | 481.0mm | 105.0mm | φ2.0mm | through |
+| front | 481.0mm | 35.0mm | φ2.0mm | through |
+| front | 19.0mm | 105.0mm | φ2.0mm | through |
+| front | 19.0mm | 35.0mm | φ2.0mm | through |
 
 ```
-back (500mm x 140mm):
+front (500mm x 140mm):
 +----------------------------------------+
 |                                        |
 | o                                    o |
@@ -473,11 +473,11 @@ back (500mm x 140mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 481.0mm | 105.0mm | φ2.0mm | through |
-| back | 481.0mm | 35.0mm | φ2.0mm | through |
+| front | 481.0mm | 105.0mm | φ2.0mm | through |
+| front | 481.0mm | 35.0mm | φ2.0mm | through |
 
 ```
-back (500mm x 140mm):
+front (500mm x 140mm):
 +----------------------------------------+
 |                                        |
 |                                      o |
@@ -491,11 +491,11 @@ back (500mm x 140mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 481.0mm | 105.0mm | φ2.0mm | through |
-| back | 481.0mm | 35.0mm | φ2.0mm | through |
+| front | 481.0mm | 105.0mm | φ2.0mm | through |
+| front | 481.0mm | 35.0mm | φ2.0mm | through |
 
 ```
-back (500mm x 140mm):
+front (500mm x 140mm):
 +----------------------------------------+
 |                                        |
 |                                      o |
@@ -509,11 +509,11 @@ back (500mm x 140mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 481.0mm | 76.5mm | φ2.0mm | through |
-| back | 481.0mm | 25.5mm | φ2.0mm | through |
+| front | 481.0mm | 76.5mm | φ2.0mm | through |
+| front | 481.0mm | 25.5mm | φ2.0mm | through |
 
 ```
-back (500mm x 140mm):
+front (500mm x 140mm):
 +----------------------------------------+
 |                                      o |
 |                                        |

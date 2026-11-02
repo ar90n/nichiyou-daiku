@@ -145,8 +145,21 @@ fn validate_json_is_the_text_the_python_cli_prints() {
     );
 }
 
+/// ND_BLESS=1 writes what the CLI prints over the report's golden files,
+/// which are the Rust CLI's own since countersinks (2026-11-02).
+fn blessing() -> bool {
+    std::env::var_os("ND_BLESS").is_some()
+}
+
 #[test]
-fn report_prints_what_the_python_version_prints() {
+fn report_prints_its_golden_files() {
+    if blessing() {
+        for (name, source) in corpus_cases() {
+            let path = Path::new(CORPUS).join(format!("{name}.cli-report.txt"));
+            fs::write(path, run(&["report", "-"], &source, Path::new(CORPUS))).unwrap();
+        }
+        return;
+    }
     check_corpus(&["report", "-"], "cli-report.txt", |name| {
         golden(name, "cli-report.txt")
     });
@@ -188,6 +201,10 @@ fn options_print_what_the_python_version_prints() {
         let want =
             fs::read_to_string(Path::new(CLI_DIR).join(format!("{}.txt", case.name))).unwrap();
         let got = run(&args, &stdin, Path::new(CLI_DIR));
+        if blessing() && case.args.iter().any(|a| a == "report") {
+            fs::write(Path::new(CLI_DIR).join(format!("{}.txt", case.name)), &got).unwrap();
+            continue;
+        }
         if !same_output(&toml_reason_hidden(&want), &toml_reason_hidden(&got)) {
             failures.push(format!("--- {}\n{want}\n+++\n{got}", case.name));
         }

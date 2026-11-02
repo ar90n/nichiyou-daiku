@@ -68,13 +68,13 @@ Distances are measured on the face the hole is drilled into:
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 22.2mm | 44.5mm | φ2.5mm | through |
-| back | 66.8mm | 44.5mm | φ2.5mm | through |
-| back | 933.2mm | 44.5mm | φ2.5mm | through |
-| back | 977.8mm | 44.5mm | φ2.5mm | through |
+| front | 22.2mm | 44.5mm | φ2.5mm | through |
+| front | 66.8mm | 44.5mm | φ2.5mm | through |
+| front | 933.2mm | 44.5mm | φ2.5mm | through |
+| front | 977.8mm | 44.5mm | φ2.5mm | through |
 
 ```
-back (1000mm x 89mm):
+front (1000mm x 89mm):
 +----------------------------------------+
 |                                        |
 |                                        |

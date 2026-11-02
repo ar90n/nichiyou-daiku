@@ -17,7 +17,8 @@ const DIR: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/corpus");
 
 fn facts(source: &str) -> Value {
     let model = nichiyou_daiku_core::dsl::parse(source).expect("a source that assembles");
-    let assembly = Assembly::of(model).expect("a source that assembles");
+    let mut assembly = Assembly::of(model).expect("a source that assembles");
+    common::python_holes(&mut assembly);
     let parts: Vec<Value> = part_groups(&assembly)
         .iter()
         .enumerate()

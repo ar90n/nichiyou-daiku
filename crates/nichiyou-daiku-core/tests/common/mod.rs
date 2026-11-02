@@ -5,6 +5,9 @@
 
 use std::collections::{BTreeSet, HashMap};
 
+use nichiyou_daiku_core::assembly::Assembly;
+use nichiyou_daiku_core::geometry::SurfacePoint;
+
 use serde_json::Value;
 
 // The Python version names anonymous pieces with random UUIDs: both sides
@@ -168,4 +171,26 @@ pub fn same_syntax_message(expected: &str, actual: &str) -> bool {
         && e.found == a.found
         && e.rest == a.rest
         && e.expected.is_subset(&a.expected)
+}
+
+/// The holes as the Python version records them, which has no countersinks
+/// (2026-11-02): a countersunk screw hole back on the target's contact face.
+pub fn python_holes(assembly: &mut Assembly) {
+    let model = &assembly.model;
+    for (piece_id, holes) in assembly.pilot_holes.iter_mut() {
+        let shape = model.piece(piece_id).expect("a piece with holes").shape();
+        let size = [shape.width, shape.height, shape.length];
+        for (at, hole) in holes.iter_mut() {
+            if hole.countersink.take().is_some() {
+                let face = at.face.opposite();
+                let mut point = at.to_point(shape);
+                point[face.axis()] = if face.is_positive() {
+                    size[face.axis()]
+                } else {
+                    0.0
+                };
+                *at = SurfacePoint::from_point(shape, face, point);
+            }
+        }
+    }
 }

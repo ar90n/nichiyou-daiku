@@ -1,4 +1,4 @@
 exit: 1
 --- stdout
 --- stderr
-Error: stock/bad-toml.toml: not valid TOML (Invalid value (at line 1, column 8)). Write e.g. kerf = 3 and "2x4" = [1820, 2440]
+Error: stock/bad-toml.toml: not valid TOML (extra `=`, expected nothing). Write e.g. kerf = 3 and "2x4" = [1820, 2440]

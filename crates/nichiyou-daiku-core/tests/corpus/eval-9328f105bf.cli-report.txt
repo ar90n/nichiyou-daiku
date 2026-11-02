@@ -156,58 +156,12 @@ top (140mm x 19mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| front | 151.0mm | 9.5mm | φ2.0mm | through |
-| front | 221.0mm | 9.5mm | φ2.0mm | through |
-| down | 35.0mm | 9.5mm | φ2.0mm | 11.0mm |
-| down | 105.0mm | 9.5mm | φ2.0mm | 11.0mm |
-| top | 35.0mm | 9.5mm | φ2.0mm | 11.0mm |
-| top | 105.0mm | 9.5mm | φ2.0mm | 11.0mm |
-
-```
-down (140mm x 19mm):
-+----------------------------------------+
-|                                        |
-|                                        |
-|          o                   o         |
-|                                        |
-|                                        |
-+----------------------------------------+
-```
-
-```
-front (412mm x 140mm):
-+----------------------------------------+
-|              o      o                  |
-|                                        |
-|                                        |
-|                                        |
-|                                        |
-+----------------------------------------+
-```
-
-```
-top (140mm x 19mm):
-+----------------------------------------+
-|                                        |
-|                                        |
-|          o                   o         |
-|                                        |
-|                                        |
-+----------------------------------------+
-```
-
-### shelf_middle (1x6, 412mm)
-
-| Face | From Length Edge | From Width Edge | Diameter | Depth |
-|---|---|---|---|---|
 | back | 151.0mm | 9.5mm | φ2.0mm | through |
 | back | 221.0mm | 9.5mm | φ2.0mm | through |
 | down | 35.0mm | 9.5mm | φ2.0mm | 11.0mm |
 | down | 105.0mm | 9.5mm | φ2.0mm | 11.0mm |
 | top | 35.0mm | 9.5mm | φ2.0mm | 11.0mm |
 | top | 105.0mm | 9.5mm | φ2.0mm | 11.0mm |
-| front | 191.0mm | 9.5mm | φ2.0mm | through |
-| front | 261.0mm | 9.5mm | φ2.0mm | through |
 
 ```
 back (412mm x 140mm):
@@ -232,17 +186,6 @@ down (140mm x 19mm):
 ```
 
 ```
-front (412mm x 140mm):
-+----------------------------------------+
-|                  o      o              |
-|                                        |
-|                                        |
-|                                        |
-|                                        |
-+----------------------------------------+
-```
-
-```
 top (140mm x 19mm):
 +----------------------------------------+
 |                                        |
@@ -253,10 +196,12 @@ top (140mm x 19mm):
 +----------------------------------------+
 ```
 
-### shelf_top (1x6, 412mm)
+### shelf_middle (1x6, 412mm)
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
+| front | 151.0mm | 9.5mm | φ2.0mm | through |
+| front | 221.0mm | 9.5mm | φ2.0mm | through |
 | down | 35.0mm | 9.5mm | φ2.0mm | 11.0mm |
 | down | 105.0mm | 9.5mm | φ2.0mm | 11.0mm |
 | top | 35.0mm | 9.5mm | φ2.0mm | 11.0mm |
@@ -287,6 +232,61 @@ down (140mm x 19mm):
 ```
 
 ```
+front (412mm x 140mm):
++----------------------------------------+
+|              o      o                  |
+|                                        |
+|                                        |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+```
+top (140mm x 19mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+### shelf_top (1x6, 412mm)
+
+| Face | From Length Edge | From Width Edge | Diameter | Depth |
+|---|---|---|---|---|
+| down | 35.0mm | 9.5mm | φ2.0mm | 11.0mm |
+| down | 105.0mm | 9.5mm | φ2.0mm | 11.0mm |
+| top | 35.0mm | 9.5mm | φ2.0mm | 11.0mm |
+| top | 105.0mm | 9.5mm | φ2.0mm | 11.0mm |
+| front | 191.0mm | 9.5mm | φ2.0mm | through |
+| front | 261.0mm | 9.5mm | φ2.0mm | through |
+
+```
+down (140mm x 19mm):
++----------------------------------------+
+|                                        |
+|                                        |
+|          o                   o         |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+```
+front (412mm x 140mm):
++----------------------------------------+
+|                  o      o              |
+|                                        |
+|                                        |
+|                                        |
+|                                        |
++----------------------------------------+
+```
+
+```
 top (140mm x 19mm):
 +----------------------------------------+
 |                                        |
@@ -301,15 +301,15 @@ top (140mm x 19mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 9.5mm | 35.0mm | φ2.0mm | through |
-| back | 9.5mm | 105.0mm | φ2.0mm | through |
-| back | 300.0mm | 35.0mm | φ2.0mm | through |
-| back | 300.0mm | 105.0mm | φ2.0mm | through |
-| back | 590.5mm | 35.0mm | φ2.0mm | through |
-| back | 590.5mm | 105.0mm | φ2.0mm | through |
+| front | 9.5mm | 35.0mm | φ2.0mm | through |
+| front | 9.5mm | 105.0mm | φ2.0mm | through |
+| front | 300.0mm | 35.0mm | φ2.0mm | through |
+| front | 300.0mm | 105.0mm | φ2.0mm | through |
+| front | 590.5mm | 35.0mm | φ2.0mm | through |
+| front | 590.5mm | 105.0mm | φ2.0mm | through |
 
 ```
-back (600mm x 140mm):
+front (600mm x 140mm):
 +----------------------------------------+
 |                                        |
 |o                   o                  o|
@@ -323,15 +323,15 @@ back (600mm x 140mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| front | 9.5mm | 35.0mm | φ2.0mm | through |
-| front | 9.5mm | 105.0mm | φ2.0mm | through |
-| front | 300.0mm | 35.0mm | φ2.0mm | through |
-| front | 300.0mm | 105.0mm | φ2.0mm | through |
-| front | 590.5mm | 35.0mm | φ2.0mm | through |
-| front | 590.5mm | 105.0mm | φ2.0mm | through |
+| back | 9.5mm | 35.0mm | φ2.0mm | through |
+| back | 9.5mm | 105.0mm | φ2.0mm | through |
+| back | 300.0mm | 35.0mm | φ2.0mm | through |
+| back | 300.0mm | 105.0mm | φ2.0mm | through |
+| back | 590.5mm | 35.0mm | φ2.0mm | through |
+| back | 590.5mm | 105.0mm | φ2.0mm | through |
 
 ```
-front (600mm x 140mm):
+back (600mm x 140mm):
 +----------------------------------------+
 |                                        |
 |o                   o                  o|

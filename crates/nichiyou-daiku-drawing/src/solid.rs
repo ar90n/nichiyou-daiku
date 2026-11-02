@@ -171,6 +171,7 @@ mod tests {
             point,
             diameter: 8.0,
             depth,
+            countersink: None,
         }
     }
 

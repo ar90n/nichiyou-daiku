@@ -104,13 +104,13 @@ Distances are measured on the face the hole is drilled into:
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| front | 22.2mm | 44.5mm | φ2.5mm | through |
-| front | 66.8mm | 44.5mm | φ2.5mm | through |
-| front | 933.2mm | 44.5mm | φ2.5mm | through |
-| front | 977.8mm | 44.5mm | φ2.5mm | through |
+| back | 22.2mm | 44.5mm | φ2.5mm | through |
+| back | 66.8mm | 44.5mm | φ2.5mm | through |
+| back | 933.2mm | 44.5mm | φ2.5mm | through |
+| back | 977.8mm | 44.5mm | φ2.5mm | through |
 
 ```
-front (1000mm x 89mm):
+back (1000mm x 89mm):
 +----------------------------------------+
 |                                        |
 |                                        |
@@ -124,15 +124,15 @@ front (1000mm x 89mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 22.2mm | 44.5mm | φ2.5mm | through |
-| back | 66.8mm | 44.5mm | φ2.5mm | through |
-| back | 933.2mm | 44.5mm | φ2.5mm | through |
-| back | 977.8mm | 44.5mm | φ2.5mm | through |
+| front | 22.2mm | 44.5mm | φ2.5mm | through |
+| front | 66.8mm | 44.5mm | φ2.5mm | through |
+| front | 933.2mm | 44.5mm | φ2.5mm | through |
+| front | 977.8mm | 44.5mm | φ2.5mm | through |
 | left | 125.0mm | 19.0mm | φ2.0mm | 26.0mm |
 | left | 375.0mm | 19.0mm | φ2.0mm | 26.0mm |
 
 ```
-back (1000mm x 89mm):
+front (1000mm x 89mm):
 +----------------------------------------+
 |                                        |
 |                                        |
@@ -219,8 +219,8 @@ top (89mm x 38mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| front | 614.2mm | 19.0mm | φ2.5mm | through |
-| front | 658.8mm | 19.0mm | φ2.5mm | through |
+| back | 614.2mm | 19.0mm | φ2.5mm | through |
+| back | 658.8mm | 19.0mm | φ2.5mm | through |
 | back | 636.5mm | 22.2mm | φ2.5mm | 27.0mm |
 | back | 636.5mm | 66.8mm | φ2.5mm | 27.0mm |
 
@@ -228,20 +228,9 @@ top (89mm x 38mm):
 back (681mm x 89mm):
 +----------------------------------------+
 |                                        |
-|                                     o  |
+|                                    ooo |
 |                                        |
 |                                     o  |
-|                                        |
-+----------------------------------------+
-```
-
-```
-front (681mm x 89mm):
-+----------------------------------------+
-|                                        |
-|                                    o o |
-|                                        |
-|                                        |
 |                                        |
 +----------------------------------------+
 ```
@@ -252,8 +241,8 @@ front (681mm x 89mm):
 |---|---|---|---|---|
 | back | 636.5mm | 22.2mm | φ2.5mm | 27.0mm |
 | back | 636.5mm | 66.8mm | φ2.5mm | 27.0mm |
-| front | 614.2mm | 70.0mm | φ2.5mm | through |
-| front | 658.8mm | 70.0mm | φ2.5mm | through |
+| back | 614.2mm | 70.0mm | φ2.5mm | through |
+| back | 658.8mm | 70.0mm | φ2.5mm | through |
 
 ```
 back (681mm x 89mm):
@@ -261,18 +250,7 @@ back (681mm x 89mm):
 |                                        |
 |                                     o  |
 |                                        |
-|                                     o  |
-|                                        |
-+----------------------------------------+
-```
-
-```
-front (681mm x 89mm):
-+----------------------------------------+
-|                                        |
-|                                        |
-|                                        |
-|                                    o o |
+|                                    ooo |
 |                                        |
 +----------------------------------------+
 ```
@@ -283,25 +261,14 @@ front (681mm x 89mm):
 |---|---|---|---|---|
 | front | 636.5mm | 22.2mm | φ2.5mm | 27.0mm |
 | front | 636.5mm | 66.8mm | φ2.5mm | 27.0mm |
-| back | 614.2mm | 19.0mm | φ2.5mm | through |
-| back | 658.8mm | 19.0mm | φ2.5mm | through |
-
-```
-back (681mm x 89mm):
-+----------------------------------------+
-|                                        |
-|                                    o o |
-|                                        |
-|                                        |
-|                                        |
-+----------------------------------------+
-```
+| front | 614.2mm | 19.0mm | φ2.5mm | through |
+| front | 658.8mm | 19.0mm | φ2.5mm | through |
 
 ```
 front (681mm x 89mm):
 +----------------------------------------+
 |                                        |
-|                                     o  |
+|                                    ooo |
 |                                        |
 |                                     o  |
 |                                        |
@@ -314,19 +281,8 @@ front (681mm x 89mm):
 |---|---|---|---|---|
 | front | 636.5mm | 22.2mm | φ2.5mm | 27.0mm |
 | front | 636.5mm | 66.8mm | φ2.5mm | 27.0mm |
-| back | 614.2mm | 70.0mm | φ2.5mm | through |
-| back | 658.8mm | 70.0mm | φ2.5mm | through |
-
-```
-back (681mm x 89mm):
-+----------------------------------------+
-|                                        |
-|                                        |
-|                                        |
-|                                    o o |
-|                                        |
-+----------------------------------------+
-```
+| front | 614.2mm | 70.0mm | φ2.5mm | through |
+| front | 658.8mm | 70.0mm | φ2.5mm | through |
 
 ```
 front (681mm x 89mm):
@@ -334,7 +290,7 @@ front (681mm x 89mm):
 |                                        |
 |                                     o  |
 |                                        |
-|                                     o  |
+|                                    ooo |
 |                                        |
 +----------------------------------------+
 ```
@@ -343,11 +299,11 @@ front (681mm x 89mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 375.0mm | 121.0mm | φ2.0mm | through |
-| back | 125.0mm | 121.0mm | φ2.0mm | through |
+| front | 375.0mm | 121.0mm | φ2.0mm | through |
+| front | 125.0mm | 121.0mm | φ2.0mm | through |
 
 ```
-back (500mm x 140mm):
+front (500mm x 140mm):
 +----------------------------------------+
 |                                        |
 |                                        |

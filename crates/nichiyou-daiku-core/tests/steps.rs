@@ -11,6 +11,15 @@ use common::normalize;
 const DIR: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/corpus");
 const KEYS: [&str; 4] = ["parts", "steps", "steps_declared", "steps_hint"];
 
+/// The view with the holes as the Python version records them.
+fn python_form_view(source: &str) -> serde_json::Value {
+    let located = nichiyou_daiku_core::dsl::parse_located(source).expect("a source that assembles");
+    let mut assembly = nichiyou_daiku_core::assembly::Assembly::of(located.model.clone())
+        .expect("a source that assembles");
+    common::python_holes(&mut assembly);
+    nichiyou_daiku_core::diagnostics::view_report(&assembly, &located.pieces, &located.connections)
+}
+
 #[test]
 fn parts_steps_and_fasteners_match_the_python_version() {
     let mut paths: Vec<PathBuf> = fs::read_dir(DIR)
@@ -28,7 +37,7 @@ fn parts_steps_and_fasteners_match_the_python_version() {
         };
         let expected = normalize(serde_json::from_str(&text).unwrap(), &mut HashMap::new());
         let view = normalize(
-            nichiyou_daiku_core::view(&fs::read_to_string(&path).unwrap()),
+            python_form_view(&fs::read_to_string(&path).unwrap()),
             &mut HashMap::new(),
         );
         if let Some(key) = KEYS.iter().find(|key| view[**key] != expected[**key]) {

@@ -64,11 +64,11 @@ down (89mm x 38mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 614.2mm | 19.0mm | φ2.5mm | through |
-| back | 658.8mm | 19.0mm | φ2.5mm | through |
+| front | 614.2mm | 19.0mm | φ2.5mm | through |
+| front | 658.8mm | 19.0mm | φ2.5mm | through |
 
 ```
-back (681mm x 89mm):
+front (681mm x 89mm):
 +----------------------------------------+
 |                                        |
 |                                    o o |

@@ -85,11 +85,11 @@ top (140mm x 19mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 9.5mm | 35.0mm | φ2.0mm | through |
-| back | 9.5mm | 105.0mm | φ2.0mm | through |
+| front | 9.5mm | 35.0mm | φ2.0mm | through |
+| front | 9.5mm | 105.0mm | φ2.0mm | through |
 
 ```
-back (600mm x 140mm):
+front (600mm x 140mm):
 +----------------------------------------+
 |                                        |
 |o                                       |
@@ -103,11 +103,11 @@ back (600mm x 140mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| front | 9.5mm | 35.0mm | φ2.0mm | through |
-| front | 9.5mm | 105.0mm | φ2.0mm | through |
+| back | 9.5mm | 35.0mm | φ2.0mm | through |
+| back | 9.5mm | 105.0mm | φ2.0mm | through |
 
 ```
-front (600mm x 140mm):
+back (600mm x 140mm):
 +----------------------------------------+
 |                                        |
 |o                                       |

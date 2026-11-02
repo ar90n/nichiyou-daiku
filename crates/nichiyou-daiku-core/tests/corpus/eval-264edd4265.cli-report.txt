@@ -208,17 +208,17 @@ top (184mm x 19mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 9.5mm | 46.0mm | φ2.0mm | through |
-| back | 9.5mm | 138.0mm | φ2.0mm | through |
-| back | 303.2mm | 46.0mm | φ2.0mm | through |
-| back | 303.2mm | 138.0mm | φ2.0mm | through |
-| back | 596.8mm | 46.0mm | φ2.0mm | through |
-| back | 596.8mm | 138.0mm | φ2.0mm | through |
-| back | 890.5mm | 46.0mm | φ2.0mm | through |
-| back | 890.5mm | 138.0mm | φ2.0mm | through |
+| front | 9.5mm | 46.0mm | φ2.0mm | through |
+| front | 9.5mm | 138.0mm | φ2.0mm | through |
+| front | 303.2mm | 46.0mm | φ2.0mm | through |
+| front | 303.2mm | 138.0mm | φ2.0mm | through |
+| front | 596.8mm | 46.0mm | φ2.0mm | through |
+| front | 596.8mm | 138.0mm | φ2.0mm | through |
+| front | 890.5mm | 46.0mm | φ2.0mm | through |
+| front | 890.5mm | 138.0mm | φ2.0mm | through |
 
 ```
-back (900mm x 184mm):
+front (900mm x 184mm):
 +----------------------------------------+
 |                                        |
 |o            o            o            o|
@@ -232,17 +232,17 @@ back (900mm x 184mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| front | 9.5mm | 46.0mm | φ2.0mm | through |
-| front | 9.5mm | 138.0mm | φ2.0mm | through |
-| front | 303.2mm | 46.0mm | φ2.0mm | through |
-| front | 303.2mm | 138.0mm | φ2.0mm | through |
-| front | 596.8mm | 46.0mm | φ2.0mm | through |
-| front | 596.8mm | 138.0mm | φ2.0mm | through |
-| front | 890.5mm | 46.0mm | φ2.0mm | through |
-| front | 890.5mm | 138.0mm | φ2.0mm | through |
+| back | 9.5mm | 46.0mm | φ2.0mm | through |
+| back | 9.5mm | 138.0mm | φ2.0mm | through |
+| back | 303.2mm | 46.0mm | φ2.0mm | through |
+| back | 303.2mm | 138.0mm | φ2.0mm | through |
+| back | 596.8mm | 46.0mm | φ2.0mm | through |
+| back | 596.8mm | 138.0mm | φ2.0mm | through |
+| back | 890.5mm | 46.0mm | φ2.0mm | through |
+| back | 890.5mm | 138.0mm | φ2.0mm | through |
 
 ```
-front (900mm x 184mm):
+back (900mm x 184mm):
 +----------------------------------------+
 |                                        |
 |o            o            o            o|

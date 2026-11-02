@@ -113,6 +113,14 @@ fn compare_report(expected: &Value, actual: &Value) -> Result<(), String> {
     Ok(())
 }
 
+/// The holes report with the holes as the Python version records them.
+fn python_form_holes(source: &str) -> Option<Value> {
+    let model = nichiyou_daiku_core::dsl::parse(source).ok()?;
+    let mut assembly = nichiyou_daiku_core::assembly::Assembly::of(model).ok()?;
+    common::python_holes(&mut assembly);
+    Some(nichiyou_daiku_core::diagnostics::holes_report(&assembly))
+}
+
 fn check(case: &Case) -> Result<(), String> {
     let expected = normalize(case.validate.clone(), &mut HashMap::new());
     let actual = normalize(
@@ -120,7 +128,7 @@ fn check(case: &Case) -> Result<(), String> {
         &mut HashMap::new(),
     );
     compare_report(&expected, &actual)?;
-    match (&case.holes, nichiyou_daiku_core::holes(&case.source)) {
+    match (&case.holes, python_form_holes(&case.source)) {
         (None, None) => Ok(()),
         (Some(e), Some(a)) => {
             let e = normalize(e.clone(), &mut HashMap::new());

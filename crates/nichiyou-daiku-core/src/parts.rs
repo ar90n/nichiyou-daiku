@@ -39,6 +39,8 @@ pub struct LocalHole {
     pub point: [f64; 3],
     pub diameter: f64,
     pub depth: Option<f64>,
+    /// The mouth of a countersink for a screw head, if any
+    pub countersink: Option<f64>,
 }
 
 /// Pieces made the same way; the holes are the first one's.
@@ -69,6 +71,7 @@ pub fn piece_holes(assembly: &Assembly, piece_id: &str) -> Vec<LocalHole> {
                     point: at.to_point(shape),
                     diameter: hole.diameter,
                     depth: hole.depth,
+                    countersink: hole.countersink,
                 })
                 .collect()
         })
@@ -145,6 +148,7 @@ fn same_holes(a: &[LocalHole], b: &[LocalHole]) -> bool {
                 && (0..3).all(|k| close(hole.point[k], other.point[k]))
                 && close(hole.diameter, other.diameter)
                 && close_depth(hole.depth, other.depth)
+                && close_depth(hole.countersink, other.countersink)
         });
         match found {
             Some(i) => {
@@ -166,7 +170,8 @@ fn through_on_one_side(holes: &[LocalHole], size: [f64; 3]) -> Vec<LocalHole> {
                 .iter()
                 .position(|f| *f == hole.face)
                 .expect("a face");
-            if hole.depth.is_some() || index % 2 == 0 {
+            // A countersunk hole is drilled from its own face
+            if hole.depth.is_some() || hole.countersink.is_some() || index % 2 == 0 {
                 return *hole;
             }
             let face = FACE_ORDER[index - 1];
@@ -452,6 +457,7 @@ mod tests {
             point,
             diameter: 2.5,
             depth: Some(27.0),
+            countersink: None,
         }
     }
 
@@ -564,6 +570,7 @@ mod tests {
             point,
             diameter: 2.5,
             depth,
+            countersink: None,
         }
     }
 
@@ -612,5 +619,29 @@ mod tests {
                 (vec!["c".to_string()], [89.0, 38.0, 400.0])
             ]
         );
+    }
+
+    #[test]
+    fn a_countersunk_hole_stays_on_its_face_when_parts_are_compared() {
+        let sunk = |face: Face, y: f64| LocalHole {
+            face,
+            point: [44.5, y, 100.0],
+            diameter: 2.5,
+            depth: None,
+            countersink: Some(7.5),
+        };
+        // Countersunk from the front or from the back: a half turn about the
+        // length brings one onto the other
+        assert!(same_part(
+            &[sunk(Face::Front, 38.0)],
+            &[sunk(Face::Back, 0.0)],
+            BOARD
+        ));
+        // A plain through hole is the same from either face, a countersunk one is not
+        let plain = LocalHole {
+            countersink: None,
+            ..sunk(Face::Back, 0.0)
+        };
+        assert!(!same_part(&[sunk(Face::Front, 38.0)], &[plain], BOARD));
     }
 }

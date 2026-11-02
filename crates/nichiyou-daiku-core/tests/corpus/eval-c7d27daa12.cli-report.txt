@@ -158,17 +158,17 @@ top (89mm x 38mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 57.0mm | 22.2mm | φ2.5mm | through |
-| back | 57.0mm | 66.8mm | φ2.5mm | through |
-| back | 443.0mm | 22.2mm | φ2.5mm | through |
-| back | 443.0mm | 66.8mm | φ2.5mm | through |
-| back | 19.0mm | 66.8mm | φ2.5mm | through |
-| back | 19.0mm | 22.2mm | φ2.5mm | through |
-| back | 481.0mm | 66.8mm | φ2.5mm | through |
-| back | 481.0mm | 22.2mm | φ2.5mm | through |
+| front | 57.0mm | 22.2mm | φ2.5mm | through |
+| front | 57.0mm | 66.8mm | φ2.5mm | through |
+| front | 443.0mm | 22.2mm | φ2.5mm | through |
+| front | 443.0mm | 66.8mm | φ2.5mm | through |
+| front | 19.0mm | 66.8mm | φ2.5mm | through |
+| front | 19.0mm | 22.2mm | φ2.5mm | through |
+| front | 481.0mm | 66.8mm | φ2.5mm | through |
+| front | 481.0mm | 22.2mm | φ2.5mm | through |
 
 ```
-back (500mm x 89mm):
+front (500mm x 89mm):
 +----------------------------------------+
 |                                        |
 | o  o                              o  o |
@@ -182,17 +182,17 @@ back (500mm x 89mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| front | 57.0mm | 22.2mm | φ2.5mm | through |
-| front | 57.0mm | 66.8mm | φ2.5mm | through |
-| front | 443.0mm | 22.2mm | φ2.5mm | through |
-| front | 443.0mm | 66.8mm | φ2.5mm | through |
-| front | 19.0mm | 66.8mm | φ2.5mm | through |
-| front | 19.0mm | 22.2mm | φ2.5mm | through |
-| front | 481.0mm | 66.8mm | φ2.5mm | through |
-| front | 481.0mm | 22.2mm | φ2.5mm | through |
+| back | 57.0mm | 22.2mm | φ2.5mm | through |
+| back | 57.0mm | 66.8mm | φ2.5mm | through |
+| back | 443.0mm | 22.2mm | φ2.5mm | through |
+| back | 443.0mm | 66.8mm | φ2.5mm | through |
+| back | 19.0mm | 66.8mm | φ2.5mm | through |
+| back | 19.0mm | 22.2mm | φ2.5mm | through |
+| back | 481.0mm | 66.8mm | φ2.5mm | through |
+| back | 481.0mm | 22.2mm | φ2.5mm | through |
 
 ```
-front (500mm x 89mm):
+back (500mm x 89mm):
 +----------------------------------------+
 |                                        |
 | o  o                              o  o |

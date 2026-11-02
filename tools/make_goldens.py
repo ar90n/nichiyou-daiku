@@ -11,9 +11,11 @@ NAME.steps.json (the parts, the assembly steps with their fasteners and
 dimensions) and NAME.parts.json (what each drilled part's drawing says); the
 last three only when the source assembles. `--steps-only` writes the steps and
 parts files again for the corpus that is there. `--cli` writes what the CLI
-prints (NAME.cli-validate.txt, NAME.cli-report.txt and, for examples,
+prints (NAME.cli-validate.txt and, for examples,
 NAME.cli-validate-json.txt) and the option cases in
-crates/nichiyou-daiku-cli/tests/cli.
+crates/nichiyou-daiku-cli/tests/cli. The report's golden files are the Rust CLI's own
+since countersinks (2026-11-02): ND_BLESS=1 cargo test -p nichiyou-daiku-cli
+writes them.
 """
 
 import argparse
@@ -236,7 +238,9 @@ def write(path: Path, value) -> None:
 
 
 CLI_DIR = ROOT / "crates" / "nichiyou-daiku-cli" / "tests" / "cli"
-CLI_GENERATED = ("*.cli-validate.txt", "*.cli-report.txt", "*.cli-validate-json.txt")
+# The report's golden files are the Rust CLI's own since countersinks
+# (2026-11-02): ND_BLESS=1 cargo test -p nichiyou-daiku-cli writes them
+CLI_GENERATED = ("*.cli-validate.txt", "*.cli-validate-json.txt")
 GENERATED_ON = re.compile(r"^\*Generated on \d{4}-\d{2}-\d{2} \d{2}:\d{2}\*$", re.M)
 
 # A design with a problem (an unconnected piece) and one with a piece longer
@@ -340,9 +344,6 @@ def write_cli_goldens() -> None:
         (CORPUS / f"{name}.cli-validate.txt").write_text(
             run_cli(["validate", "-"], source), encoding="utf-8"
         )
-        (CORPUS / f"{name}.cli-report.txt").write_text(
-            run_cli(["report", "-"], source), encoding="utf-8"
-        )
         if name.startswith("example-"):
             (CORPUS / f"{name}.cli-validate-json.txt").write_text(
                 run_cli(["validate", "--json", "-"], source), encoding="utf-8"
@@ -350,7 +351,8 @@ def write_cli_goldens() -> None:
     stock = CLI_DIR / "stock"
     stock.mkdir(parents=True, exist_ok=True)
     for old in CLI_DIR.glob("*.txt"):
-        old.unlink()
+        if not old.name.startswith("report-"):
+            old.unlink()
     for name, content in STOCK_FILES.items():
         if isinstance(content, bytes):
             (stock / name).write_bytes(content)
@@ -359,11 +361,13 @@ def write_cli_goldens() -> None:
     cases = []
     with contextlib.chdir(CLI_DIR):
         for name, args, file, text in OPTION_CASES:
+            cases.append({"name": name, "args": args, "file": file, "text": text})
+            if "report" in args:
+                continue  # The Rust CLI's own; see CLI_GENERATED
             source = (ROOT / file).read_text(encoding="utf-8") if file else text
             (CLI_DIR / f"{name}.txt").write_text(
                 run_cli(args, source), encoding="utf-8"
             )
-            cases.append({"name": name, "args": args, "file": file, "text": text})
     (CLI_DIR / "cases.json").write_text(
         json.dumps(cases, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )

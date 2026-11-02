@@ -6,7 +6,7 @@ exit: 0
 
 ## Project Overview
 
-- **Overall Size (X × Y × Z)**: 89 × 38 × 1500 mm (Z is the length direction of '0fd671e5-962d-410c-8f37-34ec1174eccd')
+- **Overall Size (X × Y × Z)**: 89 × 38 × 1500 mm (Z is the length direction of '00000000-0000-4000-8000-000000000001')
 - **Total Pieces**: 1
 - **Lumber Types**: 1 (2x4)
 - **Total Volume**: 5,073,000 mm³
@@ -17,7 +17,7 @@ exit: 0
 
 | ID | Type | Length (mm) | Width (mm) | Height (mm) | Volume (mm³) |
 |----|------|------------|-----------|------------|-------------|
-| 0fd671e5-962d-410c-8f37-34ec1174eccd | 2x4 | 1500 | 89 | 38 | 5,073,000 |
+| 00000000-0000-4000-8000-000000000001 | 2x4 | 1500 | 89 | 38 | 5,073,000 |
 
 
 ## Anchor Details
@@ -49,7 +49,7 @@ Total waste: 317mm (17.4%)
 ### 2x4 Boards
 
 **Board 1** (1820mm):
-- Cut 1500mm → 0fd671e5-962d-410c-8f37-34ec1174eccd
+- Cut 1500mm → 00000000-0000-4000-8000-000000000001
 - Waste: 317mm
 
 ---

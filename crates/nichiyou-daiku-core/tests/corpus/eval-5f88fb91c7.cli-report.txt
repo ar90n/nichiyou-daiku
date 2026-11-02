@@ -976,11 +976,11 @@ top (89mm x 38mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 331.0mm | 35.0mm | φ2.5mm | through |
-| back | 331.0mm | 105.0mm | φ2.5mm | through |
+| front | 331.0mm | 35.0mm | φ2.5mm | through |
+| front | 331.0mm | 105.0mm | φ2.5mm | through |
 
 ```
-back (350mm x 140mm):
+front (350mm x 140mm):
 +----------------------------------------+
 |                                        |
 |                                     o  |
@@ -994,11 +994,11 @@ back (350mm x 140mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 331.0mm | 35.0mm | φ2.5mm | through |
-| back | 331.0mm | 105.0mm | φ2.5mm | through |
+| front | 331.0mm | 35.0mm | φ2.5mm | through |
+| front | 331.0mm | 105.0mm | φ2.5mm | through |
 
 ```
-back (350mm x 140mm):
+front (350mm x 140mm):
 +----------------------------------------+
 |                                        |
 |                                     o  |
@@ -1012,11 +1012,11 @@ back (350mm x 140mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 331.0mm | 35.0mm | φ2.5mm | through |
-| back | 331.0mm | 105.0mm | φ2.5mm | through |
+| front | 331.0mm | 35.0mm | φ2.5mm | through |
+| front | 331.0mm | 105.0mm | φ2.5mm | through |
 
 ```
-back (350mm x 140mm):
+front (350mm x 140mm):
 +----------------------------------------+
 |                                        |
 |                                     o  |
@@ -1030,11 +1030,11 @@ back (350mm x 140mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 331.0mm | 35.0mm | φ2.5mm | through |
-| back | 331.0mm | 105.0mm | φ2.5mm | through |
+| front | 331.0mm | 35.0mm | φ2.5mm | through |
+| front | 331.0mm | 105.0mm | φ2.5mm | through |
 
 ```
-back (350mm x 140mm):
+front (350mm x 140mm):
 +----------------------------------------+
 |                                        |
 |                                     o  |
@@ -1048,11 +1048,11 @@ back (350mm x 140mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 331.0mm | 35.0mm | φ2.5mm | through |
-| back | 331.0mm | 105.0mm | φ2.5mm | through |
+| front | 331.0mm | 35.0mm | φ2.5mm | through |
+| front | 331.0mm | 105.0mm | φ2.5mm | through |
 
 ```
-back (350mm x 140mm):
+front (350mm x 140mm):
 +----------------------------------------+
 |                                        |
 |                                     o  |
@@ -1066,11 +1066,11 @@ back (350mm x 140mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 331.0mm | 35.0mm | φ2.5mm | through |
-| back | 331.0mm | 105.0mm | φ2.5mm | through |
+| front | 331.0mm | 35.0mm | φ2.5mm | through |
+| front | 331.0mm | 105.0mm | φ2.5mm | through |
 
 ```
-back (350mm x 140mm):
+front (350mm x 140mm):
 +----------------------------------------+
 |                                        |
 |                                     o  |
@@ -1084,11 +1084,11 @@ back (350mm x 140mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 19.0mm | 22.2mm | φ2.5mm | through |
-| back | 19.0mm | 66.8mm | φ2.5mm | through |
+| front | 19.0mm | 22.2mm | φ2.5mm | through |
+| front | 19.0mm | 66.8mm | φ2.5mm | through |
 
 ```
-back (350mm x 140mm):
+front (350mm x 140mm):
 +----------------------------------------+
 |  o                                     |
 |                                        |
@@ -1102,11 +1102,11 @@ back (350mm x 140mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 331.0mm | 35.0mm | φ2.5mm | through |
-| back | 331.0mm | 105.0mm | φ2.5mm | through |
+| front | 331.0mm | 35.0mm | φ2.5mm | through |
+| front | 331.0mm | 105.0mm | φ2.5mm | through |
 
 ```
-back (350mm x 140mm):
+front (350mm x 140mm):
 +----------------------------------------+
 |                                        |
 |                                     o  |
@@ -1120,11 +1120,11 @@ back (350mm x 140mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 331.0mm | 35.0mm | φ2.5mm | through |
-| back | 331.0mm | 105.0mm | φ2.5mm | through |
+| front | 331.0mm | 35.0mm | φ2.5mm | through |
+| front | 331.0mm | 105.0mm | φ2.5mm | through |
 
 ```
-back (350mm x 140mm):
+front (350mm x 140mm):
 +----------------------------------------+
 |                                        |
 |                                     o  |
@@ -1138,11 +1138,11 @@ back (350mm x 140mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 331.0mm | 64.1mm | φ2.5mm | through |
-| back | 331.0mm | 114.7mm | φ2.5mm | through |
+| front | 331.0mm | 64.1mm | φ2.5mm | through |
+| front | 331.0mm | 114.7mm | φ2.5mm | through |
 
 ```
-back (350mm x 140mm):
+front (350mm x 140mm):
 +----------------------------------------+
 |                                        |
 |                                        |
@@ -1156,11 +1156,11 @@ back (350mm x 140mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 331.0mm | 25.3mm | φ2.5mm | through |
-| back | 331.0mm | 75.9mm | φ2.5mm | through |
+| front | 331.0mm | 25.3mm | φ2.5mm | through |
+| front | 331.0mm | 75.9mm | φ2.5mm | through |
 
 ```
-back (350mm x 140mm):
+front (350mm x 140mm):
 +----------------------------------------+
 |                                     o  |
 |                                        |
@@ -1174,11 +1174,11 @@ back (350mm x 140mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 331.0mm | 35.0mm | φ2.5mm | through |
-| back | 331.0mm | 105.0mm | φ2.5mm | through |
+| front | 331.0mm | 35.0mm | φ2.5mm | through |
+| front | 331.0mm | 105.0mm | φ2.5mm | through |
 
 ```
-back (350mm x 140mm):
+front (350mm x 140mm):
 +----------------------------------------+
 |                                        |
 |                                     o  |
@@ -1192,11 +1192,11 @@ back (350mm x 140mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 331.0mm | 35.0mm | φ2.5mm | through |
-| back | 331.0mm | 105.0mm | φ2.5mm | through |
+| front | 331.0mm | 35.0mm | φ2.5mm | through |
+| front | 331.0mm | 105.0mm | φ2.5mm | through |
 
 ```
-back (350mm x 140mm):
+front (350mm x 140mm):
 +----------------------------------------+
 |                                        |
 |                                     o  |
@@ -1210,11 +1210,11 @@ back (350mm x 140mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 19.0mm | 73.2mm | φ2.5mm | through |
-| back | 19.0mm | 117.8mm | φ2.5mm | through |
+| front | 19.0mm | 73.2mm | φ2.5mm | through |
+| front | 19.0mm | 117.8mm | φ2.5mm | through |
 
 ```
-back (350mm x 140mm):
+front (350mm x 140mm):
 +----------------------------------------+
 |                                        |
 |                                        |

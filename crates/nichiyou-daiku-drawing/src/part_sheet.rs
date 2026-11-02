@@ -491,7 +491,7 @@ mod tests {
         assert_eq!(
             drawing.notes,
             [
-                "4 vertical dimension values in face A (back) of apron_front do not fit beside their chain without \
+                "4 vertical dimension values in face A (front) of apron_front do not fit beside their chain without \
               crossing its lines. The report's Pilot Holes table lists the same holes"
             ]
         );

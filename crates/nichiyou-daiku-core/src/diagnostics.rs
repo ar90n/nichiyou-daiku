@@ -243,6 +243,7 @@ fn view_hole(
         "direction": placed["direction"],
         "diameter": placed["diameter"],
         "depth": placed["depth"],
+        "countersink": drilled.countersink.map(round_mm),
     })
 }
 
@@ -309,7 +310,7 @@ pub fn view_report(
             FastenerKind::Screw => "pilot",
         };
         let base = (fastener.base_position, fastener.base_hole);
-        let target = (fastener.target_position, fastener.target_hole);
+        let target = fastener.target_drilled();
         holes.push(view_hole(assembly, &fastener.base_id, kind, base, origin));
         holes.push(view_hole(
             assembly,
@@ -428,12 +429,17 @@ pub fn holes_report(assembly: &Assembly) -> Value {
         let listed: Vec<Value> = listed
             .into_iter()
             .map(|(face, center, hole)| {
-                json!({
+                let mut entry = json!({
                     "face": face,
                     "center": center,
                     "diameter": round_mm(hole.diameter),
                     "depth": hole.depth.map(round_mm),
-                })
+                });
+                // Only when there is one: the Python version's holes have none
+                if let Some(sink) = hole.countersink {
+                    entry["countersink"] = json!(round_mm(sink));
+                }
+                entry
             })
             .collect();
         pieces.insert(piece_id.clone(), Value::Array(listed));

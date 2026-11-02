@@ -1210,11 +1210,11 @@ right (1181mm x 38mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 281.0mm | 22.2mm | φ2.0mm | through |
-| back | 281.0mm | 66.8mm | φ2.0mm | through |
+| front | 281.0mm | 22.2mm | φ2.0mm | through |
+| front | 281.0mm | 66.8mm | φ2.0mm | through |
 
 ```
-back (300mm x 89mm):
+front (300mm x 89mm):
 +----------------------------------------+
 |                                        |
 |                                     o  |
@@ -1228,11 +1228,11 @@ back (300mm x 89mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 281.0mm | 22.2mm | φ2.0mm | through |
-| back | 281.0mm | 66.8mm | φ2.0mm | through |
+| front | 281.0mm | 22.2mm | φ2.0mm | through |
+| front | 281.0mm | 66.8mm | φ2.0mm | through |
 
 ```
-back (300mm x 89mm):
+front (300mm x 89mm):
 +----------------------------------------+
 |                                        |
 |                                     o  |
@@ -1246,11 +1246,11 @@ back (300mm x 89mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 281.0mm | 22.2mm | φ2.0mm | through |
-| back | 281.0mm | 66.8mm | φ2.0mm | through |
+| front | 281.0mm | 22.2mm | φ2.0mm | through |
+| front | 281.0mm | 66.8mm | φ2.0mm | through |
 
 ```
-back (300mm x 89mm):
+front (300mm x 89mm):
 +----------------------------------------+
 |                                        |
 |                                     o  |
@@ -1264,11 +1264,11 @@ back (300mm x 89mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 281.0mm | 22.2mm | φ2.0mm | through |
-| back | 281.0mm | 66.8mm | φ2.0mm | through |
+| front | 281.0mm | 22.2mm | φ2.0mm | through |
+| front | 281.0mm | 66.8mm | φ2.0mm | through |
 
 ```
-back (300mm x 89mm):
+front (300mm x 89mm):
 +----------------------------------------+
 |                                        |
 |                                     o  |
@@ -1282,11 +1282,11 @@ back (300mm x 89mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 281.0mm | 22.2mm | φ2.0mm | through |
-| back | 281.0mm | 66.8mm | φ2.0mm | through |
+| front | 281.0mm | 22.2mm | φ2.0mm | through |
+| front | 281.0mm | 66.8mm | φ2.0mm | through |
 
 ```
-back (300mm x 89mm):
+front (300mm x 89mm):
 +----------------------------------------+
 |                                        |
 |                                     o  |
@@ -1300,11 +1300,11 @@ back (300mm x 89mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 281.0mm | 22.2mm | φ2.0mm | through |
-| back | 281.0mm | 66.8mm | φ2.0mm | through |
+| front | 281.0mm | 22.2mm | φ2.0mm | through |
+| front | 281.0mm | 66.8mm | φ2.0mm | through |
 
 ```
-back (300mm x 89mm):
+front (300mm x 89mm):
 +----------------------------------------+
 |                                        |
 |                                     o  |
@@ -1318,11 +1318,11 @@ back (300mm x 89mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 281.0mm | 22.2mm | φ2.0mm | through |
-| back | 281.0mm | 66.8mm | φ2.0mm | through |
+| front | 281.0mm | 22.2mm | φ2.0mm | through |
+| front | 281.0mm | 66.8mm | φ2.0mm | through |
 
 ```
-back (300mm x 89mm):
+front (300mm x 89mm):
 +----------------------------------------+
 |                                        |
 |                                     o  |
@@ -1336,11 +1336,11 @@ back (300mm x 89mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 281.0mm | 22.2mm | φ2.0mm | through |
-| back | 281.0mm | 66.8mm | φ2.0mm | through |
+| front | 281.0mm | 22.2mm | φ2.0mm | through |
+| front | 281.0mm | 66.8mm | φ2.0mm | through |
 
 ```
-back (300mm x 89mm):
+front (300mm x 89mm):
 +----------------------------------------+
 |                                        |
 |                                     o  |
@@ -1354,11 +1354,11 @@ back (300mm x 89mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 281.0mm | 22.2mm | φ2.0mm | through |
-| back | 281.0mm | 66.8mm | φ2.0mm | through |
+| front | 281.0mm | 22.2mm | φ2.0mm | through |
+| front | 281.0mm | 66.8mm | φ2.0mm | through |
 
 ```
-back (300mm x 89mm):
+front (300mm x 89mm):
 +----------------------------------------+
 |                                        |
 |                                     o  |
@@ -1372,11 +1372,11 @@ back (300mm x 89mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 281.0mm | 22.2mm | φ2.0mm | through |
-| back | 281.0mm | 66.8mm | φ2.0mm | through |
+| front | 281.0mm | 22.2mm | φ2.0mm | through |
+| front | 281.0mm | 66.8mm | φ2.0mm | through |
 
 ```
-back (300mm x 89mm):
+front (300mm x 89mm):
 +----------------------------------------+
 |                                        |
 |                                     o  |
@@ -1390,11 +1390,11 @@ back (300mm x 89mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 281.0mm | 22.2mm | φ2.0mm | through |
-| back | 281.0mm | 66.8mm | φ2.0mm | through |
+| front | 281.0mm | 22.2mm | φ2.0mm | through |
+| front | 281.0mm | 66.8mm | φ2.0mm | through |
 
 ```
-back (300mm x 89mm):
+front (300mm x 89mm):
 +----------------------------------------+
 |                                        |
 |                                     o  |
@@ -1408,11 +1408,11 @@ back (300mm x 89mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 281.0mm | 22.2mm | φ2.0mm | through |
-| back | 281.0mm | 66.8mm | φ2.0mm | through |
+| front | 281.0mm | 22.2mm | φ2.0mm | through |
+| front | 281.0mm | 66.8mm | φ2.0mm | through |
 
 ```
-back (300mm x 89mm):
+front (300mm x 89mm):
 +----------------------------------------+
 |                                        |
 |                                     o  |
@@ -1426,11 +1426,11 @@ back (300mm x 89mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 281.0mm | 22.2mm | φ2.0mm | through |
-| back | 281.0mm | 66.8mm | φ2.0mm | through |
+| front | 281.0mm | 22.2mm | φ2.0mm | through |
+| front | 281.0mm | 66.8mm | φ2.0mm | through |
 
 ```
-back (300mm x 89mm):
+front (300mm x 89mm):
 +----------------------------------------+
 |                                        |
 |                                     o  |
@@ -1444,11 +1444,11 @@ back (300mm x 89mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 281.0mm | 22.2mm | φ2.0mm | through |
-| back | 281.0mm | 66.8mm | φ2.0mm | through |
+| front | 281.0mm | 22.2mm | φ2.0mm | through |
+| front | 281.0mm | 66.8mm | φ2.0mm | through |
 
 ```
-back (300mm x 89mm):
+front (300mm x 89mm):
 +----------------------------------------+
 |                                        |
 |                                     o  |
@@ -1462,11 +1462,11 @@ back (300mm x 89mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 281.0mm | 22.2mm | φ2.0mm | through |
-| back | 281.0mm | 66.8mm | φ2.0mm | through |
+| front | 281.0mm | 22.2mm | φ2.0mm | through |
+| front | 281.0mm | 66.8mm | φ2.0mm | through |
 
 ```
-back (300mm x 89mm):
+front (300mm x 89mm):
 +----------------------------------------+
 |                                        |
 |                                     o  |
@@ -1480,11 +1480,11 @@ back (300mm x 89mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 281.0mm | 22.2mm | φ2.0mm | through |
-| back | 281.0mm | 66.8mm | φ2.0mm | through |
+| front | 281.0mm | 22.2mm | φ2.0mm | through |
+| front | 281.0mm | 66.8mm | φ2.0mm | through |
 
 ```
-back (300mm x 89mm):
+front (300mm x 89mm):
 +----------------------------------------+
 |                                        |
 |                                     o  |
@@ -1498,11 +1498,11 @@ back (300mm x 89mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 281.0mm | 22.2mm | φ2.0mm | through |
-| back | 281.0mm | 66.8mm | φ2.0mm | through |
+| front | 281.0mm | 22.2mm | φ2.0mm | through |
+| front | 281.0mm | 66.8mm | φ2.0mm | through |
 
 ```
-back (300mm x 89mm):
+front (300mm x 89mm):
 +----------------------------------------+
 |                                        |
 |                                     o  |
@@ -1516,11 +1516,11 @@ back (300mm x 89mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 281.0mm | 22.2mm | φ2.0mm | through |
-| back | 281.0mm | 66.8mm | φ2.0mm | through |
+| front | 281.0mm | 22.2mm | φ2.0mm | through |
+| front | 281.0mm | 66.8mm | φ2.0mm | through |
 
 ```
-back (300mm x 89mm):
+front (300mm x 89mm):
 +----------------------------------------+
 |                                        |
 |                                     o  |
@@ -1534,11 +1534,11 @@ back (300mm x 89mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 19.0mm | 22.2mm | φ2.0mm | through |
-| back | 19.0mm | 66.8mm | φ2.0mm | through |
+| front | 19.0mm | 22.2mm | φ2.0mm | through |
+| front | 19.0mm | 66.8mm | φ2.0mm | through |
 
 ```
-back (300mm x 89mm):
+front (300mm x 89mm):
 +----------------------------------------+
 |                                        |
 |  o                                     |
@@ -1552,11 +1552,11 @@ back (300mm x 89mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 281.0mm | 22.2mm | φ2.0mm | through |
-| back | 281.0mm | 66.8mm | φ2.0mm | through |
+| front | 281.0mm | 22.2mm | φ2.0mm | through |
+| front | 281.0mm | 66.8mm | φ2.0mm | through |
 
 ```
-back (300mm x 89mm):
+front (300mm x 89mm):
 +----------------------------------------+
 |                                        |
 |                                     o  |
@@ -1570,11 +1570,11 @@ back (300mm x 89mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 281.0mm | 22.2mm | φ2.0mm | through |
-| back | 281.0mm | 66.8mm | φ2.0mm | through |
+| front | 281.0mm | 22.2mm | φ2.0mm | through |
+| front | 281.0mm | 66.8mm | φ2.0mm | through |
 
 ```
-back (300mm x 89mm):
+front (300mm x 89mm):
 +----------------------------------------+
 |                                        |
 |                                     o  |
@@ -1588,11 +1588,11 @@ back (300mm x 89mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 281.0mm | 22.2mm | φ2.0mm | through |
-| back | 281.0mm | 66.8mm | φ2.0mm | through |
+| front | 281.0mm | 22.2mm | φ2.0mm | through |
+| front | 281.0mm | 66.8mm | φ2.0mm | through |
 
 ```
-back (300mm x 89mm):
+front (300mm x 89mm):
 +----------------------------------------+
 |                                        |
 |                                     o  |
@@ -1606,11 +1606,11 @@ back (300mm x 89mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 281.0mm | 22.2mm | φ2.0mm | through |
-| back | 281.0mm | 66.8mm | φ2.0mm | through |
+| front | 281.0mm | 22.2mm | φ2.0mm | through |
+| front | 281.0mm | 66.8mm | φ2.0mm | through |
 
 ```
-back (300mm x 89mm):
+front (300mm x 89mm):
 +----------------------------------------+
 |                                        |
 |                                     o  |
@@ -1624,11 +1624,11 @@ back (300mm x 89mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 281.0mm | 22.2mm | φ2.0mm | through |
-| back | 281.0mm | 66.8mm | φ2.0mm | through |
+| front | 281.0mm | 22.2mm | φ2.0mm | through |
+| front | 281.0mm | 66.8mm | φ2.0mm | through |
 
 ```
-back (300mm x 89mm):
+front (300mm x 89mm):
 +----------------------------------------+
 |                                        |
 |                                     o  |
@@ -1642,11 +1642,11 @@ back (300mm x 89mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 281.0mm | 22.2mm | φ2.0mm | through |
-| back | 281.0mm | 66.8mm | φ2.0mm | through |
+| front | 281.0mm | 22.2mm | φ2.0mm | through |
+| front | 281.0mm | 66.8mm | φ2.0mm | through |
 
 ```
-back (300mm x 89mm):
+front (300mm x 89mm):
 +----------------------------------------+
 |                                        |
 |                                     o  |
@@ -1660,11 +1660,11 @@ back (300mm x 89mm):
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 19.0mm | 22.2mm | φ2.0mm | through |
-| back | 19.0mm | 66.8mm | φ2.0mm | through |
+| front | 19.0mm | 22.2mm | φ2.0mm | through |
+| front | 19.0mm | 66.8mm | φ2.0mm | through |
 
 ```
-back (300mm x 89mm):
+front (300mm x 89mm):
 +----------------------------------------+
 |                                        |
 |  o                                     |

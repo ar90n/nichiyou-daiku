@@ -303,6 +303,7 @@ mod tests {
             point: [44.5, 38.0, 150.0],
             diameter: 8.0,
             depth: Some(15.0),
+            countersink: None,
         };
         let board = board_body(BOARD, &[hole], &STILL, &view);
         let blocker = Body {

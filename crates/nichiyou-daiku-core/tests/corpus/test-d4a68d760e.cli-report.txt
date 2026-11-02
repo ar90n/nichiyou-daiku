@@ -60,15 +60,15 @@ Distances are measured on the face the hole is drilled into:
 
 | Face | From Length Edge | From Width Edge | Diameter | Depth |
 |---|---|---|---|---|
-| back | 233.2mm | 19.0mm | φ2.5mm | through |
-| back | 277.8mm | 19.0mm | φ2.5mm | through |
+| front | 233.2mm | 19.0mm | φ2.5mm | through |
+| front | 277.8mm | 19.0mm | φ2.5mm | through |
 | right | 277.8mm | 19.0mm | φ2.5mm | through |
 | left | 277.8mm | 19.0mm | φ10.0mm | 51.0mm |
 | right | 233.2mm | 19.0mm | φ2.5mm | through |
 | left | 233.2mm | 19.0mm | φ10.0mm | 51.0mm |
 
 ```
-back (600mm x 89mm):
+front (600mm x 89mm):
 +----------------------------------------+
 |                                        |
 |               o  o                     |
