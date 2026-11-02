@@ -133,11 +133,11 @@ impl Svg {
         });
     }
 
-    /// Bold text centred on `centre`, for a title's attribute names.
-    pub fn text_bold(&mut self, text: &str, centre: Point) {
+    /// Bold text starting at `start`, for a title's attribute names.
+    pub fn text_bold(&mut self, text: &str, start: Point) {
         self.items.push(Item::Text {
             text: text.to_string(),
-            centre,
+            centre: start,
             vertical: false,
             ink: Ink::Black,
             bold: true,
@@ -241,7 +241,12 @@ impl Svg {
                 } else {
                     format!(" fill=\"{}\"", ink.css())
                 };
-                let weight = if *bold { " font-weight=\"bold\"" } else { "" };
+                // Bold widths are only estimated: bold text starts where it is put
+                let weight = if *bold {
+                    " text-anchor=\"start\" font-weight=\"bold\""
+                } else {
+                    ""
+                };
                 let turn = if *vertical {
                     format!(" transform=\"rotate(-90 {x} {yy})\"")
                 } else {
@@ -323,12 +328,13 @@ mod tests {
     }
 
     #[test]
-    fn bold_text_is_bold() {
+    fn bold_text_is_bold_and_starts_where_it_is_put() {
         let mut svg = Svg::new(100.0);
         svg.text_bold("Pieces:", (10.0, 10.0));
         svg.text("leg", (40.0, 10.0), false);
         let out = svg.render(20.0);
-        assert!(out.contains("font-weight=\"bold\">Pieces:</text>"));
+        // Its width is only estimated, so it is anchored at its start
+        assert!(out.contains("<text x=\"10\" y=\"10\" dominant-baseline=\"central\" text-anchor=\"start\" font-weight=\"bold\">Pieces:</text>"));
         assert!(!out.contains("font-weight=\"bold\">leg"));
     }
 }

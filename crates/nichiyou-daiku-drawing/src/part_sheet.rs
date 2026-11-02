@@ -100,9 +100,17 @@ pub struct TitleRow {
     pub count: String,
 }
 
-const LABELS: [&str; 5] = ["Pieces:", "Count:", "Lumber:", "Length:", "Holes:"];
-/// DejaVu Sans Bold runs about this much wider than the regular face
-const BOLD_WIDTH: f64 = 1.12;
+const LABELS: [&str; 6] = [
+    "Pieces:",
+    "Count:",
+    "Lumber:",
+    "Length:",
+    "Mirror of:",
+    "Holes:",
+];
+/// DejaVu Sans Bold runs this much wider than the regular face at most for
+/// the labels (1.19 for "Mirror of:")
+const BOLD_WIDTH: f64 = 1.2;
 const COLUMN_GAP: f64 = 2.5;
 
 pub fn hole_text(kind: &HoleKind) -> String {
@@ -152,6 +160,11 @@ pub fn title_rows(title: &PartTitle, width: f64) -> Vec<TitleRow> {
     rows.push(row("Count:", title.pieces.len().to_string()));
     rows.push(row("Lumber:", title.lumber.to_string()));
     rows.push(row("Length:", format!("{}mm", format_mm(title.length))));
+    if !title.mirror_of.is_empty() {
+        for (i, line) in wrapped(&title.mirror_of, width).into_iter().enumerate() {
+            rows.push(row(if i == 0 { "Mirror of:" } else { "" }, line));
+        }
+    }
     for (i, kind) in title.holes.iter().enumerate() {
         rows.push(TitleRow {
             label: if i == 0 { "Holes:" } else { "" },
@@ -375,7 +388,8 @@ fn isometric(group: &PartGroup, letters: &[(Face, char)], page: &mut Page, top: 
 
 /// The drawing of one part: the title, the isometric view and every drilled
 /// face, top to bottom.
-pub fn part_sheet(assembly: &Assembly, group: &PartGroup) -> PartSheet {
+pub fn part_sheet(assembly: &Assembly, groups: &[PartGroup], index: usize) -> PartSheet {
+    let group = &groups[index];
     let letters = face_letters(&group.holes, group.size);
     let drilled: Vec<Face> = letters
         .iter()
@@ -404,7 +418,7 @@ pub fn part_sheet(assembly: &Assembly, group: &PartGroup) -> PartSheet {
         .fold(0.0, f64::max);
     let value_x = MARGIN + label_width + COLUMN_GAP;
     let rows = title_rows(
-        &part_title(&assembly.model, group),
+        &part_title(&assembly.model, groups, index),
         PAGE_WIDTH - MARGIN - value_x,
     );
     let widest_hole = rows
@@ -422,10 +436,7 @@ pub fn part_sheet(assembly: &Assembly, group: &PartGroup) -> PartSheet {
     for (i, row) in rows.iter().enumerate() {
         let y = top + 8.0 + (rows.len() - 1 - i) as f64 * spacing;
         if !row.label.is_empty() {
-            page.svg.text_bold(
-                row.label,
-                (MARGIN + text_size(row.label).0 * BOLD_WIDTH / 2.0, y),
-            );
+            page.svg.text_bold(row.label, (MARGIN, y));
         }
         page.text(&row.value, value_x + text_size(&row.value).0 / 2.0, y);
         if !row.count.is_empty() {
@@ -486,7 +497,7 @@ mod tests {
     fn sheet() -> PartSheet {
         let assembly = Assembly::of(parse(SHELF).unwrap()).unwrap();
         let groups = part_groups(&assembly);
-        part_sheet(&assembly, &groups[0])
+        part_sheet(&assembly, &groups, 0)
     }
 
     #[test]
@@ -518,7 +529,7 @@ mod tests {
         let source = "(a:2x4 =800)\n(b:2x4 =400)\nb -[DF<0 RF<300 S(Slim:3.8x65)]- a\n";
         let assembly = Assembly::of(parse(source).unwrap()).unwrap();
         let groups = part_groups(&assembly);
-        let sheet = part_sheet(&assembly, &groups[0]);
+        let sheet = part_sheet(&assembly, &groups, 0);
         let (_, rect) = sheet
             .faces
             .iter()
@@ -543,6 +554,7 @@ mod tests {
             pieces: pieces.clone(),
             lumber: "2x4",
             length: 750.0,
+            mirror_of: Vec::new(),
             holes: Vec::new(),
         };
         let rows = title_rows(&title, 150.0);
@@ -569,6 +581,7 @@ mod tests {
             pieces: vec!["leg".into()],
             lumber: "2x4",
             length: 750.0,
+            mirror_of: Vec::new(),
             holes: vec![
                 HoleKind {
                     diameter: 2.5,
@@ -660,6 +673,28 @@ mod tests {
                 1.0
             ),
             [1.25]
+        );
+    }
+
+    #[test]
+    fn a_mirror_part_is_named_under_the_length() {
+        let title = PartTitle {
+            pieces: vec!["leg_fl".into(), "leg_br".into()],
+            lumber: "2x4",
+            length: 750.0,
+            mirror_of: vec!["leg_fr".into(), "leg_bl".into()],
+            holes: Vec::new(),
+        };
+        let rows = title_rows(&title, 200.0);
+        assert_eq!(rows[4], row("Mirror of:", "leg_fr, leg_bl", ""));
+        let alone = PartTitle {
+            mirror_of: Vec::new(),
+            ..title
+        };
+        assert!(
+            title_rows(&alone, 200.0)
+                .iter()
+                .all(|r| r.label != "Mirror of:")
         );
     }
 }

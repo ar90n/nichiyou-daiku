@@ -45,12 +45,13 @@ fn facts(source: &str) -> Value {
     let model = nichiyou_daiku_core::dsl::parse(source).expect("a source that assembles");
     let mut assembly = Assembly::of(model).expect("a source that assembles");
     common::python_holes(&mut assembly);
-    let parts: Vec<Value> = part_groups(&assembly)
+    let groups = part_groups(&assembly);
+    let parts: Vec<Value> = groups
         .iter()
         .enumerate()
         .filter(|(_, group)| !group.holes.is_empty())
-        .map(|(index, group)| {
-            let facts = part_facts(&assembly.model, group);
+        .map(|(index, _)| {
+            let facts = part_facts(&assembly.model, &groups, index);
             let letters: serde_json::Map<String, Value> = facts
                 .letters
                 .iter()

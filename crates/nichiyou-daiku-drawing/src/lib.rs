@@ -59,7 +59,7 @@ pub fn part_drawing(source: &str, part: usize) -> Result<Drawing, String> {
             part_name(group)
         ));
     }
-    let sheet = part_sheet::part_sheet(&assembly, group);
+    let sheet = part_sheet::part_sheet(&assembly, &groups, part);
     Ok(Drawing {
         svg: sheet.svg,
         notes: sheet.crowded,

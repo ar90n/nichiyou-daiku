@@ -197,6 +197,47 @@ pub(crate) fn same_part(a: &[LocalHole], b: &[LocalHole], size: [f64; 3]) -> boo
         .any(|turn| same_holes(&a, &through_on_one_side(&turned(b, turn, size), size)))
 }
 
+/// The holes as a mirror shows them: reflected across the board's width.
+fn reflected(holes: &[LocalHole], size: [f64; 3]) -> Vec<LocalHole> {
+    holes
+        .iter()
+        .map(|hole| {
+            let mut point = hole.point;
+            point[0] = size[0] - point[0];
+            let face = match hole.face {
+                Face::Left => Face::Right,
+                Face::Right => Face::Left,
+                other => other,
+            };
+            LocalHole {
+                face,
+                point,
+                ..*hole
+            }
+        })
+        .collect()
+}
+
+/// The first other part made as this one's mirror image: the same board,
+/// its holes these reflected (one reflection and the board's turns give
+/// every mirror). Builders mix such pairs up.
+pub fn mirror_of(groups: &[PartGroup], index: usize) -> Option<usize> {
+    let group = &groups[index];
+    if group.holes.is_empty() {
+        return None;
+    }
+    let mirrored = reflected(&group.holes, group.size);
+    groups
+        .iter()
+        .enumerate()
+        .find(|(i, other)| {
+            *i != index
+                && (0..3).all(|k| close(other.size[k], group.size[k]))
+                && same_part(&mirrored, &other.holes, group.size)
+        })
+        .map(|(i, _)| i)
+}
+
 /// The pieces grouped by how they are made, in declaration order: the same
 /// lumber and length, and holes that match after a turn that brings the
 /// board onto itself (a mirrored piece is a different part).
@@ -383,10 +424,13 @@ pub struct PartTitle {
     pub pieces: Vec<String>,
     pub lumber: &'static str,
     pub length: f64,
+    /// The pieces of the part made as this one's mirror image, if any
+    pub mirror_of: Vec<String>,
     pub holes: Vec<HoleKind>,
 }
 
-pub fn part_title(model: &Model, group: &PartGroup) -> PartTitle {
+pub fn part_title(model: &Model, groups: &[PartGroup], index: usize) -> PartTitle {
+    let group = &groups[index];
     let lumber = model
         .piece(&group.pieces[0])
         .expect("a piece of the model")
@@ -427,6 +471,7 @@ pub fn part_title(model: &Model, group: &PartGroup) -> PartTitle {
         pieces: group.pieces.clone(),
         lumber,
         length: group.size[2],
+        mirror_of: mirror_of(groups, index).map_or(Vec::new(), |i| groups[i].pieces.clone()),
         holes,
     }
 }
@@ -448,7 +493,8 @@ pub struct PartFacts {
     pub faces: Vec<FaceStops>,
 }
 
-pub fn part_facts(model: &Model, group: &PartGroup) -> PartFacts {
+pub fn part_facts(model: &Model, groups: &[PartGroup], index: usize) -> PartFacts {
+    let group = &groups[index];
     let letters = face_letters(&group.holes, group.size);
     let faces = letters
         .iter()
@@ -469,7 +515,7 @@ pub fn part_facts(model: &Model, group: &PartGroup) -> PartFacts {
         })
         .collect();
     PartFacts {
-        title: part_title(model, group),
+        title: part_title(model, groups, index),
         letters,
         faces,
     }
@@ -561,7 +607,7 @@ mod tests {
             post -[BT<0 FT<0 S(Coarse:3.8x57)]- cleat\npost -[BL<300 DL<0 D(:8x30)]- shelf\n";
         let assembly = Assembly::of(parse(source).unwrap()).unwrap();
         let groups = part_groups(&assembly);
-        let post = part_title(&assembly.model, &groups[0]);
+        let post = part_title(&assembly.model, &groups, 0);
         assert_eq!(
             (post.pieces.clone(), post.lumber, post.length),
             (vec!["post".to_string()], "2x4", 600.0)
@@ -580,7 +626,7 @@ mod tests {
                 (8.0, Some(15.0), None, 2)
             ]
         );
-        let rail = part_title(&assembly.model, &groups[1]);
+        let rail = part_title(&assembly.model, &groups, 1);
         assert_eq!(
             rail.holes,
             [HoleKind {
@@ -595,10 +641,10 @@ mod tests {
         let assembly = Assembly::of(parse(shelf).unwrap()).unwrap();
         let groups = part_groups(&assembly);
         assert_eq!(
-            part_title(&assembly.model, &groups[0]).pieces,
+            part_title(&assembly.model, &groups, 0).pieces,
             ["left_side", "right_side"]
         );
-        let facts = part_facts(&assembly.model, &groups[0]);
+        let facts = part_facts(&assembly.model, &groups, 0);
         assert_eq!(facts.letters, [(Face::Back, 'A')]);
         assert_eq!(facts.faces.len(), 1);
         assert_eq!(
@@ -693,5 +739,31 @@ mod tests {
             ..sunk(Face::Back, 0.0)
         };
         assert!(!same_part(&[sunk(Face::Front, 38.0)], &[plain], BOARD));
+    }
+
+    #[test]
+    fn mirror_image_parts_name_each_other() {
+        // Countersunk from the front, off the middle across and along: no
+        // turn brings one onto the other, a mirror does
+        let sunk = |x: f64| LocalHole {
+            face: Face::Front,
+            point: [x, 38.0, 100.0],
+            diameter: 2.5,
+            depth: None,
+            countersink: Some(7.5),
+        };
+        let group = |name: &str, x: f64| PartGroup {
+            pieces: vec![name.to_string()],
+            size: BOARD,
+            holes: vec![sunk(x)],
+        };
+        let groups = [
+            group("left", 20.0),
+            group("right", 69.0),
+            group("other", 30.0),
+        ];
+        assert_eq!(mirror_of(&groups, 0), Some(1));
+        assert_eq!(mirror_of(&groups, 1), Some(0));
+        assert_eq!(mirror_of(&groups, 2), None);
     }
 }
