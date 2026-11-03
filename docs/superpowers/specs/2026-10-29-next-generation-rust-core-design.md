@@ -39,7 +39,7 @@
    4. R4 CLI: `validate` と `report`（材料表・買い物リスト・木取り・ビス・ドリル）、R3 の描き方を使う
       `render`・`drawing`・`steps`。プラグインの `bin/nichiyou-daiku` を Rust 版に替える（配り方はビルド済みの
       バイナリ）。R4a 文字（CLI の骨組み・`validate`・`report`）→ R4b 絵（`render`・`steps`・`drawing`・`view`）→ R4c 配る に分ける（2026-11-01、ユーザー承認。R4a は `2026-11-01-r4a-cli-text-design.md`）。R4b は R4b1（PNG の土台・`render`・`steps`、`2026-11-02-r4b1-render-and-steps-design.md`）→ R4b2（`drawing` の PDF、`2026-11-02-r4b2-drawing-design.md`）に分け、`view` は R4c でブラウザのビューアーを開く形にする（2026-11-02、ユーザー承認）。R4c は `2026-11-03-r4c-distribution-design.md`（Actions でビルドして Releases に置き、入口が落とす。届けるのは R6）。R4a の後に、皿取りと部品図の題名の見せ方を小さな仕様で入れる（ユーザー。`2026-11-02-countersinks-and-part-titles-design.md`）。
-   5. R5 3D の書き出し: STL と STEP。
+   5. R5 3D の書き出し: STL と STEP（`2026-11-03-r5-export-design.md`。角は丸めず穴は全部、形は自前で組む）。
    6. R6 片付け: Python 版を消し、評価・ドキュメント・CLAUDE.md を Rust 版に合わせる。
 6. **評価の仕組み（`evals/design`）は Python のまま残す**（前提、ユーザー了承）。製品ではなく開発の道具なので、
    使う CLI だけを Rust 版に替える。
