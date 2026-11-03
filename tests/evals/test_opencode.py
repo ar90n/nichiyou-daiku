@@ -18,7 +18,7 @@ from evals.design.opencode import (
     uses_opencode,
 )
 
-MODEL = "opencode/deepseek-v4.1-flash-free"
+MODEL = "opencode-go/deepseek-v4.1-flash"
 
 
 def _event(kind: str, at: int, **part) -> str:
@@ -61,11 +61,18 @@ RECORD = [
 ]
 
 
-def test_short_names_point_at_free_models():
+def test_short_names_point_at_the_subscription_s_models():
     assert model_id("deepseek") == MODELS["deepseek"] == MODEL
+    assert model_id("glm") == "opencode-go/glm-5.3-flash"
     assert model_id("opencode-go/glm-5.3") == "opencode-go/glm-5.3"
     assert uses_opencode("glm") and uses_opencode("opencode-go/kimi-k3")
     assert not uses_opencode("sonnet")
+
+
+def test_only_the_opencode_go_subscription_s_models_run():
+    # opencode/... is OpenCode Zen, billed apart from the subscription
+    assert not uses_opencode("opencode/deepseek-v4.1-flash-free")
+    assert not uses_opencode("opencode/deepseek-v4-pro")
 
 
 def test_the_command_runs_the_model_without_asking():

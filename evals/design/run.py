@@ -327,11 +327,16 @@ def _conditions(args: argparse.Namespace) -> str | None:
         args.cases = ",".join(meta["cases"])
         for name in ("reps", "model", "judge_model"):
             setattr(args, name, meta[name])
+    if args.model.startswith("opencode/"):
+        return (
+            f"{args.model} runs on OpenCode Zen, outside the OpenCode Go subscription; "
+            f"use {', '.join(MODELS)} or an opencode-go/... name"
+        )
     if not (is_claude(args.model) or uses_opencode(args.model)):
         return (
             f"Unknown model {args.model}; use {', '.join(CLAUDE_MODELS)} or a "
             f"claude-... name for Claude Code, or {', '.join(MODELS)} or an "
-            "opencode/... or opencode-go/... name for opencode"
+            "opencode-go/... name for opencode"
         )
     return None
 

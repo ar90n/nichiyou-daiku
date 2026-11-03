@@ -29,6 +29,9 @@ GLM でも動くことを確かめたい。直し方は、状況を見てから�
    選べるようにする。有料版（`opencode-go/...`）は OpenCode Go のキーが期限切れで使えない。キーを更新すれば正式な
    名前（`opencode/...`・`opencode-go/...`）で選べる。無料版の名前は opencode の都合で変わるので、短い名前の表は
    評価の仕組みの 1 か所に置く。
+   **更新（2026-11-03、ユーザー）**: OpenCode はサブスク（OpenCode Go、`opencode-go/…`）だけを使う。短い名前は
+   `deepseek` → `opencode-go/deepseek-v4.1-flash`、`glm` → `opencode-go/glm-5.3-flash`。`opencode/…`（OpenCode Zen、
+   無料版も含む）は従量課金の別枠なので、名前を見て止める。
 3. **どの LLM も同じスキルを読む**（ユーザー）。スキルを道具ごとに分けたり書き換えたりしない。Claude Code には
    これまでどおり `--plugin-dir` でプラグインの写しを渡す。opencode には、回ごとの opencode の設定ファイルの
    `skills.paths` でプラグインの写しの `skills/` を指して渡す（確かめた）。スキルは写しの中にあるので、スキルから
