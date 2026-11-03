@@ -35,14 +35,15 @@ def test_marketplace_offers_the_repository_as_the_plugin():
 
 
 WRAPPER = ROOT / "bin" / "nichiyou-daiku"
+VERSION = "9.9.9"
 
 
 def _tools(tmp_path: Path) -> Path:
-    """Only the utilities the wrapper needs, so a uv or nichiyou-daiku
-    installed on this machine stays out of the tests."""
+    """Only the utilities the wrapper needs to reach its cache, so a
+    nichiyou-daiku installed on this machine stays out of the tests."""
     tools = tmp_path / "tools"
     tools.mkdir(exist_ok=True)
-    for name in ("dirname", "basename", "readlink"):
+    for name in ("dirname", "basename", "readlink", "sed", "head", "uname"):
         if not (tools / name).exists():
             (tools / name).symlink_to(shutil.which(name))
     return tools
@@ -57,16 +58,26 @@ def _fake(directory: Path, name: str, label: str) -> None:
 
 
 def _plugin(tmp_path: Path, name: str = "plugin") -> Path:
-    """A plugin root holding a copy of the wrapper."""
+    """A plugin root holding a copy of the wrapper and the version it reads."""
     bin_dir = tmp_path / name / "bin"
     bin_dir.mkdir(parents=True)
     shutil.copy2(WRAPPER, bin_dir / "nichiyou-daiku")
+    (tmp_path / name / "Cargo.toml").write_text(
+        f'[workspace]\n\n[workspace.package]\nversion = "{VERSION}"\n'
+    )
     return (tmp_path / name).resolve()
+
+
+def _cached(cache_home: Path) -> Path:
+    """This version's CLI, as the wrapper leaves it after downloading it."""
+    _fake(cache_home / "nichiyou-daiku" / VERSION, "nichiyou-daiku", "cached")
+    return cache_home
 
 
 def _run(
     command: Path,
     *path: Path | str,
+    cache: Path,
     args=("validate", "my table.nd"),
     env=None,
     cwd=None,
@@ -75,7 +86,7 @@ def _run(
         [str(command), *args],
         env={
             "PATH": os.pathsep.join(str(p) for p in path),
-            "XDG_CACHE_HOME": "/nonexistent/cache",
+            "XDG_CACHE_HOME": str(cache),
             **(env or {}),
         },
         cwd=cwd,
@@ -83,23 +94,6 @@ def _run(
         text=True,
         timeout=10,
     )
-
-
-def _uv_call(root: Path, *args: str, viz: bool = False) -> list[str]:
-    """What the fake uv prints when the wrapper runs the plugin's source."""
-    extra = ["--extra", "viz"] if viz else []
-    return [
-        "uv",
-        "run",
-        "--project",
-        str(root),
-        "--frozen",
-        "--no-dev",
-        "--no-editable",
-        *extra,
-        "nichiyou-daiku",
-        *args,
-    ]
 
 
 def test_wrapper_is_an_executable_posix_shell_script():
@@ -112,120 +106,80 @@ def test_wrapper_is_an_executable_posix_shell_script():
 def test_wrapper_runs_an_installed_cli(tmp_path, installed_first):
     root = _plugin(tmp_path)
     _fake(tmp_path / "installed", "nichiyou-daiku", "installed")
-    _fake(tmp_path / "uv-bin", "uv", "uv")
     dirs = [tmp_path / "installed", root / "bin"]
     if not installed_first:
         dirs.reverse()
     result = _run(
-        root / "bin" / "nichiyou-daiku", *dirs, tmp_path / "uv-bin", _tools(tmp_path)
+        root / "bin" / "nichiyou-daiku",
+        *dirs,
+        _tools(tmp_path),
+        cache=_cached(tmp_path / "cache"),
     )
     assert result.stdout.splitlines() == ["installed", "validate", "my table.nd"]
 
 
-def test_wrapper_runs_its_own_source_through_uv(tmp_path):
+def test_wrapper_runs_the_cli_its_version_downloaded(tmp_path):
     root = _plugin(tmp_path)
-    _fake(tmp_path / "uv-bin", "uv", "uv")
     result = _run(
         root / "bin" / "nichiyou-daiku",
         root / "bin",
-        tmp_path / "uv-bin",
         _tools(tmp_path),
+        cache=_cached(tmp_path / "cache"),
     )
-    assert result.stdout.splitlines() == _uv_call(root, "validate", "my table.nd")
+    assert result.stdout.splitlines() == ["cached", "validate", "my table.nd"]
 
 
-@pytest.mark.parametrize(
-    "args",
-    [
-        ("export", "d.nd"),
-        ("drawing", "d.nd"),
-        ("view", "d.nd"),
-        ("render", "d.nd"),
-        ("steps", "d.nd"),
-        ("-v", "export", "d.nd"),
-    ],
-)
-def test_wrapper_adds_the_viz_extra_for_3d_commands(tmp_path, args):
+def test_wrapper_keeps_the_cli_outside_the_plugin(tmp_path):
+    # The plugin directory is replaced on every update: the downloaded CLI
+    # lives in the user's cache, ~/.cache without XDG_CACHE_HOME
     root = _plugin(tmp_path)
-    _fake(tmp_path / "uv-bin", "uv", "uv")
+    home = tmp_path / "home"
+    _cached(home / ".cache")
     result = _run(
         root / "bin" / "nichiyou-daiku",
-        tmp_path / "uv-bin",
         _tools(tmp_path),
-        args=args,
+        cache=Path(""),
+        env={"XDG_CACHE_HOME": "", "HOME": str(home)},
     )
-    assert result.stdout.splitlines() == _uv_call(root, *args, viz=True)
-
-
-@pytest.mark.parametrize(
-    ("cache", "command", "environment"),
-    [
-        ({"XDG_CACHE_HOME": "/x/cache"}, "validate", "/x/cache/nichiyou-daiku/core"),
-        ({"XDG_CACHE_HOME": "/x/cache"}, "drawing", "/x/cache/nichiyou-daiku/viz"),
-        (
-            {"XDG_CACHE_HOME": "", "HOME": "/x/home"},
-            "report",
-            "/x/home/.cache/nichiyou-daiku/core",
-        ),
-    ],
-)
-def test_wrapper_keeps_its_environments_outside_the_plugin(
-    tmp_path, cache, command, environment
-):
-    # The plugin directory is replaced on every update, so uv must not put
-    # its virtual environment there
-    root = _plugin(tmp_path)
-    uv = tmp_path / "uv-bin" / "uv"
-    uv.parent.mkdir()
-    uv.write_text('#!/bin/sh\necho "$UV_PROJECT_ENVIRONMENT"\n')
-    uv.chmod(0o755)
-    result = _run(
-        root / "bin" / "nichiyou-daiku",
-        uv.parent,
-        _tools(tmp_path),
-        args=(command, "d.nd"),
-        env=cache,
-    )
-    assert result.stdout.splitlines() == [environment]
+    assert result.stdout.splitlines()[0] == "cached"
 
 
 def test_wrapper_keeps_a_plugin_path_with_spaces_whole(tmp_path):
+    # The version comes from the plugin root, so a root broken at its space
+    # would not find this version's CLI
     root = _plugin(tmp_path, "claude plugins")
-    _fake(tmp_path / "uv-bin", "uv", "uv")
     result = _run(
-        root / "bin" / "nichiyou-daiku", tmp_path / "uv-bin", _tools(tmp_path)
+        root / "bin" / "nichiyou-daiku",
+        _tools(tmp_path),
+        cache=_cached(tmp_path / "cache"),
     )
-    assert result.stdout.splitlines()[3] == str(root)
+    assert result.stdout.splitlines()[0] == "cached"
 
 
-def test_wrapper_called_by_another_copy_goes_straight_to_uv(tmp_path):
+def test_wrapper_called_by_another_copy_goes_straight_to_its_cache(tmp_path):
     root = _plugin(tmp_path)
     _fake(tmp_path / "installed", "nichiyou-daiku", "installed")
-    _fake(tmp_path / "uv-bin", "uv", "uv")
     result = _run(
         root / "bin" / "nichiyou-daiku",
         tmp_path / "installed",
-        tmp_path / "uv-bin",
         _tools(tmp_path),
+        cache=_cached(tmp_path / "cache"),
         env={"NICHIYOU_DAIKU_WRAPPED": "1"},
     )
-    assert result.stdout.splitlines()[0] == "uv"
+    assert result.stdout.splitlines()[0] == "cached"
 
 
 def test_copies_of_the_wrapper_do_not_call_each_other(tmp_path):
     first = _plugin(tmp_path, "first")
     second = _plugin(tmp_path, "second")
-    _fake(tmp_path / "uv-bin", "uv", "uv")
     result = _run(
         first / "bin" / "nichiyou-daiku",
         first / "bin",
         second / "bin",
-        tmp_path / "uv-bin",
         _tools(tmp_path),
+        cache=_cached(tmp_path / "cache"),
     )
-    lines = result.stdout.splitlines()
-    assert lines[0] == "uv"
-    assert lines[3] in (str(first), str(second))
+    assert result.stdout.splitlines()[0] == "cached"
 
 
 def test_wrapper_reached_through_a_symlink_uses_the_plugin_root(tmp_path):
@@ -234,37 +188,28 @@ def test_wrapper_reached_through_a_symlink_uses_the_plugin_root(tmp_path):
     links.mkdir()
     target = root / "bin" / "nichiyou-daiku"
     (links / "nichiyou-daiku").symlink_to(os.path.relpath(target, links))
-    _fake(tmp_path / "uv-bin", "uv", "uv")
     result = _run(
-        links / "nichiyou-daiku", links, tmp_path / "uv-bin", _tools(tmp_path)
+        links / "nichiyou-daiku",
+        links,
+        _tools(tmp_path),
+        cache=_cached(tmp_path / "cache"),
     )
-    assert result.stdout.splitlines()[3] == str(root)
+    assert result.stdout.splitlines()[0] == "cached"
 
 
 def test_wrapper_skips_the_current_directory_and_directories(tmp_path):
     root = _plugin(tmp_path)
     _fake(tmp_path / "work", "nichiyou-daiku", "from the current directory")
     (tmp_path / "checkouts" / "nichiyou-daiku").mkdir(parents=True)
-    _fake(tmp_path / "uv-bin", "uv", "uv")
     result = _run(
         root / "bin" / "nichiyou-daiku",
         "",  # an empty entry means the current directory
         tmp_path / "checkouts",
-        tmp_path / "uv-bin",
         _tools(tmp_path),
+        cache=_cached(tmp_path / "cache"),
         cwd=tmp_path / "work",
     )
-    assert result.stdout.splitlines()[0] == "uv"
-
-
-def test_wrapper_without_cli_or_uv_says_how_to_install(tmp_path):
-    root = _plugin(tmp_path)
-    result = _run(root / "bin" / "nichiyou-daiku", root / "bin", _tools(tmp_path))
-    assert result.returncode == 127
-    assert "https://docs.astral.sh/uv/" in result.stderr
-    assert (
-        'uv tool install "git+https://github.com/ar90n/nichiyou-daiku"' in result.stderr
-    )
+    assert result.stdout.splitlines()[0] == "cached"
 
 
 SKILLS = sorted((ROOT / "skills").glob("*/SKILL.md"))
