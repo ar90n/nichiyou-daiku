@@ -1,0 +1,104 @@
+name: Release
+
+# A v* tag builds the CLI for every target into a draft release; running it
+# by hand only builds them, as artifacts. Publishing is the maintainer's call
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  viewer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Rust for WebAssembly
+        # Installs the toolchain rust-toolchain.toml names, with its wasm32 target
+        run: rustup toolchain install
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: make web
+      - uses: actions/upload-artifact@v7
+        with:
+          name: viewer
+          path: web/dist
+
+  build:
+    needs: viewer
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { target: x86_64-unknown-linux-musl, os: ubuntu-latest, runs: true }
+          - { target: aarch64-unknown-linux-musl, os: ubuntu-24.04-arm, runs: true }
+          - { target: aarch64-apple-darwin, os: macos-latest, runs: true }
+          - { target: x86_64-apple-darwin, os: macos-latest, runs: false }
+          - { target: x86_64-pc-windows-msvc, os: windows-latest, runs: true }
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          name: viewer
+          path: web/dist
+      - name: Rust for ${{ matrix.target }}
+        run: rustup toolchain install && rustup target add ${{ matrix.target }}
+      - name: Build, with the viewer built in
+        run: cargo build --release --locked -p nichiyou-daiku-cli --target ${{ matrix.target }}
+      - name: Check it runs
+        if: matrix.runs
+        run: target/${{ matrix.target }}/release/nichiyou-daiku validate examples/nd_files/simple_table.nd
+      - name: Package
+        run: |
+          version=$(sed -n '/^\[workspace\.package\]/,/^\[/s/^version *= *"\(.*\)"/\1/p' Cargo.toml | head -n 1)
+          name=nichiyou-daiku-$version-${{ matrix.target }}
+          mkdir -p dist
+          cd target/${{ matrix.target }}/release
+          if [ "${{ matrix.target }}" = x86_64-pc-windows-msvc ]; then
+            7z a "$GITHUB_WORKSPACE/dist/$name.zip" nichiyou-daiku.exe
+          else
+            tar -czf "$GITHUB_WORKSPACE/dist/$name.tar.gz" nichiyou-daiku
+          fi
+      - uses: actions/upload-artifact@v7
+        with:
+          name: cli-${{ matrix.target }}
+          path: dist/*
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+      - name: The tag is the version in Cargo.toml
+        run: |
+          version=$(sed -n '/^\[workspace\.package\]/,/^\[/s/^version *= *"\(.*\)"/\1/p' Cargo.toml | head -n 1)
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::The tag $GITHUB_REF_NAME is not the version in Cargo.toml (v$version): tag the commit v$version, or change [workspace.package] version"
+            exit 1
+          fi
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: cli-*
+          merge-multiple: true
+          path: dist
+      - name: Checksums
+        run: cd dist && sha256sum * > SHA256SUMS
+      - name: Draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >
+          gh release create "$GITHUB_REF_NAME" dist/*
+          --draft --title "$GITHUB_REF_NAME"
+          --notes "The nichiyou-daiku CLI for Linux (musl), macOS and Windows. The plugin's bin/nichiyou-daiku downloads the one for your system; SHA256SUMS checks them."
