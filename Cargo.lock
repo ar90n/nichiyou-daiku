@@ -529,6 +529,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "nichiyou-daiku-export"
+version = "0.2.0"
+dependencies = [
+ "nichiyou-daiku-core",
+ "serde_json",
+]
+
+[[package]]
 name = "nichiyou-daiku-wasm"
 version = "0.2.0"
 dependencies = [

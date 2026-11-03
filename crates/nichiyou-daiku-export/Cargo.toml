@@ -1,0 +1,12 @@
+[package]
+name = "nichiyou-daiku-export"
+description = "3D export of nichiyou-daiku designs: STL and STEP"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+[dependencies]
+nichiyou-daiku-core = { path = "../nichiyou-daiku-core" }
+
+[dev-dependencies]
+serde_json = "1"

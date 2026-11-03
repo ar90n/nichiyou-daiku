@@ -15,7 +15,8 @@ chains files again for the corpus that is there. `--cli` writes what the CLI
 prints (NAME.cli-validate.txt and, for examples,
 NAME.cli-validate-json.txt), NAME.steps.md (the steps command's page) and,
 for the examples and the documents' examples, NAME.render.json (what the
-check image labels and notes), and the option cases in
+check image labels and notes) and NAME.solids.json (each piece's volume
+and box in the 3D), and the option cases in
 crates/nichiyou-daiku-cli/tests/cli. The report's golden files are the Rust CLI's own
 since countersinks (2026-11-02): ND_BLESS=1 cargo test -p nichiyou-daiku-cli
 writes them.
@@ -296,6 +297,7 @@ CLI_GENERATED = (
     "*.cli-validate-json.txt",
     "*.steps.md",
     "*.render.json",
+    "*.solids.json",
 )
 RENDERED = ("example-", "doc-")
 """Cases whose check image's labels and note are recorded: drawing them in
@@ -411,6 +413,23 @@ def render_facts(assembly: Assembly) -> dict:
     }
 
 
+def solid_facts(assembly) -> dict:
+    """Each piece's volume and box as the Python version's 3D (square edges,
+    its holes cut) has them, for the Rust export to match."""
+    from nichiyou_daiku.shell.build123d_export import assembly_to_build123d
+
+    part = assembly_to_build123d(assembly, fillet_radius=0)
+    pieces = {}
+    for child in part.children:
+        box = child.bounding_box()
+        pieces[child.label] = {
+            "volume": round(child.volume, 3),
+            "min": [round_mm(box.min.X), round_mm(box.min.Y), round_mm(box.min.Z)],
+            "max": [round_mm(box.max.X), round_mm(box.max.Y), round_mm(box.max.Z)],
+        }
+    return {"pieces": pieces}
+
+
 def write_cli_goldens() -> None:
     for pattern in CLI_GENERATED:
         for old in CORPUS.glob(pattern):
@@ -434,6 +453,7 @@ def write_cli_goldens() -> None:
         )
         if name.startswith(RENDERED):
             write(CORPUS / f"{name}.render.json", render_facts(assembly))
+            write(CORPUS / f"{name}.solids.json", solid_facts(assembly))
     stock = CLI_DIR / "stock"
     stock.mkdir(parents=True, exist_ok=True)
     for old in CLI_DIR.glob("*.txt"):
