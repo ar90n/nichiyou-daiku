@@ -5,9 +5,6 @@ name: Release
 on:
   push:
     tags: ["v*"]
-    # Temporary: a manual run needs the workflow on the default branch, which
-    # gets it at R6; this branch's pushes try the builds until then
-    branches: [next-r4c-distribution]
   workflow_dispatch:
 
 permissions:
