@@ -8,11 +8,12 @@ from pathlib import Path
 
 from .agent import AgentFailed, Transcript, cli_calls, in_shared_tmp, run_claude
 
-# opencode's free models by short name. Its catalog changes, so the names
-# live here only
+# The OpenCode Go subscription's models by short name. Only its models run:
+# opencode/... is OpenCode Zen, billed apart. Its catalog changes, so the
+# names live here only
 MODELS = {
-    "deepseek": "opencode/deepseek-v4.1-flash-free",
-    "glm": "opencode/glm-5.3-flash-free",
+    "deepseek": "opencode-go/deepseek-v4.1-flash",
+    "glm": "opencode-go/glm-5.3-flash",
 }
 # The skill's name in its SKILL.md: opencode gives it no plugin prefix
 SKILL = "design"
@@ -27,15 +28,15 @@ REFUSED_COMMANDS = (
     "uv tool *",
     "pip *",
 )
-# A working run writes its first event within seconds; a free model's
-# endpoint that stopped answering leaves the record empty
+# A working run writes its first event within seconds; an endpoint that
+# stopped answering leaves the record empty
 FIRST_OUTPUT_S = 180.0
 # What opencode answers a tool call that a permission rule refuses
 _DENIED = "rule which prevents"
 
 
 def uses_opencode(model: str) -> bool:
-    return model in MODELS or model.startswith(("opencode/", "opencode-go/"))
+    return model in MODELS or model.startswith("opencode-go/")
 
 
 def model_id(model: str) -> str:

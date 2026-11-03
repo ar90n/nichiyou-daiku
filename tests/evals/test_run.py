@@ -53,6 +53,10 @@ def seen():
     return []
 
 
+def _no_opencode(*args):
+    raise AssertionError("a test reached the real opencode: fake run_opencode")
+
+
 @pytest.fixture
 def fake(monkeypatch, seen, tmp_path_factory):
     """The agent writes the side table example for every case; the bench
@@ -119,6 +123,8 @@ def fake(monkeypatch, seen, tmp_path_factory):
     monkeypatch.setattr(run, "ENVIRONMENTS", tmp_path_factory.mktemp("envs"))
     monkeypatch.setattr(run, "preflight", lambda plugin, env, scratch, model: None)
     monkeypatch.setattr(run, "run_agent", agent)
+    # A test that reached the real opencode would spend a model's use
+    monkeypatch.setattr(run, "run_opencode", _no_opencode)
     monkeypatch.setattr(run, "judge", judge)
     monkeypatch.setattr(run, "_commit", lambda: "abc123")
     return calls
@@ -230,10 +236,10 @@ def test_the_preflight_checks_opencode_and_its_model(tmp_path):
         "opencode",
         f'echo "$XDG_CONFIG_HOME" > "{tmp_path}/config_home"\n'
         f'pwd > "{tmp_path}/models_cwd"\n'
-        "echo opencode/glm-5.3-flash-free\n",
+        "echo opencode-go/glm-5.3-flash\n",
     )
     wrong = run.preflight(plugin, env, tmp_path, "deepseek")
-    assert "opencode does not offer opencode/deepseek-v4.1-flash-free" in wrong
+    assert "opencode does not offer opencode-go/deepseek-v4.1-flash" in wrong
     assert run.preflight(plugin, env, tmp_path, "glm") is None
     assert (tmp_path / "config_home").read_text().strip() == str(
         tmp_path / "opencode" / "config"
@@ -256,8 +262,8 @@ def test_the_preflight_asks_opencode_again_once_its_cache_is_filled(tmp_path):
     _tool(
         tools,
         "opencode",
-        f'if [ -e "{tmp_path}/filled" ]; then echo opencode/glm-5.3-flash-free; '
-        f'else : > "{tmp_path}/filled"; echo opencode/old-free; fi\n',
+        f'if [ -e "{tmp_path}/filled" ]; then echo opencode-go/glm-5.3-flash; '
+        f'else : > "{tmp_path}/filled"; echo opencode-go/old-flash; fi\n',
     )
     env = {"PATH": f"{plugin / 'bin'}:{tools}"}
     assert run.preflight(plugin, env, tmp_path, "glm") is None
@@ -366,7 +372,7 @@ def test_a_run_without_an_api_key_source_says_nothing_of_one():
         "judge_cost_usd": 0.0,
         **TRANSCRIPT.model_copy(
             update={
-                "model": "opencode/deepseek-v4.1-flash-free",
+                "model": "opencode-go/deepseek-v4.1-flash",
                 "tool": "opencode 1.18.30",
                 "api_key_source": None,
             }
@@ -374,7 +380,7 @@ def test_a_run_without_an_api_key_source_says_nothing_of_one():
     }
     report = report_markdown({"cases": ["bench"], "reps": 1}, [row], [])
     assert (
-        "- Agent: opencode/deepseek-v4.1-flash-free on opencode 1.18.30; judge: -"
+        "- Agent: opencode-go/deepseek-v4.1-flash on opencode 1.18.30; judge: -"
         in report
     )
 
@@ -591,6 +597,16 @@ def test_an_unknown_model_stops_before_anything_runs(fake, tmp_path, capsys):
     assert fake == []
 
 
+def test_a_model_outside_the_subscription_stops_before_anything_runs(
+    fake, tmp_path, capsys
+):
+    model = "opencode/deepseek-v4.1-flash-free"
+    assert run.main(["--model", model, "--out", str(tmp_path)]) == 2
+    said = capsys.readouterr().err
+    assert f"{model} runs on OpenCode Zen" in said and "opencode-go/" in said
+    assert fake == []
+
+
 def test_a_model_opencode_serves_runs_through_opencode(fake, monkeypatch, tmp_path):
     asked = []
 
@@ -612,11 +628,11 @@ def test_each_model_gets_its_own_run_directory(fake, monkeypatch, tmp_path):
     monkeypatch.setattr(run, "RUNS", tmp_path)
     monkeypatch.setattr(run, "run_opencode", lambda *args: TRANSCRIPT)
     run.main(["--cases", "side-table"])
-    run.main(["--cases", "side-table", "--model", "opencode/glm-5.3-flash-free"])
+    run.main(["--cases", "side-table", "--model", "opencode-go/glm-5.3-flash"])
     names = sorted(path.name for path in tmp_path.iterdir())
     assert len(names) == 2
-    assert names[0].endswith("-opencode-glm-5.3-flash-free") or names[1].endswith(
-        "-opencode-glm-5.3-flash-free"
+    assert names[0].endswith("-opencode-go-glm-5.3-flash") or names[1].endswith(
+        "-opencode-go-glm-5.3-flash"
     )
     assert any(name.endswith("-sonnet") for name in names)
 

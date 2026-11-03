@@ -48,8 +48,8 @@ format:  ## Format code
 	uv run ruff format src/ tests/ evals/ tools/
 	cargo fmt --all
 
-# The LLM that designs: sonnet, opus or haiku through Claude Code, deepseek or
-# glm (free) or an opencode/... name through opencode
+# The LLM that designs: sonnet, opus or haiku through Claude Code, deepseek,
+# glm or an opencode-go/... name through opencode (the OpenCode Go subscription)
 MODEL ?= sonnet
 
 eval:  ## Check the design skill on the 5 core requests once, ~15 min (MODEL=sonnet; uses your Claude allowance)
