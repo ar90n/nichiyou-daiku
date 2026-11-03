@@ -10,6 +10,8 @@ mod pdf;
 mod png;
 mod render;
 mod report;
+#[allow(dead_code, reason = "view uses it")]
+mod serve;
 mod steps;
 mod stock;
 mod validate;
