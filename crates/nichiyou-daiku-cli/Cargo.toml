@@ -16,6 +16,7 @@ clap = { version = "4", features = ["derive"] }
 jiff = "0.2"
 resvg = { version = "0.45", default-features = false, features = ["text", "system-fonts"] }
 svg2pdf = { version = "0.13", default-features = false, features = ["text"] }
+tiny_http = "0.12"
 serde_json = { version = "1", features = ["preserve_order"] }
 toml = { version = "0.9", features = ["preserve_order"] }
 

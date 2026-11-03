@@ -10,11 +10,11 @@ mod pdf;
 mod png;
 mod render;
 mod report;
-#[allow(dead_code, reason = "view uses it")]
 mod serve;
 mod steps;
 mod stock;
 mod validate;
+mod view;
 
 use std::process::ExitCode;
 
@@ -77,6 +77,14 @@ enum Commands {
     /// --no-dimensions).
     #[command(args_override_self = true)]
     Drawing(drawing::Args),
+    /// Open a design in the browser viewer, served from this machine.
+    ///
+    /// The page shows the 3D model, the assembly steps and the printable
+    /// manual, and follows the file as it is saved. Ctrl-C stops it.
+    /// NICHIYOU_DAIKU_VIEWER names a built viewer folder (web/dist) to serve
+    /// instead of the one built in.
+    #[command(args_override_self = true)]
+    View(view::Args),
 }
 
 fn main() -> ExitCode {
@@ -90,5 +98,6 @@ fn main() -> ExitCode {
         Commands::Render(args) => render::run(args, &echo),
         Commands::Steps(args) => steps::run(args, &echo),
         Commands::Drawing(args) => drawing::run(args, &echo),
+        Commands::View(args) => view::run(args, &echo),
     })
 }
