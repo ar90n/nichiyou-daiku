@@ -2,7 +2,9 @@
 //! holes, as STEP (exact faces) and STL (triangles).
 
 pub mod bore;
+pub mod mesh;
 pub mod solid;
+pub mod stl;
 
 use nichiyou_daiku_core::assembly::Assembly;
 use nichiyou_daiku_core::parts::piece_holes;

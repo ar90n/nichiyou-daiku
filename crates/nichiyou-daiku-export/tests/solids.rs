@@ -119,3 +119,30 @@ fn solids_match_the_python_version() {
             .join("\n")
     );
 }
+
+#[test]
+fn every_piece_meshes_watertight_to_its_volume() {
+    for (path, assembly) in designs() {
+        for solid in model(&assembly).solids {
+            let mesh = nichiyou_daiku_export::mesh::mesh(&solid);
+            let mut seen = HashMap::new();
+            for t in &mesh.triangles {
+                for k in 0..3 {
+                    *seen.entry((t[k], t[(k + 1) % 3])).or_insert(0) += 1;
+                }
+            }
+            let tight = seen
+                .iter()
+                .all(|(&(a, b), &n)| n == 1 && seen.get(&(b, a)) == Some(&1));
+            assert!(tight, "{} {}: not watertight", path.display(), solid.name);
+            let v = nichiyou_daiku_export::mesh::volume(&mesh);
+            assert!(
+                v >= solid.volume - 1e-6,
+                "{} {}: {v} < {}",
+                path.display(),
+                solid.name,
+                solid.volume
+            );
+        }
+    }
+}
