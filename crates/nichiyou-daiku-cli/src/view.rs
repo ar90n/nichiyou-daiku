@@ -107,10 +107,12 @@ pub fn run(args: &Args, echo: &Echo) -> u8 {
     } else {
         ""
     };
+    // src holds the design's URL, a query value escaped once more: the
+    // viewer fetches the value as it is, so '#', '?' and '%' stay escaped
     let url = format!(
         "http://{}:{port}/?src={}{watch}",
         bracketed(&args.host),
-        encode(design.name())
+        encode(&encode(design.name()))
     );
     let mut line = format!("Viewing {} at {url} (Ctrl-C to stop)", design.name());
     if EVERY.contains(&args.host.as_str()) {

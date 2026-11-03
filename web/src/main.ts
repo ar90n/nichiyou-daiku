@@ -2,7 +2,7 @@ import "./style.css";
 import { dimensionDirection, layoutDimensions } from "./dimensions";
 import { atLine, forPiece, forProblem, NONE, type Highlight, type Paint } from "./highlight";
 import { fetchSource, nameOf, readFile, sourceUrl, takeFile, withSourceUrl, type Source } from "./load";
-import { watching, watchSource } from "./watch";
+import { placeToKeep, watching, watchSource, type StepsPlace } from "./watch";
 import { shownAfterStep, type Shown } from "./drawing";
 import { DrawingPane } from "./drawingPane";
 import { renderManual, type Drawings } from "./manual";
@@ -160,7 +160,7 @@ function openStepsTab(wanted: number): void {
   setTab("steps");
 }
 
-function showStep(next: number, picked: number | null = null): void {
+function showStep(next: number, picked: number | null = null, keepCamera = false): void {
   if (!current || !stepsTab(current).enabled) {
     closeDrawing();
     return;
@@ -176,7 +176,7 @@ function showStep(next: number, picked: number | null = null): void {
   viewer.apply(stepHighlight(scene));
   // Drawn first, so that the camera frames the dimension rows too
   drawDimensions();
-  viewer.fit(scene.bounds);
+  if (!keepCamera) viewer.fit(scene.bounds);
   renderSteps(stepsEl, current, step, part, { onStep: (n) => showStep(n), onPart: (i) => showStep(0, i), onDrawing: (i) => void openDrawing(i), onStepDrawing: (n) => void openStepDrawing(n) });
   setTab("steps");
   history.replaceState(null, "", withStep(location.href, step));
@@ -233,6 +233,7 @@ async function open(
   name: string | null,
   wanted: number | null = step,
   keepCamera = false,
+  picked: number | null = null,
 ): Promise<void> {
   let source: Source;
   try {
@@ -258,7 +259,7 @@ async function open(
   history.replaceState(null, "", page);
   // Reopened, a file keeps its step; one with fewer steps goes to its last
   if (tab === "manual") void openManual();
-  else if ((wanted !== null || tab === "steps") && stepsTab(current).enabled) showStep(wanted ?? 0);
+  else if ((wanted !== null || tab === "steps") && stepsTab(current).enabled) showStep(wanted ?? 0, picked, keepCamera);
   else if (tab === "steps") showModel();
 }
 
@@ -273,8 +274,14 @@ let stopWatching: (() => void) | null = null;
 /** Follow the file view serves: reopen it, as it was looked at, when it is saved. */
 function follow(url: string): void {
   stopWatching?.();
+  // Where a save that broke the steps took the page from
+  let away: StepsPlace | null = null;
   stopWatching = watchSource(url, () => currentText, (text) => {
-    void open(async () => ({ name: nameOf(url), text, url }), url, step, true);
+    const place = placeToKeep(tab, step, part, away);
+    void open(async () => ({ name: nameOf(url), text, url }), url, place ? place.step : step, true, place?.part ?? null)
+      .then(() => {
+        away = place && tab !== "steps" ? place : null;
+      });
   });
 }
 

@@ -54,6 +54,13 @@ jobs:
         run: rustup toolchain install && rustup target add ${{ matrix.target }}
       - name: Build, with the viewer built in
         run: cargo build --release --locked -p nichiyou-daiku-cli --target ${{ matrix.target }}
+      - name: The viewer is built in
+        # Without it, view would only say the CLI was built without the viewer
+        run: |
+          if ! grep -q include_bytes target/${{ matrix.target }}/release/build/nichiyou-daiku-cli-*/out/viewer.rs; then
+            echo "::error::The CLI for ${{ matrix.target }} was built without the viewer: the viewer artifact did not reach web/dist"
+            exit 1
+          fi
       - name: Check it runs
         if: matrix.runs
         run: target/${{ matrix.target }}/release/nichiyou-daiku validate examples/nd_files/simple_table.nd

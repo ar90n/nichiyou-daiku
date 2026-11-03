@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
-import { watching, watchSource } from "../src/watch";
+import { placeToKeep, watching, watchSource } from "../src/watch";
 
 beforeEach(() => vi.useFakeTimers());
 afterEach(() => vi.useRealTimers());
@@ -51,4 +51,16 @@ it("reads without the browser's cache", async () => {
   await vi.advanceTimersByTimeAsync(1000);
   expect(seen[0]?.cache).toBe("no-store");
   stop();
+});
+
+it("a save keeps the step and part being looked at", () => {
+  expect(placeToKeep("steps", 3, null, null)).toEqual({ step: 3, part: null });
+  expect(placeToKeep("steps", 0, 2, null)).toEqual({ step: 0, part: 2 });
+  expect(placeToKeep("model", null, null, null)).toBeNull();
+});
+
+it("steps a slip mid-edit took away come back with the next good save", () => {
+  // The model tab shows a file whose steps cannot be planned; the step it
+  // left waits for the steps to come back
+  expect(placeToKeep("model", null, null, { step: 3, part: null })).toEqual({ step: 3, part: null });
 });

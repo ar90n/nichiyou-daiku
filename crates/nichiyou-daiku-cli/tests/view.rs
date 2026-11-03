@@ -84,7 +84,8 @@ fn view_serves_the_viewer_and_the_design_as_saved() {
     );
     assert!(url.starts_with("http://127.0.0.1:"), "{url}");
     assert!(
-        url.ends_with("/?src=my%20table%20%281%29.nd&watch"),
+        // src holds the file's URL, itself escaped as a query value
+        url.ends_with("/?src=my%2520table%2520%25281%2529.nd&watch"),
         "{url}"
     );
     assert_eq!(get(&url, "/"), (200, "VIEWER PAGE".into()));
@@ -179,6 +180,23 @@ fn a_design_from_stdin_is_served_without_following() {
     assert!(line.ends_with("/?src=stdin.nd (Ctrl-C to stop)"), "{line}");
     assert_eq!(
         get(&url_in(&line), "/stdin.nd"),
+        (200, "(a:2x4 =400)\n".into())
+    );
+}
+
+#[test]
+fn a_name_with_url_characters_is_served() {
+    // The viewer fetches src's value as a URL: '#', '?' and '%' must reach
+    // the server escaped
+    let dir = folder("characters");
+    fs::write(dir.join("a#1 100%.nd"), "(a:2x4 =400)\n").unwrap();
+    let (_running, url) = start(&dir, &["view", "a#1 100%.nd", "--no-open"]);
+    assert!(
+        url.ends_with("/?src=a%25231%2520100%2525.nd&watch"),
+        "{url}"
+    );
+    assert_eq!(
+        get(&url, "/a%231%20100%25.nd"),
         (200, "(a:2x4 =400)\n".into())
     );
 }

@@ -38,3 +38,23 @@ export function watchSource(
   }, interval);
   return () => clearInterval(timer);
 }
+
+/** A place in the Steps tab: the step, or the part of step 0. */
+export interface StepsPlace {
+  step: number;
+  part: number | null;
+}
+
+/**
+ * Where a followed save should reopen in the Steps tab: where the user is,
+ * or, when a slip mid-edit took the steps away (and the page to the Model
+ * tab), where they were then. Null: not in the Steps tab.
+ */
+export function placeToKeep(
+  tab: string,
+  step: number | null,
+  part: number | null,
+  away: StepsPlace | null,
+): StepsPlace | null {
+  return tab === "steps" ? { step: step ?? 0, part } : away;
+}
