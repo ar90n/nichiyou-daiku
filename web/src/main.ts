@@ -1,7 +1,8 @@
 import "./style.css";
 import { dimensionDirection, layoutDimensions } from "./dimensions";
 import { atLine, forPiece, forProblem, NONE, type Highlight, type Paint } from "./highlight";
-import { fetchSource, readFile, sourceUrl, takeFile, withSourceUrl, type Source } from "./load";
+import { fetchSource, nameOf, readFile, sourceUrl, takeFile, withSourceUrl, type Source } from "./load";
+import { watching, watchSource } from "./watch";
 import { shownAfterStep, type Shown } from "./drawing";
 import { DrawingPane } from "./drawingPane";
 import { renderManual, type Drawings } from "./manual";
@@ -111,7 +112,7 @@ function selectLine(line: number): void {
   }
 }
 
-function render(name: string | null, text: string, view: View): void {
+function render(name: string | null, text: string, view: View, keepCamera = false): void {
   closeDrawing();
   current = view;
   currentText = text;
@@ -123,7 +124,7 @@ function render(name: string | null, text: string, view: View): void {
   problemsTitle.textContent = view.problems.length ? `Problems (${view.problems.length})` : "Problems";
   renderProblems(problemsEl, view, (problem) => select(forProblem(view, problem), null));
   renderPiece(pieceEl, view, null, showLine);
-  viewer.show(view.error ? null : view);
+  viewer.show(view.error ? null : view, keepCamera);
   if (view.error) markLine(sourceEl, view.error.line, true);
   markTabs([stepsTabButton, manualTab], view);
 }
@@ -227,7 +228,12 @@ async function openManual(): Promise<void> {
   renderManual(manualPages, view, currentName, draw);
 }
 
-async function open(load: () => Promise<Source>, name: string | null, wanted: number | null = step): Promise<void> {
+async function open(
+  load: () => Promise<Source>,
+  name: string | null,
+  wanted: number | null = step,
+  keepCamera = false,
+): Promise<void> {
   let source: Source;
   try {
     source = await load();
@@ -246,7 +252,7 @@ async function open(load: () => Promise<Source>, name: string | null, wanted: nu
     if (tab !== "model") showModel();
     return;
   }
-  render(source.name, source.text, safeView(viewOf, source.text));
+  render(source.name, source.text, safeView(viewOf, source.text), keepCamera);
   // The address bar shares what is open: a file from this computer has no URL
   const page = source.url ? withSourceUrl(location.href, source.url) : withoutSource(location.href);
   history.replaceState(null, "", page);
@@ -262,12 +268,27 @@ function withoutSource(href: string): string {
   return page.toString();
 }
 
+let stopWatching: (() => void) | null = null;
+
+/** Follow the file view serves: reopen it, as it was looked at, when it is saved. */
+function follow(url: string): void {
+  stopWatching?.();
+  stopWatching = watchSource(url, () => currentText, (text) => {
+    void open(async () => ({ name: nameOf(url), text, url }), url, step, true);
+  });
+}
+
 function openUrl(url: string, wanted: number | null = step): void {
+  // Opening something else stops following the file view serves
+  stopWatching?.();
+  stopWatching = null;
   byId<HTMLInputElement>("url").value = url;
   void open(() => fetchSource(url), url, wanted);
 }
 
 function openFile(file: File): void {
+  stopWatching?.();
+  stopWatching = null;
   void open(() => readFile(file), file.name);
 }
 
@@ -334,4 +355,7 @@ document.addEventListener("keydown", (e) => {
 });
 
 const initial = sourceUrl(location.search);
-if (initial) openUrl(initial, stepFromSearch(location.search));
+if (initial) {
+  openUrl(initial, stepFromSearch(location.search));
+  if (watching(location.search)) follow(initial);
+}

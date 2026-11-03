@@ -154,3 +154,13 @@ it("piece names stay off after opening another view", () => {
   viewer.setLabels(true);
   expect(shown()).toHaveLength(1); // the first view's names left with it
 });
+
+it("a model shown again keeps the camera where it was put", () => {
+  const viewer = new Viewer(document.createElement("div"));
+  viewer.show(view([piece]));
+  viewer.camera.position.set(1, 2, 3);
+  viewer.show(view([piece]), true);
+  expect(viewer.camera.position.toArray()).toEqual([1, 2, 3]);
+  viewer.show(view([piece]));
+  expect(viewer.camera.position.toArray()).not.toEqual([1, 2, 3]);
+});

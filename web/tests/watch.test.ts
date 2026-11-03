@@ -1,0 +1,54 @@
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import { watching, watchSource } from "../src/watch";
+
+beforeEach(() => vi.useFakeTimers());
+afterEach(() => vi.useRealTimers());
+
+/** A server whose file reads `text`, or fails while it is null. */
+function server(state: { text: string | null }): typeof fetch {
+  return (async () => {
+    if (state.text === null) return new Response("gone", { status: 404 });
+    return new Response(state.text, { status: 200 });
+  }) as typeof fetch;
+}
+
+it("follows the source only when view asks to", () => {
+  expect(watching("?src=a.nd&watch")).toBe(true);
+  expect(watching("?src=a.nd")).toBe(false);
+});
+
+it("reopens only when the file has changed", async () => {
+  const state = { text: "(a:2x4 =100)" as string | null };
+  let shown = "(a:2x4 =100)";
+  const changes: string[] = [];
+  const stop = watchSource("a.nd", () => shown, (text) => { changes.push(text); shown = text; }, 1000, server(state));
+  await vi.advanceTimersByTimeAsync(3000);
+  expect(changes).toEqual([]);
+  state.text = "(a:2x4 =200)";
+  await vi.advanceTimersByTimeAsync(1000);
+  expect(changes).toEqual(["(a:2x4 =200)"]);
+  await vi.advanceTimersByTimeAsync(3000);
+  expect(changes).toEqual(["(a:2x4 =200)"]);
+  stop();
+});
+
+it("a failed read keeps what is shown", async () => {
+  const state = { text: null as string | null };
+  const changes: string[] = [];
+  const stop = watchSource("a.nd", () => "(a:2x4 =100)", (text) => changes.push(text), 1000, server(state));
+  await vi.advanceTimersByTimeAsync(3000);
+  expect(changes).toEqual([]);
+  stop();
+});
+
+it("reads without the browser's cache", async () => {
+  const seen: RequestInit[] = [];
+  const fetchFn = (async (_url: string, init: RequestInit) => {
+    seen.push(init);
+    return new Response("x", { status: 200 });
+  }) as unknown as typeof fetch;
+  const stop = watchSource("a.nd", () => "x", () => {}, 1000, fetchFn);
+  await vi.advanceTimersByTimeAsync(1000);
+  expect(seen[0]?.cache).toBe("no-store");
+  stop();
+});

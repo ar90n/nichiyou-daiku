@@ -27,7 +27,7 @@ const DIMENSION_COLOR = 0x3d5a80;
 /** What the page asks of the 3D view. */
 export interface Drawing {
   onPick: (id: string | null) => void;
-  show(view: View | null): void;
+  show(view: View | null, keepCamera?: boolean): void;
   setView(name: ViewName): void;
   setLabels(visible: boolean): void;
   apply(highlight: Highlight): void;
@@ -105,8 +105,10 @@ export class Viewer implements Drawing {
     this.resize();
   }
 
-  /** Draw a view (null clears) and look at it from the iso view. */
-  show(view: View | null): void {
+  /** Draw a view (null clears) and look at it from the iso view, or, with
+   * `keepCamera` and a model already drawn, from where the camera is. */
+  show(view: View | null, keepCamera = false): void {
+    const had = this.parts !== null;
     this.clearDimensions();
     if (this.parts) this.scene.remove(this.parts.root);
     // Each name leaves the overlay only when removed itself, not with its group
@@ -130,7 +132,7 @@ export class Viewer implements Drawing {
         this.labels.add(object);
       }
       this.scene.add(this.labels);
-      this.setView("Iso");
+      if (!(keepCamera && had)) this.setView("Iso");
     }
     // setView draws nothing for a view without pieces, which would leave the last model on screen
     this.render();
