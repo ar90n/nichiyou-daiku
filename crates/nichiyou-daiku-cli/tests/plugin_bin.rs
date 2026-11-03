@@ -15,8 +15,21 @@ fn executable(path: &Path, script: &str) {
     fs::set_permissions(path, fs::Permissions::from_mode(0o755)).unwrap();
 }
 
-/// A fresh folder: bin/ with a uname saying `system` and `machine`, an empty
-/// cache, and releases/ to fill.
+/// Stands in for `curl -fsL -o OUT URL` with a file:// URL, so the tests
+/// need no curl (CI's container has none)
+const CURL: &str = r#"#!/bin/sh
+out=
+while [ $# -gt 1 ]; do
+  case $1 in
+    -o) out=$2; shift 2 ;;
+    *) shift ;;
+  esac
+done
+cp "${1#file://}" "$out" 2>/dev/null
+"#;
+
+/// A fresh folder: bin/ with a uname saying `system` and `machine` and a
+/// curl for file:// URLs, an empty cache, and releases/ to fill.
 fn folder(name: &str, system: &str, machine: &str) -> PathBuf {
     let dir = std::env::temp_dir().join(format!("nd-plugin-{}-{name}", std::process::id()));
     let _ = fs::remove_dir_all(&dir);
@@ -27,6 +40,7 @@ fn folder(name: &str, system: &str, machine: &str) -> PathBuf {
         &dir.join("bin/uname"),
         &format!("#!/bin/sh\ncase $1 in -s) echo {system} ;; -m) echo {machine} ;; esac\n"),
     );
+    executable(&dir.join("bin/curl"), CURL);
     dir
 }
 
