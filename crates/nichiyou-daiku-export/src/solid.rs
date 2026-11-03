@@ -186,12 +186,15 @@ fn cavity(b: &mut Builder, bore: &Bore, spans: &[Span], length: f64, mouths: &mu
     }
     for (k, span) in spans.iter().enumerate() {
         let end = b.circle(bore, span.t1, span.r1, n);
-        // The seam joins the two circles' first points
+        // The seam joins the two circles' first points: along a cone's slant
         let (vs, ve) = (b.edges[start].start, b.edges[end].start);
+        let (ps, pe) = (b.vertices[vs], b.vertices[ve]);
+        let d = [0, 1, 2].map(|i| pe[i] - ps[i]);
+        let slant = dot(d, d).sqrt();
         let seam = b.edge(
             Curve::Line {
-                origin: b.vertices[vs],
-                direction: e,
+                origin: ps,
+                direction: d.map(|v| v / slant),
             },
             vs,
             ve,

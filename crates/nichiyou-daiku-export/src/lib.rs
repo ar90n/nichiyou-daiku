@@ -4,6 +4,7 @@
 pub mod bore;
 pub mod mesh;
 pub mod solid;
+pub mod step;
 pub mod stl;
 
 use nichiyou_daiku_core::assembly::Assembly;

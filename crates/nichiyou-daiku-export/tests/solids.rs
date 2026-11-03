@@ -121,6 +121,46 @@ fn solids_match_the_python_version() {
 }
 
 #[test]
+fn every_edge_runs_through_its_vertices() {
+    use nichiyou_daiku_export::solid::Curve;
+    let mut off = Vec::new();
+    for (path, assembly) in designs() {
+        for solid in model(&assembly).solids {
+            for edge in &solid.edges {
+                let on = |p: [f64; 3]| match edge.curve {
+                    Curve::Line { origin, direction } => {
+                        let d = [0, 1, 2].map(|i| p[i] - origin[i]);
+                        let along: f64 = (0..3).map(|i| d[i] * direction[i]).sum();
+                        (0..3).all(|i| (d[i] - along * direction[i]).abs() < 1e-9)
+                    }
+                    Curve::Circle {
+                        centre,
+                        axis,
+                        radius,
+                        ..
+                    } => {
+                        let d = [0, 1, 2].map(|i| p[i] - centre[i]);
+                        let height: f64 = (0..3).map(|i| d[i] * axis[i]).sum();
+                        let r = (0..3).map(|i| d[i] * d[i]).sum::<f64>().sqrt();
+                        height.abs() < 1e-9 && (r - radius).abs() < 1e-9
+                    }
+                };
+                if !on(solid.vertices[edge.start]) || !on(solid.vertices[edge.end]) {
+                    off.push(format!("{} {}", path.display(), solid.name));
+                }
+            }
+        }
+    }
+    off.dedup();
+    assert!(
+        off.is_empty(),
+        "{} edges:\n{}",
+        off.len(),
+        off[..off.len().min(5)].join("\n")
+    );
+}
+
+#[test]
 fn every_piece_meshes_watertight_to_its_volume() {
     for (path, assembly) in designs() {
         for solid in model(&assembly).solids {
