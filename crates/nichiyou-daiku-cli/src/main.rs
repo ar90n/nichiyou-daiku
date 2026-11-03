@@ -2,6 +2,7 @@
 
 mod drawing;
 mod echo;
+mod export;
 mod fonts;
 mod input;
 mod load;
@@ -69,6 +70,13 @@ enum Commands {
     /// black, beside a view dimensioning where they go.
     #[command(args_override_self = true)]
     Steps(steps::Args),
+    /// Export DSL file to 3D format (STL or STEP).
+    ///
+    /// Each piece is a box with its holes (pilot, dowel, counterbore and
+    /// countersink); in a STEP file each is a part named as the design
+    /// names it.
+    #[command(args_override_self = true)]
+    Export(export::Args),
     /// Generate technical drawing (PDF) with orthographic views.
     ///
     /// Creates technical drawing with: the top view (plan), the front view
@@ -97,6 +105,7 @@ fn main() -> ExitCode {
         Commands::Report(args) => report::run(args, &echo),
         Commands::Render(args) => render::run(args, &echo),
         Commands::Steps(args) => steps::run(args, &echo),
+        Commands::Export(args) => export::run(args, &echo),
         Commands::Drawing(args) => drawing::run(args, &echo),
         Commands::View(args) => view::run(args, &echo),
     })

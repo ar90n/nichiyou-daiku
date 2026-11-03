@@ -12,6 +12,7 @@ path = "src/main.rs"
 [dependencies]
 nichiyou-daiku-core = { path = "../nichiyou-daiku-core" }
 nichiyou-daiku-drawing = { path = "../nichiyou-daiku-drawing" }
+nichiyou-daiku-export = { path = "../nichiyou-daiku-export" }
 clap = { version = "4", features = ["derive"] }
 jiff = "0.2"
 resvg = { version = "0.45", default-features = false, features = ["text", "system-fonts"] }

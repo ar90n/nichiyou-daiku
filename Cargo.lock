@@ -502,6 +502,7 @@ dependencies = [
  "jiff",
  "nichiyou-daiku-core",
  "nichiyou-daiku-drawing",
+ "nichiyou-daiku-export",
  "resvg",
  "serde",
  "serde_json",
