@@ -16,7 +16,7 @@ impl ScrewType {
 }
 
 /// Diameter and length in mm.
-const DOWELS: [(f64, f64); 8] = [
+pub const DOWELS: [(f64, f64); 8] = [
     (6.0, 25.0),
     (6.0, 30.0),
     (8.0, 25.0),
@@ -26,7 +26,7 @@ const DOWELS: [(f64, f64); 8] = [
     (10.0, 40.0),
     (12.0, 40.0),
 ];
-const SLIM_SCREWS: [(f64, f64); 12] = [
+pub const SLIM_SCREWS: [(f64, f64); 12] = [
     (3.3, 25.0),
     (3.3, 30.0),
     (3.3, 35.0),
@@ -40,7 +40,7 @@ const SLIM_SCREWS: [(f64, f64); 12] = [
     (3.8, 75.0),
     (4.2, 90.0),
 ];
-const COARSE_SCREWS: [(f64, f64); 12] = [
+pub const COARSE_SCREWS: [(f64, f64); 12] = [
     (3.8, 25.0),
     (3.8, 30.0),
     (3.8, 35.0),

@@ -22,5 +22,6 @@ serde_json = { version = "1", features = ["preserve_order"] }
 toml = { version = "0.9", features = ["preserve_order"] }
 
 [dev-dependencies]
+regex = "1"
 serde = { version = "1", features = ["derive"] }
 ttf-parser = "0.25"

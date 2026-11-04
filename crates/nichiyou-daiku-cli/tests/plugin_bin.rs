@@ -51,7 +51,7 @@ fn release(dir: &Path, target: &str) -> String {
     fs::create_dir_all(&stage).unwrap();
     executable(
         &stage.join("nichiyou-daiku"),
-        "#!/bin/sh\necho \"prebuilt $*\"\n",
+        "#!/bin/sh\nprintf prebuilt\nfor arg in \"$@\"; do printf ' [%s]' \"$arg\"; done\necho\n",
     );
     let name = format!("nichiyou-daiku-{VERSION}-{target}.tar.gz");
     let at = dir.join(format!("releases/v{VERSION}"));
@@ -77,10 +77,11 @@ fn release(dir: &Path, target: &str) -> String {
     name
 }
 
-/// Runs the entry point with only `dir/bin` and the system's tools on PATH.
-fn run(dir: &Path, args: &[&str]) -> Output {
+/// Runs `script` (the entry point or a copy or link of it) with only
+/// `dir/bin` and the system's tools on PATH.
+fn run_script(dir: &Path, script: &Path, args: &[&str]) -> Output {
     Command::new("sh")
-        .arg(ENTRY)
+        .arg(script)
         .args(args)
         .env_clear()
         .env(
@@ -95,6 +96,24 @@ fn run(dir: &Path, args: &[&str]) -> Output {
         )
         .output()
         .unwrap()
+}
+
+fn run(dir: &Path, args: &[&str]) -> Output {
+    run_script(dir, Path::new(ENTRY), args)
+}
+
+/// A copy of the entry point in a plugin root at `dir/name`, with the
+/// version it reads.
+fn plugin(dir: &Path, name: &str) -> PathBuf {
+    let root = dir.join(name);
+    fs::create_dir_all(root.join("bin")).unwrap();
+    fs::copy(ENTRY, root.join("bin/nichiyou-daiku")).unwrap();
+    fs::write(
+        root.join("Cargo.toml"),
+        format!("[workspace]\n\n[workspace.package]\nversion = \"{VERSION}\"\n"),
+    )
+    .unwrap();
+    root
 }
 
 fn text(bytes: &[u8]) -> String {
@@ -123,7 +142,7 @@ fn the_release_is_downloaded_once_then_run_from_the_cache() {
     let out = run(&dir, &["validate", "t.nd"]);
     assert_eq!(
         text(&out.stdout),
-        "prebuilt validate t.nd\n",
+        "prebuilt [validate] [t.nd]\n",
         "{}",
         text(&out.stderr)
     );
@@ -134,7 +153,7 @@ fn the_release_is_downloaded_once_then_run_from_the_cache() {
     assert!(cached(&dir).is_file());
     fs::remove_dir_all(dir.join("releases")).unwrap();
     let again = run(&dir, &["report", "t.nd"]);
-    assert_eq!(text(&again.stdout), "prebuilt report t.nd\n");
+    assert_eq!(text(&again.stdout), "prebuilt [report] [t.nd]\n");
     assert_eq!(text(&again.stderr), "");
 }
 
@@ -145,7 +164,7 @@ fn a_mac_on_arm_gets_the_arm_build() {
     let out = run(&dir, &["--help"]);
     assert_eq!(
         text(&out.stdout),
-        "prebuilt --help\n",
+        "prebuilt [--help]\n",
         "{}",
         text(&out.stderr)
     );
@@ -159,7 +178,7 @@ fn an_older_version_in_the_cache_is_not_used() {
     executable(&old.join("nichiyou-daiku"), "#!/bin/sh\necho old\n");
     release(&dir, "x86_64-unknown-linux-musl");
     let out = run(&dir, &["validate"]);
-    assert_eq!(text(&out.stdout), "prebuilt validate\n");
+    assert_eq!(text(&out.stdout), "prebuilt [validate]\n");
 }
 
 #[test]
@@ -207,5 +226,47 @@ fn an_unknown_machine_is_named() {
     assert!(
         err.contains("no prebuilt nichiyou-daiku for Plan9 pdp11"),
         "{err}"
+    );
+}
+
+#[test]
+fn the_entry_point_is_a_posix_shell_script() {
+    assert!(
+        fs::read_to_string(ENTRY)
+            .unwrap()
+            .starts_with("#!/bin/sh\n")
+    );
+}
+
+#[test]
+fn a_plugin_path_with_spaces_stays_whole() {
+    let dir = folder("spaces", "Linux", "x86_64");
+    release(&dir, "x86_64-unknown-linux-musl");
+    let root = plugin(&dir, "my plugin");
+    let out = run_script(
+        &dir,
+        &root.join("bin/nichiyou-daiku"),
+        &["validate", "my table.nd"],
+    );
+    assert_eq!(
+        text(&out.stdout),
+        "prebuilt [validate] [my table.nd]\n",
+        "{}",
+        text(&out.stderr)
+    );
+}
+
+#[test]
+fn a_link_to_the_entry_point_finds_its_plugin() {
+    let dir = folder("link", "Linux", "x86_64");
+    release(&dir, "x86_64-unknown-linux-musl");
+    let root = plugin(&dir, "plugin");
+    std::os::unix::fs::symlink(root.join("bin/nichiyou-daiku"), dir.join("nd")).unwrap();
+    let out = run_script(&dir, &dir.join("nd"), &["validate"]);
+    assert_eq!(
+        text(&out.stdout),
+        "prebuilt [validate]\n",
+        "{}",
+        text(&out.stderr)
     );
 }
