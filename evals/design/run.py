@@ -36,8 +36,8 @@ from .report import load_jsonl, report_markdown
 
 REPO = Path(__file__).resolve().parents[2]
 RUNS = Path(__file__).parent / "runs"
-# The plugin CLI's environments, one per evaluation: on uv's file system,
-# so that uv links the packages instead of copying them
+# The plugin CLI's builds: cargo's target folder, kept between evaluations
+# so that each builds only what changed
 ENVIRONMENTS = (
     Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache")
     / "nichiyou-daiku-eval"
@@ -55,7 +55,7 @@ CONDITIONS = {"cases": "core", "reps": 1, "model": "sonnet", "judge_model": "opu
 # Left out of the plugin the agent loads: the requirements (the cases, the
 # spec's table, the tests) and earlier runs, and the developer's Claude Code
 # setup
-HIDDEN = ("evals/", "docs/superpowers/", "tests/evals/", ".claude/", "CLAUDE.md")
+HIDDEN = ("evals/", "docs/superpowers/", ".claude/", "CLAUDE.md")
 
 
 # Never part of the plugin when the repository is copied without git
@@ -341,14 +341,19 @@ def _conditions(args: argparse.Namespace) -> str | None:
     return None
 
 
-def _uv_cache() -> str:
-    if cache := os.environ.get("UV_CACHE_DIR"):
-        return cache
-    try:
-        found = subprocess.run(["uv", "cache", "dir"], capture_output=True, text=True)
-    except FileNotFoundError:
-        return ""
-    return found.stdout.strip()
+def build_cli(plugin: Path, into: Path) -> Path:
+    """The CLI built with cargo from the plugin's own source, copied into
+    ``into``: edits to the repository during an evaluation do not reach it."""
+    target = ENVIRONMENTS / "target"
+    subprocess.run(
+        ["cargo", "build", "--release", "--quiet", "-p", "nichiyou-daiku-cli"]
+        + ["--manifest-path", str(plugin / "Cargo.toml")],
+        env={**os.environ, "CARGO_TARGET_DIR": str(target)},
+        check=True,
+    )
+    built = into / "nichiyou-daiku"
+    shutil.copy2(target / "release" / "nichiyou-daiku", built)
+    return built
 
 
 def preflight(
@@ -356,8 +361,7 @@ def preflight(
 ) -> str | None:
     """What would make every run fail, found before any allowance is spent:
     claude (the judge's), the plugin's CLI validating and drawing the skill's
-    example (which builds its environments once for all the runs), and for
-    an opencode ``model``, opencode serving it."""
+    example, and for an opencode ``model``, opencode serving it."""
     if shutil.which("claude", path=env["PATH"]) is None:
         return "claude is not on PATH; install Claude Code to run the evaluation"
     example = plugin / "skills" / "design" / "examples" / "side-table.nd"
@@ -373,7 +377,7 @@ def preflight(
             said = (result.stderr.strip().splitlines() or ["no message"])[-1]
             return (
                 f"the plugin's CLI could not {command[0]} the skill's example "
-                f"({said}); check that bin/nichiyou-daiku runs with uv"
+                f"({said}); check that the CLI cargo built from the plugin runs"
             )
     if model is None or not uses_opencode(model):
         return None
@@ -429,15 +433,34 @@ def main(argv: list[str] | None = None) -> int:
         tempfile.TemporaryDirectory(dir=ENVIRONMENTS) as cache,
     ):
         plugin = plugin_copy(REPO, Path(tmp) / "plugin")
-        env = agent_env(plugin, Path(cache), _uv_cache(), REPO / ".venv")
-        if wrong := preflight(
-            plugin, env, Path(tmp), None if args.self_check else args.model
-        ):
-            print(wrong, file=sys.stderr)
+        try:
+            cli = build_cli(plugin, Path(cache))
+        except (OSError, subprocess.CalledProcessError) as e:
+            print(
+                f"could not build the plugin's CLI with cargo ({e}); install Rust "
+                "(https://rustup.rs) and run the evaluation again",
+                file=sys.stderr,
+            )
             return 2
-        if args.self_check:
-            return _self_check(args, plugin, env)
-        return _evaluate(args, cases, plugin, env)
+        # The checks read the designs with the CLI the agent runs, for this
+        # evaluation only: the CLI goes with its temporary folder
+        before = os.environ.get("NICHIYOU_DAIKU_BIN")
+        os.environ["NICHIYOU_DAIKU_BIN"] = str(cli)
+        try:
+            env = agent_env(plugin, Path(cache), cli, REPO / ".venv")
+            if wrong := preflight(
+                plugin, env, Path(tmp), None if args.self_check else args.model
+            ):
+                print(wrong, file=sys.stderr)
+                return 2
+            if args.self_check:
+                return _self_check(args, plugin, env)
+            return _evaluate(args, cases, plugin, env)
+        finally:
+            if before is None:
+                os.environ.pop("NICHIYOU_DAIKU_BIN", None)
+            else:
+                os.environ["NICHIYOU_DAIKU_BIN"] = before
 
 
 def _self_check(args: argparse.Namespace, plugin: Path, env: dict[str, str]) -> int:

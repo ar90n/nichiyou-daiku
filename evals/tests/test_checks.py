@@ -4,8 +4,14 @@ import os
 from pathlib import Path
 
 from evals.design.cases import Fasteners, Legs, Levels, Lumber, Shelf, Size, load_cases
-from evals.design.checks import CHECKS, _level_tops, _levels, check_design, find_design
-from nichiyou_daiku.shell.diagnostics import PieceFaces, PiecePosition, ValidationReport
+from evals.design.checks import (
+    CHECKS,
+    _level_tops,
+    _levels,
+    check_design,
+    find_design,
+    read_design,
+)
 
 ROOT = Path(__file__).parents[2]
 SIDE_TABLE = ROOT / "skills" / "design" / "examples" / "side-table.nd"
@@ -101,17 +107,18 @@ def test_levels_count_boards_and_their_spacing():
     assert "2 levels, asked 3" in check_design(SHELF, three)["levels"].detail
 
 
-def _flat(id: str, type: str, low: tuple, high: tuple) -> PiecePosition:
-    faces = PieceFaces(top="+x", right="+y", front="+z")
-    return PiecePosition(
-        id=id,
-        type=type,
-        length=high[0] - low[0],
-        group=0,
-        min=low,
-        max=high,
-        faces=faces,
-    )
+def _flat(id: str, type: str, low: tuple, high: tuple) -> dict:
+    """A board lying flat, as validate --json lists it: its front face up,
+    its length along x."""
+    return {
+        "id": id,
+        "type": type,
+        "length": high[0] - low[0],
+        "group": 0,
+        "min": list(low),
+        "max": list(high),
+        "faces": {"top": "+x", "right": "+y", "front": "+z"},
+    }
 
 
 def test_a_flat_board_holding_up_another_is_not_a_level():
@@ -135,9 +142,10 @@ def test_a_level_of_a_few_narrow_boards_is_not_counted():
         _flat(f"shelf_{x}", "2x6", (x, 38, 150), (x + 140, 312, 188))
         for x in (0, 556, 1060)
     ]
-    report = ValidationReport.model_construct(
-        pieces=(top_front, top_back, *shelves), overall_size=(1200.0, 350.0, 400.0)
-    )
+    report = {
+        "pieces": [top_front, top_back, *shelves],
+        "overall_size": [1200.0, 350.0, 400.0],
+    }
     check = _levels(report, CASES["tv-stand"])
     assert check.passed is False
     assert check.detail == (
@@ -208,3 +216,15 @@ def test_the_design_named_after_the_case_is_chosen(tmp_path):
 
 def test_no_nd_file_is_no_design(tmp_path):
     assert find_design(tmp_path, "side-table") is None
+
+
+def test_the_checks_read_what_validate_json_says(tmp_path):
+    # The fasteners and the steps come from validate --json's connections
+    # and steps, not from a model in Python
+    report = read_design(SIDE_TABLE)
+    assert {connection["type"] for connection in report["connections"]} <= {
+        "vanilla",
+        "dowel",
+        "screw",
+    }
+    assert report["steps"] > 0

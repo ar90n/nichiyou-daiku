@@ -67,19 +67,19 @@ def test_subagents_are_refused():
 
 
 def test_a_run_uses_the_plugin_s_own_cli(monkeypatch):
-    # As for a person who installed the plugin: its launcher builds the CLI
-    # from the plugin's source into an environment of its own, never an
-    # installed CLI or the developer's .venv (python with nichiyou_daiku,
-    # the dev tools), which make eval's uv run puts on PATH
+    # As for a person who installed the plugin: its entry point on PATH,
+    # running the CLI built from the plugin's source, never an installed
+    # CLI or the developer's .venv, which make eval's uv run puts on PATH
     monkeypatch.setenv("PATH", "/repo/.venv/bin:/usr/bin")
     monkeypatch.setenv("VIRTUAL_ENV", "/repo/.venv")
-    env = agent_env(Path("/plugin"), Path("/cache"), "/uv-cache", Path("/repo/.venv"))
+    env = agent_env(
+        Path("/plugin"), Path("/cache"), Path("/cache/nd"), Path("/repo/.venv")
+    )
     assert env["PATH"] == "/plugin/bin:/usr/bin"
     assert "VIRTUAL_ENV" not in env
-    # The launcher runs the plugin's source, not a CLI found on PATH
-    assert env["NICHIYOU_DAIKU_WRAPPED"] == "1"
+    assert env["NICHIYOU_DAIKU_BIN"] == "/cache/nd"
     assert env["XDG_CACHE_HOME"] == "/cache"
-    assert env["UV_CACHE_DIR"] == "/uv-cache"
+    assert "NICHIYOU_DAIKU_WRAPPED" not in env
 
 
 def test_the_record_tells_what_the_agent_did():

@@ -70,6 +70,8 @@ exclude = [
     "src/nichiyou_daiku/cli/commands/view.py",
     "tests/utils/projection_utils.py",
     "evals/design/runs",
+    # The evaluation's tests, as before they moved here from tests/
+    "evals/tests",
 ]
 
 [tool.uv.sources]

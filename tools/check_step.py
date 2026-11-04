@@ -1,17 +1,21 @@
 """Check a STEP the Rust CLI wrote (R5): every piece a valid solid, named
 as the design names it, their volume the STL's.
 
-    .venv/bin/python tools/check_step.py design.nd model.step model.stl
+    NICHIYOU_DAIKU_BIN=target/release/nichiyou-daiku \\
+        uv run --with build123d tools/check_step.py design.nd model.step model.stl
 """
 
+import json
+import os
 import re
 import struct
+import subprocess
 import sys
 from pathlib import Path
 
 from build123d import import_step
 
-from nichiyou_daiku.dsl import parse_dsl
+ROOT = Path(__file__).resolve().parents[1]
 
 UUID = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
 
@@ -32,8 +36,17 @@ def stl_volume(path: Path) -> float:
     return total
 
 
+def piece_ids(design: str) -> list[str]:
+    """The design's pieces, as validate --json lists them."""
+    cli = os.environ.get("NICHIYOU_DAIKU_BIN") or str(ROOT / "bin" / "nichiyou-daiku")
+    result = subprocess.run(
+        [cli, "validate", "--json", design], capture_output=True, text=True
+    )
+    return [piece["id"] for piece in json.loads(result.stdout)["pieces"]]
+
+
 def main(design: str, step: str, stl: str) -> int:
-    pieces = list(parse_dsl(Path(design).read_text(encoding="utf-8")).pieces)
+    pieces = piece_ids(design)
     shape = import_step(step)
     parts = list(shape.children)
     problems = []

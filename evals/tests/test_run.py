@@ -200,11 +200,36 @@ def test_a_failed_preflight_spends_nothing(fake, monkeypatch, tmp_path, capsys):
     assert fake == []
 
 
+def test_the_evaluation_s_cli_is_only_for_its_run(fake, monkeypatch, tmp_path):
+    # The checks run the CLI the evaluation built, which goes with its
+    # temporary folder: later evaluations and tests must not reach for it
+    before = os.environ["NICHIYOU_DAIKU_BIN"]
+    built = tmp_path / "built"
+    built.symlink_to(before)
+    monkeypatch.setattr(run, "build_cli", lambda plugin, into: built)
+    run.main(["--cases", "side-table", "--reps", "1", "--out", str(tmp_path / "out")])
+    assert os.environ["NICHIYOU_DAIKU_BIN"] == before
+
+
+def test_an_evaluation_without_cargo_stops_before_spending(
+    fake, monkeypatch, tmp_path, capsys
+):
+    def no_cargo(plugin, into):
+        raise FileNotFoundError("cargo")
+
+    monkeypatch.setattr(run, "build_cli", no_cargo)
+    assert run.main(["--cases", "side-table", "--out", str(tmp_path / "out")]) == 2
+    said = capsys.readouterr().err
+    assert "could not build the plugin's CLI with cargo" in said
+    assert "https://rustup.rs" in said
+    assert fake == []
+
+
 def test_the_preflight_names_what_does_not_work(tmp_path):
     plugin = tmp_path / "plugin"
     (plugin / "bin").mkdir(parents=True)
     cli = plugin / "bin" / "nichiyou-daiku"
-    cli.write_text('#!/bin/sh\necho "build123d is required" >&2\nexit 1\n')
+    cli.write_text('#!/bin/sh\necho "cannot read the design" >&2\nexit 1\n')
     cli.chmod(0o755)
     tools = tmp_path / "tools"
     tools.mkdir()
@@ -213,7 +238,7 @@ def test_the_preflight_names_what_does_not_work(tmp_path):
     (tools / "claude").write_text("#!/bin/sh\n")
     (tools / "claude").chmod(0o755)
     wrong = run.preflight(plugin, env, tmp_path, "sonnet")
-    assert "could not validate" in wrong and "build123d is required" in wrong
+    assert "could not validate" in wrong and "cannot read the design" in wrong
 
 
 def _tool(directory: Path, name: str, script: str) -> None:

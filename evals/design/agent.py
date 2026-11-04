@@ -162,13 +162,11 @@ def agent_command(request: str, model: str, plugin: Path) -> list[str]:
     ]
 
 
-def agent_env(plugin: Path, cache: Path, uv_cache: str, venv: Path) -> dict[str, str]:
+def agent_env(plugin: Path, cache: Path, cli: Path, venv: Path) -> dict[str, str]:
     """The environment of a run, as a person who installed the plugin has
-    it: the plugin's launcher first on PATH, building the CLI from the
-    plugin's source into an environment under ``cache``, so edits to the
-    repository during an evaluation do not reach it. Never an installed CLI
-    or the developer's ``venv`` (python with nichiyou_daiku, the dev tools),
-    which uv run puts on PATH."""
+    it: the plugin's entry point first on PATH, running ``cli``, the CLI
+    built from the plugin's source. Never an installed CLI or the
+    developer's ``venv`` (the dev tools), which uv run puts on PATH."""
     env = dict(os.environ)
     env.pop("VIRTUAL_ENV", None)
     kept = [
@@ -177,12 +175,9 @@ def agent_env(plugin: Path, cache: Path, uv_cache: str, venv: Path) -> dict[str,
         if entry and Path(entry) != venv / "bin"
     ]
     env["PATH"] = os.pathsep.join([str(plugin / "bin"), *kept])
-    # Otherwise the launcher hands over to a CLI it finds on PATH
-    env["NICHIYOU_DAIKU_WRAPPED"] = "1"
-    # The launcher keeps its environments under XDG_CACHE_HOME; uv's own
-    # cache stays where it is
+    env["NICHIYOU_DAIKU_BIN"] = str(cli)
+    # Should the entry point look in its cache, the run's own
     env["XDG_CACHE_HOME"] = str(cache)
-    env["UV_CACHE_DIR"] = uv_cache
     return env
 
 

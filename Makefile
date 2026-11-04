@@ -7,7 +7,7 @@ help:  ## Show this help message
 check: lint test rust-check web-check  ## Lint and test; run before every commit (~3min)
 
 test:  ## Run tests with coverage (including doctests)
-	uv run pytest src/ tests/ --doctest-modules --cov=nichiyou_daiku --cov-report=term-missing -v
+	uv run pytest src/ tests/ evals/tests --doctest-modules --cov=nichiyou_daiku --cov-report=term-missing -v
 
 lint:  ## Run linting checks
 	uv run ruff format --check src/ tests/ evals/ tools/

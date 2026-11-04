@@ -1,21 +1,18 @@
-"""Machine checks: read the design with nichiyou-daiku and compare it with
-what the case asks for."""
+"""Machine checks: read the design with the nichiyou-daiku CLI
+(validate --json) and compare it with what the case asks for."""
 
+import json
+import os
+import subprocess
 from pathlib import Path
-from typing import NamedTuple
-
-from nichiyou_daiku.core.assembly import Assembly
-from nichiyou_daiku.core.connection import DowelConnection, ScrewConnection
-from nichiyou_daiku.core.model import Model
-from nichiyou_daiku.core.piece import PieceType, get_shape
-from nichiyou_daiku.dsl import parse_dsl
-from nichiyou_daiku.shell.diagnostics import (
-    PiecePosition,
-    ValidationReport,
-    validation_report,
-)
+from typing import Any, NamedTuple
 
 from .cases import Case
+
+REPO = Path(__file__).resolve().parents[2]
+# validate --json's report and one of its pieces
+Report = dict[str, Any]
+Piece = dict[str, Any]
 
 CHECKS = (
     "valid",
@@ -68,19 +65,31 @@ def find_design(
     return max(designs, key=lambda path: path.stat().st_mtime)
 
 
-def _assemble(path: Path) -> tuple[Model, Assembly]:
-    model = parse_dsl(path.read_text(encoding="utf-8"))
-    return model, Assembly.of(model)
+def cli() -> str:
+    """The CLI the checks run: NICHIYOU_DAIKU_BIN (an evaluation sets it to
+    the CLI it built for the agent), else the plugin's entry point."""
+    return os.environ.get("NICHIYOU_DAIKU_BIN") or str(REPO / "bin" / "nichiyou-daiku")
+
+
+def read_design(path: Path) -> Report:
+    """What validate --json says of the design at ``path``."""
+    result = subprocess.run(
+        [cli(), "validate", "--json", str(path)], capture_output=True, text=True
+    )
+    try:
+        return json.loads(result.stdout)
+    except json.JSONDecodeError:
+        said = (result.stderr.strip().splitlines() or ["no output"])[-1]
+        raise RuntimeError(
+            f"{cli()} validate --json printed no report ({said}); build the CLI "
+            "(cargo build -p nichiyou-daiku-cli) or set NICHIYOU_DAIKU_BIN"
+        ) from None
 
 
 def assembles(path: Path) -> bool:
     """Whether the design at ``path`` parses and assembles, so that it can
     be drawn."""
-    try:
-        _assemble(path)
-    except Exception:
-        return False
-    return True
+    return read_design(path)["error"] is None
 
 
 def check_design(path: Path | None, case: Case) -> dict[str, Check]:
@@ -88,22 +97,23 @@ def check_design(path: Path | None, case: Case) -> dict[str, Check]:
     asked = _asked(case)
     if path is None:
         return _failed(asked, "no .nd file in the working directory")
-    try:
-        model, assembly = _assemble(path)
-    except Exception as e:
-        first_line = str(e).splitlines()[0] if str(e) else type(e).__name__
-        return _failed(asked, f"{path.name} does not assemble: {first_line}")
-    report = validation_report(assembly)
+    report = read_design(path)
+    if report["error"] is not None:
+        message = report["error"]["message"] or report["error"]["kind"]
+        return _failed(
+            asked, f"{path.name} does not assemble: {message.splitlines()[0]}"
+        )
+    pieces = report["pieces"]
     checks = {
         "valid": _valid(report),
         "size": _size(report, case),
         "orientation": _orientation(report, case),
-        "lumber": _lumber(report.pieces, case),
-        "legs": _legs(report.pieces, case),
-        "shelves": _shelves(report.pieces, case),
+        "lumber": _lumber(pieces, case),
+        "legs": _legs(pieces, case),
+        "shelves": _shelves(pieces, case),
         "levels": _levels(report, case),
-        "fasteners": _fasteners(model, case),
-        "steps": _steps(model),
+        "fasteners": _fasteners(report, case),
+        "steps": _steps(report),
     }
     return {
         name: check if name in asked else Check(None, "not asked")
@@ -137,15 +147,15 @@ def _close(a: float, b: float, tolerance: float) -> bool:
     return abs(a - b) <= tolerance
 
 
-def _valid(report: ValidationReport) -> Check:
-    if report.valid:
+def _valid(report: Report) -> Check:
+    if report["valid"]:
         return Check(True, "no problems")
-    kinds = sorted({problem.kind for problem in report.problems})
+    kinds = sorted({problem["kind"] for problem in report["problems"]})
     return Check(False, f"validate reports {', '.join(kinds)}")
 
 
-def _size(report: ValidationReport, case: Case) -> Check:
-    size = report.overall_size
+def _size(report: Report, case: Case) -> Check:
+    size = report["overall_size"]
     if size is None:
         return Check(False, "the pieces are not all connected: no overall size")
     wanted = case.size
@@ -158,8 +168,8 @@ def _size(report: ValidationReport, case: Case) -> Check:
     return Check(passed, f"{shown} mm")
 
 
-def _orientation(report: ValidationReport, case: Case) -> Check:
-    size = report.overall_size
+def _orientation(report: Report, case: Case) -> Check:
+    size = report["overall_size"]
     wanted = case.size
     if size is None or wanted.width is None or wanted.depth is None:
         return Check(False, "no overall size")
@@ -173,8 +183,8 @@ def _orientation(report: ValidationReport, case: Case) -> Check:
     return Check(passed, f"x {size[0]:g}, y {size[1]:g}, z {size[2]:g}")
 
 
-def _lumber(pieces: tuple[PiecePosition, ...], case: Case) -> Check:
-    used = sorted({piece.type for piece in pieces})
+def _lumber(pieces: list[Piece], case: Case) -> Check:
+    used = sorted({piece["type"] for piece in pieces})
     extra = sorted(set(used) - set(case.lumber.allowed))
     missing = sorted(set(case.lumber.required) - set(used))
     detail = f"uses {', '.join(used)}"
@@ -185,28 +195,28 @@ def _lumber(pieces: tuple[PiecePosition, ...], case: Case) -> Check:
     return Check(not extra and not missing, detail)
 
 
-def _upright(piece: PiecePosition) -> bool:
-    return piece.faces.top[1] == "z"
+def _upright(piece: Piece) -> bool:
+    return piece["faces"]["top"][1] == "z"
 
 
-def _legs(pieces: tuple[PiecePosition, ...], case: Case) -> Check:
+def _legs(pieces: list[Piece], case: Case) -> Check:
     if case.legs is None:
         return Check(None, "not asked")
-    legs = [p for p in pieces if _upright(p) and p.min[2] <= _FLOOR_MM]
+    legs = [p for p in pieces if _upright(p) and p["min"][2] <= _FLOOR_MM]
     return Check(
         len(legs) == case.legs.count,
         f"{len(legs)} upright pieces stand on the floor, asked {case.legs.count}",
     )
 
 
-def _shelves(pieces: tuple[PiecePosition, ...], case: Case) -> Check:
+def _shelves(pieces: list[Piece], case: Case) -> Check:
     lying = [piece for piece in pieces if not _upright(piece)]
     missing = [
         shelf.at
         for shelf in case.shelves
         if not any(
-            _close(piece.min[2], shelf.at, shelf.tolerance)
-            or _close(piece.max[2], shelf.at, shelf.tolerance)
+            _close(piece["min"][2], shelf.at, shelf.tolerance)
+            or _close(piece["max"][2], shelf.at, shelf.tolerance)
             for piece in lying
         )
     ]
@@ -216,22 +226,27 @@ def _shelves(pieces: tuple[PiecePosition, ...], case: Case) -> Check:
     return Check(True, "every asked height has a horizontal piece")
 
 
-def _flat_board(piece: PiecePosition) -> bool:
-    section = get_shape(PieceType(piece.type))
-    # A square section (2x2) lying down is a rail, not a board
-    return piece.faces.front[1] == "z" and section.width > section.height
+def _flat_board(piece: Piece) -> bool:
+    """A board lying flat: its front face up and its section wider than it
+    is thick (a square section, 2x2, lying down is a rail)."""
+    if piece["faces"]["front"][1] != "z":
+        return False
+    across = "xyz".index(piece["faces"]["right"][1])
+    width = piece["max"][across] - piece["min"][across]
+    return width > piece["max"][2] - piece["min"][2]
 
 
-def _holds_up(lower: PiecePosition, upper: PiecePosition) -> bool:
+def _holds_up(lower: Piece, upper: Piece) -> bool:
     """Whether ``lower`` lies right under ``upper``, touching it."""
-    return abs(lower.max[2] - upper.min[2]) <= _LEVEL_MM and all(
-        lower.min[axis] < upper.max[axis] and upper.min[axis] < lower.max[axis]
+    return abs(lower["max"][2] - upper["min"][2]) <= _LEVEL_MM and all(
+        lower["min"][axis] < upper["max"][axis]
+        and upper["min"][axis] < lower["max"][axis]
         for axis in (0, 1)
     )
 
 
 def _level_tops(
-    pieces: tuple[PiecePosition, ...], plan_area: float | None
+    pieces: list[Piece], plan_area: float | None
 ) -> tuple[list[float], list[tuple[float, str]]]:
     """The tops of the levels, and (top, why) of the boards that sit at one
     height but are too sparse to be a level (``plan_area`` None counts every
@@ -241,26 +256,28 @@ def _level_tops(
     # level of its own
     boards = sorted(
         (b for b in boards if not any(_holds_up(b, other) for other in boards)),
-        key=lambda board: board.max[2],
+        key=lambda board: board["max"][2],
     )
-    groups: list[list[PiecePosition]] = []
+    groups: list[list[Piece]] = []
     for board in boards:
-        if groups and board.max[2] - groups[-1][0].max[2] <= _LEVEL_MM:
+        if groups and board["max"][2] - groups[-1][0]["max"][2] <= _LEVEL_MM:
             groups[-1].append(board)
         else:
             groups.append([board])
     levels: list[float] = []
     sparse: list[tuple[float, str]] = []
     for group in groups:
-        top = max(board.max[2] for board in group)
+        top = max(board["max"][2] for board in group)
         covered = sum(
-            (board.max[0] - board.min[0]) * (board.max[1] - board.min[1])
+            (board["max"][0] - board["min"][0]) * (board["max"][1] - board["min"][1])
             for board in group
         )
         extent = (
-            max(board.max[0] for board in group) - min(board.min[0] for board in group)
+            max(board["max"][0] for board in group)
+            - min(board["min"][0] for board in group)
         ) * (
-            max(board.max[1] for board in group) - min(board.min[1] for board in group)
+            max(board["max"][1] for board in group)
+            - min(board["min"][1] for board in group)
         )
         fill = covered / extent
         share = covered / plan_area if plan_area else 1.0
@@ -273,12 +290,12 @@ def _level_tops(
     return levels, sparse
 
 
-def _levels(report: ValidationReport, case: Case) -> Check:
+def _levels(report: Report, case: Case) -> Check:
     wanted = case.levels
     if wanted is None:
         return Check(None, "not asked")
-    size = report.overall_size
-    tops, sparse = _level_tops(report.pieces, size[0] * size[1] if size else None)
+    size = report["overall_size"]
+    tops, sparse = _level_tops(report["pieces"], size[0] * size[1] if size else None)
     shown = ", ".join(f"{top:g}" for top in tops) or "none"
     failures = []
     if wanted.count is not None and len(tops) != wanted.count:
@@ -286,7 +303,7 @@ def _levels(report: ValidationReport, case: Case) -> Check:
     gaps = [b - a for a, b in zip(tops, tops[1:])]
     if wanted.equal and gaps and max(gaps) - min(gaps) > _LEVEL_MM:
         failures.append("levels not evenly spaced")
-    height = report.overall_size[2] if report.overall_size else None
+    height = size[2] if size else None
     if wanted.top and (not tops or height is None or not _close(tops[-1], height, 1)):
         failures.append("the top is not a board")
     detail = f"board tops at {shown}"
@@ -299,16 +316,16 @@ def _levels(report: ValidationReport, case: Case) -> Check:
     )
 
 
-def _fasteners(model: Model, case: Case) -> Check:
+def _fasteners(report: Report, case: Case) -> Check:
     wanted = case.fasteners
     if wanted is None:
         return Check(None, "not asked")
-    kinds = {type(connection.type) for connection in model.connections.values()}
+    kinds = {connection["type"] for connection in report["connections"]}
     missing = [
         name
         for name, asked, kind in (
-            ("dowels", wanted.dowel, DowelConnection),
-            ("screws", wanted.screw, ScrewConnection),
+            ("dowels", wanted.dowel, "dowel"),
+            ("screws", wanted.screw, "screw"),
         )
         if asked and kind not in kinds
     ]
@@ -317,10 +334,9 @@ def _fasteners(model: Model, case: Case) -> Check:
     return Check(True, "asked fasteners used")
 
 
-def _steps(model: Model) -> Check:
-    if len(model.pieces) < _STEPS_FROM:
-        return Check(True, f"{len(model.pieces)} pieces: no steps block needed")
-    return Check(
-        bool(model.steps),
-        f"{len(model.steps)} steps" if model.steps else "no steps block",
-    )
+def _steps(report: Report) -> Check:
+    count = len(report["pieces"])
+    if count < _STEPS_FROM:
+        return Check(True, f"{count} pieces: no steps block needed")
+    steps = report["steps"]
+    return Check(bool(steps), f"{steps} steps" if steps else "no steps block")
