@@ -1,64 +1,25 @@
 [project]
-name = "nichiyou-daiku"
-version = "0.1.0"
-description = "A Python library for designing DIY furniture using standard lumber sizes"
-readme = "README.md"
-license = { text = "Apache-2.0" }
-authors = [
-    { name = "Masahiro Wada", email = "argon.argon.argon@gmail.com" }
-]
+name = "nichiyou-daiku-dev"
+version = "0.2.0"
+description = "Development tools for nichiyou-daiku: the design skill's evaluation, the CI pipeline and checks"
 requires-python = ">=3.13"
 dependencies = [
-    "numpy>=2.2.6",
-    "pydantic>=2.11.7",
-    "lark>=1.1.9",  # DSL parsing support
-    "click>=8.1.7",  # CLI framework
+    "pydantic>=2.11.7",  # the evaluation's cases
 ]
 
-[project.optional-dependencies]
-viz = [
-    "build123d",
-    # NOTE: build123d>=0.9.0 is required for full 3D rendering functionality
-    # However, it currently doesn't support ARM64/aarch64 platforms
-    "ocp-vscode>=2.8.5",
-    "cairosvg>=2.7.0",  # SVG→PDF conversion for technical drawings
-]
-test-visual = [
-    "cairosvg>=2.7.0",  # SVG→PNG conversion for regression tests
-    "Pillow>=10.0.0",   # Image comparison for regression tests
-]
-all = [
-    "build123d",
-    "ocp-vscode>=2.8.5",
-    "cairosvg>=2.7.0",  # Shared by viz and test-visual
-    "Pillow>=10.0.0",
-]
-
-[project.scripts]
-nichiyou-daiku = "nichiyou_daiku.cli.dsl_cli:cli"
-
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+[tool.uv]
+# Not a package: the product is the Rust CLI (crates/)
+package = false
 
 [dependency-groups]
 dev = [
-    "hypothesis>=6.135.2",
     "pytest>=8.4.0",
-    "pytest-benchmark>=5.1.0",
-    "pytest-cov>=6.1.1",
     "ruff>=0.11.13",
-    "psutil>=6.1.1",
     "pyright>=1.1.402",
 ]
 ci = [
     "dagger-io>=0.18.11",
     "anyio>=4.9.0",
-]
-
-[tool.coverage.run]
-omit = [
-    "src/nichiyou_daiku/cli/commands/view.py",
 ]
 
 [tool.ruff]
@@ -67,12 +28,7 @@ extend-exclude = ["evals/design/runs"]
 
 [tool.pyright]
 exclude = [
-    "src/nichiyou_daiku/cli/commands/view.py",
-    "tests/utils/projection_utils.py",
     "evals/design/runs",
     # The evaluation's tests, as before they moved here from tests/
     "evals/tests",
 ]
-
-[tool.uv.sources]
-build123d = { git = "https://github.com/gumyr/build123d" }

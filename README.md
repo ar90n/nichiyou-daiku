@@ -91,7 +91,6 @@ The **Manual** tab lays the whole manual out as A4 landscape pages: what to get 
 ## Documentation
 
 - [DSL specification](docs/dsl-specification.md): pieces, faces and offsets, connections, variables, unknowns, fasteners, CLI, grammar, errors
-- [Python API](docs/api-specification.md): pieces, connections, models, assembly, placement, reports, 3D export
 - [Design skill](skills/design/SKILL.md): the Claude Code skill that designs furniture and checks it with the CLI
 
 ## Development

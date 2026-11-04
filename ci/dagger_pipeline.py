@@ -1,109 +1,14 @@
 #!/usr/bin/env python3
-"""Dagger CI pipeline for nichiyou-daiku project."""
+"""The CI pipeline in Dagger: the Rust crates, the viewer, and the
+evaluation's, tools' and CI's Python."""
 
 import sys
-from typing import Optional
 
 import anyio
 import dagger
 from dagger import Config, Container, Directory
 
-
-async def test_pipeline(
-    client: dagger.Client,
-    source_dir: Directory,
-    python_version: str = "3.11",
-) -> Container:
-    """Run tests with pytest and coverage."""
-    python = (
-        client.container()
-        .from_(f"python:{python_version}-slim")
-        .with_mounted_directory("/src", source_dir)
-        .with_workdir("/src")
-        .with_exec(["apt-get", "update", "-qq"])
-        .with_exec(
-            [
-                "apt-get",
-                "install",
-                "-y",
-                "--no-install-recommends",
-                "git",
-                "libgl1-mesa-dev",
-                "libcairo2-dev",
-            ]
-        )
-        .with_exec(["pip", "install", "--upgrade", "pip"])
-        .with_exec(["pip", "install", "uv"])
-        .with_exec(["uv", "sync", "--dev", "--all-extras"])
-    )
-
-    # Run pytest with coverage
-    test_result = python.with_exec(
-        [
-            "uv",
-            "run",
-            "pytest",
-            "src/",
-            "tests/",
-            "--doctest-modules",
-            "--cov=nichiyou_daiku",
-            "--cov-report=term-missing",
-            "--cov-report=xml",
-            "--cov-fail-under=90",  # Fail if coverage is less than 90%
-            "-v",
-        ]
-    )
-
-    return test_result
-
-
-async def lint_pipeline(
-    client: dagger.Client,
-    source_dir: Directory,
-    python_version: str = "3.11",
-) -> Container:
-    """Run linting and type checking."""
-    python = (
-        client.container()
-        .from_(f"python:{python_version}-slim")
-        .with_mounted_directory("/src", source_dir)
-        .with_workdir("/src")
-        .with_exec(["apt-get", "update", "-qq"])
-        .with_exec(
-            [
-                "apt-get",
-                "install",
-                "-y",
-                "--no-install-recommends",
-                "git",
-                "libgl1-mesa-dev",
-                "libcairo2-dev",
-                # pyright runs on this Node; the one it downloads by itself
-                # fails when Node's release index lists an alpha version
-                "nodejs",
-            ]
-        )
-        .with_exec(["pip", "install", "--upgrade", "pip"])
-        .with_exec(["pip", "install", "uv"])
-        .with_exec(["uv", "sync", "--dev", "--all-extras"])
-    )
-
-    # Run ruff format
-    format_check = python.with_exec(
-        ["uv", "run", "ruff", "format", "--check", "src/", "tests/", "evals/"]
-    )
-
-    # Run ruff
-    ruff_check = format_check.with_exec(
-        ["uv", "run", "ruff", "check", "src/", "tests/", "evals/"]
-    )
-
-    # Run pyright
-    pyright_check = ruff_check.with_exec(
-        ["uv", "run", "pyright", "src/nichiyou_daiku", "evals"]
-    )
-
-    return pyright_check
+WASM_BINDGEN_VERSION = "0.2.130"
 
 
 async def rust_pipeline(client: dagger.Client, source_dir: Directory) -> Container:
@@ -129,9 +34,6 @@ async def rust_pipeline(client: dagger.Client, source_dir: Directory) -> Contain
             ]
         )
     )
-
-
-WASM_BINDGEN_VERSION = "0.2.130"
 
 
 async def web_pipeline(client: dagger.Client, source_dir: Directory) -> Container:
@@ -194,56 +96,57 @@ async def web_pipeline(client: dagger.Client, source_dir: Directory) -> Containe
     )
 
 
-async def build_pipeline(
-    client: dagger.Client,
-    source_dir: Directory,
-    python_version: str = "3.11",
+async def evals_pipeline(
+    client: dagger.Client, source_dir: Directory, rust: Container
 ) -> Container:
-    """Build the package."""
-    python = (
+    """Lint the Python, and test the evaluation with the CLI the Rust
+    pipeline built: its checks run validate --json."""
+    cli = rust.with_exec(["cargo", "build", "-p", "nichiyou-daiku-cli"]).file(
+        "/src/target/debug/nichiyou-daiku"
+    )
+    return (
         client.container()
-        .from_(f"python:{python_version}-slim")
+        .from_("python:3.13-slim")
         .with_mounted_directory("/src", source_dir)
         .with_workdir("/src")
         .with_exec(["apt-get", "update", "-qq"])
-        .with_exec(["apt-get", "install", "-y", "--no-install-recommends", "git"])
-        .with_exec(["pip", "install", "--upgrade", "pip"])
-        .with_exec(["pip", "install", "uv", "build"])
-        .with_exec(["uv", "sync"])
+        .with_exec(
+            [
+                "apt-get",
+                "install",
+                "-y",
+                "--no-install-recommends",
+                "git",
+                # pyright runs on this Node; the one it downloads by itself
+                # fails when Node's release index lists an alpha version
+                "nodejs",
+            ]
+        )
+        .with_exec(["pip", "install", "uv"])
+        .with_exec(["uv", "sync", "--group", "dev"])
+        .with_file("/usr/local/bin/nichiyou-daiku", cli)
+        .with_env_variable("NICHIYOU_DAIKU_BIN", "/usr/local/bin/nichiyou-daiku")
+        .with_exec(
+            ["uv", "run", "ruff", "format", "--check", "evals/", "tools/", "ci/"]
+        )
+        .with_exec(["uv", "run", "ruff", "check", "evals/", "tools/", "ci/"])
+        .with_exec(["uv", "run", "pyright", "evals"])
+        .with_exec(["uv", "run", "pytest", "evals/tests", "-q"])
     )
 
-    # Build the package
-    build_result = python.with_exec(["python", "-m", "build"])
 
-    return build_result
-
-
-async def main(
-    python_versions: Optional[list[str]] = None,
-) -> None:
-    """Main CI pipeline orchestrator."""
-    if python_versions is None:
-        python_versions = ["3.13"]
-
+async def main() -> None:
     config = Config(log_output=sys.stdout)
-
     async with dagger.Connection(config) as client:
-        # Get source directory
         source = client.host().directory(
             ".",
             exclude=[
                 ".venv/",
-                "dist/",
-                "build/",
-                "*.egg-info/",
                 "__pycache__/",
                 ".pytest_cache/",
-                ".mypy_cache/",
                 ".ruff_cache/",
                 ".git/",
                 "*.pyc",
-                ".coverage",
-                "coverage.xml",
                 # Evaluation runs hold designs, transcripts and images
                 "evals/design/runs/",
                 # Rust build output
@@ -254,103 +157,25 @@ async def main(
                 "web/src/wasm/",
             ],
         )
-
-        # Run pipelines for each Python version
-        test_results = []
-        lint_results = []
-        build_results = []
-
-        for py_version in python_versions:
-            print(f"\n🐍 Running CI for Python {py_version}")
-
-            # Run tests
-            print("  📋 Running tests...")
-            test_result = await test_pipeline(client, source, py_version)
-            test_results.append(test_result)
-
-            # Run linting (only on one version to save time)
-            if py_version == python_versions[0]:
-                print("  🔍 Running linting...")
-                lint_result = await lint_pipeline(client, source, py_version)
-                lint_results.append(lint_result)
-
-            # Build package
-            print("  📦 Building package...")
-            build_result = await build_pipeline(client, source, py_version)
-            build_results.append(build_result)
-
-        print("\n🦀 Checking the Rust crates...")
-        rust_result = await rust_pipeline(client, source)
-
-        print("\n🌐 Checking the viewer...")
-        web_result = await web_pipeline(client, source)
-
-        # Execute all pipelines
-        print("\n🚀 Executing all pipelines...")
-
-        has_failures = False
-
-        print("\n🦀 Rust results:")
-        try:
-            await rust_result.stdout()
-        except Exception as e:
-            print(f"❌ Rust checks failed: {e}")
-            has_failures = True
-
-        print("\n🌐 Viewer results:")
-        try:
-            await web_result.stdout()
-        except Exception as e:
-            print(f"❌ Viewer checks failed: {e}")
-            has_failures = True
-
-        # Execute test results
-        for i, (py_version, test_result) in enumerate(
-            zip(python_versions, test_results)
-        ):
-            print(f"\n📋 Test results for Python {py_version}:")
+        rust = await rust_pipeline(client, source)
+        checks = {
+            "🦀 Rust": rust,
+            "🌐 Viewer": await web_pipeline(client, source),
+            "🐍 Evaluation": await evals_pipeline(client, source, rust),
+        }
+        failed = False
+        for name, container in checks.items():
+            print(f"\n{name}:")
             try:
-                await test_result.stdout()
-                # Export coverage.xml for GitHub Actions
-                await test_result.file("/src/coverage.xml").export("./coverage.xml")
+                await container.stdout()
             except Exception as e:
-                print(f"❌ Tests failed for Python {py_version}: {e}")
-                has_failures = True
-
-        # Execute linting results
-        if lint_results:
-            print("\n🔍 Linting results:")
-            try:
-                await lint_results[0].stdout()
-            except Exception as e:
-                print(f"❌ Linting failed: {e}")
-                has_failures = True
-
-        # Execute build results
-        for i, (py_version, build_result) in enumerate(
-            zip(python_versions, build_results)
-        ):
-            print(f"\n📦 Build results for Python {py_version}:")
-            try:
-                await build_result.stdout()
-                # Export built artifacts
-                dist_dir = build_result.directory("/src/dist")
-                await dist_dir.export(f"./dist-py{py_version}")
-            except Exception as e:
-                print(f"❌ Build failed for Python {py_version}: {e}")
-                has_failures = True
-
-        if has_failures:
+                print(f"❌ {name} failed: {e}")
+                failed = True
+        if failed:
             print("\n❌ CI pipeline failed!")
             sys.exit(1)
-        else:
-            print("\n✅ All CI checks passed!")
+        print("\n✅ All CI checks passed!")
 
 
 if __name__ == "__main__":
-    # Parse command line arguments
-    python_versions = None
-    if len(sys.argv) > 1:
-        python_versions = sys.argv[1].split(",")
-
-    anyio.run(main, python_versions)
+    anyio.run(main)

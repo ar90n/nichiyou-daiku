@@ -4,15 +4,15 @@ help:  ## Show this help message
 	@echo "Available commands:"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
 
-check: lint test rust-check web-check  ## Lint and test; run before every commit (~3min)
+check: lint test rust-check web-check  ## Lint and test everything; run before every commit (~3min)
 
-test:  ## Run tests with coverage (including doctests)
-	uv run pytest src/ tests/ evals/tests --doctest-modules --cov=nichiyou_daiku --cov-report=term-missing -v
+test:  ## Test the evaluation (its checks run the CLI, built if needed)
+	uv run pytest evals/tests -q
 
-lint:  ## Run linting checks
-	uv run ruff format --check src/ tests/ evals/ tools/
-	uv run ruff check src/ tests/ evals/ tools/
-	uv run pyright src/nichiyou_daiku evals
+lint:  ## Lint the evaluation's, the tools' and CI's Python
+	uv run ruff format --check evals/ tools/ ci/
+	uv run ruff check evals/ tools/ ci/
+	uv run pyright evals
 
 rust-check:  ## Rust: format, lint, test, and build the core for WebAssembly
 	cargo fmt --all --check
@@ -45,7 +45,7 @@ web-check: wasm web-node-modules  ## Viewer: type check, tests, build
 	cd web && npm run typecheck && npm test && npm run build
 
 format:  ## Format code
-	uv run ruff format src/ tests/ evals/ tools/
+	uv run ruff format evals/ tools/ ci/
 	cargo fmt --all
 
 # The LLM that designs: sonnet, opus or haiku through Claude Code, deepseek,
@@ -58,14 +58,13 @@ eval:  ## Check the design skill on the 5 core requests once, ~15 min (MODEL=son
 eval-full:  ## Measure the design skill on all 10 requests 3 times, before merging skill changes (MODEL=sonnet; uses your Claude allowance)
 	uv run python -m evals.design.run --cases all --reps 3 --model $(MODEL)
 
-ci-setup:  ## Install CI dependencies for local CI runs
-	uv sync --group ci --group dev --all-extras
+ci-setup:  ## Install the Python tools CI and the evaluation use
+	uv sync --group ci --group dev
 
 ci-local:  ## Run the full CI pipeline in Dagger; run before merging to main or pushing
 	uv run python ci/dagger_pipeline.py
 
 clean:  ## Clean build artifacts
-	rm -rf dist/ build/ *.egg-info
-	rm -rf .coverage coverage.xml
-	find . -type d -name __pycache__ -exec rm -rf {} +
-	find . -type f -name "*.pyc" -delete
+	cargo clean
+	rm -rf web/dist
+	find . -type d -name __pycache__ -not -path './.venv/*' -exec rm -rf {} +

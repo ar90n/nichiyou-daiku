@@ -7,49 +7,26 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
-env:
-  PYTHON_VERSIONS: "3.13"
-
 jobs:
   quality-assurance:
-    name: "QA Pipeline - Python Multi-Version"
+    name: "QA Pipeline"
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: 📥 Checkout Repository
         uses: actions/checkout@v4
-      
-      - name: 🐍 Setup Python Environment
+
+      - name: 🐍 Setup Python for Dagger
         uses: actions/setup-python@v5
         with:
-          python-version: "3.13"  # Python version for running Dagger
-      
+          python-version: "3.13"
+
       - name: 📦 Install CI Dependencies
         run: |
-          pip install --upgrade pip
           pip install uv
           uv sync --group ci
-      
+
       - name: 🚀 Execute Dagger Pipeline
-        run: |
-          uv run python ci/dagger_pipeline.py "${{ env.PYTHON_VERSIONS }}"
+        run: uv run python ci/dagger_pipeline.py
         env:
           DAGGER_CLOUD_TOKEN: ${{ secrets.DAGGER_CLOUD_TOKEN }}
-      
-      - name: 📊 Upload Coverage Reports
-        uses: codecov/codecov-action@v4
-        if: always()
-        with:
-          files: ./coverage.xml
-          flags: unittests
-          name: nichiyou-daiku-coverage
-          fail_ci_if_error: false
-          token: ${{ secrets.CODECOV_TOKEN }}
-      
-      - name: 📦 Upload Build Artifacts
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: dist-packages
-          path: dist-py*
-          retention-days: 7
