@@ -68,6 +68,14 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "leg1",
+      "target": "apron",
+      "type": "vanilla"
+    }
+  ],
+  "steps": 0,
   "problems": [
     {
       "kind": "unconnected",

@@ -114,6 +114,29 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "a",
+      "target": "b",
+      "type": "vanilla"
+    },
+    {
+      "base": "a",
+      "target": "c",
+      "type": "vanilla"
+    },
+    {
+      "base": "a",
+      "target": "d",
+      "type": "vanilla"
+    },
+    {
+      "base": "a",
+      "target": "e",
+      "type": "vanilla"
+    }
+  ],
+  "steps": 0,
   "problems": [
     {
       "kind": "overlap",

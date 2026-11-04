@@ -28,7 +28,7 @@ use crate::echo::Echo;
 /// Process .nd files to generate 3D models, reports, and more.
 #[derive(Parser)]
 // click keeps the last of a repeated option, as wrappers adding to defaults expect
-#[command(name = "nichiyou-daiku", args_override_self = true)]
+#[command(name = "nichiyou-daiku", version, args_override_self = true)]
 struct Cli {
     /// Show tracebacks for unexpected errors
     #[arg(short, long)]

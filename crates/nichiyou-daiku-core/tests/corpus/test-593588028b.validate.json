@@ -51,6 +51,14 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "base",
+      "target": "target",
+      "type": "screw"
+    }
+  ],
+  "steps": 0,
   "problems": [
     {
       "kind": "fastener",

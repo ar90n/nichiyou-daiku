@@ -849,5 +849,203 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "rail",
+      "target": "s0",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s1",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s2",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s3",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s4",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s5",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s6",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s7",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s8",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s9",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s10",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s11",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s12",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s13",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s14",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s15",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s16",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s17",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s18",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s19",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s20",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s21",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s22",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s23",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s24",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s25",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s26",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s27",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s28",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s29",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s30",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s31",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s32",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s33",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s34",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s35",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s36",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s37",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "s38",
+      "type": "vanilla"
+    }
+  ],
+  "steps": 0,
   "problems": []
 }

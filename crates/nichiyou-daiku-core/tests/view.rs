@@ -41,7 +41,11 @@ fn apply(piece: &Value, local: [f64; 3]) -> [f64; 3] {
 fn without_its_additions_view_is_validate() {
     for (name, source) in sources() {
         let mut view = nichiyou_daiku_core::view(&source);
-        let validate = nichiyou_daiku_core::validate(&source);
+        let mut validate = nichiyou_daiku_core::validate(&source);
+        // The view gives the connections and steps in fuller forms of its own
+        for key in ["connections", "steps"] {
+            validate.as_object_mut().unwrap().remove(key).expect(key);
+        }
         let object = view.as_object_mut().unwrap();
         object.remove("connections").expect("connections");
         object.remove("holes").expect("holes");

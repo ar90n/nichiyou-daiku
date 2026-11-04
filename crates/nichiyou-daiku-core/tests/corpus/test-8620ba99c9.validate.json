@@ -131,6 +131,29 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "leg1",
+      "target": "apron_front",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg2",
+      "target": "apron_front",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg3",
+      "target": "apron_back",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg4",
+      "target": "apron_back",
+      "type": "vanilla"
+    }
+  ],
+  "steps": 0,
   "problems": [
     {
       "kind": "unconnected",

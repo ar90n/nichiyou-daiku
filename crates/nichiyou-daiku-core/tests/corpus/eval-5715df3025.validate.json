@@ -156,6 +156,39 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "apron_front",
+      "target": "leg_fl",
+      "type": "screw"
+    },
+    {
+      "base": "apron_front",
+      "target": "leg_fr",
+      "type": "screw"
+    },
+    {
+      "base": "apron_back",
+      "target": "leg_bl",
+      "type": "screw"
+    },
+    {
+      "base": "apron_back",
+      "target": "leg_br",
+      "type": "screw"
+    },
+    {
+      "base": "apron_front",
+      "target": "top_1",
+      "type": "screw"
+    },
+    {
+      "base": "apron_back",
+      "target": "top_1",
+      "type": "screw"
+    }
+  ],
+  "steps": 0,
   "problems": [
     {
       "kind": "hole_collision",

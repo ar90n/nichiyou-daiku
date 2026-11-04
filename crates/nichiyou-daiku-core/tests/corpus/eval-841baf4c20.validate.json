@@ -324,5 +324,83 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "leg_fl",
+      "target": "apron_front",
+      "type": "screw"
+    },
+    {
+      "base": "leg_fr",
+      "target": "apron_front",
+      "type": "screw"
+    },
+    {
+      "base": "apron_left",
+      "target": "leg_fl",
+      "type": "screw"
+    },
+    {
+      "base": "apron_left",
+      "target": "leg_bl",
+      "type": "screw"
+    },
+    {
+      "base": "leg_bl",
+      "target": "apron_back",
+      "type": "screw"
+    },
+    {
+      "base": "leg_br",
+      "target": "apron_back",
+      "type": "screw"
+    },
+    {
+      "base": "apron_right",
+      "target": "leg_fr",
+      "type": "screw"
+    },
+    {
+      "base": "apron_right",
+      "target": "leg_br",
+      "type": "screw"
+    },
+    {
+      "base": "apron_front",
+      "target": "top_1",
+      "type": "screw"
+    },
+    {
+      "base": "apron_front",
+      "target": "top_2",
+      "type": "screw"
+    },
+    {
+      "base": "apron_front",
+      "target": "top_3",
+      "type": "screw"
+    },
+    {
+      "base": "apron_front",
+      "target": "top_4",
+      "type": "screw"
+    },
+    {
+      "base": "apron_front",
+      "target": "top_5",
+      "type": "screw"
+    },
+    {
+      "base": "apron_front",
+      "target": "top_6",
+      "type": "screw"
+    },
+    {
+      "base": "apron_front",
+      "target": "top_7",
+      "type": "screw"
+    }
+  ],
+  "steps": 0,
   "problems": []
 }

@@ -240,5 +240,63 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "leg_lf",
+      "target": "apron_end_l",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_lb",
+      "target": "apron_end_l",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_rf",
+      "target": "apron_end_r",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_rb",
+      "target": "apron_end_r",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_lf",
+      "target": "stretcher_front",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_rf",
+      "target": "stretcher_front",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_lb",
+      "target": "stretcher_back",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_rb",
+      "target": "stretcher_back",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_lf",
+      "target": "seat_1",
+      "type": "screw"
+    },
+    {
+      "base": "apron_end_l",
+      "target": "seat_2",
+      "type": "screw"
+    },
+    {
+      "base": "leg_lb",
+      "target": "seat_3",
+      "type": "screw"
+    }
+  ],
+  "steps": 4,
   "problems": []
 }

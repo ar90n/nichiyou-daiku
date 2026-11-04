@@ -51,5 +51,13 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "leg1",
+      "target": "leg2",
+      "type": "vanilla"
+    }
+  ],
+  "steps": 0,
   "problems": []
 }

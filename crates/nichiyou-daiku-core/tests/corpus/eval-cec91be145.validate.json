@@ -408,5 +408,123 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "leg_fl",
+      "target": "apron_front",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "apron_front",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "apron_back",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "apron_back",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fl",
+      "target": "apron_left",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "apron_left",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "apron_right",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "apron_right",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fl",
+      "target": "lower_front",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "lower_front",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "lower_back",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "lower_back",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fl",
+      "target": "lower_left",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "lower_left",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "lower_right",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "lower_right",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fl",
+      "target": "top_1",
+      "type": "screw"
+    },
+    {
+      "base": "apron_front",
+      "target": "top_2",
+      "type": "screw"
+    },
+    {
+      "base": "apron_front",
+      "target": "top_3",
+      "type": "screw"
+    },
+    {
+      "base": "leg_fr",
+      "target": "top_4",
+      "type": "screw"
+    },
+    {
+      "base": "lower_front",
+      "target": "shelf_1",
+      "type": "screw"
+    },
+    {
+      "base": "lower_front",
+      "target": "shelf_2",
+      "type": "screw"
+    },
+    {
+      "base": "lower_front",
+      "target": "shelf_3",
+      "type": "screw"
+    }
+  ],
+  "steps": 5,
   "problems": []
 }

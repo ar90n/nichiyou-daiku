@@ -135,5 +135,48 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "shelf_1",
+      "target": "side_left",
+      "type": "dowel"
+    },
+    {
+      "base": "shelf_1",
+      "target": "side_right",
+      "type": "dowel"
+    },
+    {
+      "base": "shelf_2",
+      "target": "side_left",
+      "type": "dowel"
+    },
+    {
+      "base": "shelf_2",
+      "target": "side_right",
+      "type": "dowel"
+    },
+    {
+      "base": "shelf_3",
+      "target": "side_left",
+      "type": "dowel"
+    },
+    {
+      "base": "shelf_3",
+      "target": "side_right",
+      "type": "dowel"
+    },
+    {
+      "base": "shelf_4",
+      "target": "side_left",
+      "type": "dowel"
+    },
+    {
+      "base": "shelf_4",
+      "target": "side_right",
+      "type": "dowel"
+    }
+  ],
+  "steps": 3,
   "problems": []
 }

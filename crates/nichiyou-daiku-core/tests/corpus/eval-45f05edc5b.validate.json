@@ -765,5 +765,208 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "leg_fl",
+      "target": "apron_upper_front",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "apron_upper_front",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "apron_upper_back",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "apron_upper_back",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fl",
+      "target": "apron_upper_left",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "apron_upper_left",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "apron_upper_right",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "apron_upper_right",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fl",
+      "target": "apron_lower_front",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "apron_lower_front",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "apron_lower_back",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "apron_lower_back",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fl",
+      "target": "apron_lower_left",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "apron_lower_left",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "apron_lower_right",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "apron_lower_right",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fl",
+      "target": "top_1",
+      "type": "screw"
+    },
+    {
+      "base": "apron_upper_front",
+      "target": "top_2",
+      "type": "screw"
+    },
+    {
+      "base": "apron_upper_front",
+      "target": "top_3",
+      "type": "screw"
+    },
+    {
+      "base": "apron_upper_front",
+      "target": "top_4",
+      "type": "screw"
+    },
+    {
+      "base": "apron_upper_front",
+      "target": "top_5",
+      "type": "screw"
+    },
+    {
+      "base": "apron_upper_front",
+      "target": "top_6",
+      "type": "screw"
+    },
+    {
+      "base": "apron_upper_front",
+      "target": "top_7",
+      "type": "screw"
+    },
+    {
+      "base": "apron_upper_front",
+      "target": "top_8",
+      "type": "screw"
+    },
+    {
+      "base": "apron_upper_front",
+      "target": "top_9",
+      "type": "screw"
+    },
+    {
+      "base": "apron_upper_front",
+      "target": "top_10",
+      "type": "screw"
+    },
+    {
+      "base": "apron_upper_front",
+      "target": "top_11",
+      "type": "screw"
+    },
+    {
+      "base": "apron_upper_front",
+      "target": "top_12",
+      "type": "screw"
+    },
+    {
+      "base": "leg_fr",
+      "target": "top_13",
+      "type": "screw"
+    },
+    {
+      "base": "apron_lower_front",
+      "target": "shelf_1",
+      "type": "dowel"
+    },
+    {
+      "base": "apron_lower_front",
+      "target": "shelf_2",
+      "type": "dowel"
+    },
+    {
+      "base": "apron_lower_front",
+      "target": "shelf_3",
+      "type": "dowel"
+    },
+    {
+      "base": "apron_lower_front",
+      "target": "shelf_4",
+      "type": "dowel"
+    },
+    {
+      "base": "apron_lower_front",
+      "target": "shelf_5",
+      "type": "dowel"
+    },
+    {
+      "base": "apron_lower_front",
+      "target": "shelf_6",
+      "type": "dowel"
+    },
+    {
+      "base": "apron_lower_front",
+      "target": "shelf_7",
+      "type": "dowel"
+    },
+    {
+      "base": "apron_lower_front",
+      "target": "shelf_8",
+      "type": "dowel"
+    },
+    {
+      "base": "apron_lower_front",
+      "target": "shelf_9",
+      "type": "dowel"
+    },
+    {
+      "base": "apron_lower_front",
+      "target": "shelf_10",
+      "type": "dowel"
+    },
+    {
+      "base": "apron_lower_front",
+      "target": "shelf_11",
+      "type": "dowel"
+    }
+  ],
+  "steps": 5,
   "problems": []
 }

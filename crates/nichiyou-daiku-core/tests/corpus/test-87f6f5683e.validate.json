@@ -72,5 +72,18 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "post_l",
+      "target": "rung",
+      "type": "dowel"
+    },
+    {
+      "base": "post_r",
+      "target": "rung",
+      "type": "dowel"
+    }
+  ],
+  "steps": 0,
   "problems": []
 }

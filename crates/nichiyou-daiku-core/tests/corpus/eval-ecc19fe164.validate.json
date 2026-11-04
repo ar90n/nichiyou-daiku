@@ -72,6 +72,19 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "leg",
+      "target": "af",
+      "type": "dowel"
+    },
+    {
+      "base": "leg",
+      "target": "al",
+      "type": "dowel"
+    }
+  ],
+  "steps": 0,
   "problems": [
     {
       "kind": "hole_collision",

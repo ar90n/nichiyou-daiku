@@ -93,5 +93,28 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "side_l",
+      "target": "shelf_bottom",
+      "type": "dowel"
+    },
+    {
+      "base": "side_r",
+      "target": "shelf_bottom",
+      "type": "dowel"
+    },
+    {
+      "base": "shelf_top",
+      "target": "side_l",
+      "type": "screw"
+    },
+    {
+      "base": "shelf_top",
+      "target": "side_r",
+      "type": "screw"
+    }
+  ],
+  "steps": 0,
   "problems": []
 }

@@ -72,5 +72,18 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "leg",
+      "target": "apron",
+      "type": "dowel"
+    },
+    {
+      "base": "apron",
+      "target": "top",
+      "type": "vanilla"
+    }
+  ],
+  "steps": 0,
   "problems": []
 }

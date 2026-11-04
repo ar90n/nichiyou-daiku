@@ -324,5 +324,93 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "back_1_l",
+      "target": "shelf_1",
+      "type": "dowel"
+    },
+    {
+      "base": "shelf_1",
+      "target": "back_1_m",
+      "type": "dowel"
+    },
+    {
+      "base": "shelf_1",
+      "target": "back_1_r",
+      "type": "dowel"
+    },
+    {
+      "base": "shelf_1",
+      "target": "side_l",
+      "type": "dowel"
+    },
+    {
+      "base": "shelf_1",
+      "target": "side_r",
+      "type": "dowel"
+    },
+    {
+      "base": "side_l",
+      "target": "shelf_2",
+      "type": "dowel"
+    },
+    {
+      "base": "side_r",
+      "target": "shelf_2",
+      "type": "dowel"
+    },
+    {
+      "base": "side_l",
+      "target": "shelf_3",
+      "type": "dowel"
+    },
+    {
+      "base": "side_r",
+      "target": "shelf_3",
+      "type": "dowel"
+    },
+    {
+      "base": "side_l",
+      "target": "shelf_4",
+      "type": "dowel"
+    },
+    {
+      "base": "side_r",
+      "target": "shelf_4",
+      "type": "dowel"
+    },
+    {
+      "base": "shelf_3",
+      "target": "back_2_l",
+      "type": "dowel"
+    },
+    {
+      "base": "shelf_3",
+      "target": "back_2_m",
+      "type": "dowel"
+    },
+    {
+      "base": "shelf_3",
+      "target": "back_2_r",
+      "type": "dowel"
+    },
+    {
+      "base": "shelf_4",
+      "target": "back_3_l",
+      "type": "dowel"
+    },
+    {
+      "base": "shelf_4",
+      "target": "back_3_m",
+      "type": "dowel"
+    },
+    {
+      "base": "shelf_4",
+      "target": "back_3_r",
+      "type": "dowel"
+    }
+  ],
+  "steps": 9,
   "problems": []
 }

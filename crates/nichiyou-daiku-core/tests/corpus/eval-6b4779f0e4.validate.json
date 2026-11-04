@@ -660,5 +660,278 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "leg_fl",
+      "target": "rail_front_1",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "rail_front_1",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "rail_back_1",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "rail_back_1",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fl",
+      "target": "rail_left_1",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "rail_left_1",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "rail_right_1",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "rail_right_1",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fl",
+      "target": "rail_front_2",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "rail_front_2",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "rail_back_2",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "rail_back_2",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fl",
+      "target": "rail_left_2",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "rail_left_2",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "rail_right_2",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "rail_right_2",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fl",
+      "target": "rail_front_3",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "rail_front_3",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "rail_back_3",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "rail_back_3",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fl",
+      "target": "rail_left_3",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "rail_left_3",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "rail_right_3",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "rail_right_3",
+      "type": "dowel"
+    },
+    {
+      "base": "rail_front_1",
+      "target": "shelf_1_1",
+      "type": "screw"
+    },
+    {
+      "base": "rail_back_1",
+      "target": "shelf_1_1",
+      "type": "screw"
+    },
+    {
+      "base": "rail_front_1",
+      "target": "shelf_1_2",
+      "type": "screw"
+    },
+    {
+      "base": "rail_back_1",
+      "target": "shelf_1_2",
+      "type": "screw"
+    },
+    {
+      "base": "rail_front_1",
+      "target": "shelf_1_3",
+      "type": "screw"
+    },
+    {
+      "base": "rail_back_1",
+      "target": "shelf_1_3",
+      "type": "screw"
+    },
+    {
+      "base": "rail_front_1",
+      "target": "shelf_1_4",
+      "type": "screw"
+    },
+    {
+      "base": "rail_back_1",
+      "target": "shelf_1_4",
+      "type": "screw"
+    },
+    {
+      "base": "rail_front_1",
+      "target": "shelf_1_5",
+      "type": "screw"
+    },
+    {
+      "base": "rail_back_1",
+      "target": "shelf_1_5",
+      "type": "screw"
+    },
+    {
+      "base": "rail_front_2",
+      "target": "shelf_2_1",
+      "type": "screw"
+    },
+    {
+      "base": "rail_back_2",
+      "target": "shelf_2_1",
+      "type": "screw"
+    },
+    {
+      "base": "rail_front_2",
+      "target": "shelf_2_2",
+      "type": "screw"
+    },
+    {
+      "base": "rail_back_2",
+      "target": "shelf_2_2",
+      "type": "screw"
+    },
+    {
+      "base": "rail_front_2",
+      "target": "shelf_2_3",
+      "type": "screw"
+    },
+    {
+      "base": "rail_back_2",
+      "target": "shelf_2_3",
+      "type": "screw"
+    },
+    {
+      "base": "rail_front_2",
+      "target": "shelf_2_4",
+      "type": "screw"
+    },
+    {
+      "base": "rail_back_2",
+      "target": "shelf_2_4",
+      "type": "screw"
+    },
+    {
+      "base": "rail_front_2",
+      "target": "shelf_2_5",
+      "type": "screw"
+    },
+    {
+      "base": "rail_back_2",
+      "target": "shelf_2_5",
+      "type": "screw"
+    },
+    {
+      "base": "rail_front_3",
+      "target": "shelf_3_1",
+      "type": "screw"
+    },
+    {
+      "base": "rail_back_3",
+      "target": "shelf_3_1",
+      "type": "screw"
+    },
+    {
+      "base": "rail_front_3",
+      "target": "shelf_3_2",
+      "type": "screw"
+    },
+    {
+      "base": "rail_back_3",
+      "target": "shelf_3_2",
+      "type": "screw"
+    },
+    {
+      "base": "rail_front_3",
+      "target": "shelf_3_3",
+      "type": "screw"
+    },
+    {
+      "base": "rail_back_3",
+      "target": "shelf_3_3",
+      "type": "screw"
+    },
+    {
+      "base": "rail_front_3",
+      "target": "shelf_3_4",
+      "type": "screw"
+    },
+    {
+      "base": "rail_back_3",
+      "target": "shelf_3_4",
+      "type": "screw"
+    },
+    {
+      "base": "rail_front_3",
+      "target": "shelf_3_5",
+      "type": "screw"
+    },
+    {
+      "base": "rail_back_3",
+      "target": "shelf_3_5",
+      "type": "screw"
+    }
+  ],
+  "steps": 6,
   "problems": []
 }

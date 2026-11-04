@@ -93,5 +93,23 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "beam1",
+      "target": "beam2",
+      "type": "vanilla"
+    },
+    {
+      "base": "beam2",
+      "target": "beam3",
+      "type": "dowel"
+    },
+    {
+      "base": "beam3",
+      "target": "beam4",
+      "type": "screw"
+    }
+  ],
+  "steps": 0,
   "problems": []
 }

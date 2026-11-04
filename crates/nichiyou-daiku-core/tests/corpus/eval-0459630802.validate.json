@@ -156,5 +156,38 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "leg_fl",
+      "target": "apron_uf_l",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fm",
+      "target": "apron_uf_l",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "apron_uf_r",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fm",
+      "target": "apron_uf_r",
+      "type": "dowel"
+    },
+    {
+      "base": "apron_uf_l",
+      "target": "top_2",
+      "type": "dowel"
+    },
+    {
+      "base": "apron_uf_l",
+      "target": "top_4",
+      "type": "dowel"
+    }
+  ],
+  "steps": 0,
   "problems": []
 }

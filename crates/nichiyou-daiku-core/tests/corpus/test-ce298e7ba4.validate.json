@@ -93,5 +93,28 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "a",
+      "target": "q",
+      "type": "vanilla"
+    },
+    {
+      "base": "a",
+      "target": "s",
+      "type": "vanilla"
+    },
+    {
+      "base": "q",
+      "target": "u",
+      "type": "vanilla"
+    },
+    {
+      "base": "u",
+      "target": "s",
+      "type": "vanilla"
+    }
+  ],
+  "steps": 0,
   "problems": []
 }

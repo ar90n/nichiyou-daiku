@@ -114,5 +114,38 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "shelf_bottom",
+      "target": "side_l",
+      "type": "screw"
+    },
+    {
+      "base": "shelf_bottom",
+      "target": "side_r",
+      "type": "screw"
+    },
+    {
+      "base": "shelf_middle",
+      "target": "side_l",
+      "type": "screw"
+    },
+    {
+      "base": "shelf_middle",
+      "target": "side_r",
+      "type": "screw"
+    },
+    {
+      "base": "shelf_top",
+      "target": "side_l",
+      "type": "screw"
+    },
+    {
+      "base": "shelf_top",
+      "target": "side_r",
+      "type": "screw"
+    }
+  ],
+  "steps": 2,
   "problems": []
 }

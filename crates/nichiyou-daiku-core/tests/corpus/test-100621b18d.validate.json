@@ -72,6 +72,19 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "post",
+      "target": "front",
+      "type": "dowel"
+    },
+    {
+      "base": "post",
+      "target": "other",
+      "type": "dowel"
+    }
+  ],
+  "steps": 0,
   "problems": [
     {
       "kind": "hole_collision",

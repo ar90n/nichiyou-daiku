@@ -156,5 +156,58 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "back_lower",
+      "target": "shelf_bottom",
+      "type": "screw"
+    },
+    {
+      "base": "back_lower",
+      "target": "shelf_middle",
+      "type": "screw"
+    },
+    {
+      "base": "shelf_bottom",
+      "target": "side_l",
+      "type": "screw"
+    },
+    {
+      "base": "shelf_bottom",
+      "target": "side_r",
+      "type": "screw"
+    },
+    {
+      "base": "shelf_middle",
+      "target": "side_l",
+      "type": "screw"
+    },
+    {
+      "base": "shelf_middle",
+      "target": "side_r",
+      "type": "screw"
+    },
+    {
+      "base": "shelf_top",
+      "target": "side_l",
+      "type": "screw"
+    },
+    {
+      "base": "shelf_top",
+      "target": "side_r",
+      "type": "screw"
+    },
+    {
+      "base": "back_upper",
+      "target": "shelf_middle",
+      "type": "screw"
+    },
+    {
+      "base": "back_upper",
+      "target": "shelf_top",
+      "type": "screw"
+    }
+  ],
+  "steps": 0,
   "problems": []
 }

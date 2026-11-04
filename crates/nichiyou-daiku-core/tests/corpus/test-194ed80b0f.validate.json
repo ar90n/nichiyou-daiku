@@ -89,6 +89,19 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "p1",
+      "target": "p2",
+      "type": "vanilla"
+    },
+    {
+      "base": "p3",
+      "target": "p4",
+      "type": "vanilla"
+    }
+  ],
+  "steps": 0,
   "problems": [
     {
       "kind": "unconnected",

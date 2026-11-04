@@ -11,6 +11,8 @@ exit: 1
   "overall_size": null,
   "size_reference": null,
   "pieces": [],
+  "connections": [],
+  "steps": 0,
   "problems": []
 }
 --- stderr

@@ -345,5 +345,128 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "leg_fl",
+      "target": "rail_left_1",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "rail_left_1",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "rail_right_1",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "rail_right_1",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fl",
+      "target": "rail_left_2",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "rail_left_2",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "rail_right_2",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "rail_right_2",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fl",
+      "target": "rail_left_3",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "rail_left_3",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "rail_right_3",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "rail_right_3",
+      "type": "dowel"
+    },
+    {
+      "base": "rail_left_1",
+      "target": "board_1_1",
+      "type": "screw"
+    },
+    {
+      "base": "rail_right_1",
+      "target": "board_1_1",
+      "type": "screw"
+    },
+    {
+      "base": "rail_left_1",
+      "target": "board_1_2",
+      "type": "screw"
+    },
+    {
+      "base": "rail_right_1",
+      "target": "board_1_2",
+      "type": "screw"
+    },
+    {
+      "base": "rail_left_2",
+      "target": "board_2_1",
+      "type": "screw"
+    },
+    {
+      "base": "rail_right_2",
+      "target": "board_2_1",
+      "type": "screw"
+    },
+    {
+      "base": "rail_left_2",
+      "target": "board_2_2",
+      "type": "screw"
+    },
+    {
+      "base": "rail_right_2",
+      "target": "board_2_2",
+      "type": "screw"
+    },
+    {
+      "base": "rail_left_3",
+      "target": "board_3_1",
+      "type": "screw"
+    },
+    {
+      "base": "rail_right_3",
+      "target": "board_3_1",
+      "type": "screw"
+    },
+    {
+      "base": "rail_left_3",
+      "target": "board_3_2",
+      "type": "screw"
+    },
+    {
+      "base": "rail_right_3",
+      "target": "board_3_2",
+      "type": "screw"
+    }
+  ],
+  "steps": 5,
   "problems": []
 }

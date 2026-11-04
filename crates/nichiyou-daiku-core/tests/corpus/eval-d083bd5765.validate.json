@@ -345,5 +345,108 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "leg_fl",
+      "target": "apron_top_front",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "apron_top_front",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "apron_top_back",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "apron_top_back",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fl",
+      "target": "apron_top_left",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "apron_top_left",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "apron_top_right",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "apron_top_right",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fl",
+      "target": "apron_low_front",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "apron_low_front",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "apron_low_back",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "apron_low_back",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fl",
+      "target": "apron_low_left",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "apron_low_left",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "apron_low_right",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "apron_low_right",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fl",
+      "target": "top_1",
+      "type": "screw"
+    },
+    {
+      "base": "apron_top_front",
+      "target": "top_2",
+      "type": "screw"
+    },
+    {
+      "base": "apron_top_front",
+      "target": "top_3",
+      "type": "screw"
+    },
+    {
+      "base": "leg_fr",
+      "target": "top_4",
+      "type": "screw"
+    }
+  ],
+  "steps": 4,
   "problems": []
 }

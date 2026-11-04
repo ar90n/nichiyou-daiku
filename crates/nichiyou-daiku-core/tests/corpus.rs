@@ -68,6 +68,8 @@ fn a_report_starts_with_whether_it_is_valid() {
             "overall_size",
             "size_reference",
             "pieces",
+            "connections",
+            "steps",
             "problems"
         ]
     );
@@ -108,4 +110,42 @@ fn screws_without_a_counterbore_and_only_they_are_countersunk_on_the_head_side()
         }
     }
     assert!(checked > 1000, "only {checked} fasteners");
+}
+
+const TABLE: &str = "(leg:2x4 =400)
+(rail:2x4 =300)
+(top:2x4 =300)
+(board:1x4 =300)
+leg -[FL<300 DF<0]- rail
+leg -[TF<0 DF<0 D(:8x30)]- top
+top -[FL<0 BL<0 S(Slim:3.3x45)]- board
+steps {
+  \"Frame\": leg, rail
+  \"Top\": top, board
+}
+";
+
+#[test]
+fn a_report_lists_the_connections_and_counts_the_steps() {
+    let report = nichiyou_daiku_core::validate(TABLE);
+    assert_eq!(report["error"], serde_json::Value::Null);
+    assert_eq!(
+        report["connections"],
+        serde_json::json!([
+            {"base": "leg", "target": "rail", "type": "vanilla"},
+            {"base": "leg", "target": "top", "type": "dowel"},
+            {"base": "top", "target": "board", "type": "screw"},
+        ])
+    );
+    assert_eq!(report["steps"], 2);
+    let without = nichiyou_daiku_core::validate(TABLE.split("steps").next().unwrap());
+    assert_eq!(without["steps"], 0);
+}
+
+#[test]
+fn a_report_that_stops_has_no_connections_and_no_steps() {
+    let report = nichiyou_daiku_core::validate("(leg:2x4 =)\n");
+    assert_eq!(report["error"]["kind"], "syntax");
+    assert_eq!(report["connections"], serde_json::json!([]));
+    assert_eq!(report["steps"], 0);
 }

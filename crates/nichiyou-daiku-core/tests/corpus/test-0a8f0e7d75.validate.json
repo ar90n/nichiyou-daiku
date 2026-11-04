@@ -68,6 +68,14 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "a",
+      "target": "b",
+      "type": "vanilla"
+    }
+  ],
+  "steps": 0,
   "problems": [
     {
       "kind": "unconnected",

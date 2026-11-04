@@ -156,5 +156,38 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "c",
+      "target": "up",
+      "type": "dowel"
+    },
+    {
+      "base": "c",
+      "target": "dn",
+      "type": "dowel"
+    },
+    {
+      "base": "c",
+      "target": "f",
+      "type": "dowel"
+    },
+    {
+      "base": "c",
+      "target": "b",
+      "type": "dowel"
+    },
+    {
+      "base": "c",
+      "target": "l",
+      "type": "dowel"
+    },
+    {
+      "base": "c",
+      "target": "r",
+      "type": "dowel"
+    }
+  ],
+  "steps": 0,
   "problems": []
 }

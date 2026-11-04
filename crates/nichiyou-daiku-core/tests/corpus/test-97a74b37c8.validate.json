@@ -72,5 +72,18 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "rail_a",
+      "target": "post",
+      "type": "screw"
+    },
+    {
+      "base": "rail_b",
+      "target": "post",
+      "type": "screw"
+    }
+  ],
+  "steps": 0,
   "problems": []
 }

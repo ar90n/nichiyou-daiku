@@ -534,5 +534,218 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "leg_bl",
+      "target": "rail_back_top",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "rail_back_top",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "rail_back_mid",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "rail_back_mid",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "rail_back_bot",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "rail_back_bot",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fl",
+      "target": "rail_front_top",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "rail_front_top",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fl",
+      "target": "rail_front_mid",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "rail_front_mid",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fl",
+      "target": "rail_front_bot",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "rail_front_bot",
+      "type": "dowel"
+    },
+    {
+      "base": "rail_back_top",
+      "target": "shelf_top_1",
+      "type": "screw"
+    },
+    {
+      "base": "rail_back_top",
+      "target": "shelf_top_2",
+      "type": "screw"
+    },
+    {
+      "base": "rail_back_top",
+      "target": "shelf_top_3",
+      "type": "screw"
+    },
+    {
+      "base": "rail_back_top",
+      "target": "shelf_top_4",
+      "type": "screw"
+    },
+    {
+      "base": "rail_back_top",
+      "target": "shelf_top_5",
+      "type": "screw"
+    },
+    {
+      "base": "rail_front_top",
+      "target": "shelf_top_1",
+      "type": "screw"
+    },
+    {
+      "base": "rail_front_top",
+      "target": "shelf_top_2",
+      "type": "screw"
+    },
+    {
+      "base": "rail_front_top",
+      "target": "shelf_top_3",
+      "type": "screw"
+    },
+    {
+      "base": "rail_front_top",
+      "target": "shelf_top_4",
+      "type": "screw"
+    },
+    {
+      "base": "rail_front_top",
+      "target": "shelf_top_5",
+      "type": "screw"
+    },
+    {
+      "base": "rail_back_mid",
+      "target": "shelf_mid_1",
+      "type": "screw"
+    },
+    {
+      "base": "rail_back_mid",
+      "target": "shelf_mid_2",
+      "type": "screw"
+    },
+    {
+      "base": "rail_back_mid",
+      "target": "shelf_mid_3",
+      "type": "screw"
+    },
+    {
+      "base": "rail_back_mid",
+      "target": "shelf_mid_4",
+      "type": "screw"
+    },
+    {
+      "base": "rail_back_mid",
+      "target": "shelf_mid_5",
+      "type": "screw"
+    },
+    {
+      "base": "rail_front_mid",
+      "target": "shelf_mid_1",
+      "type": "screw"
+    },
+    {
+      "base": "rail_front_mid",
+      "target": "shelf_mid_2",
+      "type": "screw"
+    },
+    {
+      "base": "rail_front_mid",
+      "target": "shelf_mid_3",
+      "type": "screw"
+    },
+    {
+      "base": "rail_front_mid",
+      "target": "shelf_mid_4",
+      "type": "screw"
+    },
+    {
+      "base": "rail_front_mid",
+      "target": "shelf_mid_5",
+      "type": "screw"
+    },
+    {
+      "base": "rail_back_bot",
+      "target": "shelf_bot_1",
+      "type": "screw"
+    },
+    {
+      "base": "rail_back_bot",
+      "target": "shelf_bot_2",
+      "type": "screw"
+    },
+    {
+      "base": "rail_back_bot",
+      "target": "shelf_bot_3",
+      "type": "screw"
+    },
+    {
+      "base": "rail_back_bot",
+      "target": "shelf_bot_4",
+      "type": "screw"
+    },
+    {
+      "base": "rail_back_bot",
+      "target": "shelf_bot_5",
+      "type": "screw"
+    },
+    {
+      "base": "rail_front_bot",
+      "target": "shelf_bot_1",
+      "type": "screw"
+    },
+    {
+      "base": "rail_front_bot",
+      "target": "shelf_bot_2",
+      "type": "screw"
+    },
+    {
+      "base": "rail_front_bot",
+      "target": "shelf_bot_3",
+      "type": "screw"
+    },
+    {
+      "base": "rail_front_bot",
+      "target": "shelf_bot_4",
+      "type": "screw"
+    },
+    {
+      "base": "rail_front_bot",
+      "target": "shelf_bot_5",
+      "type": "screw"
+    }
+  ],
+  "steps": 5,
   "problems": []
 }

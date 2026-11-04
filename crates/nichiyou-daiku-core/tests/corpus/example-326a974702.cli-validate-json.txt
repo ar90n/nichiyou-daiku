@@ -347,6 +347,89 @@ exit: 0
       }
     }
   ],
+  "connections": [
+    {
+      "base": "leg_1",
+      "target": "apron_front",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_2",
+      "target": "apron_front",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_3",
+      "target": "apron_back",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_4",
+      "target": "apron_back",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_1",
+      "target": "apron_left",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_3",
+      "target": "apron_left",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_2",
+      "target": "apron_right",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_4",
+      "target": "apron_right",
+      "type": "vanilla"
+    },
+    {
+      "base": "table_top_1",
+      "target": "leg_1",
+      "type": "vanilla"
+    },
+    {
+      "base": "apron_front",
+      "target": "table_top_2",
+      "type": "vanilla"
+    },
+    {
+      "base": "apron_front",
+      "target": "table_top_3",
+      "type": "vanilla"
+    },
+    {
+      "base": "apron_front",
+      "target": "table_top_4",
+      "type": "vanilla"
+    },
+    {
+      "base": "apron_front",
+      "target": "table_top_5",
+      "type": "vanilla"
+    },
+    {
+      "base": "apron_front",
+      "target": "table_top_6",
+      "type": "vanilla"
+    },
+    {
+      "base": "apron_front",
+      "target": "table_top_7",
+      "type": "vanilla"
+    },
+    {
+      "base": "table_top_8",
+      "target": "leg_2",
+      "type": "vanilla"
+    }
+  ],
+  "steps": 4,
   "problems": []
 }
 --- stderr

@@ -72,5 +72,18 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "a",
+      "target": "b",
+      "type": "vanilla"
+    },
+    {
+      "base": "b",
+      "target": "c",
+      "type": "vanilla"
+    }
+  ],
+  "steps": 0,
   "problems": []
 }

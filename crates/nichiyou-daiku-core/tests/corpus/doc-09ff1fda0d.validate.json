@@ -72,5 +72,18 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "left_side",
+      "target": "shelf",
+      "type": "dowel"
+    },
+    {
+      "base": "right_side",
+      "target": "shelf",
+      "type": "dowel"
+    }
+  ],
+  "steps": 2,
   "problems": []
 }

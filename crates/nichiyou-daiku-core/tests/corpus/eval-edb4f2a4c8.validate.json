@@ -89,6 +89,19 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "leg_fl",
+      "target": "apron_front",
+      "type": "screw"
+    },
+    {
+      "base": "apron_left",
+      "target": "leg_fl",
+      "type": "screw"
+    }
+  ],
+  "steps": 0,
   "problems": [
     {
       "kind": "unconnected",

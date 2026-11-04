@@ -114,5 +114,28 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "post",
+      "target": "rail",
+      "type": "screw"
+    },
+    {
+      "base": "post",
+      "target": "rail_low",
+      "type": "screw"
+    },
+    {
+      "base": "post",
+      "target": "cleat",
+      "type": "screw"
+    },
+    {
+      "base": "rail_side",
+      "target": "post",
+      "type": "screw"
+    }
+  ],
+  "steps": 0,
   "problems": []
 }

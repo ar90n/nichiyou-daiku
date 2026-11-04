@@ -51,6 +51,14 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "a",
+      "target": "b",
+      "type": "dowel"
+    }
+  ],
+  "steps": 0,
   "problems": [
     {
       "kind": "fastener",

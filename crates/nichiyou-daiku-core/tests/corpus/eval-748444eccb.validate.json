@@ -660,5 +660,278 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "leg_fl",
+      "target": "rail_f_bottom",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "rail_f_bottom",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "rail_b_bottom",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "rail_b_bottom",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fl",
+      "target": "rail_f_middle",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "rail_f_middle",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "rail_b_middle",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "rail_b_middle",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fl",
+      "target": "rail_f_top",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "rail_f_top",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "rail_b_top",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "rail_b_top",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fl",
+      "target": "rail_l_bottom",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "rail_l_bottom",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "rail_r_bottom",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "rail_r_bottom",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fl",
+      "target": "rail_l_middle",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "rail_l_middle",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "rail_r_middle",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "rail_r_middle",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fl",
+      "target": "rail_l_top",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "rail_l_top",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "rail_r_top",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "rail_r_top",
+      "type": "dowel"
+    },
+    {
+      "base": "rail_f_bottom",
+      "target": "board_b_1",
+      "type": "dowel"
+    },
+    {
+      "base": "rail_b_bottom",
+      "target": "board_b_1",
+      "type": "dowel"
+    },
+    {
+      "base": "rail_f_bottom",
+      "target": "board_b_2",
+      "type": "dowel"
+    },
+    {
+      "base": "rail_b_bottom",
+      "target": "board_b_2",
+      "type": "dowel"
+    },
+    {
+      "base": "rail_f_bottom",
+      "target": "board_b_3",
+      "type": "dowel"
+    },
+    {
+      "base": "rail_b_bottom",
+      "target": "board_b_3",
+      "type": "dowel"
+    },
+    {
+      "base": "rail_f_bottom",
+      "target": "board_b_4",
+      "type": "dowel"
+    },
+    {
+      "base": "rail_b_bottom",
+      "target": "board_b_4",
+      "type": "dowel"
+    },
+    {
+      "base": "rail_f_bottom",
+      "target": "board_b_5",
+      "type": "dowel"
+    },
+    {
+      "base": "rail_b_bottom",
+      "target": "board_b_5",
+      "type": "dowel"
+    },
+    {
+      "base": "rail_f_middle",
+      "target": "board_m_1",
+      "type": "dowel"
+    },
+    {
+      "base": "rail_b_middle",
+      "target": "board_m_1",
+      "type": "dowel"
+    },
+    {
+      "base": "rail_f_middle",
+      "target": "board_m_2",
+      "type": "dowel"
+    },
+    {
+      "base": "rail_b_middle",
+      "target": "board_m_2",
+      "type": "dowel"
+    },
+    {
+      "base": "rail_f_middle",
+      "target": "board_m_3",
+      "type": "dowel"
+    },
+    {
+      "base": "rail_b_middle",
+      "target": "board_m_3",
+      "type": "dowel"
+    },
+    {
+      "base": "rail_f_middle",
+      "target": "board_m_4",
+      "type": "dowel"
+    },
+    {
+      "base": "rail_b_middle",
+      "target": "board_m_4",
+      "type": "dowel"
+    },
+    {
+      "base": "rail_f_middle",
+      "target": "board_m_5",
+      "type": "dowel"
+    },
+    {
+      "base": "rail_b_middle",
+      "target": "board_m_5",
+      "type": "dowel"
+    },
+    {
+      "base": "rail_f_top",
+      "target": "board_t_1",
+      "type": "dowel"
+    },
+    {
+      "base": "rail_b_top",
+      "target": "board_t_1",
+      "type": "dowel"
+    },
+    {
+      "base": "rail_f_top",
+      "target": "board_t_2",
+      "type": "dowel"
+    },
+    {
+      "base": "rail_b_top",
+      "target": "board_t_2",
+      "type": "dowel"
+    },
+    {
+      "base": "rail_f_top",
+      "target": "board_t_3",
+      "type": "dowel"
+    },
+    {
+      "base": "rail_b_top",
+      "target": "board_t_3",
+      "type": "dowel"
+    },
+    {
+      "base": "rail_f_top",
+      "target": "board_t_4",
+      "type": "dowel"
+    },
+    {
+      "base": "rail_b_top",
+      "target": "board_t_4",
+      "type": "dowel"
+    },
+    {
+      "base": "rail_f_top",
+      "target": "board_t_5",
+      "type": "dowel"
+    },
+    {
+      "base": "rail_b_top",
+      "target": "board_t_5",
+      "type": "dowel"
+    }
+  ],
+  "steps": 6,
   "problems": []
 }

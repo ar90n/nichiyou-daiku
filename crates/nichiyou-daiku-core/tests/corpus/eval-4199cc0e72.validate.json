@@ -131,6 +131,29 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "leg_fl",
+      "target": "apron_left",
+      "type": "screw"
+    },
+    {
+      "base": "leg_bl",
+      "target": "apron_left",
+      "type": "screw"
+    },
+    {
+      "base": "leg_fr",
+      "target": "apron_right",
+      "type": "screw"
+    },
+    {
+      "base": "leg_br",
+      "target": "apron_right",
+      "type": "screw"
+    }
+  ],
+  "steps": 0,
   "problems": [
     {
       "kind": "unconnected",

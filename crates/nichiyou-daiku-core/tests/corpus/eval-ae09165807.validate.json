@@ -408,5 +408,123 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "leg_fl",
+      "target": "apron_front",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_fr",
+      "target": "apron_front",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_bl",
+      "target": "apron_back",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_br",
+      "target": "apron_back",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_fl",
+      "target": "apron_left",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_bl",
+      "target": "apron_left",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_fr",
+      "target": "apron_right",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_br",
+      "target": "apron_right",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_fl",
+      "target": "apron_front_low",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_fr",
+      "target": "apron_front_low",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_bl",
+      "target": "apron_back_low",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_br",
+      "target": "apron_back_low",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_fl",
+      "target": "apron_left_low",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_bl",
+      "target": "apron_left_low",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_fr",
+      "target": "apron_right_low",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_br",
+      "target": "apron_right_low",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_fl",
+      "target": "top_1",
+      "type": "screw"
+    },
+    {
+      "base": "apron_front",
+      "target": "top_2",
+      "type": "screw"
+    },
+    {
+      "base": "apron_front",
+      "target": "top_3",
+      "type": "screw"
+    },
+    {
+      "base": "leg_fr",
+      "target": "top_4",
+      "type": "screw"
+    },
+    {
+      "base": "apron_front_low",
+      "target": "shelf_1",
+      "type": "screw"
+    },
+    {
+      "base": "apron_front_low",
+      "target": "shelf_2",
+      "type": "screw"
+    },
+    {
+      "base": "apron_front_low",
+      "target": "shelf_3",
+      "type": "screw"
+    }
+  ],
+  "steps": 3,
   "problems": []
 }

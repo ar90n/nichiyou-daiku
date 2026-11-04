@@ -72,5 +72,18 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "leg_1",
+      "target": "apron_front",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_1",
+      "target": "apron_left",
+      "type": "vanilla"
+    }
+  ],
+  "steps": 0,
   "problems": []
 }

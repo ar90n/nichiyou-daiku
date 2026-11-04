@@ -93,6 +93,24 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "leg_fl",
+      "target": "apron_front",
+      "type": "screw"
+    },
+    {
+      "base": "leg_fr",
+      "target": "apron_front",
+      "type": "screw"
+    },
+    {
+      "base": "apron_right",
+      "target": "leg_fr",
+      "type": "screw"
+    }
+  ],
+  "steps": 0,
   "problems": [
     {
       "kind": "fastener",

@@ -114,5 +114,28 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "leg_1",
+      "target": "apron_left",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_3",
+      "target": "apron_left",
+      "type": "vanilla"
+    },
+    {
+      "base": "apron_left",
+      "target": "board_a",
+      "type": "vanilla"
+    },
+    {
+      "base": "apron_left",
+      "target": "board_b",
+      "type": "vanilla"
+    }
+  ],
+  "steps": 2,
   "problems": []
 }

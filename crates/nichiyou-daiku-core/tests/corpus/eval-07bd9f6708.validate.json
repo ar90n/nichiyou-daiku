@@ -240,5 +240,68 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "leg_fl",
+      "target": "top_f",
+      "type": "screw"
+    },
+    {
+      "base": "leg_fc",
+      "target": "top_f",
+      "type": "screw"
+    },
+    {
+      "base": "leg_fr",
+      "target": "top_f",
+      "type": "screw"
+    },
+    {
+      "base": "leg_bl",
+      "target": "top_b",
+      "type": "screw"
+    },
+    {
+      "base": "leg_bc",
+      "target": "top_b",
+      "type": "screw"
+    },
+    {
+      "base": "leg_br",
+      "target": "top_b",
+      "type": "screw"
+    },
+    {
+      "base": "shelf_l",
+      "target": "leg_fl",
+      "type": "dowel"
+    },
+    {
+      "base": "shelf_l",
+      "target": "leg_bl",
+      "type": "dowel"
+    },
+    {
+      "base": "shelf_m",
+      "target": "leg_fc",
+      "type": "dowel"
+    },
+    {
+      "base": "shelf_m",
+      "target": "leg_bc",
+      "type": "dowel"
+    },
+    {
+      "base": "shelf_r",
+      "target": "leg_fr",
+      "type": "dowel"
+    },
+    {
+      "base": "shelf_r",
+      "target": "leg_br",
+      "type": "dowel"
+    }
+  ],
+  "steps": 4,
   "problems": []
 }

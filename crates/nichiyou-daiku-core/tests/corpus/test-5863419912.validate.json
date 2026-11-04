@@ -72,5 +72,18 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "post",
+      "target": "a",
+      "type": "dowel"
+    },
+    {
+      "base": "post",
+      "target": "b",
+      "type": "dowel"
+    }
+  ],
+  "steps": 0,
   "problems": []
 }

@@ -408,5 +408,123 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "leg_fl",
+      "target": "apron_upper_front",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "apron_upper_front",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "apron_upper_back",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "apron_upper_back",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fl",
+      "target": "apron_upper_left",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_bl",
+      "target": "apron_upper_left",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_fr",
+      "target": "apron_upper_right",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_br",
+      "target": "apron_upper_right",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_fl",
+      "target": "apron_lower_front",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "apron_lower_front",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "apron_lower_back",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "apron_lower_back",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fl",
+      "target": "apron_lower_left",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_bl",
+      "target": "apron_lower_left",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_fr",
+      "target": "apron_lower_right",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_br",
+      "target": "apron_lower_right",
+      "type": "vanilla"
+    },
+    {
+      "base": "top_1",
+      "target": "leg_fl",
+      "type": "dowel"
+    },
+    {
+      "base": "apron_upper_front",
+      "target": "top_2",
+      "type": "dowel"
+    },
+    {
+      "base": "apron_upper_front",
+      "target": "top_3",
+      "type": "dowel"
+    },
+    {
+      "base": "top_4",
+      "target": "leg_fr",
+      "type": "dowel"
+    },
+    {
+      "base": "apron_lower_front",
+      "target": "shelf_1",
+      "type": "dowel"
+    },
+    {
+      "base": "apron_lower_front",
+      "target": "shelf_2",
+      "type": "dowel"
+    },
+    {
+      "base": "apron_lower_front",
+      "target": "shelf_3",
+      "type": "dowel"
+    }
+  ],
+  "steps": 5,
   "problems": []
 }

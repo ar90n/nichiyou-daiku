@@ -72,6 +72,19 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "leg_fl",
+      "target": "apron_front",
+      "type": "screw"
+    },
+    {
+      "base": "leg_fr",
+      "target": "apron_front",
+      "type": "screw"
+    }
+  ],
+  "steps": 0,
   "problems": [
     {
       "kind": "hole_collision",

@@ -282,5 +282,68 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "rail",
+      "target": "slat_with_a_long_name_00",
+      "type": "dowel"
+    },
+    {
+      "base": "rail",
+      "target": "slat_with_a_long_name_01",
+      "type": "dowel"
+    },
+    {
+      "base": "rail",
+      "target": "slat_with_a_long_name_02",
+      "type": "dowel"
+    },
+    {
+      "base": "rail",
+      "target": "slat_with_a_long_name_03",
+      "type": "dowel"
+    },
+    {
+      "base": "rail",
+      "target": "slat_with_a_long_name_04",
+      "type": "dowel"
+    },
+    {
+      "base": "rail",
+      "target": "slat_with_a_long_name_05",
+      "type": "dowel"
+    },
+    {
+      "base": "rail",
+      "target": "slat_with_a_long_name_06",
+      "type": "dowel"
+    },
+    {
+      "base": "rail",
+      "target": "slat_with_a_long_name_07",
+      "type": "dowel"
+    },
+    {
+      "base": "rail",
+      "target": "slat_with_a_long_name_08",
+      "type": "dowel"
+    },
+    {
+      "base": "rail",
+      "target": "slat_with_a_long_name_09",
+      "type": "dowel"
+    },
+    {
+      "base": "rail",
+      "target": "slat_with_a_long_name_10",
+      "type": "dowel"
+    },
+    {
+      "base": "rail",
+      "target": "slat_with_a_long_name_11",
+      "type": "dowel"
+    }
+  ],
+  "steps": 0,
   "problems": []
 }

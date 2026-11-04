@@ -177,5 +177,48 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "leg_1",
+      "target": "apron_front",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_2",
+      "target": "apron_front",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_3",
+      "target": "apron_back",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_4",
+      "target": "apron_back",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_1",
+      "target": "apron_left",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_3",
+      "target": "apron_left",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_2",
+      "target": "apron_right",
+      "type": "vanilla"
+    },
+    {
+      "base": "leg_4",
+      "target": "apron_right",
+      "type": "vanilla"
+    }
+  ],
+  "steps": 0,
   "problems": []
 }

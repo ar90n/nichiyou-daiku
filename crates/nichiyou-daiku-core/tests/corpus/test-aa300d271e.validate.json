@@ -72,6 +72,19 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "base",
+      "target": "leg1",
+      "type": "screw"
+    },
+    {
+      "base": "base",
+      "target": "leg2",
+      "type": "screw"
+    }
+  ],
+  "steps": 0,
   "problems": [
     {
       "kind": "fastener",

@@ -114,6 +114,29 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "post_a",
+      "target": "rail",
+      "type": "vanilla"
+    },
+    {
+      "base": "post_b",
+      "target": "rail",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "block",
+      "type": "vanilla"
+    },
+    {
+      "base": "block",
+      "target": "cap",
+      "type": "vanilla"
+    }
+  ],
+  "steps": 0,
   "problems": [
     {
       "kind": "overlap",

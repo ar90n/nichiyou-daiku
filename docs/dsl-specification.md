@@ -554,7 +554,7 @@ right_side -[FL<300 TL<0 D(:8x30)]- shelf
 
 ## CLI Tools
 
-Every command reads a `.nd` file, or standard input when the file is `-`. Global options go before the command: `-d`/`--debug` (tracebacks for unexpected errors), `-v`/`--verbose` (progress messages) and `-q`/`--quiet`.
+Every command reads a `.nd` file, or standard input when the file is `-`. Global options go before the command: `-d`/`--debug` (tracebacks for unexpected errors), `-v`/`--verbose` (progress messages) and `-q`/`--quiet`. `nichiyou-daiku --version` prints the version.
 
 ### Validation
 
@@ -626,15 +626,25 @@ nichiyou-daiku validate --json examples/nd_files/corner_angle_compact.nd
       }
     }
   ],
+  "connections": [
+    {
+      "base": "corner_piece_a",
+      "target": "corner_piece_b",
+      "type": "vanilla"
+    }
+  ],
+  "steps": 0,
   "problems": []
 }
 ```
 
 - `valid`: there is no error and no problem.
-- `error`: why validation stopped before it could check the model, with `kind` (`file`, `syntax`, `semantic`, `validation`, `assembly` or `unexpected`), `message`, and the `line` and `column` when known. Then `overall_size` is null and `pieces` and `problems` are empty.
+- `error`: why validation stopped before it could check the model, with `kind` (`file`, `syntax`, `semantic`, `validation`, `assembly` or `unexpected`), `message`, and the `line` and `column` when known. Then `overall_size` is null, `pieces`, `connections` and `problems` are empty and `steps` is 0.
 - `overall_size`: the x, y and z extent of the model in mm, as in the report; null when some pieces are not connected.
 - `size_reference`: the piece that sets the axes, the first one declared: x runs along its width, y along its thickness and z along its length (declare a leg first and z is the height). Null when some pieces are not connected.
 - `pieces`: each piece's lumber `type`, solved `length`, placement `group`, and its box (`min`, `max`) in world coordinates, with the origin at the smallest corner of the whole model. Pieces in different groups have no defined position relative to each other (the groups are laid side by side along x). `faces` gives the world direction (`+x` … `-z`) that its `top`, `right` and `front` faces point to; `down`, `left` and `back` point the other way.
+- `connections`: each connection in the order written, with its `base` and `target` piece IDs and its `type` (`vanilla`, `dowel` or `screw`).
+- `steps`: how many steps the `steps` block has; 0 without one.
 - `problems`: the problems of the text output in the same order, each with a `kind`, the text `message` and the parts involved:
 
 | `kind` | Fields |

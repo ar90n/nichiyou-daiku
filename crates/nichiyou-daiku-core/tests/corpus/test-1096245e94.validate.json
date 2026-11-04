@@ -849,5 +849,203 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "shelf_board_00",
+      "target": "shelf_board_01",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_01",
+      "target": "shelf_board_02",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_02",
+      "target": "shelf_board_03",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_03",
+      "target": "shelf_board_04",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_04",
+      "target": "shelf_board_05",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_05",
+      "target": "shelf_board_06",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_06",
+      "target": "shelf_board_07",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_07",
+      "target": "shelf_board_08",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_08",
+      "target": "shelf_board_09",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_09",
+      "target": "shelf_board_10",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_10",
+      "target": "shelf_board_11",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_11",
+      "target": "shelf_board_12",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_12",
+      "target": "shelf_board_13",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_13",
+      "target": "shelf_board_14",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_14",
+      "target": "shelf_board_15",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_15",
+      "target": "shelf_board_16",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_16",
+      "target": "shelf_board_17",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_17",
+      "target": "shelf_board_18",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_18",
+      "target": "shelf_board_19",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_19",
+      "target": "shelf_board_20",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_20",
+      "target": "shelf_board_21",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_21",
+      "target": "shelf_board_22",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_22",
+      "target": "shelf_board_23",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_23",
+      "target": "shelf_board_24",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_24",
+      "target": "shelf_board_25",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_25",
+      "target": "shelf_board_26",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_26",
+      "target": "shelf_board_27",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_27",
+      "target": "shelf_board_28",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_28",
+      "target": "shelf_board_29",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_29",
+      "target": "shelf_board_30",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_30",
+      "target": "shelf_board_31",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_31",
+      "target": "shelf_board_32",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_32",
+      "target": "shelf_board_33",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_33",
+      "target": "shelf_board_34",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_34",
+      "target": "shelf_board_35",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_35",
+      "target": "shelf_board_36",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_36",
+      "target": "shelf_board_37",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_37",
+      "target": "shelf_board_38",
+      "type": "vanilla"
+    },
+    {
+      "base": "shelf_board_38",
+      "target": "shelf_board_39",
+      "type": "vanilla"
+    }
+  ],
+  "steps": 0,
   "problems": []
 }

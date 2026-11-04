@@ -723,5 +723,218 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "leg_fl",
+      "target": "uf_l",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fc",
+      "target": "uf_l",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fc",
+      "target": "uf_r",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "uf_r",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "ub_l",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bc",
+      "target": "ub_l",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bc",
+      "target": "ub_r",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "ub_r",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fl",
+      "target": "us_l",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "us_l",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fc",
+      "target": "us_c",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bc",
+      "target": "us_c",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "us_r",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "us_r",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fl",
+      "target": "lf_l",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fc",
+      "target": "lf_l",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fc",
+      "target": "lf_r",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "lf_r",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "lb_l",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bc",
+      "target": "lb_l",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bc",
+      "target": "lb_r",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "lb_r",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fl",
+      "target": "ls_l",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "ls_l",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fc",
+      "target": "ls_c",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bc",
+      "target": "ls_c",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "ls_r",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "ls_r",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fl",
+      "target": "top_1",
+      "type": "screw"
+    },
+    {
+      "base": "uf_l",
+      "target": "top_2",
+      "type": "screw"
+    },
+    {
+      "base": "uf_l",
+      "target": "top_3",
+      "type": "screw"
+    },
+    {
+      "base": "uf_l",
+      "target": "top_4",
+      "type": "screw"
+    },
+    {
+      "base": "uf_r",
+      "target": "top_5",
+      "type": "screw"
+    },
+    {
+      "base": "uf_r",
+      "target": "top_6",
+      "type": "screw"
+    },
+    {
+      "base": "uf_r",
+      "target": "top_7",
+      "type": "screw"
+    },
+    {
+      "base": "leg_fr",
+      "target": "top_8",
+      "type": "screw"
+    },
+    {
+      "base": "lf_l",
+      "target": "shelf_l1",
+      "type": "screw"
+    },
+    {
+      "base": "lf_l",
+      "target": "shelf_l2",
+      "type": "screw"
+    },
+    {
+      "base": "lf_l",
+      "target": "shelf_l3",
+      "type": "screw"
+    },
+    {
+      "base": "lf_r",
+      "target": "shelf_r1",
+      "type": "screw"
+    },
+    {
+      "base": "lf_r",
+      "target": "shelf_r2",
+      "type": "screw"
+    },
+    {
+      "base": "lf_r",
+      "target": "shelf_r3",
+      "type": "screw"
+    }
+  ],
+  "steps": 6,
   "problems": []
 }

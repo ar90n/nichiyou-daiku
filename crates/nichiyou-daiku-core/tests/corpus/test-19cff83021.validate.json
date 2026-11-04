@@ -72,6 +72,24 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "a",
+      "target": "b",
+      "type": "vanilla"
+    },
+    {
+      "base": "a",
+      "target": "c",
+      "type": "vanilla"
+    },
+    {
+      "base": "b",
+      "target": "c",
+      "type": "dowel"
+    }
+  ],
+  "steps": 0,
   "problems": [
     {
       "kind": "conflict",

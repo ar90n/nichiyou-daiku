@@ -387,5 +387,98 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "leg_fl",
+      "target": "apron_front",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "apron_front",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "apron_back",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "apron_back",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fl",
+      "target": "apron_left",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "apron_left",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "apron_right",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "apron_right",
+      "type": "dowel"
+    },
+    {
+      "base": "seat_1",
+      "target": "leg_fl",
+      "type": "dowel"
+    },
+    {
+      "base": "apron_front",
+      "target": "seat_2",
+      "type": "screw"
+    },
+    {
+      "base": "apron_front",
+      "target": "seat_3",
+      "type": "screw"
+    },
+    {
+      "base": "apron_front",
+      "target": "seat_4",
+      "type": "screw"
+    },
+    {
+      "base": "apron_front",
+      "target": "seat_5",
+      "type": "screw"
+    },
+    {
+      "base": "apron_front",
+      "target": "seat_6",
+      "type": "screw"
+    },
+    {
+      "base": "apron_front",
+      "target": "seat_7",
+      "type": "screw"
+    },
+    {
+      "base": "apron_front",
+      "target": "seat_8",
+      "type": "screw"
+    },
+    {
+      "base": "apron_front",
+      "target": "seat_9",
+      "type": "screw"
+    },
+    {
+      "base": "seat_10",
+      "target": "leg_fr",
+      "type": "dowel"
+    }
+  ],
+  "steps": 4,
   "problems": []
 }

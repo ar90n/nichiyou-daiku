@@ -72,5 +72,18 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "shelf",
+      "target": "side",
+      "type": "screw"
+    },
+    {
+      "base": "shelf2",
+      "target": "side",
+      "type": "screw"
+    }
+  ],
+  "steps": 0,
   "problems": []
 }

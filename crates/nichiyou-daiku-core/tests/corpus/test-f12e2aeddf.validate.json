@@ -47,6 +47,8 @@
       }
     }
   ],
+  "connections": [],
+  "steps": 0,
   "problems": [
     {
       "kind": "unconnected",

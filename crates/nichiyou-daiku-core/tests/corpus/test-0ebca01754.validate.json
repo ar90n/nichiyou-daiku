@@ -72,5 +72,18 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "beam1",
+      "target": "beam2",
+      "type": "vanilla"
+    },
+    {
+      "base": "beam2",
+      "target": "beam3",
+      "type": "dowel"
+    }
+  ],
+  "steps": 0,
   "problems": []
 }

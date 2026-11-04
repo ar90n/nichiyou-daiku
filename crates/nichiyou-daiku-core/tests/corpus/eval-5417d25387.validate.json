@@ -177,6 +177,49 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "leg_fl",
+      "target": "apron_front",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_fr",
+      "target": "apron_front",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_bl",
+      "target": "apron_back",
+      "type": "dowel"
+    },
+    {
+      "base": "leg_br",
+      "target": "apron_back",
+      "type": "dowel"
+    },
+    {
+      "base": "apron_front",
+      "target": "apron_left",
+      "type": "dowel"
+    },
+    {
+      "base": "apron_back",
+      "target": "apron_left",
+      "type": "dowel"
+    },
+    {
+      "base": "apron_front",
+      "target": "apron_right",
+      "type": "dowel"
+    },
+    {
+      "base": "apron_back",
+      "target": "apron_right",
+      "type": "dowel"
+    }
+  ],
+  "steps": 0,
   "problems": [
     {
       "kind": "hole_collision",

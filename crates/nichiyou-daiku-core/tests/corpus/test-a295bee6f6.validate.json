@@ -72,6 +72,19 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "post",
+      "target": "front",
+      "type": "screw"
+    },
+    {
+      "base": "post",
+      "target": "other",
+      "type": "screw"
+    }
+  ],
+  "steps": 0,
   "problems": [
     {
       "kind": "hole_collision",

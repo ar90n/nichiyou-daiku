@@ -11,6 +11,7 @@ use crate::dimensioning::{Chain, step_dimensions};
 use crate::dsl::ast::Pos;
 use crate::geometry::{Face, SurfacePoint};
 use crate::hardware::count_hardware;
+use crate::model::Model;
 use crate::parts::part_groups;
 use crate::placement::{ConstraintKind, axis_index, find_overlaps, overall_bounds, rotate};
 use crate::pyfmt::{format_mm, round_mm};
@@ -197,6 +198,26 @@ pub fn describe_assembly_issues(assembly: &Assembly) -> Vec<String> {
         .collect()
 }
 
+/// Each connection's pieces and kind, in the order written.
+fn connections(model: &Model) -> Value {
+    model
+        .connections
+        .iter()
+        .map(|connection| {
+            let kind = match connection.kind {
+                ConnectionType::Vanilla => "vanilla",
+                ConnectionType::Dowel { .. } => "dowel",
+                ConnectionType::Screw { .. } => "screw",
+            };
+            json!({
+                "base": connection.base.piece.id,
+                "target": connection.target.piece.id,
+                "type": kind,
+            })
+        })
+        .collect()
+}
+
 /// What `validate --json` prints for a model that assembles.
 pub fn validation_report(assembly: &Assembly) -> Value {
     let problems = collect_problems(assembly);
@@ -215,6 +236,8 @@ pub fn validation_report(assembly: &Assembly) -> Value {
         "overall_size": overall_size,
         "size_reference": size_reference,
         "pieces": positions(assembly, origin(assembly)),
+        "connections": connections(&assembly.model),
+        "steps": assembly.model.steps.len(),
         "problems": problems,
     })
 }
@@ -233,6 +256,8 @@ pub fn failure_report(
         "overall_size": null,
         "size_reference": null,
         "pieces": [],
+        "connections": [],
+        "steps": 0,
         "problems": [],
     })
 }

@@ -53,6 +53,14 @@ exit: 0
       }
     }
   ],
+  "connections": [
+    {
+      "base": "corner_piece_a",
+      "target": "corner_piece_b",
+      "type": "vanilla"
+    }
+  ],
+  "steps": 0,
   "problems": []
 }
 --- stderr

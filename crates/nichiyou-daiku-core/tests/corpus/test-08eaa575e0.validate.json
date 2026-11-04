@@ -89,6 +89,19 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "frame1",
+      "target": "frame2",
+      "type": "vanilla"
+    },
+    {
+      "base": "frame1",
+      "target": "panel1",
+      "type": "vanilla"
+    }
+  ],
+  "steps": 0,
   "problems": [
     {
       "kind": "unconnected",

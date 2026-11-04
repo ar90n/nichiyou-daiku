@@ -93,5 +93,23 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "post_a",
+      "target": "rail",
+      "type": "vanilla"
+    },
+    {
+      "base": "post_b",
+      "target": "rail",
+      "type": "vanilla"
+    },
+    {
+      "base": "rail",
+      "target": "block",
+      "type": "vanilla"
+    }
+  ],
+  "steps": 0,
   "problems": []
 }

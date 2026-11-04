@@ -51,5 +51,13 @@
       }
     }
   ],
+  "connections": [
+    {
+      "base": "apron_front",
+      "target": "leg_fl",
+      "type": "screw"
+    }
+  ],
+  "steps": 0,
   "problems": []
 }
