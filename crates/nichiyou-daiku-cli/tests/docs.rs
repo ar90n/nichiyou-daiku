@@ -374,3 +374,38 @@ fn every_command_is_in_the_cli_reference() {
         "{commands:?}: {missing:?}"
     );
 }
+
+#[test]
+fn the_docs_need_no_python() {
+    // The Python version (v0.1.0) is gone: no build123d, no viz extra, no
+    // install with uv but the line that points to v0.1.0
+    let mut found = Vec::new();
+    for path in markdown() {
+        for (n, line) in fs::read_to_string(&path).unwrap().lines().enumerate() {
+            // The line pointing to v0.1.0 may name what it has
+            let python = !line.contains("@v0.1.0")
+                && [
+                    "build123d",
+                    "viz extra",
+                    "[viz]",
+                    "Python API",
+                    "uv tool install",
+                ]
+                .iter()
+                .any(|w| line.contains(w));
+            if python {
+                found.push(format!("{}:{}: {line}", path.display(), n + 1));
+            }
+        }
+    }
+    assert!(found.is_empty(), "{found:#?}");
+}
+
+#[test]
+fn the_readme_installs_with_install_sh() {
+    let readme = fs::read_to_string(root().join("README.md")).unwrap();
+    assert!(readme.contains(
+        "curl -fsSL https://raw.githubusercontent.com/ar90n/nichiyou-daiku/main/install.sh | sh"
+    ));
+    assert!(root().join("install.sh").is_file());
+}

@@ -562,7 +562,7 @@ Every command reads a `.nd` file, or standard input when the file is `-`. Global
 nichiyou-daiku validate furniture.nd
 ```
 
-Checks the syntax, solves unknowns and the placement, and reports contradicting connections, pieces not connected to the rest, overlapping pieces, fasteners that do not fit their contact area, and holes of two connections that run into each other. It exits with 1 if there is any problem and does not need build123d.
+Checks the syntax, solves unknowns and the placement, and reports contradicting connections, pieces not connected to the rest, overlapping pieces, fasteners that do not fit their contact area, and holes of two connections that run into each other. It exits with 1 if there is any problem.
 
 The other commands print the same problems (all but overlaps) as warnings and carry on; `report` also lists them in a Warnings section of the report.
 
@@ -677,30 +677,25 @@ kerf = 2                         # saw kerf in mm (3 when left out)
 
 A mistake in the file (an unknown lumber type or key, a length list that is empty or has a length of 0 or less, a negative kerf, a length or kerf that is not a finite number such as TOML's `nan` and `inf`, a TOML syntax error) stops the command with what to fix.
 
-### 3D View (requires build123d)
+### Viewer
 
 ```bash
 nichiyou-daiku view furniture.nd
+nichiyou-daiku view furniture.nd --host 0.0.0.0 --port 8080 --no-open
 ```
 
-Shows the model in OCP CAD Viewer (VS Code) or, failing that, jupyter-cadquery. `--fillet-radius` rounds the edges (default 5mm, 0 for sharp edges).
+Opens the design in the browser viewer, served from this machine: the 3D model with its holes, the problems `validate` finds, the assembly steps and the printable manual. The page follows the file: save it and the page shows the new design, keeping its tab, step and camera. `--host` and `--port` choose where to serve (127.0.0.1 and a free port by default; 0.0.0.0 or this machine's address lets another machine's browser in), and `--no-open` prints the address without opening a browser. Ctrl-C stops it.
 
-### Export (requires build123d)
+### Export
 
 ```bash
-# STL format
-nichiyou-daiku export furniture.nd -f stl
-
-# STEP format
+nichiyou-daiku export furniture.nd -f stl            # furniture.stl
 nichiyou-daiku export furniture.nd -f step -o model.step
-
-# With fillet radius
-nichiyou-daiku export furniture.nd -f stl --fillet-radius 10
 ```
 
-The format comes from `-f` or the output file's extension.
+Writes the 3D model: each piece a square-edged box with its holes (pilot, dowel, counterbore and countersink), as one binary STL or as STEP (AP214), where each piece is a part named as the design names it. The format comes from `-f` (`stl`, `step` or `stp`) or from the output file's extension; without `-o`, the file is the input's with the format's extension, and the input is never written over. A hole that runs into another one or breaks out of the side of its piece is left out of the 3D, with a warning that says how to fix it. `--fillet-radius` is accepted and ignored.
 
-### Technical Drawing (requires build123d)
+### Technical Drawing
 
 ```bash
 nichiyou-daiku drawing furniture.nd -o furniture.pdf
@@ -718,16 +713,16 @@ The top, front and right-side views are in third-angle projection, with the furn
 
 Piece lengths are not dimensioned (the cut list in `report` has them), nor are the positions of lying pieces below the top layer. A model whose pieces are not all connected gets no dimensions (its parts have no places relative to each other), and the command warns why; `--no-dimensions` leaves them out to draw the views larger.
 
-### Check Image (requires build123d)
+### Check Image
 
 ```bash
 nichiyou-daiku render furniture.nd                  # furniture.png
 nichiyou-daiku render furniture.nd -o check.png --size 1000
 ```
 
-Draws one square PNG (default 1400px, at least 400px) for checking a design by eye: the model seen from +z, +y, -x and -x +y +z (the top, front, right-side and isometric views of `drawing`) on a 2×2 grid at one scale, visible lines only, in the axes of `size_reference` (see `validate --json`). Each piece's ID is written at its center in every view where no other piece hides that center and it does not overlap another label; pieces labelled in no view are listed in the note at the bottom, below the file name and the overall size. Shapes are those of `export` and `drawing`, including holes and `--fillet-radius`.
+Draws one square PNG (default 1400px, at least 400px) for checking a design by eye: the model seen from +z, +y, -x and -x +y +z (the top, front, right-side and isometric views of `drawing`) on a 2×2 grid at one scale, visible lines only, in the axes of `size_reference` (see `validate --json`). Each piece's ID is written at its center in every view where no other piece hides that center and it does not overlap another label; pieces labelled in no view are listed in the note at the bottom, below the file name and the overall size. Shapes are those of `export` and `drawing`, square-edged with their holes.
 
-### Assembly Steps (requires build123d)
+### Assembly Instructions
 
 ```bash
 nichiyou-daiku steps shelf.nd                    # shelf-steps/steps.md, part-01.png, ... and step-01.png, ...
@@ -738,7 +733,7 @@ Writes `steps.md`, one PNG per drilled part and one per step (default 1600px wid
 
 The parts are listed in declaration order with their lumber, length and count, each drilled one linked to its drawing below the table (`part-01.png`, ...). Pieces made the same way are one part (`shelf_1, shelf_2, shelf_3, shelf_4 ×4`): the same lumber and length, and holes that match within 0.05mm once the board is turned onto itself (a half turn about its length, width or thickness; for a square section such as 2x2, also a quarter turn about its length), a hole drilled through matching from either face. A mirrored piece, such as the left leg of the right one, is a different part. A drawing's title gives the pieces, the lumber, the length to cut and the holes of one piece by kind (`φ8 ↧15 ×10`: diameter, depth and count; a hole drilled through has no depth). Under it the piece is drawn from the diagonal where most of its drilled faces show, those faces lettered A, B, ... in the order front, back, left, right, top, down (dashed when hidden), with a triangle beyond the down end, the reference end. Then each drilled face is seen from outside, a long face with the reference end to the left, dimensioned through the hole centres from the reference end and from its lower edge. Its letter is at its left, and at the height of each edge the letter of the drilled face across it (beside an end face, on all four sides). A thin face is drawn taller so that its values fit; the values are true sizes. When the only drilled faces are the two ends and a turn about the length that brings the section onto itself (a half turn, or a quarter turn for a square section) would change the holes of both ends, the front is lettered too, to tell how the ends turn to each other.
 
-Each step image shows the part the step leaves from -x +y +z, the pieces built before in grey and the step's pieces in black with their IDs (their hidden edges dashed in the dimension view only), beside an orthographic view dimensioning where the step's pieces go: chain dimensions as in `drawing`, stopping at both ends of the step's pieces and of the pieces they are joined to, with the part's overall size. That view looks across the edges the step's connections are measured along, along the axis where the step's pieces hide each other least, from the side where the rest of the part hides them least (on a tie, from the isometric's side, so that both halves show the part the same way round). A grey arrow in the isometric's lower left corner points the way that view looks (lying on the floor, or down or up the page when it looks from above or below); the isometric is drawn smaller when it would come within 6mm of the arrow. The view names the step's pieces too. When those names cannot show which way round it is (it takes two names in both halves, apart across the view, or either way in a view from above or below), one or two earlier pieces are named in grey in both halves, each where it covers no other piece and no dimension line; when no two such names can be found, none are added. When values do not fit beside their chain, the command warns and suggests splitting the step (for a step of one piece, it points to the report's Anchor Details; for a part, to the report's Pilot Holes table, which lists the same holes). Without a `steps` block it says how to add one. `--fillet-radius` is that of `export`.
+Each step image shows the part the step leaves from -x +y +z, the pieces built before in grey and the step's pieces in black with their IDs (their hidden edges dashed in the dimension view only), beside an orthographic view dimensioning where the step's pieces go: chain dimensions as in `drawing`, stopping at both ends of the step's pieces and of the pieces they are joined to, with the part's overall size. That view looks across the edges the step's connections are measured along, along the axis where the step's pieces hide each other least, from the side where the rest of the part hides them least (on a tie, from the isometric's side, so that both halves show the part the same way round). A grey arrow in the isometric's lower left corner points the way that view looks (lying on the floor, or down or up the page when it looks from above or below); the isometric is drawn smaller when it would come within 6mm of the arrow. The view names the step's pieces too. When those names cannot show which way round it is (it takes two names in both halves, apart across the view, or either way in a view from above or below), one or two earlier pieces are named in grey in both halves, each where it covers no other piece and no dimension line; when no two such names can be found, none are added. When values do not fit beside their chain, the command warns and suggests splitting the step (for a step of one piece, it points to the report's Anchor Details; for a part, to the report's Pilot Holes table, which lists the same holes). Without a `steps` block it says how to add one. `--fillet-radius` is accepted and ignored, as by `export`.
 
 ## Grammar (EBNF)
 

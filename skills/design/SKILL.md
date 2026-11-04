@@ -44,7 +44,7 @@ Check `overall_size` in the same JSON against the request (it is null while some
 
 ## 6. Look at it
 
-Once the model is valid and the right size, draw it and list the materials in one command, `nichiyou-daiku render <name>.nd -o <name>.png && nichiyou-daiku report <name>.nd --no-cut-diagram --no-anchor-details --no-pilot-holes` (add `--stock stock.toml` if you wrote one), for the bill of materials and the shopping list, then read the PNG. It shows the model from +z, +y, -x and -x +y +z (the axes of `validate --json`): the top, the front (the furniture's front faces +y), the right side and an isometric view, with each piece's ID where you can see it; pieces hidden in every view are listed in the note at the bottom. Compare it with the request: which way the boards run, the heights of shelves and aprons, which way the legs face, and that nothing floats or sticks out. If something is off, fix it and go back to step 4. The first run installs build123d and can take a few minutes; tell the user.
+Once the model is valid and the right size, draw it and list the materials in one command, `nichiyou-daiku render <name>.nd -o <name>.png && nichiyou-daiku report <name>.nd --no-cut-diagram --no-anchor-details --no-pilot-holes` (add `--stock stock.toml` if you wrote one), for the bill of materials and the shopping list, then read the PNG. It shows the model from +z, +y, -x and -x +y +z (the axes of `validate --json`): the top, the front (the furniture's front faces +y), the right side and an isometric view, with each piece's ID where you can see it; pieces hidden in every view are listed in the note at the bottom. Compare it with the request: which way the boards run, the heights of shelves and aprons, which way the legs face, and that nothing floats or sticks out. If something is off, fix it and go back to step 4.
 
 ## 7. Output files on request
 
@@ -58,13 +58,4 @@ Tell the user the file path, the overall size, what to buy from the shopping lis
 
 ## The CLI
 
-`nichiyou-daiku` runs an installed nichiyou-daiku if there is one, otherwise this plugin's own copy through uv. If it says it found neither, ask the user to install uv.
-
-An installed CLI can be behind this plugin. Ask the user to reinstall it when:
-
-- `render` says `No such command 'render'` or `steps` says `No such command 'steps'` (it predates them): `uv tool install --force "nichiyou-daiku[viz] @ git+https://github.com/ar90n/nichiyou-daiku"`
-- `drawing`, `export`, `render` or `steps` says build123d is missing (it lacks the viz extra): `uv tool install --force "nichiyou-daiku[viz] @ git+https://github.com/ar90n/nichiyou-daiku"`
-- `validate` says `No such option: --json` (it predates the JSON output): `uv tool install --force "git+https://github.com/ar90n/nichiyou-daiku"`, or the `[viz]` form above
-- `validate` rejects syntax that the DSL specification documents (it is older than the plugin): `uv tool install --force "git+https://github.com/ar90n/nichiyou-daiku"`, or the `[viz]` form above
-
-If `render`, `drawing`, `export` or `steps` says the cairo library is missing, ask the user to install it (macOS: `brew install cairo`, Debian/Ubuntu: `sudo apt install libcairo2`).
+`nichiyou-daiku` runs this plugin's own version of the CLI, which it downloads the first time (a few seconds; tell the user). If it says it could not download it, tell the user what it said: they can download the CLI by hand from the release it names and put it where it says, or install Rust (https://rustup.rs) so that it builds the CLI from the plugin's source; then run the command again.

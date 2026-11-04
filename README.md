@@ -1,8 +1,6 @@
 # nichiyou-daiku (日曜大工)
 
 [![Quality Assurance](https://github.com/ar90n/nichiyou-daiku/actions/workflows/ci.yml/badge.svg)](https://github.com/ar90n/nichiyou-daiku/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/ar90n/nichiyou-daiku/branch/main/graph/badge.svg)](https://codecov.io/gh/ar90n/nichiyou-daiku)
-[![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 ![Built with vibe coding](https://img.shields.io/badge/built%20with-vibe%20coding-ff69b4)
 
@@ -22,12 +20,13 @@ corner_piece_a -[TF<0 BD<0]- corner_piece_b
 ```
 
 ```bash
-nichiyou-daiku validate corner.nd           # syntax, placement, overlaps, fasteners
+nichiyou-daiku validate corner.nd            # syntax, placement, overlaps, fasteners
 nichiyou-daiku report corner.nd -o report.md # bill of materials, shopping list, cut list
-nichiyou-daiku export corner.nd -f step      # 3D model (needs the viz extra)
-nichiyou-daiku drawing corner.nd             # technical drawing PDF with dimensions (needs the viz extra)
-nichiyou-daiku render corner.nd              # check image PNG, four labelled views (needs the viz extra)
-nichiyou-daiku steps corner.nd               # assembly steps: Markdown, part drawings and step images (needs the viz extra)
+nichiyou-daiku view corner.nd                # the 3D model, the steps and the manual in your browser
+nichiyou-daiku export corner.nd -f step      # 3D model (STEP or STL)
+nichiyou-daiku drawing corner.nd             # technical drawing PDF with dimensions
+nichiyou-daiku render corner.nd              # check image PNG, four labelled views
+nichiyou-daiku steps corner.nd               # assembly steps: Markdown, part drawings and step images
 ```
 
 See [`examples/nd_files/`](examples/nd_files/) for complete designs, such as a table written with variables ([`simple_table_parametric.nd`](examples/nd_files/simple_table_parametric.nd)) and one whose apron length is solved from the legs ([`simple_table_unknowns.nd`](examples/nd_files/simple_table_unknowns.nd)).
@@ -37,11 +36,13 @@ See [`examples/nd_files/`](examples/nd_files/) for complete designs, such as a t
 - 📝 A small DSL for furniture: pieces, connections, variables and arithmetic
 - 🧩 Unknown lengths (`=?`) and sliding connections (`?` offsets) solved from the other connections
 - 📐 Exact placement from all connections at once; contradictions and overlaps are reported
-- 🔩 Dowels and screws laid out in the contact area, with preset sizes
+- 🔩 Dowels and screws laid out in the contact area, with preset sizes, counterbores and countersinks
 - 📑 Markdown reports: bill of materials, shopping list with hardware and drill bits, cut list for your store's board lengths and saw kerf
-- 🎯 STL/STEP export and technical drawings with build123d (optional)
+- 🖼️ Technical drawings, check images and assembly instructions with a drawing of each drilled part
+- 🎯 STL and STEP export with every hole
+- 🌐 A browser viewer: the 3D model, the assembly steps and a printable manual
 - 🪵 Standard lumber: 1x4, 1x6, 1x8, 2x2, 2x4, 2x6
-- 🐍 Typed Python API
+- 📦 One executable for Linux, macOS and Windows
 
 ## Use with Claude Code
 
@@ -52,31 +53,34 @@ Add this repository as a plugin marketplace and install the plugin:
 /plugin install nichiyou-daiku@nichiyou-daiku
 ```
 
-Then ask for furniture, e.g. "Design a 500 x 400 x 600 side table from 2x4". The `nichiyou-daiku:design` skill writes the `.nd` file, checks it with the CLI until it is sound and reports the size and the lumber to buy. The plugin runs an installed CLI if there is one, otherwise its own copy through [uv](https://docs.astral.sh/uv/).
+Then ask for furniture, e.g. "Design a 500 x 400 x 600 side table from 2x4". The `nichiyou-daiku:design` skill writes the `.nd` file, checks it with the CLI until it is sound and reports the size and the lumber to buy. The plugin downloads its own version of the CLI from this repository's releases the first time (a few seconds).
 
 ## Installation
 
-nichiyou-daiku is not on PyPI. Install the CLI from GitHub with uv:
+On Linux and macOS (x86_64 or arm64):
 
 ```bash
-uv tool install "git+https://github.com/ar90n/nichiyou-daiku"                       # core and CLI
-uv tool install "nichiyou-daiku[viz] @ git+https://github.com/ar90n/nichiyou-daiku"  # plus 3D export and drawings (build123d)
+curl -fsSL https://raw.githubusercontent.com/ar90n/nichiyou-daiku/main/install.sh | sh
 ```
 
-Run the command again with `--force` to update. The Claude Code plugin follows this repository, so keep an installed CLI up to date with it.
+It installs the newest release's CLI into `~/.local/bin`, checked against the release's checksums, and says if that folder is not on your PATH. `--version 0.2.0` installs another version and `--to <folder>` another place (`... | sh -s -- --to ~/bin`). Run it again to update. On Windows, download `nichiyou-daiku-<version>-x86_64-pc-windows-msvc.zip` from the [releases](https://github.com/ar90n/nichiyou-daiku/releases) and put `nichiyou-daiku.exe` on your PATH. `nichiyou-daiku --version` tells which version you have.
 
-> **Note** build123d currently has limited support for ARM64/aarch64. The core works everywhere.
+If you installed the Python version with uv, remove it: `uv tool uninstall nichiyou-daiku`. It stays available, with its Python API, as v0.1.0: `uv tool install "git+https://github.com/ar90n/nichiyou-daiku@v0.1.0"`.
 
-## Viewer (next generation)
-
-The `next` branch rewrites the core in Rust and runs it in the browser as WebAssembly. The viewer opens an `.nd` file, draws it in 3D with its holes, lists what `validate` finds and shows the source beside it. Nothing leaves the browser.
+To build it from source, with Rust and Node.js 24 or later:
 
 ```bash
-make web-dev   # open it on a local server (needs Rust and Node.js 24 or later)
-make web       # build the static site into web/dist
+git clone https://github.com/ar90n/nichiyou-daiku.git
+cd nichiyou-daiku
+make web                                        # the viewer that view serves
+cargo install --path crates/nichiyou-daiku-cli
 ```
 
-Open a file with **Open** or by dropping it on the page, or open a URL: `?src=<URL of an .nd>` opens it when the page loads, so the address can be shared. The server must let other sites read the file; on GitHub, use the raw file (`raw.githubusercontent.com`) or a gist's raw URL. The `Viewer on GitHub Pages` workflow publishes the viewer when started by hand (choose "GitHub Actions" as the Pages source first).
+## Viewer
+
+`nichiyou-daiku view design.nd` opens the design in your browser, served from your machine: the 3D model with its holes, what `validate` finds and the source beside it. The page follows the file as you save it. Nothing leaves your machine.
+
+The viewer is also a static site: `make web` builds it into `web/dist` (`make web-dev` serves it while you work on it). Open a file with **Open** or by dropping it on the page, or open a URL: `?src=<URL of an .nd>` opens it when the page loads, so the address can be shared. The server must let other sites read the file; on GitHub, use the raw file (`raw.githubusercontent.com`) or a gist's raw URL. The `Viewer on GitHub Pages` workflow publishes the viewer when started by hand (choose "GitHub Actions" as the Pages source first).
 
 The **Steps** tab walks through the assembly: the parts list, then one step at a time (with **◀ Prev** / **Next ▶** or the arrow keys), drawing the part each step leaves with the step's pieces in blue. `?step=N` opens a step (0 is the parts list). The steps come from the design's `steps` block, or one piece at a time without one.
 
@@ -98,12 +102,15 @@ The **Manual** tab lays the whole manual out as A4 landscape pages: what to get 
 ```bash
 git clone https://github.com/ar90n/nichiyou-daiku.git
 cd nichiyou-daiku
-uv sync --dev --all-extras
+uv sync --group dev --group ci   # the Python of the evaluation and CI
 
-make check     # lint and tests; run before every commit (~30s)
-make ci-local  # the full CI pipeline in Dagger; run before merging into main or pushing
+make check             # Rust, the viewer and the evaluation; run before every commit
+make ci-local          # the full CI pipeline in Dagger; run before merging into main or pushing
 make format
+ND_BLESS=1 cargo test  # after changing what the CLI prints: rewrite the golden files, then review the diff
 ```
+
+To release, push a tag `v<version>` with the version in `Cargo.toml`: the Release workflow builds the CLI for five systems into a draft release. Publish it after checking it, and before that version reaches main, since the plugin downloads its own version.
 
 Design decisions are recorded in [`docs/superpowers/specs/`](docs/superpowers/specs/).
 
@@ -112,7 +119,7 @@ Design decisions are recorded in [`docs/superpowers/specs/`](docs/superpowers/sp
 1. Fork the repository and create a feature branch
 2. Write tests first (TDD), then implement
 3. Run `make check`
-4. Open a pull request titled `<type>: <description>`, where type is one of `feat`, `fix`, `docs`, `refactor`, `style`, `chore` or `test`; release notes are grouped by it
+4. Open a pull request titled `<type>: <description>`, where type is one of `feat`, `fix`, `docs`, `refactor`, `style`, `chore` or `test`
 
 ## License
 

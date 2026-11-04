@@ -122,3 +122,13 @@ fn the_skill_does_not_rely_on_claude_code_s_plugin_root() {
     }
     assert!(literal.is_empty(), "{literal:?}");
 }
+
+#[test]
+fn the_skill_says_what_to_do_when_the_cli_cannot_be_downloaded() {
+    // The entry point downloads the plugin's own CLI; when it cannot, the
+    // user downloads it by hand where the message says or installs Rust
+    let skill = skill();
+    assert!(skill.contains("could not download"), "{skill}");
+    assert!(skill.contains("https://rustup.rs"), "{skill}");
+    assert!(!skill.contains("cairo"), "{skill}");
+}
