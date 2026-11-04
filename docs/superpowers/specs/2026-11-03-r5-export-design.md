@@ -27,12 +27,17 @@ Rust 版の CLI に `export` を作る。家具の 3D の形を STL（三角形�
    壊れる。
 5. **別の軸の穴が食い込むときは、後の穴をその部材の形から省いて知らせる**。core のぶつかりの判定（`bores_meet`、
    ねじの太さで見る）で交わる穴は `validate` が問題として報告しているので、直し方はそちらにある。1 点でかするだけ
-   の穴（コーパスに多い、ダボ穴どうしの角）は省かない。コーパスで穴の口が面からはみ出す例は 0（約 2 万 7 千の穴）。
+   の穴（コーパスに多い、ダボ穴どうしの角）は省かない。平行な穴が線で接するときは省く（面の上で口が接し、
+   その面を書けない。最終レビュー、コーパスでは 0 件）。コーパスで穴の口が面からはみ出す例は 0（約 2 万 7 千の穴）。
 6. **新しいクレート `nichiyou-daiku-export` に置き、core だけに頼る**。ほかの依存を足さないので、後でビューアー
    （WASM）から書き出すこともできる（R5 では作らない）。CLI はこれを呼んでファイルに書くだけ。
 7. **STEP は部材ごとに 1 つの部品（PRODUCT）にし、全体をそれを並べた 1 段の組み立てにする**（2026-11-03、試し）。
    OpenCASCADE（FreeCAD・build123d が使う）は立体に付けた名前を読まず、部品の名前を部材名として出す。部品の形は
    世界の座標のまま書き、組み立ての置き方は動かさない（単位の変換）。
+8. **穴の口が部材の側面からはみ出す（接する）ときも、その穴を省いて知らせる**（2026-11-03、最終レビュー）。
+   validate は通る設計で起きる（重なりの短辺がねじ径の 2 倍あっても、座掘り φ10 の中心が端から 4mm になる）。
+   箱と穴の形では側面の欠けを表せず、書くと STL が作れず STEP は壊れた立体になる。直し方（継ぎ目を端から
+   穴の半径より内へ動かす）を警告に書く。
 
 ## 形
 
@@ -64,7 +69,8 @@ Rust 版の CLI に `export` を作る。家具の 3D の形を STL（三角形�
   - 食い違う: `Error: Output extension '<拡張子>' does not match format '<-f の値>'.`
   - 標準入力 `-` のときは `-o` が要り、入力のファイルは上書きしない（ほかのコマンドと同じ文）。
 - メッセージ: 組み立ての問題は `Warning: …`。省いた穴は
-  `Warning: <部材>: the φ<径> hole at <面> (<位置>) runs into another hole; it is left out of the 3D. Fix the collision validate reports`。
+  `Warning: <部材>: the φ<径> hole at <面> (<位置>) runs into another hole; it is left out of the 3D. Fix the collision validate reports`、
+  側面からはみ出す穴は `… breaks out of the piece's side; it is left out of the 3D. Move the joint so the hole's centre is more than <半径>mm from the piece's edge`（決定 8）。
   成功は `Successfully exported to: PATH`。書けないときは `Error exporting file: cannot write PATH: …`。
 
 ## テスト

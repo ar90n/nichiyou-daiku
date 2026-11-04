@@ -136,8 +136,9 @@ fn distance_to(value: f64, low: f64, high: f64) -> f64 {
     }
 }
 
-/// Whether two stretches on different lines share more than a point or a
-/// line, each taken as a cylinder of its widest radius.
+/// Whether two stretches on different lines share more than a point, each
+/// taken as a cylinder of its widest radius. Parallel ones touching along a
+/// line meet: their mouths would touch on the face.
 fn spans_meet(a: &Line, sa: &Span, b: &Line, sb: &Span) -> bool {
     let (pa, pb) = (line_point(a), line_point(b));
     let (ra, rb) = (sa.widest(), sb.widest());
@@ -145,7 +146,7 @@ fn spans_meet(a: &Line, sa: &Span, b: &Line, sb: &Span) -> bool {
         let overlap = sa.t1.min(sb.t1) - sa.t0.max(sb.t0);
         let [i, j] = others(a.0);
         let apart = ((pa[i] - pb[i]).powi(2) + (pa[j] - pb[j]).powi(2)).sqrt();
-        return overlap > EPSILON && apart < ra + rb - EPSILON;
+        return overlap > EPSILON && apart < ra + rb + EPSILON;
     }
     let (i, j) = (a.0, b.0);
     let k = 3 - i - j;
@@ -221,13 +222,31 @@ fn union(spans: &[Span]) -> Vec<Vec<Span>> {
     cavities
 }
 
+/// Why a hole is left out of the 3D.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum Left {
+    /// It runs into an earlier hole on another line
+    RunsIntoAnother,
+    /// Its widest part, of this radius, reaches a side of the piece: a box
+    /// with holes cannot show the notch it would cut
+    BreaksOut { radius: f64 },
+}
+
 /// The piece's cavities by line, in the order the holes come, and the holes
-/// left out for running into an earlier one on another line.
-pub fn bores(holes: &[LocalHole], size: [f64; 3]) -> (Vec<Bore>, Vec<LocalHole>) {
+/// left out.
+pub fn bores(holes: &[LocalHole], size: [f64; 3]) -> (Vec<Bore>, Vec<(LocalHole, Left)>) {
     let mut kept: Vec<(Line, Vec<Span>)> = Vec::new();
     let mut left = Vec::new();
     for hole in holes {
         let (line, spans) = hole_spans(hole, size);
+        let radius = spans.iter().map(Span::widest).fold(0.0, f64::max);
+        let (axis, at) = line;
+        let [i, j] = others(axis);
+        let room = at[0].min(size[i] - at[0]).min(at[1]).min(size[j] - at[1]);
+        if radius >= room - EPSILON {
+            left.push((*hole, Left::BreaksOut { radius }));
+            continue;
+        }
         let meets = kept.iter().any(|(other, theirs)| {
             !same_line(&line, other)
                 && spans
@@ -235,7 +254,7 @@ pub fn bores(holes: &[LocalHole], size: [f64; 3]) -> (Vec<Bore>, Vec<LocalHole>)
                     .any(|s| theirs.iter().any(|t| spans_meet(&line, s, other, t)))
         });
         if meets {
-            left.push(*hole);
+            left.push((*hole, Left::RunsIntoAnother));
         } else {
             kept.push((line, spans));
         }
@@ -378,7 +397,40 @@ mod tests {
         let screw = hole(Face::Back, [44.5, 0.0, 385.0], 3.0, None);
         let (bores, left) = bores(&[dowel, screw], TWO_BY_FOUR);
         assert_eq!(bores.len(), 1);
-        assert_eq!(left, [screw]);
+        assert_eq!(left, [(screw, Left::RunsIntoAnother)]);
+    }
+
+    #[test]
+    fn parallel_holes_touching_along_a_line_meet() {
+        // Their mouths would touch on the face, which no face can hold
+        let first = hole(Face::Back, [30.0, 0.0, 200.0], 8.0, Some(15.0));
+        let second = hole(Face::Back, [38.0, 0.0, 200.0], 8.0, Some(15.0));
+        let (bores, left) = bores(&[first, second], TWO_BY_FOUR);
+        assert_eq!(bores.len(), 1);
+        assert_eq!(left, [(second, Left::RunsIntoAnother)]);
+    }
+
+    #[test]
+    fn a_hole_breaking_out_of_a_side_is_left_out() {
+        // A φ10 counterbore 4mm from the back of a 2x4, one touching the
+        // front, and a countersink's φ8.5 mouth 4.2mm from the left side
+        let out = hole(Face::Left, [0.0, 4.0, 200.0], 10.0, Some(20.0));
+        let touching = hole(Face::Left, [0.0, 33.0, 300.0], 10.0, Some(20.0));
+        let sunk = LocalHole {
+            countersink: Some(8.5),
+            ..hole(Face::Back, [4.2, 0.0, 50.0], 2.5, None)
+        };
+        let inside = hole(Face::Left, [0.0, 19.0, 100.0], 10.0, Some(20.0));
+        let (bores, left) = bores(&[out, touching, sunk, inside], TWO_BY_FOUR);
+        assert_eq!(bores.len(), 1);
+        assert_eq!(
+            left,
+            [
+                (out, Left::BreaksOut { radius: 5.0 }),
+                (touching, Left::BreaksOut { radius: 5.0 }),
+                (sunk, Left::BreaksOut { radius: 4.25 }),
+            ]
+        );
     }
 
     #[test]

@@ -4,14 +4,16 @@
 
 use crate::solid::{Curve, P3, Solid, Surface};
 
-/// A real with the decimal point STEP requires, to a micrometre.
+/// A real with the decimal point STEP requires, with every digit that reads
+/// back the same number (well within the declared 1e-7 uncertainty);
+/// rounding noise around zero is 0.
 pub fn real(value: f64) -> String {
-    if value.abs() < 5e-7 {
+    if value.abs() < 1e-12 {
         return "0.".into();
     }
-    let text = format!("{value:.6}");
-    let text = text.trim_end_matches('0');
-    text.to_string()
+    // Display never uses an exponent and gives the shortest exact digits
+    let text = format!("{value}");
+    if text.contains('.') { text } else { text + "." }
 }
 
 /// A string: quotes doubled, everything outside ASCII as \X2\…\X0\.
@@ -361,10 +363,18 @@ mod tests {
     #[test]
     fn reals_always_carry_a_point() {
         assert_eq!(real(0.0), "0.");
+        assert_eq!(real(-0.0), "0.");
         assert_eq!(real(3.0), "3.");
         assert_eq!(real(-12.5), "-12.5");
-        assert_eq!(real(1e-7), "0.");
-        assert_eq!(real(0.123456789), "0.123457");
+        assert_eq!(real(4.9e-16), "0.");
+    }
+
+    #[test]
+    fn reals_keep_every_digit_the_uncertainty_needs() {
+        // A seam's end must stay on its line well within the declared 1e-7
+        assert_eq!(real(276.3333333333333), "276.3333333333333");
+        assert_eq!(real(std::f64::consts::FRAC_1_SQRT_2), "0.7071067811865476");
+        assert_eq!(real(1e-7), "0.0000001");
     }
 
     #[test]

@@ -155,3 +155,23 @@ fn export_says_which_hole_it_left_out() {
         "{err}"
     );
 }
+
+#[test]
+fn export_leaves_out_a_hole_breaking_out_of_a_side() {
+    // validate passes it: the 8mm overlap is twice the screw, but the φ10
+    // counterbore's centre is 4mm from the post's edge
+    let dir = folder("breakout");
+    fs::write(
+        dir.join("b.nd"),
+        "(post:2x4 =600)\n(rail:2x4 =400)\nrail -[DF>0 RF<592 S(Slim:3.8x65)]- post\n",
+    )
+    .unwrap();
+    for format in ["stl", "step"] {
+        let (code, err) = run(&["export", "b.nd", "-f", format], "", &dir);
+        assert_eq!(code, 0, "{err}");
+        assert!(
+            err.contains("breaks out of the piece's side; it is left out of the 3D."),
+            "{err}"
+        );
+    }
+}
