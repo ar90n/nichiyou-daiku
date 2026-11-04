@@ -1,1 +1,56 @@
-{"labels": {"from +z": ["apron_upper_front", "apron_upper_back", "top_1", "top_3", "top_5"], "from +y": ["leg_1", "leg_2", "apron_upper_front", "apron_lower_front", "top_1", "top_3", "top_5", "shelf_1", "shelf_3"], "from -x +y +z": ["leg_1", "leg_2", "leg_3", "leg_4", "apron_upper_front", "apron_upper_right", "apron_lower_front", "apron_lower_right", "top_1", "top_2", "top_3", "top_4", "top_6", "shelf_1", "shelf_2"], "from -x": ["leg_2", "leg_4", "apron_upper_right", "apron_lower_right", "top_6", "shelf_4"]}, "unlabelled": ["apron_upper_left", "apron_lower_back", "apron_lower_left"], "note": ["case.nd  600 x 300 x 800 mm (x × y × z)", "not labelled: apron_upper_left, apron_lower_back, apron_lower_left"]}
+{
+  "labels": {
+    "from +z": [
+      "apron_upper_front",
+      "apron_upper_back",
+      "top_1",
+      "top_3",
+      "top_5"
+    ],
+    "from +y": [
+      "leg_1",
+      "leg_2",
+      "apron_upper_front",
+      "apron_lower_front",
+      "top_1",
+      "top_3",
+      "top_5",
+      "shelf_1",
+      "shelf_3"
+    ],
+    "from -x +y +z": [
+      "leg_1",
+      "leg_2",
+      "leg_3",
+      "leg_4",
+      "apron_upper_front",
+      "apron_upper_right",
+      "apron_lower_front",
+      "apron_lower_right",
+      "top_1",
+      "top_2",
+      "top_3",
+      "top_4",
+      "top_6",
+      "shelf_1",
+      "shelf_2"
+    ],
+    "from -x": [
+      "leg_2",
+      "leg_4",
+      "apron_upper_right",
+      "apron_lower_right",
+      "top_6",
+      "shelf_4"
+    ]
+  },
+  "unlabelled": [
+    "apron_upper_left",
+    "apron_lower_back",
+    "apron_lower_left"
+  ],
+  "note": [
+    "case.nd  600 x 300 x 800 mm (x × y × z)",
+    "not labelled: apron_upper_left, apron_lower_back, apron_lower_left"
+  ]
+}

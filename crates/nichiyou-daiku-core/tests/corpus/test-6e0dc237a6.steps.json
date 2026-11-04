@@ -1,1 +1,82 @@
-{"parts": [{"pieces": ["a"], "type": "2x4", "length": 1000.0, "count": 1, "drilled": false}, {"pieces": ["b"], "type": "2x4", "length": 800.0, "count": 1, "drilled": false}], "steps": [{"number": 1, "name": null, "kind": "first", "pieces": ["a", "b"], "connections": [["a", "b"]], "shown": ["a", "b"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 1000.0, 1038.0], "segments": [{"start": 0.0, "end": 1000.0, "lumber": false}, {"start": 1000.0, "end": 1038.0, "lumber": true}]}]}], "steps_declared": false, "steps_hint": null}
+{
+  "parts": [
+    {
+      "pieces": [
+        "a"
+      ],
+      "type": "2x4",
+      "length": 1000.0,
+      "count": 1,
+      "drilled": false
+    },
+    {
+      "pieces": [
+        "b"
+      ],
+      "type": "2x4",
+      "length": 800.0,
+      "count": 1,
+      "drilled": false
+    }
+  ],
+  "steps": [
+    {
+      "number": 1,
+      "name": null,
+      "kind": "first",
+      "pieces": [
+        "a",
+        "b"
+      ],
+      "connections": [
+        [
+          "a",
+          "b"
+        ]
+      ],
+      "shown": [
+        "a",
+        "b"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            1000.0,
+            1038.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 1000.0,
+              "lumber": false
+            },
+            {
+              "start": 1000.0,
+              "end": 1038.0,
+              "lumber": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "steps_declared": false,
+  "steps_hint": null
+}

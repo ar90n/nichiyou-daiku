@@ -1,1 +1,113 @@
-{"valid": false, "error": null, "overall_size": [300.0, 114.0, 600.0], "size_reference": "post", "pieces": [{"id": "post", "type": "2x4", "length": 600.0, "group": 0, "min": [0.0, 38.0, 0.0], "max": [89.0, 76.0, 600.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "front", "type": "2x4", "length": 300.0, "group": 0, "min": [0.0, 76.0, 211.0], "max": [300.0, 114.0, 300.0], "faces": {"top": "+x", "right": "-z", "front": "+y"}}, {"id": "other", "type": "2x4", "length": 300.0, "group": 0, "min": [0.0, 0.0, 211.0], "max": [300.0, 38.0, 300.0], "faces": {"top": "+x", "right": "-z", "front": "+y"}}], "problems": [{"kind": "hole_collision", "message": "Connection post -> other: screw hole in 'post' runs into a screw hole of connection post -> front", "connection": ["post", "other"], "other_connection": ["post", "front"], "piece": "post", "fastener": "screw", "holes": [{"entry": [22.25, 38.0, 255.5], "direction": "+y", "depth": 27.0, "diameter": 3.8}, {"entry": [22.25, 76.0, 255.5], "direction": "-y", "depth": 27.0, "diameter": 3.8}]}]}
+{
+  "valid": false,
+  "error": null,
+  "overall_size": [
+    300.0,
+    114.0,
+    600.0
+  ],
+  "size_reference": "post",
+  "pieces": [
+    {
+      "id": "post",
+      "type": "2x4",
+      "length": 600.0,
+      "group": 0,
+      "min": [
+        0.0,
+        38.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        76.0,
+        600.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "front",
+      "type": "2x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        76.0,
+        211.0
+      ],
+      "max": [
+        300.0,
+        114.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+x",
+        "right": "-z",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "other",
+      "type": "2x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        0.0,
+        211.0
+      ],
+      "max": [
+        300.0,
+        38.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+x",
+        "right": "-z",
+        "front": "+y"
+      }
+    }
+  ],
+  "problems": [
+    {
+      "kind": "hole_collision",
+      "message": "Connection post -> other: screw hole in 'post' runs into a screw hole of connection post -> front",
+      "connection": [
+        "post",
+        "other"
+      ],
+      "other_connection": [
+        "post",
+        "front"
+      ],
+      "piece": "post",
+      "fastener": "screw",
+      "holes": [
+        {
+          "entry": [
+            22.25,
+            38.0,
+            255.5
+          ],
+          "direction": "+y",
+          "depth": 27.0,
+          "diameter": 3.8
+        },
+        {
+          "entry": [
+            22.25,
+            76.0,
+            255.5
+          ],
+          "direction": "-y",
+          "depth": 27.0,
+          "diameter": 3.8
+        }
+      ]
+    }
+  ]
+}

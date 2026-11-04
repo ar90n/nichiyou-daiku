@@ -1,1 +1,91 @@
-{"parts": [{"index": 0, "title": "leg_fl, leg_fr, leg_bl, leg_br ×4   2x4   681   φ2.5 ×2", "letters": {"front": "A"}, "faces": [{"face": "front", "right": [0.0, 643.0, 681.0], "up": [0.0, 22.25, 66.75, 89.0]}]}, {"index": 1, "title": "apron_front, apron_back ×2   2x4   1000   φ2 ↧26 ×2   φ2.5 ↧19 ×4", "letters": {"back": "A", "right": "B"}, "faces": [{"face": "back", "right": [0.0, 22.25, 66.75, 933.25, 977.75, 1000.0], "up": [0.0, 51.0, 89.0]}, {"face": "right", "right": [0.0, 395.0, 465.0, 1000.0], "up": [0.0, 19.0, 38.0]}]}, {"index": 2, "title": "top_1   1x6   500   φ2 ×4", "letters": {"back": "A"}, "faces": [{"face": "back", "right": [0.0, 19.0, 481.0, 500.0], "up": [0.0, 35.0, 105.0, 140.0]}]}]}
+{
+  "parts": [
+    {
+      "index": 0,
+      "title": "leg_fl, leg_fr, leg_bl, leg_br ×4   2x4   681   φ2.5 ×2",
+      "letters": {
+        "back": "A"
+      },
+      "faces": [
+        {
+          "face": "back",
+          "right": [
+            0.0,
+            643.0,
+            681.0
+          ],
+          "up": [
+            0.0,
+            22.25,
+            66.75,
+            89.0
+          ]
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "title": "apron_front, apron_back ×2   2x4   1000   φ2 ↧26 ×2   φ2.5 ↧19 ×4",
+      "letters": {
+        "back": "A",
+        "right": "B"
+      },
+      "faces": [
+        {
+          "face": "back",
+          "right": [
+            0.0,
+            22.25,
+            66.75,
+            933.25,
+            977.75,
+            1000.0
+          ],
+          "up": [
+            0.0,
+            51.0,
+            89.0
+          ]
+        },
+        {
+          "face": "right",
+          "right": [
+            0.0,
+            395.0,
+            465.0,
+            1000.0
+          ],
+          "up": [
+            0.0,
+            19.0,
+            38.0
+          ]
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "title": "top_1   1x6   500   φ2 ×4",
+      "letters": {
+        "front": "A"
+      },
+      "faces": [
+        {
+          "face": "front",
+          "right": [
+            0.0,
+            19.0,
+            481.0,
+            500.0
+          ],
+          "up": [
+            0.0,
+            35.0,
+            105.0,
+            140.0
+          ]
+        }
+      ]
+    }
+  ]
+}

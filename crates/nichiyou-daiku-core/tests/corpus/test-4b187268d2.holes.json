@@ -1,1 +1,106 @@
-{"pieces": {"a": [{"face": "front", "center": [19.0, 38.0, 33.25], "diameter": 8.0, "depth": 15.0}, {"face": "front", "center": [19.0, 38.0, 77.75], "diameter": 8.0, "depth": 15.0}, {"face": "front", "center": [19.0, 38.0, 333.25], "diameter": 8.0, "depth": 15.0}, {"face": "front", "center": [19.0, 38.0, 377.75], "diameter": 8.0, "depth": 15.0}], "b": [{"face": "down", "center": [22.25, 19.0, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "down", "center": [66.75, 19.0, 0.0], "diameter": 8.0, "depth": 15.0}], "c": [{"face": "down", "center": [22.25, 19.0, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "down", "center": [66.75, 19.0, 0.0], "diameter": 8.0, "depth": 15.0}]}, "fasteners": [{"base": "a", "target": "b", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "a", "target": "c", "kind": "dowel", "diameter": 8.0, "count": 2}]}
+{
+  "pieces": {
+    "a": [
+      {
+        "face": "front",
+        "center": [
+          19.0,
+          38.0,
+          33.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "front",
+        "center": [
+          19.0,
+          38.0,
+          77.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "front",
+        "center": [
+          19.0,
+          38.0,
+          333.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "front",
+        "center": [
+          19.0,
+          38.0,
+          377.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "b": [
+      {
+        "face": "down",
+        "center": [
+          22.25,
+          19.0,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "down",
+        "center": [
+          66.75,
+          19.0,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "c": [
+      {
+        "face": "down",
+        "center": [
+          22.25,
+          19.0,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "down",
+        "center": [
+          66.75,
+          19.0,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ]
+  },
+  "fasteners": [
+    {
+      "base": "a",
+      "target": "b",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "a",
+      "target": "c",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    }
+  ]
+}

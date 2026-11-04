@@ -1,1 +1,13 @@
-{"valid": false, "error": {"kind": "semantic", "message": "line 2, column 1: Variable 'W' is already defined", "line": 2, "column": 1}, "overall_size": null, "size_reference": null, "pieces": [], "problems": []}
+{
+  "valid": false,
+  "error": {
+    "kind": "semantic",
+    "message": "line 2, column 1: Variable 'W' is already defined",
+    "line": 2,
+    "column": 1
+  },
+  "overall_size": null,
+  "size_reference": null,
+  "pieces": [],
+  "problems": []
+}

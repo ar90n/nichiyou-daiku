@@ -1,1 +1,100 @@
-{"parts": [{"pieces": ["a"], "type": "2x4", "length": 1000.0, "count": 1, "drilled": false}, {"pieces": ["b"], "type": "2x4", "length": 800.0, "count": 1, "drilled": false}], "steps": [{"number": 1, "name": null, "kind": "first", "pieces": ["a", "b"], "connections": [["a", "b"]], "shown": ["a", "b"], "view": {"axis": "x", "side": -1}, "hardware": [], "dimensions": [{"axis": "y", "side": "below", "stops": [0.0, 38.0, 838.0], "segments": [{"start": 0.0, "end": 38.0, "lumber": true}, {"start": 38.0, "end": 838.0, "lumber": false}]}, {"axis": "z", "side": "left", "stops": [0.0, 561.0, 650.0, 1000.0], "segments": [{"start": 0.0, "end": 561.0, "lumber": false}, {"start": 561.0, "end": 650.0, "lumber": true}, {"start": 650.0, "end": 1000.0, "lumber": false}]}]}], "steps_declared": false, "steps_hint": null}
+{
+  "parts": [
+    {
+      "pieces": [
+        "a"
+      ],
+      "type": "2x4",
+      "length": 1000.0,
+      "count": 1,
+      "drilled": false
+    },
+    {
+      "pieces": [
+        "b"
+      ],
+      "type": "2x4",
+      "length": 800.0,
+      "count": 1,
+      "drilled": false
+    }
+  ],
+  "steps": [
+    {
+      "number": 1,
+      "name": null,
+      "kind": "first",
+      "pieces": [
+        "a",
+        "b"
+      ],
+      "connections": [
+        [
+          "a",
+          "b"
+        ]
+      ],
+      "shown": [
+        "a",
+        "b"
+      ],
+      "view": {
+        "axis": "x",
+        "side": -1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "y",
+          "side": "below",
+          "stops": [
+            0.0,
+            38.0,
+            838.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 38.0,
+              "lumber": true
+            },
+            {
+              "start": 38.0,
+              "end": 838.0,
+              "lumber": false
+            }
+          ]
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            561.0,
+            650.0,
+            1000.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 561.0,
+              "lumber": false
+            },
+            {
+              "start": 561.0,
+              "end": 650.0,
+              "lumber": true
+            },
+            {
+              "start": 650.0,
+              "end": 1000.0,
+              "lumber": false
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "steps_declared": false,
+  "steps_hint": null
+}

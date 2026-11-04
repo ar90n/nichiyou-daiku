@@ -1,1 +1,113 @@
-{"valid": false, "error": null, "overall_size": [89.0, 638.0, 600.0], "size_reference": "post", "pieces": [{"id": "post", "type": "2x4", "length": 600.0, "group": 0, "min": [0.0, 300.0, 0.0], "max": [89.0, 338.0, 600.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "front", "type": "2x4", "length": 300.0, "group": 0, "min": [0.0, 338.0, 211.0], "max": [38.0, 638.0, 300.0], "faces": {"top": "+y", "right": "-z", "front": "-x"}}, {"id": "other", "type": "2x4", "length": 300.0, "group": 0, "min": [0.0, 0.0, 211.0], "max": [38.0, 300.0, 300.0], "faces": {"top": "-y", "right": "-z", "front": "+x"}}], "problems": [{"kind": "hole_collision", "message": "Connection post -> other: dowel hole in 'post' runs into a dowel hole of connection post -> front", "connection": ["post", "other"], "other_connection": ["post", "front"], "piece": "post", "fastener": "dowel", "holes": [{"entry": [19.0, 300.0, 233.25], "direction": "+y", "depth": 20.0, "diameter": 8.0}, {"entry": [19.0, 338.0, 233.25], "direction": "-y", "depth": 20.0, "diameter": 8.0}]}]}
+{
+  "valid": false,
+  "error": null,
+  "overall_size": [
+    89.0,
+    638.0,
+    600.0
+  ],
+  "size_reference": "post",
+  "pieces": [
+    {
+      "id": "post",
+      "type": "2x4",
+      "length": 600.0,
+      "group": 0,
+      "min": [
+        0.0,
+        300.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        338.0,
+        600.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "front",
+      "type": "2x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        338.0,
+        211.0
+      ],
+      "max": [
+        38.0,
+        638.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-z",
+        "front": "-x"
+      }
+    },
+    {
+      "id": "other",
+      "type": "2x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        0.0,
+        211.0
+      ],
+      "max": [
+        38.0,
+        300.0,
+        300.0
+      ],
+      "faces": {
+        "top": "-y",
+        "right": "-z",
+        "front": "+x"
+      }
+    }
+  ],
+  "problems": [
+    {
+      "kind": "hole_collision",
+      "message": "Connection post -> other: dowel hole in 'post' runs into a dowel hole of connection post -> front",
+      "connection": [
+        "post",
+        "other"
+      ],
+      "other_connection": [
+        "post",
+        "front"
+      ],
+      "piece": "post",
+      "fastener": "dowel",
+      "holes": [
+        {
+          "entry": [
+            19.0,
+            300.0,
+            233.25
+          ],
+          "direction": "+y",
+          "depth": 20.0,
+          "diameter": 8.0
+        },
+        {
+          "entry": [
+            19.0,
+            338.0,
+            233.25
+          ],
+          "direction": "-y",
+          "depth": 20.0,
+          "diameter": 8.0
+        }
+      ]
+    }
+  ]
+}

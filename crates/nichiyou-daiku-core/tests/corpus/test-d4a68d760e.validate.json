@@ -1,1 +1,113 @@
-{"valid": false, "error": null, "overall_size": [389.0, 338.0, 600.0], "size_reference": "post", "pieces": [{"id": "post", "type": "2x4", "length": 600.0, "group": 0, "min": [0.0, 300.0, 0.0], "max": [89.0, 338.0, 600.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "rail_a", "type": "2x4", "length": 300.0, "group": 0, "min": [0.0, 0.0, 211.0], "max": [38.0, 300.0, 300.0], "faces": {"top": "-y", "right": "+z", "front": "-x"}}, {"id": "rail_b", "type": "2x4", "length": 300.0, "group": 0, "min": [89.0, 300.0, 211.0], "max": [389.0, 338.0, 300.0], "faces": {"top": "+x", "right": "-z", "front": "+y"}}], "problems": [{"kind": "hole_collision", "message": "Connection rail_b -> post: screw hole in 'post' runs into a screw hole of connection rail_a -> post", "connection": ["rail_b", "post"], "other_connection": ["rail_a", "post"], "piece": "post", "fastener": "screw", "holes": [{"entry": [89.0, 319.0, 233.25], "direction": "-x", "depth": null, "diameter": 3.8}, {"entry": [19.0, 300.0, 233.25], "direction": "+y", "depth": null, "diameter": 3.8}]}]}
+{
+  "valid": false,
+  "error": null,
+  "overall_size": [
+    389.0,
+    338.0,
+    600.0
+  ],
+  "size_reference": "post",
+  "pieces": [
+    {
+      "id": "post",
+      "type": "2x4",
+      "length": 600.0,
+      "group": 0,
+      "min": [
+        0.0,
+        300.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        338.0,
+        600.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "rail_a",
+      "type": "2x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        0.0,
+        211.0
+      ],
+      "max": [
+        38.0,
+        300.0,
+        300.0
+      ],
+      "faces": {
+        "top": "-y",
+        "right": "+z",
+        "front": "-x"
+      }
+    },
+    {
+      "id": "rail_b",
+      "type": "2x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        89.0,
+        300.0,
+        211.0
+      ],
+      "max": [
+        389.0,
+        338.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+x",
+        "right": "-z",
+        "front": "+y"
+      }
+    }
+  ],
+  "problems": [
+    {
+      "kind": "hole_collision",
+      "message": "Connection rail_b -> post: screw hole in 'post' runs into a screw hole of connection rail_a -> post",
+      "connection": [
+        "rail_b",
+        "post"
+      ],
+      "other_connection": [
+        "rail_a",
+        "post"
+      ],
+      "piece": "post",
+      "fastener": "screw",
+      "holes": [
+        {
+          "entry": [
+            89.0,
+            319.0,
+            233.25
+          ],
+          "direction": "-x",
+          "depth": null,
+          "diameter": 3.8
+        },
+        {
+          "entry": [
+            19.0,
+            300.0,
+            233.25
+          ],
+          "direction": "+y",
+          "depth": null,
+          "diameter": 3.8
+        }
+      ]
+    }
+  ]
+}

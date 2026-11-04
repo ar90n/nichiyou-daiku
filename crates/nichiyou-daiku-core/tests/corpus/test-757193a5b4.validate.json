@@ -1,1 +1,13 @@
-{"valid": false, "error": {"kind": "semantic", "message": "line 2, column 3: Duplicate piece ID: a", "line": 2, "column": 3}, "overall_size": null, "size_reference": null, "pieces": [], "problems": []}
+{
+  "valid": false,
+  "error": {
+    "kind": "semantic",
+    "message": "line 2, column 3: Duplicate piece ID: a",
+    "line": 2,
+    "column": 3
+  },
+  "overall_size": null,
+  "size_reference": null,
+  "pieces": [],
+  "problems": []
+}

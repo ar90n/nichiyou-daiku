@@ -1,1 +1,13 @@
-{"valid": false, "error": {"kind": "syntax", "message": "Syntax error: No pieces defined: the input is empty or contains only comments. Expected at least one piece definition such as (leg:2x4 =720)", "line": null, "column": null}, "overall_size": null, "size_reference": null, "pieces": [], "problems": []}
+{
+  "valid": false,
+  "error": {
+    "kind": "syntax",
+    "message": "Syntax error: No pieces defined: the input is empty or contains only comments. Expected at least one piece definition such as (leg:2x4 =720)",
+    "line": null,
+    "column": null
+  },
+  "overall_size": null,
+  "size_reference": null,
+  "pieces": [],
+  "problems": []
+}

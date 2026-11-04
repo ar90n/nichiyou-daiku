@@ -1,1 +1,57 @@
-{"pieces": {"beam1": [{"face": "front", "center": [14.75, 38.0, 981.0], "diameter": 8.0, "depth": 10.0}, {"face": "front", "center": [44.25, 38.0, 981.0], "diameter": 8.0, "depth": 10.0}], "beam2": [{"face": "down", "center": [14.75, 19.0, 0.0], "diameter": 8.0, "depth": 10.0}, {"face": "down", "center": [44.25, 19.0, 0.0], "diameter": 8.0, "depth": 10.0}]}, "fasteners": [{"base": "beam1", "target": "beam2", "kind": "dowel", "diameter": 8.0, "count": 2}]}
+{
+  "pieces": {
+    "beam1": [
+      {
+        "face": "front",
+        "center": [
+          14.75,
+          38.0,
+          981.0
+        ],
+        "diameter": 8.0,
+        "depth": 10.0
+      },
+      {
+        "face": "front",
+        "center": [
+          44.25,
+          38.0,
+          981.0
+        ],
+        "diameter": 8.0,
+        "depth": 10.0
+      }
+    ],
+    "beam2": [
+      {
+        "face": "down",
+        "center": [
+          14.75,
+          19.0,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 10.0
+      },
+      {
+        "face": "down",
+        "center": [
+          44.25,
+          19.0,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 10.0
+      }
+    ]
+  },
+  "fasteners": [
+    {
+      "base": "beam1",
+      "target": "beam2",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    }
+  ]
+}

@@ -1,1 +1,26 @@
-{"labels": {"from +z": ["left_side", "right_side", "shelf"], "from +y": ["left_side"], "from -x +y +z": ["left_side", "right_side", "shelf"], "from -x": ["left_side", "right_side", "shelf"]}, "unlabelled": [], "note": ["case.nd  89 x 676 x 800 mm (x × y × z)"]}
+{
+  "labels": {
+    "from +z": [
+      "left_side",
+      "right_side",
+      "shelf"
+    ],
+    "from +y": [
+      "left_side"
+    ],
+    "from -x +y +z": [
+      "left_side",
+      "right_side",
+      "shelf"
+    ],
+    "from -x": [
+      "left_side",
+      "right_side",
+      "shelf"
+    ]
+  },
+  "unlabelled": [],
+  "note": [
+    "case.nd  89 x 676 x 800 mm (x × y × z)"
+  ]
+}

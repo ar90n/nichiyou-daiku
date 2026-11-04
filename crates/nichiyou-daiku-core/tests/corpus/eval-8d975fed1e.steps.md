@@ -11,8 +11,9 @@
 | apron_front | 2x4 | 822 | 1 | [part-05.png](part-05.png) |
 | apron_back | 2x4 | 822 | 1 | [part-06.png](part-06.png) |
 | apron_left, apron_right | 2x4 | 424 | 2 | [part-07.png](part-07.png) |
-| top_1, top_7 | 1x6 | 500 | 2 | [part-08.png](part-08.png) |
+| top_1 | 1x6 | 500 | 1 | [part-08.png](part-08.png) |
 | top_2, top_3, top_4, top_5, top_6 | 1x6 | 500 | 5 | [part-09.png](part-09.png) |
+| top_7 | 1x6 | 500 | 1 | [part-10.png](part-10.png) |
 
 ### leg_fl
 
@@ -42,13 +43,17 @@
 
 ![Part 7](part-07.png)
 
-### top_1, top_7 ×2
+### top_1
 
 ![Part 8](part-08.png)
 
 ### top_2, top_3, top_4, top_5, top_6 ×5
 
 ![Part 9](part-09.png)
+
+### top_7
+
+![Part 10](part-10.png)
 
 ## Step 1 - Front frame
 

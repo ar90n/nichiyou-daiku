@@ -1,1 +1,13 @@
-{"valid": false, "error": {"kind": "syntax", "message": "Syntax error at line 1, column 7: Unexpected token '='. Expected: '{'. 'steps' starts the steps block, so it cannot name a piece or a variable: rename it, or write a block such as steps { \"Frame\": a, b }", "line": 1, "column": 7}, "overall_size": null, "size_reference": null, "pieces": [], "problems": []}
+{
+  "valid": false,
+  "error": {
+    "kind": "syntax",
+    "message": "Syntax error at line 1, column 7: Unexpected token '='. Expected: '{'. 'steps' starts the steps block, so it cannot name a piece or a variable: rename it, or write a block such as steps { \"Frame\": a, b }",
+    "line": 1,
+    "column": 7
+  },
+  "overall_size": null,
+  "size_reference": null,
+  "pieces": [],
+  "problems": []
+}

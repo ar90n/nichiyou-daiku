@@ -1,1 +1,145 @@
-{"valid": false, "error": null, "overall_size": [89.0, 114.0, 1300.0], "size_reference": "a", "pieces": [{"id": "a", "type": "2x4", "length": 1000.0, "group": 0, "min": [0.0, 0.0, 0.0], "max": [89.0, 38.0, 1000.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "q", "type": "2x4", "length": 300.0, "group": 0, "min": [0.0, 38.0, 0.0], "max": [89.0, 76.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "s", "type": "2x4", "length": 300.0, "group": 0, "min": [0.0, 38.0, 500.0], "max": [89.0, 76.0, 800.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "u", "type": "2x4", "length": 1000.0, "group": 0, "min": [0.0, 38.0, 300.0], "max": [89.0, 76.0, 1300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "x", "type": "2x4", "length": 100.0, "group": 0, "min": [0.0, 76.0, 1050.0], "max": [89.0, 114.0, 1150.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}], "problems": [{"kind": "conflict", "message": "Connection u -> s: contact (z) is off by 800mm (loop: u -> q -> a -> s)", "connection": ["u", "s"], "constraint": "contact", "axis": "z", "mismatch_mm": 800.0, "loop": ["u", "q", "a", "s"]}, {"kind": "overlap", "message": "Pieces 's' and 'u' overlap (1014600mm³)", "pieces": ["s", "u"], "volume_mm3": 1014600.0}]}
+{
+  "valid": false,
+  "error": null,
+  "overall_size": [
+    89.0,
+    114.0,
+    1300.0
+  ],
+  "size_reference": "a",
+  "pieces": [
+    {
+      "id": "a",
+      "type": "2x4",
+      "length": 1000.0,
+      "group": 0,
+      "min": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        38.0,
+        1000.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "q",
+      "type": "2x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        38.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        76.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "s",
+      "type": "2x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        38.0,
+        500.0
+      ],
+      "max": [
+        89.0,
+        76.0,
+        800.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "u",
+      "type": "2x4",
+      "length": 1000.0,
+      "group": 0,
+      "min": [
+        0.0,
+        38.0,
+        300.0
+      ],
+      "max": [
+        89.0,
+        76.0,
+        1300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "x",
+      "type": "2x4",
+      "length": 100.0,
+      "group": 0,
+      "min": [
+        0.0,
+        76.0,
+        1050.0
+      ],
+      "max": [
+        89.0,
+        114.0,
+        1150.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    }
+  ],
+  "problems": [
+    {
+      "kind": "conflict",
+      "message": "Connection u -> s: contact (z) is off by 800mm (loop: u -> q -> a -> s)",
+      "connection": [
+        "u",
+        "s"
+      ],
+      "constraint": "contact",
+      "axis": "z",
+      "mismatch_mm": 800.0,
+      "loop": [
+        "u",
+        "q",
+        "a",
+        "s"
+      ]
+    },
+    {
+      "kind": "overlap",
+      "message": "Pieces 's' and 'u' overlap (1014600mm³)",
+      "pieces": [
+        "s",
+        "u"
+      ],
+      "volume_mm3": 1014600.0
+    }
+  ]
+}

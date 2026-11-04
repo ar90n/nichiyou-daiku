@@ -1,1 +1,30 @@
-{"labels": {"from +z": ["post", "rail", "cleat", "rail_side"], "from +y": ["post", "rail", "rail_low", "rail_side"], "from -x +y +z": ["rail", "rail_low"], "from -x": ["post", "rail", "rail_low", "cleat"]}, "unlabelled": [], "note": ["case.nd  489 x 114 x 600 mm (x × y × z)"]}
+{
+  "labels": {
+    "from +z": [
+      "post",
+      "rail",
+      "cleat",
+      "rail_side"
+    ],
+    "from +y": [
+      "post",
+      "rail",
+      "rail_low",
+      "rail_side"
+    ],
+    "from -x +y +z": [
+      "rail",
+      "rail_low"
+    ],
+    "from -x": [
+      "post",
+      "rail",
+      "rail_low",
+      "cleat"
+    ]
+  },
+  "unlabelled": [],
+  "note": [
+    "case.nd  489 x 114 x 600 mm (x × y × z)"
+  ]
+}

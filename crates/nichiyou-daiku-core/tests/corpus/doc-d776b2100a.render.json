@@ -1,1 +1,26 @@
-{"labels": {"from +z": ["leg_1", "shelf", "leg_2"], "from +y": ["leg_1", "shelf", "leg_2"], "from -x +y +z": ["leg_1", "shelf", "leg_2"], "from -x": ["leg_1"]}, "unlabelled": [], "note": ["case.nd  pieces not connected"]}
+{
+  "labels": {
+    "from +z": [
+      "leg_1",
+      "shelf",
+      "leg_2"
+    ],
+    "from +y": [
+      "leg_1",
+      "shelf",
+      "leg_2"
+    ],
+    "from -x +y +z": [
+      "leg_1",
+      "shelf",
+      "leg_2"
+    ],
+    "from -x": [
+      "leg_1"
+    ]
+  },
+  "unlabelled": [],
+  "note": [
+    "case.nd  pieces not connected"
+  ]
+}

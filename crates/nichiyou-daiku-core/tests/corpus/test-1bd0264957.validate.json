@@ -1,1 +1,13 @@
-{"valid": false, "error": {"kind": "syntax", "message": "Syntax error at line 4, column 21: Unexpected token ','. Expected: ':'", "line": 4, "column": 21}, "overall_size": null, "size_reference": null, "pieces": [], "problems": []}
+{
+  "valid": false,
+  "error": {
+    "kind": "syntax",
+    "message": "Syntax error at line 4, column 21: Unexpected token ','. Expected: ':'",
+    "line": 4,
+    "column": 21
+  },
+  "overall_size": null,
+  "size_reference": null,
+  "pieces": [],
+  "problems": []
+}

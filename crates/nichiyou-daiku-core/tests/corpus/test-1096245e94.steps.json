@@ -1,1 +1,2487 @@
-{"parts": [{"pieces": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03", "shelf_board_04", "shelf_board_05", "shelf_board_06", "shelf_board_07", "shelf_board_08", "shelf_board_09", "shelf_board_10", "shelf_board_11", "shelf_board_12", "shelf_board_13", "shelf_board_14", "shelf_board_15", "shelf_board_16", "shelf_board_17", "shelf_board_18", "shelf_board_19", "shelf_board_20", "shelf_board_21", "shelf_board_22", "shelf_board_23", "shelf_board_24", "shelf_board_25", "shelf_board_26", "shelf_board_27", "shelf_board_28", "shelf_board_29", "shelf_board_30", "shelf_board_31", "shelf_board_32", "shelf_board_33", "shelf_board_34", "shelf_board_35", "shelf_board_36", "shelf_board_37", "shelf_board_38", "shelf_board_39"], "type": "1x4", "length": 300.0, "count": 40, "drilled": false}], "steps": [{"number": 1, "name": null, "kind": "first", "pieces": ["shelf_board_00", "shelf_board_01"], "connections": [["shelf_board_00", "shelf_board_01"]], "shown": ["shelf_board_00", "shelf_board_01"], "view": {"axis": "x", "side": -1}, "hardware": [], "dimensions": [{"axis": "y", "side": "below", "stops": [0.0, 19.0, 38.0], "segments": [{"start": 0.0, "end": 19.0, "lumber": true}, {"start": 19.0, "end": 38.0, "lumber": true}]}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 2, "name": null, "kind": "attach", "pieces": ["shelf_board_02"], "connections": [["shelf_board_01", "shelf_board_02"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 3, "name": null, "kind": "attach", "pieces": ["shelf_board_03"], "connections": [["shelf_board_02", "shelf_board_03"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 4, "name": null, "kind": "attach", "pieces": ["shelf_board_04"], "connections": [["shelf_board_03", "shelf_board_04"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03", "shelf_board_04"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 5, "name": null, "kind": "attach", "pieces": ["shelf_board_05"], "connections": [["shelf_board_04", "shelf_board_05"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03", "shelf_board_04", "shelf_board_05"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 6, "name": null, "kind": "attach", "pieces": ["shelf_board_06"], "connections": [["shelf_board_05", "shelf_board_06"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03", "shelf_board_04", "shelf_board_05", "shelf_board_06"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 7, "name": null, "kind": "attach", "pieces": ["shelf_board_07"], "connections": [["shelf_board_06", "shelf_board_07"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03", "shelf_board_04", "shelf_board_05", "shelf_board_06", "shelf_board_07"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 8, "name": null, "kind": "attach", "pieces": ["shelf_board_08"], "connections": [["shelf_board_07", "shelf_board_08"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03", "shelf_board_04", "shelf_board_05", "shelf_board_06", "shelf_board_07", "shelf_board_08"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 9, "name": null, "kind": "attach", "pieces": ["shelf_board_09"], "connections": [["shelf_board_08", "shelf_board_09"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03", "shelf_board_04", "shelf_board_05", "shelf_board_06", "shelf_board_07", "shelf_board_08", "shelf_board_09"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 10, "name": null, "kind": "attach", "pieces": ["shelf_board_10"], "connections": [["shelf_board_09", "shelf_board_10"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03", "shelf_board_04", "shelf_board_05", "shelf_board_06", "shelf_board_07", "shelf_board_08", "shelf_board_09", "shelf_board_10"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 11, "name": null, "kind": "attach", "pieces": ["shelf_board_11"], "connections": [["shelf_board_10", "shelf_board_11"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03", "shelf_board_04", "shelf_board_05", "shelf_board_06", "shelf_board_07", "shelf_board_08", "shelf_board_09", "shelf_board_10", "shelf_board_11"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 12, "name": null, "kind": "attach", "pieces": ["shelf_board_12"], "connections": [["shelf_board_11", "shelf_board_12"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03", "shelf_board_04", "shelf_board_05", "shelf_board_06", "shelf_board_07", "shelf_board_08", "shelf_board_09", "shelf_board_10", "shelf_board_11", "shelf_board_12"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 13, "name": null, "kind": "attach", "pieces": ["shelf_board_13"], "connections": [["shelf_board_12", "shelf_board_13"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03", "shelf_board_04", "shelf_board_05", "shelf_board_06", "shelf_board_07", "shelf_board_08", "shelf_board_09", "shelf_board_10", "shelf_board_11", "shelf_board_12", "shelf_board_13"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 14, "name": null, "kind": "attach", "pieces": ["shelf_board_14"], "connections": [["shelf_board_13", "shelf_board_14"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03", "shelf_board_04", "shelf_board_05", "shelf_board_06", "shelf_board_07", "shelf_board_08", "shelf_board_09", "shelf_board_10", "shelf_board_11", "shelf_board_12", "shelf_board_13", "shelf_board_14"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 15, "name": null, "kind": "attach", "pieces": ["shelf_board_15"], "connections": [["shelf_board_14", "shelf_board_15"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03", "shelf_board_04", "shelf_board_05", "shelf_board_06", "shelf_board_07", "shelf_board_08", "shelf_board_09", "shelf_board_10", "shelf_board_11", "shelf_board_12", "shelf_board_13", "shelf_board_14", "shelf_board_15"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 16, "name": null, "kind": "attach", "pieces": ["shelf_board_16"], "connections": [["shelf_board_15", "shelf_board_16"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03", "shelf_board_04", "shelf_board_05", "shelf_board_06", "shelf_board_07", "shelf_board_08", "shelf_board_09", "shelf_board_10", "shelf_board_11", "shelf_board_12", "shelf_board_13", "shelf_board_14", "shelf_board_15", "shelf_board_16"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 17, "name": null, "kind": "attach", "pieces": ["shelf_board_17"], "connections": [["shelf_board_16", "shelf_board_17"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03", "shelf_board_04", "shelf_board_05", "shelf_board_06", "shelf_board_07", "shelf_board_08", "shelf_board_09", "shelf_board_10", "shelf_board_11", "shelf_board_12", "shelf_board_13", "shelf_board_14", "shelf_board_15", "shelf_board_16", "shelf_board_17"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 18, "name": null, "kind": "attach", "pieces": ["shelf_board_18"], "connections": [["shelf_board_17", "shelf_board_18"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03", "shelf_board_04", "shelf_board_05", "shelf_board_06", "shelf_board_07", "shelf_board_08", "shelf_board_09", "shelf_board_10", "shelf_board_11", "shelf_board_12", "shelf_board_13", "shelf_board_14", "shelf_board_15", "shelf_board_16", "shelf_board_17", "shelf_board_18"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 19, "name": null, "kind": "attach", "pieces": ["shelf_board_19"], "connections": [["shelf_board_18", "shelf_board_19"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03", "shelf_board_04", "shelf_board_05", "shelf_board_06", "shelf_board_07", "shelf_board_08", "shelf_board_09", "shelf_board_10", "shelf_board_11", "shelf_board_12", "shelf_board_13", "shelf_board_14", "shelf_board_15", "shelf_board_16", "shelf_board_17", "shelf_board_18", "shelf_board_19"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 20, "name": null, "kind": "attach", "pieces": ["shelf_board_20"], "connections": [["shelf_board_19", "shelf_board_20"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03", "shelf_board_04", "shelf_board_05", "shelf_board_06", "shelf_board_07", "shelf_board_08", "shelf_board_09", "shelf_board_10", "shelf_board_11", "shelf_board_12", "shelf_board_13", "shelf_board_14", "shelf_board_15", "shelf_board_16", "shelf_board_17", "shelf_board_18", "shelf_board_19", "shelf_board_20"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 21, "name": null, "kind": "attach", "pieces": ["shelf_board_21"], "connections": [["shelf_board_20", "shelf_board_21"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03", "shelf_board_04", "shelf_board_05", "shelf_board_06", "shelf_board_07", "shelf_board_08", "shelf_board_09", "shelf_board_10", "shelf_board_11", "shelf_board_12", "shelf_board_13", "shelf_board_14", "shelf_board_15", "shelf_board_16", "shelf_board_17", "shelf_board_18", "shelf_board_19", "shelf_board_20", "shelf_board_21"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 22, "name": null, "kind": "attach", "pieces": ["shelf_board_22"], "connections": [["shelf_board_21", "shelf_board_22"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03", "shelf_board_04", "shelf_board_05", "shelf_board_06", "shelf_board_07", "shelf_board_08", "shelf_board_09", "shelf_board_10", "shelf_board_11", "shelf_board_12", "shelf_board_13", "shelf_board_14", "shelf_board_15", "shelf_board_16", "shelf_board_17", "shelf_board_18", "shelf_board_19", "shelf_board_20", "shelf_board_21", "shelf_board_22"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 23, "name": null, "kind": "attach", "pieces": ["shelf_board_23"], "connections": [["shelf_board_22", "shelf_board_23"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03", "shelf_board_04", "shelf_board_05", "shelf_board_06", "shelf_board_07", "shelf_board_08", "shelf_board_09", "shelf_board_10", "shelf_board_11", "shelf_board_12", "shelf_board_13", "shelf_board_14", "shelf_board_15", "shelf_board_16", "shelf_board_17", "shelf_board_18", "shelf_board_19", "shelf_board_20", "shelf_board_21", "shelf_board_22", "shelf_board_23"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 24, "name": null, "kind": "attach", "pieces": ["shelf_board_24"], "connections": [["shelf_board_23", "shelf_board_24"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03", "shelf_board_04", "shelf_board_05", "shelf_board_06", "shelf_board_07", "shelf_board_08", "shelf_board_09", "shelf_board_10", "shelf_board_11", "shelf_board_12", "shelf_board_13", "shelf_board_14", "shelf_board_15", "shelf_board_16", "shelf_board_17", "shelf_board_18", "shelf_board_19", "shelf_board_20", "shelf_board_21", "shelf_board_22", "shelf_board_23", "shelf_board_24"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 25, "name": null, "kind": "attach", "pieces": ["shelf_board_25"], "connections": [["shelf_board_24", "shelf_board_25"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03", "shelf_board_04", "shelf_board_05", "shelf_board_06", "shelf_board_07", "shelf_board_08", "shelf_board_09", "shelf_board_10", "shelf_board_11", "shelf_board_12", "shelf_board_13", "shelf_board_14", "shelf_board_15", "shelf_board_16", "shelf_board_17", "shelf_board_18", "shelf_board_19", "shelf_board_20", "shelf_board_21", "shelf_board_22", "shelf_board_23", "shelf_board_24", "shelf_board_25"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 26, "name": null, "kind": "attach", "pieces": ["shelf_board_26"], "connections": [["shelf_board_25", "shelf_board_26"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03", "shelf_board_04", "shelf_board_05", "shelf_board_06", "shelf_board_07", "shelf_board_08", "shelf_board_09", "shelf_board_10", "shelf_board_11", "shelf_board_12", "shelf_board_13", "shelf_board_14", "shelf_board_15", "shelf_board_16", "shelf_board_17", "shelf_board_18", "shelf_board_19", "shelf_board_20", "shelf_board_21", "shelf_board_22", "shelf_board_23", "shelf_board_24", "shelf_board_25", "shelf_board_26"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 27, "name": null, "kind": "attach", "pieces": ["shelf_board_27"], "connections": [["shelf_board_26", "shelf_board_27"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03", "shelf_board_04", "shelf_board_05", "shelf_board_06", "shelf_board_07", "shelf_board_08", "shelf_board_09", "shelf_board_10", "shelf_board_11", "shelf_board_12", "shelf_board_13", "shelf_board_14", "shelf_board_15", "shelf_board_16", "shelf_board_17", "shelf_board_18", "shelf_board_19", "shelf_board_20", "shelf_board_21", "shelf_board_22", "shelf_board_23", "shelf_board_24", "shelf_board_25", "shelf_board_26", "shelf_board_27"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 28, "name": null, "kind": "attach", "pieces": ["shelf_board_28"], "connections": [["shelf_board_27", "shelf_board_28"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03", "shelf_board_04", "shelf_board_05", "shelf_board_06", "shelf_board_07", "shelf_board_08", "shelf_board_09", "shelf_board_10", "shelf_board_11", "shelf_board_12", "shelf_board_13", "shelf_board_14", "shelf_board_15", "shelf_board_16", "shelf_board_17", "shelf_board_18", "shelf_board_19", "shelf_board_20", "shelf_board_21", "shelf_board_22", "shelf_board_23", "shelf_board_24", "shelf_board_25", "shelf_board_26", "shelf_board_27", "shelf_board_28"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 29, "name": null, "kind": "attach", "pieces": ["shelf_board_29"], "connections": [["shelf_board_28", "shelf_board_29"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03", "shelf_board_04", "shelf_board_05", "shelf_board_06", "shelf_board_07", "shelf_board_08", "shelf_board_09", "shelf_board_10", "shelf_board_11", "shelf_board_12", "shelf_board_13", "shelf_board_14", "shelf_board_15", "shelf_board_16", "shelf_board_17", "shelf_board_18", "shelf_board_19", "shelf_board_20", "shelf_board_21", "shelf_board_22", "shelf_board_23", "shelf_board_24", "shelf_board_25", "shelf_board_26", "shelf_board_27", "shelf_board_28", "shelf_board_29"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 30, "name": null, "kind": "attach", "pieces": ["shelf_board_30"], "connections": [["shelf_board_29", "shelf_board_30"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03", "shelf_board_04", "shelf_board_05", "shelf_board_06", "shelf_board_07", "shelf_board_08", "shelf_board_09", "shelf_board_10", "shelf_board_11", "shelf_board_12", "shelf_board_13", "shelf_board_14", "shelf_board_15", "shelf_board_16", "shelf_board_17", "shelf_board_18", "shelf_board_19", "shelf_board_20", "shelf_board_21", "shelf_board_22", "shelf_board_23", "shelf_board_24", "shelf_board_25", "shelf_board_26", "shelf_board_27", "shelf_board_28", "shelf_board_29", "shelf_board_30"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 31, "name": null, "kind": "attach", "pieces": ["shelf_board_31"], "connections": [["shelf_board_30", "shelf_board_31"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03", "shelf_board_04", "shelf_board_05", "shelf_board_06", "shelf_board_07", "shelf_board_08", "shelf_board_09", "shelf_board_10", "shelf_board_11", "shelf_board_12", "shelf_board_13", "shelf_board_14", "shelf_board_15", "shelf_board_16", "shelf_board_17", "shelf_board_18", "shelf_board_19", "shelf_board_20", "shelf_board_21", "shelf_board_22", "shelf_board_23", "shelf_board_24", "shelf_board_25", "shelf_board_26", "shelf_board_27", "shelf_board_28", "shelf_board_29", "shelf_board_30", "shelf_board_31"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 32, "name": null, "kind": "attach", "pieces": ["shelf_board_32"], "connections": [["shelf_board_31", "shelf_board_32"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03", "shelf_board_04", "shelf_board_05", "shelf_board_06", "shelf_board_07", "shelf_board_08", "shelf_board_09", "shelf_board_10", "shelf_board_11", "shelf_board_12", "shelf_board_13", "shelf_board_14", "shelf_board_15", "shelf_board_16", "shelf_board_17", "shelf_board_18", "shelf_board_19", "shelf_board_20", "shelf_board_21", "shelf_board_22", "shelf_board_23", "shelf_board_24", "shelf_board_25", "shelf_board_26", "shelf_board_27", "shelf_board_28", "shelf_board_29", "shelf_board_30", "shelf_board_31", "shelf_board_32"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 33, "name": null, "kind": "attach", "pieces": ["shelf_board_33"], "connections": [["shelf_board_32", "shelf_board_33"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03", "shelf_board_04", "shelf_board_05", "shelf_board_06", "shelf_board_07", "shelf_board_08", "shelf_board_09", "shelf_board_10", "shelf_board_11", "shelf_board_12", "shelf_board_13", "shelf_board_14", "shelf_board_15", "shelf_board_16", "shelf_board_17", "shelf_board_18", "shelf_board_19", "shelf_board_20", "shelf_board_21", "shelf_board_22", "shelf_board_23", "shelf_board_24", "shelf_board_25", "shelf_board_26", "shelf_board_27", "shelf_board_28", "shelf_board_29", "shelf_board_30", "shelf_board_31", "shelf_board_32", "shelf_board_33"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 34, "name": null, "kind": "attach", "pieces": ["shelf_board_34"], "connections": [["shelf_board_33", "shelf_board_34"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03", "shelf_board_04", "shelf_board_05", "shelf_board_06", "shelf_board_07", "shelf_board_08", "shelf_board_09", "shelf_board_10", "shelf_board_11", "shelf_board_12", "shelf_board_13", "shelf_board_14", "shelf_board_15", "shelf_board_16", "shelf_board_17", "shelf_board_18", "shelf_board_19", "shelf_board_20", "shelf_board_21", "shelf_board_22", "shelf_board_23", "shelf_board_24", "shelf_board_25", "shelf_board_26", "shelf_board_27", "shelf_board_28", "shelf_board_29", "shelf_board_30", "shelf_board_31", "shelf_board_32", "shelf_board_33", "shelf_board_34"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 35, "name": null, "kind": "attach", "pieces": ["shelf_board_35"], "connections": [["shelf_board_34", "shelf_board_35"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03", "shelf_board_04", "shelf_board_05", "shelf_board_06", "shelf_board_07", "shelf_board_08", "shelf_board_09", "shelf_board_10", "shelf_board_11", "shelf_board_12", "shelf_board_13", "shelf_board_14", "shelf_board_15", "shelf_board_16", "shelf_board_17", "shelf_board_18", "shelf_board_19", "shelf_board_20", "shelf_board_21", "shelf_board_22", "shelf_board_23", "shelf_board_24", "shelf_board_25", "shelf_board_26", "shelf_board_27", "shelf_board_28", "shelf_board_29", "shelf_board_30", "shelf_board_31", "shelf_board_32", "shelf_board_33", "shelf_board_34", "shelf_board_35"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 36, "name": null, "kind": "attach", "pieces": ["shelf_board_36"], "connections": [["shelf_board_35", "shelf_board_36"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03", "shelf_board_04", "shelf_board_05", "shelf_board_06", "shelf_board_07", "shelf_board_08", "shelf_board_09", "shelf_board_10", "shelf_board_11", "shelf_board_12", "shelf_board_13", "shelf_board_14", "shelf_board_15", "shelf_board_16", "shelf_board_17", "shelf_board_18", "shelf_board_19", "shelf_board_20", "shelf_board_21", "shelf_board_22", "shelf_board_23", "shelf_board_24", "shelf_board_25", "shelf_board_26", "shelf_board_27", "shelf_board_28", "shelf_board_29", "shelf_board_30", "shelf_board_31", "shelf_board_32", "shelf_board_33", "shelf_board_34", "shelf_board_35", "shelf_board_36"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 37, "name": null, "kind": "attach", "pieces": ["shelf_board_37"], "connections": [["shelf_board_36", "shelf_board_37"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03", "shelf_board_04", "shelf_board_05", "shelf_board_06", "shelf_board_07", "shelf_board_08", "shelf_board_09", "shelf_board_10", "shelf_board_11", "shelf_board_12", "shelf_board_13", "shelf_board_14", "shelf_board_15", "shelf_board_16", "shelf_board_17", "shelf_board_18", "shelf_board_19", "shelf_board_20", "shelf_board_21", "shelf_board_22", "shelf_board_23", "shelf_board_24", "shelf_board_25", "shelf_board_26", "shelf_board_27", "shelf_board_28", "shelf_board_29", "shelf_board_30", "shelf_board_31", "shelf_board_32", "shelf_board_33", "shelf_board_34", "shelf_board_35", "shelf_board_36", "shelf_board_37"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 38, "name": null, "kind": "attach", "pieces": ["shelf_board_38"], "connections": [["shelf_board_37", "shelf_board_38"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03", "shelf_board_04", "shelf_board_05", "shelf_board_06", "shelf_board_07", "shelf_board_08", "shelf_board_09", "shelf_board_10", "shelf_board_11", "shelf_board_12", "shelf_board_13", "shelf_board_14", "shelf_board_15", "shelf_board_16", "shelf_board_17", "shelf_board_18", "shelf_board_19", "shelf_board_20", "shelf_board_21", "shelf_board_22", "shelf_board_23", "shelf_board_24", "shelf_board_25", "shelf_board_26", "shelf_board_27", "shelf_board_28", "shelf_board_29", "shelf_board_30", "shelf_board_31", "shelf_board_32", "shelf_board_33", "shelf_board_34", "shelf_board_35", "shelf_board_36", "shelf_board_37", "shelf_board_38"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}, {"number": 39, "name": null, "kind": "attach", "pieces": ["shelf_board_39"], "connections": [["shelf_board_38", "shelf_board_39"]], "shown": ["shelf_board_00", "shelf_board_01", "shelf_board_02", "shelf_board_03", "shelf_board_04", "shelf_board_05", "shelf_board_06", "shelf_board_07", "shelf_board_08", "shelf_board_09", "shelf_board_10", "shelf_board_11", "shelf_board_12", "shelf_board_13", "shelf_board_14", "shelf_board_15", "shelf_board_16", "shelf_board_17", "shelf_board_18", "shelf_board_19", "shelf_board_20", "shelf_board_21", "shelf_board_22", "shelf_board_23", "shelf_board_24", "shelf_board_25", "shelf_board_26", "shelf_board_27", "shelf_board_28", "shelf_board_29", "shelf_board_30", "shelf_board_31", "shelf_board_32", "shelf_board_33", "shelf_board_34", "shelf_board_35", "shelf_board_36", "shelf_board_37", "shelf_board_38", "shelf_board_39"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}]}], "steps_declared": false, "steps_hint": "No steps block: each step adds one piece. Group pieces with a steps block, e.g. `steps { \"Frame\": shelf_board_00, shelf_board_01, ... }`."}
+{
+  "parts": [
+    {
+      "pieces": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03",
+        "shelf_board_04",
+        "shelf_board_05",
+        "shelf_board_06",
+        "shelf_board_07",
+        "shelf_board_08",
+        "shelf_board_09",
+        "shelf_board_10",
+        "shelf_board_11",
+        "shelf_board_12",
+        "shelf_board_13",
+        "shelf_board_14",
+        "shelf_board_15",
+        "shelf_board_16",
+        "shelf_board_17",
+        "shelf_board_18",
+        "shelf_board_19",
+        "shelf_board_20",
+        "shelf_board_21",
+        "shelf_board_22",
+        "shelf_board_23",
+        "shelf_board_24",
+        "shelf_board_25",
+        "shelf_board_26",
+        "shelf_board_27",
+        "shelf_board_28",
+        "shelf_board_29",
+        "shelf_board_30",
+        "shelf_board_31",
+        "shelf_board_32",
+        "shelf_board_33",
+        "shelf_board_34",
+        "shelf_board_35",
+        "shelf_board_36",
+        "shelf_board_37",
+        "shelf_board_38",
+        "shelf_board_39"
+      ],
+      "type": "1x4",
+      "length": 300.0,
+      "count": 40,
+      "drilled": false
+    }
+  ],
+  "steps": [
+    {
+      "number": 1,
+      "name": null,
+      "kind": "first",
+      "pieces": [
+        "shelf_board_00",
+        "shelf_board_01"
+      ],
+      "connections": [
+        [
+          "shelf_board_00",
+          "shelf_board_01"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01"
+      ],
+      "view": {
+        "axis": "x",
+        "side": -1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "y",
+          "side": "below",
+          "stops": [
+            0.0,
+            19.0,
+            38.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 19.0,
+              "lumber": true
+            },
+            {
+              "start": 19.0,
+              "end": 38.0,
+              "lumber": true
+            }
+          ]
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_02"
+      ],
+      "connections": [
+        [
+          "shelf_board_01",
+          "shelf_board_02"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_03"
+      ],
+      "connections": [
+        [
+          "shelf_board_02",
+          "shelf_board_03"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_04"
+      ],
+      "connections": [
+        [
+          "shelf_board_03",
+          "shelf_board_04"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03",
+        "shelf_board_04"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_05"
+      ],
+      "connections": [
+        [
+          "shelf_board_04",
+          "shelf_board_05"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03",
+        "shelf_board_04",
+        "shelf_board_05"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_06"
+      ],
+      "connections": [
+        [
+          "shelf_board_05",
+          "shelf_board_06"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03",
+        "shelf_board_04",
+        "shelf_board_05",
+        "shelf_board_06"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 7,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_07"
+      ],
+      "connections": [
+        [
+          "shelf_board_06",
+          "shelf_board_07"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03",
+        "shelf_board_04",
+        "shelf_board_05",
+        "shelf_board_06",
+        "shelf_board_07"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 8,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_08"
+      ],
+      "connections": [
+        [
+          "shelf_board_07",
+          "shelf_board_08"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03",
+        "shelf_board_04",
+        "shelf_board_05",
+        "shelf_board_06",
+        "shelf_board_07",
+        "shelf_board_08"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 9,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_09"
+      ],
+      "connections": [
+        [
+          "shelf_board_08",
+          "shelf_board_09"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03",
+        "shelf_board_04",
+        "shelf_board_05",
+        "shelf_board_06",
+        "shelf_board_07",
+        "shelf_board_08",
+        "shelf_board_09"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 10,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_10"
+      ],
+      "connections": [
+        [
+          "shelf_board_09",
+          "shelf_board_10"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03",
+        "shelf_board_04",
+        "shelf_board_05",
+        "shelf_board_06",
+        "shelf_board_07",
+        "shelf_board_08",
+        "shelf_board_09",
+        "shelf_board_10"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 11,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_11"
+      ],
+      "connections": [
+        [
+          "shelf_board_10",
+          "shelf_board_11"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03",
+        "shelf_board_04",
+        "shelf_board_05",
+        "shelf_board_06",
+        "shelf_board_07",
+        "shelf_board_08",
+        "shelf_board_09",
+        "shelf_board_10",
+        "shelf_board_11"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 12,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_12"
+      ],
+      "connections": [
+        [
+          "shelf_board_11",
+          "shelf_board_12"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03",
+        "shelf_board_04",
+        "shelf_board_05",
+        "shelf_board_06",
+        "shelf_board_07",
+        "shelf_board_08",
+        "shelf_board_09",
+        "shelf_board_10",
+        "shelf_board_11",
+        "shelf_board_12"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 13,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_13"
+      ],
+      "connections": [
+        [
+          "shelf_board_12",
+          "shelf_board_13"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03",
+        "shelf_board_04",
+        "shelf_board_05",
+        "shelf_board_06",
+        "shelf_board_07",
+        "shelf_board_08",
+        "shelf_board_09",
+        "shelf_board_10",
+        "shelf_board_11",
+        "shelf_board_12",
+        "shelf_board_13"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 14,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_14"
+      ],
+      "connections": [
+        [
+          "shelf_board_13",
+          "shelf_board_14"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03",
+        "shelf_board_04",
+        "shelf_board_05",
+        "shelf_board_06",
+        "shelf_board_07",
+        "shelf_board_08",
+        "shelf_board_09",
+        "shelf_board_10",
+        "shelf_board_11",
+        "shelf_board_12",
+        "shelf_board_13",
+        "shelf_board_14"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 15,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_15"
+      ],
+      "connections": [
+        [
+          "shelf_board_14",
+          "shelf_board_15"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03",
+        "shelf_board_04",
+        "shelf_board_05",
+        "shelf_board_06",
+        "shelf_board_07",
+        "shelf_board_08",
+        "shelf_board_09",
+        "shelf_board_10",
+        "shelf_board_11",
+        "shelf_board_12",
+        "shelf_board_13",
+        "shelf_board_14",
+        "shelf_board_15"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 16,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_16"
+      ],
+      "connections": [
+        [
+          "shelf_board_15",
+          "shelf_board_16"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03",
+        "shelf_board_04",
+        "shelf_board_05",
+        "shelf_board_06",
+        "shelf_board_07",
+        "shelf_board_08",
+        "shelf_board_09",
+        "shelf_board_10",
+        "shelf_board_11",
+        "shelf_board_12",
+        "shelf_board_13",
+        "shelf_board_14",
+        "shelf_board_15",
+        "shelf_board_16"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 17,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_17"
+      ],
+      "connections": [
+        [
+          "shelf_board_16",
+          "shelf_board_17"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03",
+        "shelf_board_04",
+        "shelf_board_05",
+        "shelf_board_06",
+        "shelf_board_07",
+        "shelf_board_08",
+        "shelf_board_09",
+        "shelf_board_10",
+        "shelf_board_11",
+        "shelf_board_12",
+        "shelf_board_13",
+        "shelf_board_14",
+        "shelf_board_15",
+        "shelf_board_16",
+        "shelf_board_17"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 18,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_18"
+      ],
+      "connections": [
+        [
+          "shelf_board_17",
+          "shelf_board_18"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03",
+        "shelf_board_04",
+        "shelf_board_05",
+        "shelf_board_06",
+        "shelf_board_07",
+        "shelf_board_08",
+        "shelf_board_09",
+        "shelf_board_10",
+        "shelf_board_11",
+        "shelf_board_12",
+        "shelf_board_13",
+        "shelf_board_14",
+        "shelf_board_15",
+        "shelf_board_16",
+        "shelf_board_17",
+        "shelf_board_18"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 19,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_19"
+      ],
+      "connections": [
+        [
+          "shelf_board_18",
+          "shelf_board_19"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03",
+        "shelf_board_04",
+        "shelf_board_05",
+        "shelf_board_06",
+        "shelf_board_07",
+        "shelf_board_08",
+        "shelf_board_09",
+        "shelf_board_10",
+        "shelf_board_11",
+        "shelf_board_12",
+        "shelf_board_13",
+        "shelf_board_14",
+        "shelf_board_15",
+        "shelf_board_16",
+        "shelf_board_17",
+        "shelf_board_18",
+        "shelf_board_19"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 20,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_20"
+      ],
+      "connections": [
+        [
+          "shelf_board_19",
+          "shelf_board_20"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03",
+        "shelf_board_04",
+        "shelf_board_05",
+        "shelf_board_06",
+        "shelf_board_07",
+        "shelf_board_08",
+        "shelf_board_09",
+        "shelf_board_10",
+        "shelf_board_11",
+        "shelf_board_12",
+        "shelf_board_13",
+        "shelf_board_14",
+        "shelf_board_15",
+        "shelf_board_16",
+        "shelf_board_17",
+        "shelf_board_18",
+        "shelf_board_19",
+        "shelf_board_20"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 21,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_21"
+      ],
+      "connections": [
+        [
+          "shelf_board_20",
+          "shelf_board_21"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03",
+        "shelf_board_04",
+        "shelf_board_05",
+        "shelf_board_06",
+        "shelf_board_07",
+        "shelf_board_08",
+        "shelf_board_09",
+        "shelf_board_10",
+        "shelf_board_11",
+        "shelf_board_12",
+        "shelf_board_13",
+        "shelf_board_14",
+        "shelf_board_15",
+        "shelf_board_16",
+        "shelf_board_17",
+        "shelf_board_18",
+        "shelf_board_19",
+        "shelf_board_20",
+        "shelf_board_21"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 22,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_22"
+      ],
+      "connections": [
+        [
+          "shelf_board_21",
+          "shelf_board_22"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03",
+        "shelf_board_04",
+        "shelf_board_05",
+        "shelf_board_06",
+        "shelf_board_07",
+        "shelf_board_08",
+        "shelf_board_09",
+        "shelf_board_10",
+        "shelf_board_11",
+        "shelf_board_12",
+        "shelf_board_13",
+        "shelf_board_14",
+        "shelf_board_15",
+        "shelf_board_16",
+        "shelf_board_17",
+        "shelf_board_18",
+        "shelf_board_19",
+        "shelf_board_20",
+        "shelf_board_21",
+        "shelf_board_22"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 23,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_23"
+      ],
+      "connections": [
+        [
+          "shelf_board_22",
+          "shelf_board_23"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03",
+        "shelf_board_04",
+        "shelf_board_05",
+        "shelf_board_06",
+        "shelf_board_07",
+        "shelf_board_08",
+        "shelf_board_09",
+        "shelf_board_10",
+        "shelf_board_11",
+        "shelf_board_12",
+        "shelf_board_13",
+        "shelf_board_14",
+        "shelf_board_15",
+        "shelf_board_16",
+        "shelf_board_17",
+        "shelf_board_18",
+        "shelf_board_19",
+        "shelf_board_20",
+        "shelf_board_21",
+        "shelf_board_22",
+        "shelf_board_23"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 24,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_24"
+      ],
+      "connections": [
+        [
+          "shelf_board_23",
+          "shelf_board_24"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03",
+        "shelf_board_04",
+        "shelf_board_05",
+        "shelf_board_06",
+        "shelf_board_07",
+        "shelf_board_08",
+        "shelf_board_09",
+        "shelf_board_10",
+        "shelf_board_11",
+        "shelf_board_12",
+        "shelf_board_13",
+        "shelf_board_14",
+        "shelf_board_15",
+        "shelf_board_16",
+        "shelf_board_17",
+        "shelf_board_18",
+        "shelf_board_19",
+        "shelf_board_20",
+        "shelf_board_21",
+        "shelf_board_22",
+        "shelf_board_23",
+        "shelf_board_24"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 25,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_25"
+      ],
+      "connections": [
+        [
+          "shelf_board_24",
+          "shelf_board_25"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03",
+        "shelf_board_04",
+        "shelf_board_05",
+        "shelf_board_06",
+        "shelf_board_07",
+        "shelf_board_08",
+        "shelf_board_09",
+        "shelf_board_10",
+        "shelf_board_11",
+        "shelf_board_12",
+        "shelf_board_13",
+        "shelf_board_14",
+        "shelf_board_15",
+        "shelf_board_16",
+        "shelf_board_17",
+        "shelf_board_18",
+        "shelf_board_19",
+        "shelf_board_20",
+        "shelf_board_21",
+        "shelf_board_22",
+        "shelf_board_23",
+        "shelf_board_24",
+        "shelf_board_25"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 26,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_26"
+      ],
+      "connections": [
+        [
+          "shelf_board_25",
+          "shelf_board_26"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03",
+        "shelf_board_04",
+        "shelf_board_05",
+        "shelf_board_06",
+        "shelf_board_07",
+        "shelf_board_08",
+        "shelf_board_09",
+        "shelf_board_10",
+        "shelf_board_11",
+        "shelf_board_12",
+        "shelf_board_13",
+        "shelf_board_14",
+        "shelf_board_15",
+        "shelf_board_16",
+        "shelf_board_17",
+        "shelf_board_18",
+        "shelf_board_19",
+        "shelf_board_20",
+        "shelf_board_21",
+        "shelf_board_22",
+        "shelf_board_23",
+        "shelf_board_24",
+        "shelf_board_25",
+        "shelf_board_26"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 27,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_27"
+      ],
+      "connections": [
+        [
+          "shelf_board_26",
+          "shelf_board_27"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03",
+        "shelf_board_04",
+        "shelf_board_05",
+        "shelf_board_06",
+        "shelf_board_07",
+        "shelf_board_08",
+        "shelf_board_09",
+        "shelf_board_10",
+        "shelf_board_11",
+        "shelf_board_12",
+        "shelf_board_13",
+        "shelf_board_14",
+        "shelf_board_15",
+        "shelf_board_16",
+        "shelf_board_17",
+        "shelf_board_18",
+        "shelf_board_19",
+        "shelf_board_20",
+        "shelf_board_21",
+        "shelf_board_22",
+        "shelf_board_23",
+        "shelf_board_24",
+        "shelf_board_25",
+        "shelf_board_26",
+        "shelf_board_27"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 28,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_28"
+      ],
+      "connections": [
+        [
+          "shelf_board_27",
+          "shelf_board_28"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03",
+        "shelf_board_04",
+        "shelf_board_05",
+        "shelf_board_06",
+        "shelf_board_07",
+        "shelf_board_08",
+        "shelf_board_09",
+        "shelf_board_10",
+        "shelf_board_11",
+        "shelf_board_12",
+        "shelf_board_13",
+        "shelf_board_14",
+        "shelf_board_15",
+        "shelf_board_16",
+        "shelf_board_17",
+        "shelf_board_18",
+        "shelf_board_19",
+        "shelf_board_20",
+        "shelf_board_21",
+        "shelf_board_22",
+        "shelf_board_23",
+        "shelf_board_24",
+        "shelf_board_25",
+        "shelf_board_26",
+        "shelf_board_27",
+        "shelf_board_28"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 29,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_29"
+      ],
+      "connections": [
+        [
+          "shelf_board_28",
+          "shelf_board_29"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03",
+        "shelf_board_04",
+        "shelf_board_05",
+        "shelf_board_06",
+        "shelf_board_07",
+        "shelf_board_08",
+        "shelf_board_09",
+        "shelf_board_10",
+        "shelf_board_11",
+        "shelf_board_12",
+        "shelf_board_13",
+        "shelf_board_14",
+        "shelf_board_15",
+        "shelf_board_16",
+        "shelf_board_17",
+        "shelf_board_18",
+        "shelf_board_19",
+        "shelf_board_20",
+        "shelf_board_21",
+        "shelf_board_22",
+        "shelf_board_23",
+        "shelf_board_24",
+        "shelf_board_25",
+        "shelf_board_26",
+        "shelf_board_27",
+        "shelf_board_28",
+        "shelf_board_29"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 30,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_30"
+      ],
+      "connections": [
+        [
+          "shelf_board_29",
+          "shelf_board_30"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03",
+        "shelf_board_04",
+        "shelf_board_05",
+        "shelf_board_06",
+        "shelf_board_07",
+        "shelf_board_08",
+        "shelf_board_09",
+        "shelf_board_10",
+        "shelf_board_11",
+        "shelf_board_12",
+        "shelf_board_13",
+        "shelf_board_14",
+        "shelf_board_15",
+        "shelf_board_16",
+        "shelf_board_17",
+        "shelf_board_18",
+        "shelf_board_19",
+        "shelf_board_20",
+        "shelf_board_21",
+        "shelf_board_22",
+        "shelf_board_23",
+        "shelf_board_24",
+        "shelf_board_25",
+        "shelf_board_26",
+        "shelf_board_27",
+        "shelf_board_28",
+        "shelf_board_29",
+        "shelf_board_30"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 31,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_31"
+      ],
+      "connections": [
+        [
+          "shelf_board_30",
+          "shelf_board_31"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03",
+        "shelf_board_04",
+        "shelf_board_05",
+        "shelf_board_06",
+        "shelf_board_07",
+        "shelf_board_08",
+        "shelf_board_09",
+        "shelf_board_10",
+        "shelf_board_11",
+        "shelf_board_12",
+        "shelf_board_13",
+        "shelf_board_14",
+        "shelf_board_15",
+        "shelf_board_16",
+        "shelf_board_17",
+        "shelf_board_18",
+        "shelf_board_19",
+        "shelf_board_20",
+        "shelf_board_21",
+        "shelf_board_22",
+        "shelf_board_23",
+        "shelf_board_24",
+        "shelf_board_25",
+        "shelf_board_26",
+        "shelf_board_27",
+        "shelf_board_28",
+        "shelf_board_29",
+        "shelf_board_30",
+        "shelf_board_31"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 32,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_32"
+      ],
+      "connections": [
+        [
+          "shelf_board_31",
+          "shelf_board_32"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03",
+        "shelf_board_04",
+        "shelf_board_05",
+        "shelf_board_06",
+        "shelf_board_07",
+        "shelf_board_08",
+        "shelf_board_09",
+        "shelf_board_10",
+        "shelf_board_11",
+        "shelf_board_12",
+        "shelf_board_13",
+        "shelf_board_14",
+        "shelf_board_15",
+        "shelf_board_16",
+        "shelf_board_17",
+        "shelf_board_18",
+        "shelf_board_19",
+        "shelf_board_20",
+        "shelf_board_21",
+        "shelf_board_22",
+        "shelf_board_23",
+        "shelf_board_24",
+        "shelf_board_25",
+        "shelf_board_26",
+        "shelf_board_27",
+        "shelf_board_28",
+        "shelf_board_29",
+        "shelf_board_30",
+        "shelf_board_31",
+        "shelf_board_32"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 33,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_33"
+      ],
+      "connections": [
+        [
+          "shelf_board_32",
+          "shelf_board_33"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03",
+        "shelf_board_04",
+        "shelf_board_05",
+        "shelf_board_06",
+        "shelf_board_07",
+        "shelf_board_08",
+        "shelf_board_09",
+        "shelf_board_10",
+        "shelf_board_11",
+        "shelf_board_12",
+        "shelf_board_13",
+        "shelf_board_14",
+        "shelf_board_15",
+        "shelf_board_16",
+        "shelf_board_17",
+        "shelf_board_18",
+        "shelf_board_19",
+        "shelf_board_20",
+        "shelf_board_21",
+        "shelf_board_22",
+        "shelf_board_23",
+        "shelf_board_24",
+        "shelf_board_25",
+        "shelf_board_26",
+        "shelf_board_27",
+        "shelf_board_28",
+        "shelf_board_29",
+        "shelf_board_30",
+        "shelf_board_31",
+        "shelf_board_32",
+        "shelf_board_33"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 34,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_34"
+      ],
+      "connections": [
+        [
+          "shelf_board_33",
+          "shelf_board_34"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03",
+        "shelf_board_04",
+        "shelf_board_05",
+        "shelf_board_06",
+        "shelf_board_07",
+        "shelf_board_08",
+        "shelf_board_09",
+        "shelf_board_10",
+        "shelf_board_11",
+        "shelf_board_12",
+        "shelf_board_13",
+        "shelf_board_14",
+        "shelf_board_15",
+        "shelf_board_16",
+        "shelf_board_17",
+        "shelf_board_18",
+        "shelf_board_19",
+        "shelf_board_20",
+        "shelf_board_21",
+        "shelf_board_22",
+        "shelf_board_23",
+        "shelf_board_24",
+        "shelf_board_25",
+        "shelf_board_26",
+        "shelf_board_27",
+        "shelf_board_28",
+        "shelf_board_29",
+        "shelf_board_30",
+        "shelf_board_31",
+        "shelf_board_32",
+        "shelf_board_33",
+        "shelf_board_34"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 35,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_35"
+      ],
+      "connections": [
+        [
+          "shelf_board_34",
+          "shelf_board_35"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03",
+        "shelf_board_04",
+        "shelf_board_05",
+        "shelf_board_06",
+        "shelf_board_07",
+        "shelf_board_08",
+        "shelf_board_09",
+        "shelf_board_10",
+        "shelf_board_11",
+        "shelf_board_12",
+        "shelf_board_13",
+        "shelf_board_14",
+        "shelf_board_15",
+        "shelf_board_16",
+        "shelf_board_17",
+        "shelf_board_18",
+        "shelf_board_19",
+        "shelf_board_20",
+        "shelf_board_21",
+        "shelf_board_22",
+        "shelf_board_23",
+        "shelf_board_24",
+        "shelf_board_25",
+        "shelf_board_26",
+        "shelf_board_27",
+        "shelf_board_28",
+        "shelf_board_29",
+        "shelf_board_30",
+        "shelf_board_31",
+        "shelf_board_32",
+        "shelf_board_33",
+        "shelf_board_34",
+        "shelf_board_35"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 36,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_36"
+      ],
+      "connections": [
+        [
+          "shelf_board_35",
+          "shelf_board_36"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03",
+        "shelf_board_04",
+        "shelf_board_05",
+        "shelf_board_06",
+        "shelf_board_07",
+        "shelf_board_08",
+        "shelf_board_09",
+        "shelf_board_10",
+        "shelf_board_11",
+        "shelf_board_12",
+        "shelf_board_13",
+        "shelf_board_14",
+        "shelf_board_15",
+        "shelf_board_16",
+        "shelf_board_17",
+        "shelf_board_18",
+        "shelf_board_19",
+        "shelf_board_20",
+        "shelf_board_21",
+        "shelf_board_22",
+        "shelf_board_23",
+        "shelf_board_24",
+        "shelf_board_25",
+        "shelf_board_26",
+        "shelf_board_27",
+        "shelf_board_28",
+        "shelf_board_29",
+        "shelf_board_30",
+        "shelf_board_31",
+        "shelf_board_32",
+        "shelf_board_33",
+        "shelf_board_34",
+        "shelf_board_35",
+        "shelf_board_36"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 37,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_37"
+      ],
+      "connections": [
+        [
+          "shelf_board_36",
+          "shelf_board_37"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03",
+        "shelf_board_04",
+        "shelf_board_05",
+        "shelf_board_06",
+        "shelf_board_07",
+        "shelf_board_08",
+        "shelf_board_09",
+        "shelf_board_10",
+        "shelf_board_11",
+        "shelf_board_12",
+        "shelf_board_13",
+        "shelf_board_14",
+        "shelf_board_15",
+        "shelf_board_16",
+        "shelf_board_17",
+        "shelf_board_18",
+        "shelf_board_19",
+        "shelf_board_20",
+        "shelf_board_21",
+        "shelf_board_22",
+        "shelf_board_23",
+        "shelf_board_24",
+        "shelf_board_25",
+        "shelf_board_26",
+        "shelf_board_27",
+        "shelf_board_28",
+        "shelf_board_29",
+        "shelf_board_30",
+        "shelf_board_31",
+        "shelf_board_32",
+        "shelf_board_33",
+        "shelf_board_34",
+        "shelf_board_35",
+        "shelf_board_36",
+        "shelf_board_37"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 38,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_38"
+      ],
+      "connections": [
+        [
+          "shelf_board_37",
+          "shelf_board_38"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03",
+        "shelf_board_04",
+        "shelf_board_05",
+        "shelf_board_06",
+        "shelf_board_07",
+        "shelf_board_08",
+        "shelf_board_09",
+        "shelf_board_10",
+        "shelf_board_11",
+        "shelf_board_12",
+        "shelf_board_13",
+        "shelf_board_14",
+        "shelf_board_15",
+        "shelf_board_16",
+        "shelf_board_17",
+        "shelf_board_18",
+        "shelf_board_19",
+        "shelf_board_20",
+        "shelf_board_21",
+        "shelf_board_22",
+        "shelf_board_23",
+        "shelf_board_24",
+        "shelf_board_25",
+        "shelf_board_26",
+        "shelf_board_27",
+        "shelf_board_28",
+        "shelf_board_29",
+        "shelf_board_30",
+        "shelf_board_31",
+        "shelf_board_32",
+        "shelf_board_33",
+        "shelf_board_34",
+        "shelf_board_35",
+        "shelf_board_36",
+        "shelf_board_37",
+        "shelf_board_38"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 39,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf_board_39"
+      ],
+      "connections": [
+        [
+          "shelf_board_38",
+          "shelf_board_39"
+        ]
+      ],
+      "shown": [
+        "shelf_board_00",
+        "shelf_board_01",
+        "shelf_board_02",
+        "shelf_board_03",
+        "shelf_board_04",
+        "shelf_board_05",
+        "shelf_board_06",
+        "shelf_board_07",
+        "shelf_board_08",
+        "shelf_board_09",
+        "shelf_board_10",
+        "shelf_board_11",
+        "shelf_board_12",
+        "shelf_board_13",
+        "shelf_board_14",
+        "shelf_board_15",
+        "shelf_board_16",
+        "shelf_board_17",
+        "shelf_board_18",
+        "shelf_board_19",
+        "shelf_board_20",
+        "shelf_board_21",
+        "shelf_board_22",
+        "shelf_board_23",
+        "shelf_board_24",
+        "shelf_board_25",
+        "shelf_board_26",
+        "shelf_board_27",
+        "shelf_board_28",
+        "shelf_board_29",
+        "shelf_board_30",
+        "shelf_board_31",
+        "shelf_board_32",
+        "shelf_board_33",
+        "shelf_board_34",
+        "shelf_board_35",
+        "shelf_board_36",
+        "shelf_board_37",
+        "shelf_board_38",
+        "shelf_board_39"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0
+          ],
+          "segments": []
+        }
+      ]
+    }
+  ],
+  "steps_declared": false,
+  "steps_hint": "No steps block: each step adds one piece. Group pieces with a steps block, e.g. `steps { \"Frame\": shelf_board_00, shelf_board_01, ... }`."
+}

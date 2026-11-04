@@ -1,1 +1,2606 @@
-{"pieces": {"leg_fl": [{"face": "back", "center": [9.5, 0.0, 92.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [9.5, 0.0, 267.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [9.5, 0.0, 442.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [28.5, 0.0, 92.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [28.5, 0.0, 267.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [28.5, 0.0, 442.0], "diameter": 8.0, "depth": 15.0}, {"face": "left", "center": [0.0, 9.5, 112.0], "diameter": 8.0, "depth": 15.0}, {"face": "left", "center": [0.0, 9.5, 287.0], "diameter": 8.0, "depth": 15.0}, {"face": "left", "center": [0.0, 9.5, 462.0], "diameter": 8.0, "depth": 15.0}, {"face": "left", "center": [0.0, 28.5, 112.0], "diameter": 8.0, "depth": 15.0}, {"face": "left", "center": [0.0, 28.5, 287.0], "diameter": 8.0, "depth": 15.0}, {"face": "left", "center": [0.0, 28.5, 462.0], "diameter": 8.0, "depth": 15.0}], "rail_f_bottom": [{"face": "down", "center": [19.0, 9.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "down", "center": [19.0, 28.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 42.25], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 86.75], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 141.0], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 185.5], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 239.75], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 284.25], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 338.5], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 383.0], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 437.25], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 481.75], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [19.0, 9.5, 524.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [19.0, 28.5, 524.0], "diameter": 8.0, "depth": 15.0}], "leg_fr": [{"face": "back", "center": [9.5, 0.0, 92.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [9.5, 0.0, 267.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [9.5, 0.0, 442.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [28.5, 0.0, 92.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [28.5, 0.0, 267.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [28.5, 0.0, 442.0], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 9.5, 112.0], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 9.5, 287.0], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 9.5, 462.0], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 28.5, 112.0], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 28.5, 287.0], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 28.5, 462.0], "diameter": 8.0, "depth": 15.0}], "leg_bl": [{"face": "front", "center": [9.5, 38.0, 92.0], "diameter": 8.0, "depth": 15.0}, {"face": "front", "center": [9.5, 38.0, 267.0], "diameter": 8.0, "depth": 15.0}, {"face": "front", "center": [9.5, 38.0, 442.0], "diameter": 8.0, "depth": 15.0}, {"face": "front", "center": [28.5, 38.0, 92.0], "diameter": 8.0, "depth": 15.0}, {"face": "front", "center": [28.5, 38.0, 267.0], "diameter": 8.0, "depth": 15.0}, {"face": "front", "center": [28.5, 38.0, 442.0], "diameter": 8.0, "depth": 15.0}, {"face": "left", "center": [0.0, 9.5, 112.0], "diameter": 8.0, "depth": 15.0}, {"face": "left", "center": [0.0, 9.5, 287.0], "diameter": 8.0, "depth": 15.0}, {"face": "left", "center": [0.0, 9.5, 462.0], "diameter": 8.0, "depth": 15.0}, {"face": "left", "center": [0.0, 28.5, 112.0], "diameter": 8.0, "depth": 15.0}, {"face": "left", "center": [0.0, 28.5, 287.0], "diameter": 8.0, "depth": 15.0}, {"face": "left", "center": [0.0, 28.5, 462.0], "diameter": 8.0, "depth": 15.0}], "rail_b_bottom": [{"face": "down", "center": [19.0, 9.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "down", "center": [19.0, 28.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 42.25], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 86.75], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 141.0], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 185.5], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 239.75], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 284.25], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 338.5], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 383.0], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 437.25], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 481.75], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [19.0, 9.5, 524.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [19.0, 28.5, 524.0], "diameter": 8.0, "depth": 15.0}], "leg_br": [{"face": "front", "center": [9.5, 38.0, 92.0], "diameter": 8.0, "depth": 15.0}, {"face": "front", "center": [9.5, 38.0, 267.0], "diameter": 8.0, "depth": 15.0}, {"face": "front", "center": [9.5, 38.0, 442.0], "diameter": 8.0, "depth": 15.0}, {"face": "front", "center": [28.5, 38.0, 92.0], "diameter": 8.0, "depth": 15.0}, {"face": "front", "center": [28.5, 38.0, 267.0], "diameter": 8.0, "depth": 15.0}, {"face": "front", "center": [28.5, 38.0, 442.0], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 9.5, 112.0], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 9.5, 287.0], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 9.5, 462.0], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 28.5, 112.0], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 28.5, 287.0], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 28.5, 462.0], "diameter": 8.0, "depth": 15.0}], "rail_f_middle": [{"face": "down", "center": [19.0, 9.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "down", "center": [19.0, 28.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 42.25], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 86.75], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 141.0], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 185.5], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 239.75], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 284.25], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 338.5], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 383.0], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 437.25], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 481.75], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [19.0, 9.5, 524.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [19.0, 28.5, 524.0], "diameter": 8.0, "depth": 15.0}], "rail_b_middle": [{"face": "down", "center": [19.0, 9.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "down", "center": [19.0, 28.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 42.25], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 86.75], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 141.0], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 185.5], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 239.75], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 284.25], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 338.5], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 383.0], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 437.25], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 481.75], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [19.0, 9.5, 524.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [19.0, 28.5, 524.0], "diameter": 8.0, "depth": 15.0}], "rail_f_top": [{"face": "down", "center": [19.0, 9.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "down", "center": [19.0, 28.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 42.25], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 86.75], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 141.0], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 185.5], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 239.75], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 284.25], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 338.5], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 383.0], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 437.25], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 481.75], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [19.0, 9.5, 524.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [19.0, 28.5, 524.0], "diameter": 8.0, "depth": 15.0}], "rail_b_top": [{"face": "down", "center": [19.0, 9.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "down", "center": [19.0, 28.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 42.25], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 86.75], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 141.0], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 185.5], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 239.75], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 284.25], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 338.5], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 383.0], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 437.25], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [38.0, 19.0, 481.75], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [19.0, 9.5, 524.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [19.0, 28.5, 524.0], "diameter": 8.0, "depth": 15.0}], "rail_l_bottom": [{"face": "down", "center": [19.0, 9.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "down", "center": [19.0, 28.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [19.0, 9.5, 224.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [19.0, 28.5, 224.0], "diameter": 8.0, "depth": 15.0}], "rail_r_bottom": [{"face": "down", "center": [19.0, 9.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "down", "center": [19.0, 28.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [19.0, 9.5, 224.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [19.0, 28.5, 224.0], "diameter": 8.0, "depth": 15.0}], "rail_l_middle": [{"face": "down", "center": [19.0, 9.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "down", "center": [19.0, 28.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [19.0, 9.5, 224.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [19.0, 28.5, 224.0], "diameter": 8.0, "depth": 15.0}], "rail_r_middle": [{"face": "down", "center": [19.0, 9.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "down", "center": [19.0, 28.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [19.0, 9.5, 224.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [19.0, 28.5, 224.0], "diameter": 8.0, "depth": 15.0}], "rail_l_top": [{"face": "down", "center": [19.0, 9.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "down", "center": [19.0, 28.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [19.0, 9.5, 224.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [19.0, 28.5, 224.0], "diameter": 8.0, "depth": 15.0}], "rail_r_top": [{"face": "down", "center": [19.0, 9.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "down", "center": [19.0, 28.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [19.0, 9.5, 224.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [19.0, 28.5, 224.0], "diameter": 8.0, "depth": 15.0}], "board_b_1": [{"face": "back", "center": [22.25, 0.0, 19.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [22.25, 0.0, 281.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [66.75, 0.0, 19.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [66.75, 0.0, 281.0], "diameter": 8.0, "depth": 15.0}], "board_b_2": [{"face": "back", "center": [22.25, 0.0, 19.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [22.25, 0.0, 281.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [66.75, 0.0, 19.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [66.75, 0.0, 281.0], "diameter": 8.0, "depth": 15.0}], "board_b_3": [{"face": "back", "center": [22.25, 0.0, 19.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [22.25, 0.0, 281.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [66.75, 0.0, 19.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [66.75, 0.0, 281.0], "diameter": 8.0, "depth": 15.0}], "board_b_4": [{"face": "back", "center": [22.25, 0.0, 19.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [22.25, 0.0, 281.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [66.75, 0.0, 19.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [66.75, 0.0, 281.0], "diameter": 8.0, "depth": 15.0}], "board_b_5": [{"face": "back", "center": [22.25, 0.0, 19.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [22.25, 0.0, 281.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [66.75, 0.0, 19.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [66.75, 0.0, 281.0], "diameter": 8.0, "depth": 15.0}], "board_m_1": [{"face": "back", "center": [22.25, 0.0, 19.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [22.25, 0.0, 281.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [66.75, 0.0, 19.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [66.75, 0.0, 281.0], "diameter": 8.0, "depth": 15.0}], "board_m_2": [{"face": "back", "center": [22.25, 0.0, 19.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [22.25, 0.0, 281.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [66.75, 0.0, 19.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [66.75, 0.0, 281.0], "diameter": 8.0, "depth": 15.0}], "board_m_3": [{"face": "back", "center": [22.25, 0.0, 19.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [22.25, 0.0, 281.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [66.75, 0.0, 19.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [66.75, 0.0, 281.0], "diameter": 8.0, "depth": 15.0}], "board_m_4": [{"face": "back", "center": [22.25, 0.0, 19.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [22.25, 0.0, 281.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [66.75, 0.0, 19.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [66.75, 0.0, 281.0], "diameter": 8.0, "depth": 15.0}], "board_m_5": [{"face": "back", "center": [22.25, 0.0, 19.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [22.25, 0.0, 281.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [66.75, 0.0, 19.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [66.75, 0.0, 281.0], "diameter": 8.0, "depth": 15.0}], "board_t_1": [{"face": "back", "center": [22.25, 0.0, 19.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [22.25, 0.0, 281.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [66.75, 0.0, 19.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [66.75, 0.0, 281.0], "diameter": 8.0, "depth": 15.0}], "board_t_2": [{"face": "back", "center": [22.25, 0.0, 19.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [22.25, 0.0, 281.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [66.75, 0.0, 19.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [66.75, 0.0, 281.0], "diameter": 8.0, "depth": 15.0}], "board_t_3": [{"face": "back", "center": [22.25, 0.0, 19.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [22.25, 0.0, 281.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [66.75, 0.0, 19.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [66.75, 0.0, 281.0], "diameter": 8.0, "depth": 15.0}], "board_t_4": [{"face": "back", "center": [22.25, 0.0, 19.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [22.25, 0.0, 281.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [66.75, 0.0, 19.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [66.75, 0.0, 281.0], "diameter": 8.0, "depth": 15.0}], "board_t_5": [{"face": "back", "center": [22.25, 0.0, 19.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [22.25, 0.0, 281.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [66.75, 0.0, 19.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [66.75, 0.0, 281.0], "diameter": 8.0, "depth": 15.0}]}, "fasteners": [{"base": "leg_fl", "target": "rail_f_bottom", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_fr", "target": "rail_f_bottom", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_bl", "target": "rail_b_bottom", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_br", "target": "rail_b_bottom", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_fl", "target": "rail_f_middle", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_fr", "target": "rail_f_middle", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_bl", "target": "rail_b_middle", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_br", "target": "rail_b_middle", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_fl", "target": "rail_f_top", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_fr", "target": "rail_f_top", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_bl", "target": "rail_b_top", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_br", "target": "rail_b_top", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_fl", "target": "rail_l_bottom", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_bl", "target": "rail_l_bottom", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_fr", "target": "rail_r_bottom", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_br", "target": "rail_r_bottom", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_fl", "target": "rail_l_middle", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_bl", "target": "rail_l_middle", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_fr", "target": "rail_r_middle", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_br", "target": "rail_r_middle", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_fl", "target": "rail_l_top", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_bl", "target": "rail_l_top", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_fr", "target": "rail_r_top", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_br", "target": "rail_r_top", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "rail_f_bottom", "target": "board_b_1", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "rail_b_bottom", "target": "board_b_1", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "rail_f_bottom", "target": "board_b_2", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "rail_b_bottom", "target": "board_b_2", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "rail_f_bottom", "target": "board_b_3", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "rail_b_bottom", "target": "board_b_3", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "rail_f_bottom", "target": "board_b_4", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "rail_b_bottom", "target": "board_b_4", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "rail_f_bottom", "target": "board_b_5", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "rail_b_bottom", "target": "board_b_5", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "rail_f_middle", "target": "board_m_1", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "rail_b_middle", "target": "board_m_1", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "rail_f_middle", "target": "board_m_2", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "rail_b_middle", "target": "board_m_2", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "rail_f_middle", "target": "board_m_3", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "rail_b_middle", "target": "board_m_3", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "rail_f_middle", "target": "board_m_4", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "rail_b_middle", "target": "board_m_4", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "rail_f_middle", "target": "board_m_5", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "rail_b_middle", "target": "board_m_5", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "rail_f_top", "target": "board_t_1", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "rail_b_top", "target": "board_t_1", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "rail_f_top", "target": "board_t_2", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "rail_b_top", "target": "board_t_2", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "rail_f_top", "target": "board_t_3", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "rail_b_top", "target": "board_t_3", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "rail_f_top", "target": "board_t_4", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "rail_b_top", "target": "board_t_4", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "rail_f_top", "target": "board_t_5", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "rail_b_top", "target": "board_t_5", "kind": "dowel", "diameter": 8.0, "count": 2}]}
+{
+  "pieces": {
+    "leg_fl": [
+      {
+        "face": "back",
+        "center": [
+          9.5,
+          0.0,
+          92.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          9.5,
+          0.0,
+          267.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          9.5,
+          0.0,
+          442.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          28.5,
+          0.0,
+          92.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          28.5,
+          0.0,
+          267.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          28.5,
+          0.0,
+          442.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "left",
+        "center": [
+          0.0,
+          9.5,
+          112.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "left",
+        "center": [
+          0.0,
+          9.5,
+          287.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "left",
+        "center": [
+          0.0,
+          9.5,
+          462.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "left",
+        "center": [
+          0.0,
+          28.5,
+          112.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "left",
+        "center": [
+          0.0,
+          28.5,
+          287.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "left",
+        "center": [
+          0.0,
+          28.5,
+          462.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "rail_f_bottom": [
+      {
+        "face": "down",
+        "center": [
+          19.0,
+          9.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "down",
+        "center": [
+          19.0,
+          28.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          42.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          86.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          141.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          185.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          239.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          284.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          338.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          383.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          437.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          481.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          19.0,
+          9.5,
+          524.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          19.0,
+          28.5,
+          524.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "leg_fr": [
+      {
+        "face": "back",
+        "center": [
+          9.5,
+          0.0,
+          92.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          9.5,
+          0.0,
+          267.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          9.5,
+          0.0,
+          442.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          28.5,
+          0.0,
+          92.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          28.5,
+          0.0,
+          267.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          28.5,
+          0.0,
+          442.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          9.5,
+          112.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          9.5,
+          287.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          9.5,
+          462.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          28.5,
+          112.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          28.5,
+          287.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          28.5,
+          462.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "leg_bl": [
+      {
+        "face": "front",
+        "center": [
+          9.5,
+          38.0,
+          92.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "front",
+        "center": [
+          9.5,
+          38.0,
+          267.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "front",
+        "center": [
+          9.5,
+          38.0,
+          442.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "front",
+        "center": [
+          28.5,
+          38.0,
+          92.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "front",
+        "center": [
+          28.5,
+          38.0,
+          267.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "front",
+        "center": [
+          28.5,
+          38.0,
+          442.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "left",
+        "center": [
+          0.0,
+          9.5,
+          112.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "left",
+        "center": [
+          0.0,
+          9.5,
+          287.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "left",
+        "center": [
+          0.0,
+          9.5,
+          462.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "left",
+        "center": [
+          0.0,
+          28.5,
+          112.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "left",
+        "center": [
+          0.0,
+          28.5,
+          287.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "left",
+        "center": [
+          0.0,
+          28.5,
+          462.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "rail_b_bottom": [
+      {
+        "face": "down",
+        "center": [
+          19.0,
+          9.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "down",
+        "center": [
+          19.0,
+          28.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          42.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          86.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          141.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          185.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          239.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          284.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          338.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          383.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          437.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          481.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          19.0,
+          9.5,
+          524.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          19.0,
+          28.5,
+          524.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "leg_br": [
+      {
+        "face": "front",
+        "center": [
+          9.5,
+          38.0,
+          92.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "front",
+        "center": [
+          9.5,
+          38.0,
+          267.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "front",
+        "center": [
+          9.5,
+          38.0,
+          442.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "front",
+        "center": [
+          28.5,
+          38.0,
+          92.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "front",
+        "center": [
+          28.5,
+          38.0,
+          267.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "front",
+        "center": [
+          28.5,
+          38.0,
+          442.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          9.5,
+          112.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          9.5,
+          287.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          9.5,
+          462.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          28.5,
+          112.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          28.5,
+          287.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          28.5,
+          462.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "rail_f_middle": [
+      {
+        "face": "down",
+        "center": [
+          19.0,
+          9.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "down",
+        "center": [
+          19.0,
+          28.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          42.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          86.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          141.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          185.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          239.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          284.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          338.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          383.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          437.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          481.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          19.0,
+          9.5,
+          524.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          19.0,
+          28.5,
+          524.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "rail_b_middle": [
+      {
+        "face": "down",
+        "center": [
+          19.0,
+          9.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "down",
+        "center": [
+          19.0,
+          28.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          42.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          86.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          141.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          185.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          239.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          284.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          338.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          383.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          437.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          481.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          19.0,
+          9.5,
+          524.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          19.0,
+          28.5,
+          524.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "rail_f_top": [
+      {
+        "face": "down",
+        "center": [
+          19.0,
+          9.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "down",
+        "center": [
+          19.0,
+          28.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          42.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          86.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          141.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          185.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          239.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          284.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          338.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          383.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          437.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          481.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          19.0,
+          9.5,
+          524.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          19.0,
+          28.5,
+          524.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "rail_b_top": [
+      {
+        "face": "down",
+        "center": [
+          19.0,
+          9.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "down",
+        "center": [
+          19.0,
+          28.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          42.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          86.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          141.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          185.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          239.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          284.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          338.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          383.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          437.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          38.0,
+          19.0,
+          481.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          19.0,
+          9.5,
+          524.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          19.0,
+          28.5,
+          524.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "rail_l_bottom": [
+      {
+        "face": "down",
+        "center": [
+          19.0,
+          9.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "down",
+        "center": [
+          19.0,
+          28.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          19.0,
+          9.5,
+          224.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          19.0,
+          28.5,
+          224.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "rail_r_bottom": [
+      {
+        "face": "down",
+        "center": [
+          19.0,
+          9.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "down",
+        "center": [
+          19.0,
+          28.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          19.0,
+          9.5,
+          224.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          19.0,
+          28.5,
+          224.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "rail_l_middle": [
+      {
+        "face": "down",
+        "center": [
+          19.0,
+          9.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "down",
+        "center": [
+          19.0,
+          28.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          19.0,
+          9.5,
+          224.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          19.0,
+          28.5,
+          224.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "rail_r_middle": [
+      {
+        "face": "down",
+        "center": [
+          19.0,
+          9.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "down",
+        "center": [
+          19.0,
+          28.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          19.0,
+          9.5,
+          224.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          19.0,
+          28.5,
+          224.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "rail_l_top": [
+      {
+        "face": "down",
+        "center": [
+          19.0,
+          9.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "down",
+        "center": [
+          19.0,
+          28.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          19.0,
+          9.5,
+          224.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          19.0,
+          28.5,
+          224.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "rail_r_top": [
+      {
+        "face": "down",
+        "center": [
+          19.0,
+          9.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "down",
+        "center": [
+          19.0,
+          28.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          19.0,
+          9.5,
+          224.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          19.0,
+          28.5,
+          224.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "board_b_1": [
+      {
+        "face": "back",
+        "center": [
+          22.25,
+          0.0,
+          19.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          22.25,
+          0.0,
+          281.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          66.75,
+          0.0,
+          19.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          66.75,
+          0.0,
+          281.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "board_b_2": [
+      {
+        "face": "back",
+        "center": [
+          22.25,
+          0.0,
+          19.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          22.25,
+          0.0,
+          281.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          66.75,
+          0.0,
+          19.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          66.75,
+          0.0,
+          281.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "board_b_3": [
+      {
+        "face": "back",
+        "center": [
+          22.25,
+          0.0,
+          19.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          22.25,
+          0.0,
+          281.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          66.75,
+          0.0,
+          19.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          66.75,
+          0.0,
+          281.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "board_b_4": [
+      {
+        "face": "back",
+        "center": [
+          22.25,
+          0.0,
+          19.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          22.25,
+          0.0,
+          281.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          66.75,
+          0.0,
+          19.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          66.75,
+          0.0,
+          281.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "board_b_5": [
+      {
+        "face": "back",
+        "center": [
+          22.25,
+          0.0,
+          19.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          22.25,
+          0.0,
+          281.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          66.75,
+          0.0,
+          19.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          66.75,
+          0.0,
+          281.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "board_m_1": [
+      {
+        "face": "back",
+        "center": [
+          22.25,
+          0.0,
+          19.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          22.25,
+          0.0,
+          281.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          66.75,
+          0.0,
+          19.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          66.75,
+          0.0,
+          281.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "board_m_2": [
+      {
+        "face": "back",
+        "center": [
+          22.25,
+          0.0,
+          19.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          22.25,
+          0.0,
+          281.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          66.75,
+          0.0,
+          19.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          66.75,
+          0.0,
+          281.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "board_m_3": [
+      {
+        "face": "back",
+        "center": [
+          22.25,
+          0.0,
+          19.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          22.25,
+          0.0,
+          281.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          66.75,
+          0.0,
+          19.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          66.75,
+          0.0,
+          281.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "board_m_4": [
+      {
+        "face": "back",
+        "center": [
+          22.25,
+          0.0,
+          19.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          22.25,
+          0.0,
+          281.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          66.75,
+          0.0,
+          19.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          66.75,
+          0.0,
+          281.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "board_m_5": [
+      {
+        "face": "back",
+        "center": [
+          22.25,
+          0.0,
+          19.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          22.25,
+          0.0,
+          281.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          66.75,
+          0.0,
+          19.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          66.75,
+          0.0,
+          281.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "board_t_1": [
+      {
+        "face": "back",
+        "center": [
+          22.25,
+          0.0,
+          19.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          22.25,
+          0.0,
+          281.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          66.75,
+          0.0,
+          19.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          66.75,
+          0.0,
+          281.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "board_t_2": [
+      {
+        "face": "back",
+        "center": [
+          22.25,
+          0.0,
+          19.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          22.25,
+          0.0,
+          281.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          66.75,
+          0.0,
+          19.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          66.75,
+          0.0,
+          281.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "board_t_3": [
+      {
+        "face": "back",
+        "center": [
+          22.25,
+          0.0,
+          19.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          22.25,
+          0.0,
+          281.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          66.75,
+          0.0,
+          19.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          66.75,
+          0.0,
+          281.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "board_t_4": [
+      {
+        "face": "back",
+        "center": [
+          22.25,
+          0.0,
+          19.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          22.25,
+          0.0,
+          281.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          66.75,
+          0.0,
+          19.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          66.75,
+          0.0,
+          281.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "board_t_5": [
+      {
+        "face": "back",
+        "center": [
+          22.25,
+          0.0,
+          19.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          22.25,
+          0.0,
+          281.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          66.75,
+          0.0,
+          19.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          66.75,
+          0.0,
+          281.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ]
+  },
+  "fasteners": [
+    {
+      "base": "leg_fl",
+      "target": "rail_f_bottom",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_fr",
+      "target": "rail_f_bottom",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_bl",
+      "target": "rail_b_bottom",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_br",
+      "target": "rail_b_bottom",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_fl",
+      "target": "rail_f_middle",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_fr",
+      "target": "rail_f_middle",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_bl",
+      "target": "rail_b_middle",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_br",
+      "target": "rail_b_middle",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_fl",
+      "target": "rail_f_top",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_fr",
+      "target": "rail_f_top",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_bl",
+      "target": "rail_b_top",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_br",
+      "target": "rail_b_top",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_fl",
+      "target": "rail_l_bottom",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_bl",
+      "target": "rail_l_bottom",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_fr",
+      "target": "rail_r_bottom",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_br",
+      "target": "rail_r_bottom",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_fl",
+      "target": "rail_l_middle",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_bl",
+      "target": "rail_l_middle",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_fr",
+      "target": "rail_r_middle",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_br",
+      "target": "rail_r_middle",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_fl",
+      "target": "rail_l_top",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_bl",
+      "target": "rail_l_top",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_fr",
+      "target": "rail_r_top",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_br",
+      "target": "rail_r_top",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "rail_f_bottom",
+      "target": "board_b_1",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "rail_b_bottom",
+      "target": "board_b_1",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "rail_f_bottom",
+      "target": "board_b_2",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "rail_b_bottom",
+      "target": "board_b_2",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "rail_f_bottom",
+      "target": "board_b_3",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "rail_b_bottom",
+      "target": "board_b_3",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "rail_f_bottom",
+      "target": "board_b_4",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "rail_b_bottom",
+      "target": "board_b_4",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "rail_f_bottom",
+      "target": "board_b_5",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "rail_b_bottom",
+      "target": "board_b_5",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "rail_f_middle",
+      "target": "board_m_1",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "rail_b_middle",
+      "target": "board_m_1",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "rail_f_middle",
+      "target": "board_m_2",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "rail_b_middle",
+      "target": "board_m_2",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "rail_f_middle",
+      "target": "board_m_3",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "rail_b_middle",
+      "target": "board_m_3",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "rail_f_middle",
+      "target": "board_m_4",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "rail_b_middle",
+      "target": "board_m_4",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "rail_f_middle",
+      "target": "board_m_5",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "rail_b_middle",
+      "target": "board_m_5",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "rail_f_top",
+      "target": "board_t_1",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "rail_b_top",
+      "target": "board_t_1",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "rail_f_top",
+      "target": "board_t_2",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "rail_b_top",
+      "target": "board_t_2",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "rail_f_top",
+      "target": "board_t_3",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "rail_b_top",
+      "target": "board_t_3",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "rail_f_top",
+      "target": "board_t_4",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "rail_b_top",
+      "target": "board_t_4",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "rail_f_top",
+      "target": "board_t_5",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "rail_b_top",
+      "target": "board_t_5",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    }
+  ]
+}

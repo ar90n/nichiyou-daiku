@@ -1,1 +1,170 @@
-{"valid": false, "error": null, "overall_size": null, "size_reference": null, "pieces": [{"id": "leg_fl", "type": "2x4", "length": 681.0, "group": 0, "min": [0.0, 462.0, 0.0], "max": [89.0, 500.0, 681.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "leg_fr", "type": "2x4", "length": 681.0, "group": 1, "min": [189.0, 462.0, 0.0], "max": [278.0, 500.0, 681.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "leg_bl", "type": "2x4", "length": 681.0, "group": 0, "min": [0.0, 0.0, 0.0], "max": [89.0, 38.0, 681.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "leg_br", "type": "2x4", "length": 681.0, "group": 1, "min": [189.0, 0.0, 0.0], "max": [278.0, 38.0, 681.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "apron_left", "type": "2x4", "length": 424.0, "group": 0, "min": [0.0, 38.0, 592.0], "max": [38.0, 462.0, 681.0], "faces": {"top": "-y", "right": "+z", "front": "-x"}}, {"id": "apron_right", "type": "2x4", "length": 424.0, "group": 1, "min": [189.0, 38.0, 681.0], "max": [278.0, 462.0, 719.0], "faces": {"top": "-y", "right": "-x", "front": "-z"}}], "problems": [{"kind": "unconnected", "message": "Some pieces are not connected to each other, so their relative position is undefined (groups: leg_fl, leg_bl, apron_left; leg_fr, leg_br, apron_right)", "groups": [["leg_fl", "leg_bl", "apron_left"], ["leg_fr", "leg_br", "apron_right"]]}, {"kind": "fastener", "message": "Connection apron_right -> leg_fr: pieces do not share a contact area", "connection": ["apron_right", "leg_fr"], "fastener": "screw"}, {"kind": "fastener", "message": "Connection apron_right -> leg_br: pieces do not share a contact area", "connection": ["apron_right", "leg_br"], "fastener": "screw"}]}
+{
+  "valid": false,
+  "error": null,
+  "overall_size": null,
+  "size_reference": null,
+  "pieces": [
+    {
+      "id": "leg_fl",
+      "type": "2x4",
+      "length": 681.0,
+      "group": 0,
+      "min": [
+        0.0,
+        462.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        500.0,
+        681.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "leg_fr",
+      "type": "2x4",
+      "length": 681.0,
+      "group": 1,
+      "min": [
+        189.0,
+        462.0,
+        0.0
+      ],
+      "max": [
+        278.0,
+        500.0,
+        681.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "leg_bl",
+      "type": "2x4",
+      "length": 681.0,
+      "group": 0,
+      "min": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        38.0,
+        681.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "leg_br",
+      "type": "2x4",
+      "length": 681.0,
+      "group": 1,
+      "min": [
+        189.0,
+        0.0,
+        0.0
+      ],
+      "max": [
+        278.0,
+        38.0,
+        681.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "apron_left",
+      "type": "2x4",
+      "length": 424.0,
+      "group": 0,
+      "min": [
+        0.0,
+        38.0,
+        592.0
+      ],
+      "max": [
+        38.0,
+        462.0,
+        681.0
+      ],
+      "faces": {
+        "top": "-y",
+        "right": "+z",
+        "front": "-x"
+      }
+    },
+    {
+      "id": "apron_right",
+      "type": "2x4",
+      "length": 424.0,
+      "group": 1,
+      "min": [
+        189.0,
+        38.0,
+        681.0
+      ],
+      "max": [
+        278.0,
+        462.0,
+        719.0
+      ],
+      "faces": {
+        "top": "-y",
+        "right": "-x",
+        "front": "-z"
+      }
+    }
+  ],
+  "problems": [
+    {
+      "kind": "unconnected",
+      "message": "Some pieces are not connected to each other, so their relative position is undefined (groups: leg_fl, leg_bl, apron_left; leg_fr, leg_br, apron_right)",
+      "groups": [
+        [
+          "leg_fl",
+          "leg_bl",
+          "apron_left"
+        ],
+        [
+          "leg_fr",
+          "leg_br",
+          "apron_right"
+        ]
+      ]
+    },
+    {
+      "kind": "fastener",
+      "message": "Connection apron_right -> leg_fr: pieces do not share a contact area",
+      "connection": [
+        "apron_right",
+        "leg_fr"
+      ],
+      "fastener": "screw"
+    },
+    {
+      "kind": "fastener",
+      "message": "Connection apron_right -> leg_br: pieces do not share a contact area",
+      "connection": [
+        "apron_right",
+        "leg_br"
+      ],
+      "fastener": "screw"
+    }
+  ]
+}

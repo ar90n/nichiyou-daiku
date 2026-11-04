@@ -1,1 +1,532 @@
-[{"view": "from +y", "axis": "z", "side": "left", "stops": [0.0, 300.0], "segments": []}, {"view": "from +y", "axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"view": "from -x", "axis": "y", "side": "below", "stops": [0.0, 19.0, 38.0, 57.0, 76.0, 95.0, 114.0, 133.0, 152.0, 171.0, 190.0, 209.0, 228.0, 247.0, 266.0, 285.0, 304.0, 323.0, 342.0, 361.0, 380.0, 399.0, 418.0, 437.0, 456.0, 475.0, 494.0, 513.0, 532.0, 551.0, 570.0, 589.0, 608.0, 627.0, 646.0, 665.0, 684.0, 703.0, 722.0, 741.0, 760.0], "segments": [{"start": 0.0, "end": 19.0, "lumber": true}, {"start": 19.0, "end": 38.0, "lumber": true}, {"start": 38.0, "end": 57.0, "lumber": true}, {"start": 57.0, "end": 76.0, "lumber": true}, {"start": 76.0, "end": 95.0, "lumber": true}, {"start": 95.0, "end": 114.0, "lumber": true}, {"start": 114.0, "end": 133.0, "lumber": true}, {"start": 133.0, "end": 152.0, "lumber": true}, {"start": 152.0, "end": 171.0, "lumber": true}, {"start": 171.0, "end": 190.0, "lumber": true}, {"start": 190.0, "end": 209.0, "lumber": true}, {"start": 209.0, "end": 228.0, "lumber": true}, {"start": 228.0, "end": 247.0, "lumber": true}, {"start": 247.0, "end": 266.0, "lumber": true}, {"start": 266.0, "end": 285.0, "lumber": true}, {"start": 285.0, "end": 304.0, "lumber": true}, {"start": 304.0, "end": 323.0, "lumber": true}, {"start": 323.0, "end": 342.0, "lumber": true}, {"start": 342.0, "end": 361.0, "lumber": true}, {"start": 361.0, "end": 380.0, "lumber": true}, {"start": 380.0, "end": 399.0, "lumber": true}, {"start": 399.0, "end": 418.0, "lumber": true}, {"start": 418.0, "end": 437.0, "lumber": true}, {"start": 437.0, "end": 456.0, "lumber": true}, {"start": 456.0, "end": 475.0, "lumber": true}, {"start": 475.0, "end": 494.0, "lumber": true}, {"start": 494.0, "end": 513.0, "lumber": true}, {"start": 513.0, "end": 532.0, "lumber": true}, {"start": 532.0, "end": 551.0, "lumber": true}, {"start": 551.0, "end": 570.0, "lumber": true}, {"start": 570.0, "end": 589.0, "lumber": true}, {"start": 589.0, "end": 608.0, "lumber": true}, {"start": 608.0, "end": 627.0, "lumber": true}, {"start": 627.0, "end": 646.0, "lumber": true}, {"start": 646.0, "end": 665.0, "lumber": true}, {"start": 665.0, "end": 684.0, "lumber": true}, {"start": 684.0, "end": 703.0, "lumber": true}, {"start": 703.0, "end": 722.0, "lumber": true}, {"start": 722.0, "end": 741.0, "lumber": true}, {"start": 741.0, "end": 760.0, "lumber": true}]}, {"view": "from +z", "axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"view": "from +z", "axis": "y", "side": "left", "stops": [0.0, 19.0, 38.0, 57.0, 76.0, 95.0, 114.0, 133.0, 152.0, 171.0, 190.0, 209.0, 228.0, 247.0, 266.0, 285.0, 304.0, 323.0, 342.0, 361.0, 380.0, 399.0, 418.0, 437.0, 456.0, 475.0, 494.0, 513.0, 532.0, 551.0, 570.0, 589.0, 608.0, 627.0, 646.0, 665.0, 684.0, 703.0, 722.0, 741.0, 760.0], "segments": [{"start": 0.0, "end": 19.0, "lumber": true}, {"start": 19.0, "end": 38.0, "lumber": true}, {"start": 38.0, "end": 57.0, "lumber": true}, {"start": 57.0, "end": 76.0, "lumber": true}, {"start": 76.0, "end": 95.0, "lumber": true}, {"start": 95.0, "end": 114.0, "lumber": true}, {"start": 114.0, "end": 133.0, "lumber": true}, {"start": 133.0, "end": 152.0, "lumber": true}, {"start": 152.0, "end": 171.0, "lumber": true}, {"start": 171.0, "end": 190.0, "lumber": true}, {"start": 190.0, "end": 209.0, "lumber": true}, {"start": 209.0, "end": 228.0, "lumber": true}, {"start": 228.0, "end": 247.0, "lumber": true}, {"start": 247.0, "end": 266.0, "lumber": true}, {"start": 266.0, "end": 285.0, "lumber": true}, {"start": 285.0, "end": 304.0, "lumber": true}, {"start": 304.0, "end": 323.0, "lumber": true}, {"start": 323.0, "end": 342.0, "lumber": true}, {"start": 342.0, "end": 361.0, "lumber": true}, {"start": 361.0, "end": 380.0, "lumber": true}, {"start": 380.0, "end": 399.0, "lumber": true}, {"start": 399.0, "end": 418.0, "lumber": true}, {"start": 418.0, "end": 437.0, "lumber": true}, {"start": 437.0, "end": 456.0, "lumber": true}, {"start": 456.0, "end": 475.0, "lumber": true}, {"start": 475.0, "end": 494.0, "lumber": true}, {"start": 494.0, "end": 513.0, "lumber": true}, {"start": 513.0, "end": 532.0, "lumber": true}, {"start": 532.0, "end": 551.0, "lumber": true}, {"start": 551.0, "end": 570.0, "lumber": true}, {"start": 570.0, "end": 589.0, "lumber": true}, {"start": 589.0, "end": 608.0, "lumber": true}, {"start": 608.0, "end": 627.0, "lumber": true}, {"start": 627.0, "end": 646.0, "lumber": true}, {"start": 646.0, "end": 665.0, "lumber": true}, {"start": 665.0, "end": 684.0, "lumber": true}, {"start": 684.0, "end": 703.0, "lumber": true}, {"start": 703.0, "end": 722.0, "lumber": true}, {"start": 722.0, "end": 741.0, "lumber": true}, {"start": 741.0, "end": 760.0, "lumber": true}]}]
+[
+  {
+    "view": "from +y",
+    "axis": "z",
+    "side": "left",
+    "stops": [
+      0.0,
+      300.0
+    ],
+    "segments": []
+  },
+  {
+    "view": "from +y",
+    "axis": "x",
+    "side": "below",
+    "stops": [
+      0.0,
+      89.0
+    ],
+    "segments": []
+  },
+  {
+    "view": "from -x",
+    "axis": "y",
+    "side": "below",
+    "stops": [
+      0.0,
+      19.0,
+      38.0,
+      57.0,
+      76.0,
+      95.0,
+      114.0,
+      133.0,
+      152.0,
+      171.0,
+      190.0,
+      209.0,
+      228.0,
+      247.0,
+      266.0,
+      285.0,
+      304.0,
+      323.0,
+      342.0,
+      361.0,
+      380.0,
+      399.0,
+      418.0,
+      437.0,
+      456.0,
+      475.0,
+      494.0,
+      513.0,
+      532.0,
+      551.0,
+      570.0,
+      589.0,
+      608.0,
+      627.0,
+      646.0,
+      665.0,
+      684.0,
+      703.0,
+      722.0,
+      741.0,
+      760.0
+    ],
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 19.0,
+        "lumber": true
+      },
+      {
+        "start": 19.0,
+        "end": 38.0,
+        "lumber": true
+      },
+      {
+        "start": 38.0,
+        "end": 57.0,
+        "lumber": true
+      },
+      {
+        "start": 57.0,
+        "end": 76.0,
+        "lumber": true
+      },
+      {
+        "start": 76.0,
+        "end": 95.0,
+        "lumber": true
+      },
+      {
+        "start": 95.0,
+        "end": 114.0,
+        "lumber": true
+      },
+      {
+        "start": 114.0,
+        "end": 133.0,
+        "lumber": true
+      },
+      {
+        "start": 133.0,
+        "end": 152.0,
+        "lumber": true
+      },
+      {
+        "start": 152.0,
+        "end": 171.0,
+        "lumber": true
+      },
+      {
+        "start": 171.0,
+        "end": 190.0,
+        "lumber": true
+      },
+      {
+        "start": 190.0,
+        "end": 209.0,
+        "lumber": true
+      },
+      {
+        "start": 209.0,
+        "end": 228.0,
+        "lumber": true
+      },
+      {
+        "start": 228.0,
+        "end": 247.0,
+        "lumber": true
+      },
+      {
+        "start": 247.0,
+        "end": 266.0,
+        "lumber": true
+      },
+      {
+        "start": 266.0,
+        "end": 285.0,
+        "lumber": true
+      },
+      {
+        "start": 285.0,
+        "end": 304.0,
+        "lumber": true
+      },
+      {
+        "start": 304.0,
+        "end": 323.0,
+        "lumber": true
+      },
+      {
+        "start": 323.0,
+        "end": 342.0,
+        "lumber": true
+      },
+      {
+        "start": 342.0,
+        "end": 361.0,
+        "lumber": true
+      },
+      {
+        "start": 361.0,
+        "end": 380.0,
+        "lumber": true
+      },
+      {
+        "start": 380.0,
+        "end": 399.0,
+        "lumber": true
+      },
+      {
+        "start": 399.0,
+        "end": 418.0,
+        "lumber": true
+      },
+      {
+        "start": 418.0,
+        "end": 437.0,
+        "lumber": true
+      },
+      {
+        "start": 437.0,
+        "end": 456.0,
+        "lumber": true
+      },
+      {
+        "start": 456.0,
+        "end": 475.0,
+        "lumber": true
+      },
+      {
+        "start": 475.0,
+        "end": 494.0,
+        "lumber": true
+      },
+      {
+        "start": 494.0,
+        "end": 513.0,
+        "lumber": true
+      },
+      {
+        "start": 513.0,
+        "end": 532.0,
+        "lumber": true
+      },
+      {
+        "start": 532.0,
+        "end": 551.0,
+        "lumber": true
+      },
+      {
+        "start": 551.0,
+        "end": 570.0,
+        "lumber": true
+      },
+      {
+        "start": 570.0,
+        "end": 589.0,
+        "lumber": true
+      },
+      {
+        "start": 589.0,
+        "end": 608.0,
+        "lumber": true
+      },
+      {
+        "start": 608.0,
+        "end": 627.0,
+        "lumber": true
+      },
+      {
+        "start": 627.0,
+        "end": 646.0,
+        "lumber": true
+      },
+      {
+        "start": 646.0,
+        "end": 665.0,
+        "lumber": true
+      },
+      {
+        "start": 665.0,
+        "end": 684.0,
+        "lumber": true
+      },
+      {
+        "start": 684.0,
+        "end": 703.0,
+        "lumber": true
+      },
+      {
+        "start": 703.0,
+        "end": 722.0,
+        "lumber": true
+      },
+      {
+        "start": 722.0,
+        "end": 741.0,
+        "lumber": true
+      },
+      {
+        "start": 741.0,
+        "end": 760.0,
+        "lumber": true
+      }
+    ]
+  },
+  {
+    "view": "from +z",
+    "axis": "x",
+    "side": "below",
+    "stops": [
+      0.0,
+      89.0
+    ],
+    "segments": []
+  },
+  {
+    "view": "from +z",
+    "axis": "y",
+    "side": "left",
+    "stops": [
+      0.0,
+      19.0,
+      38.0,
+      57.0,
+      76.0,
+      95.0,
+      114.0,
+      133.0,
+      152.0,
+      171.0,
+      190.0,
+      209.0,
+      228.0,
+      247.0,
+      266.0,
+      285.0,
+      304.0,
+      323.0,
+      342.0,
+      361.0,
+      380.0,
+      399.0,
+      418.0,
+      437.0,
+      456.0,
+      475.0,
+      494.0,
+      513.0,
+      532.0,
+      551.0,
+      570.0,
+      589.0,
+      608.0,
+      627.0,
+      646.0,
+      665.0,
+      684.0,
+      703.0,
+      722.0,
+      741.0,
+      760.0
+    ],
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 19.0,
+        "lumber": true
+      },
+      {
+        "start": 19.0,
+        "end": 38.0,
+        "lumber": true
+      },
+      {
+        "start": 38.0,
+        "end": 57.0,
+        "lumber": true
+      },
+      {
+        "start": 57.0,
+        "end": 76.0,
+        "lumber": true
+      },
+      {
+        "start": 76.0,
+        "end": 95.0,
+        "lumber": true
+      },
+      {
+        "start": 95.0,
+        "end": 114.0,
+        "lumber": true
+      },
+      {
+        "start": 114.0,
+        "end": 133.0,
+        "lumber": true
+      },
+      {
+        "start": 133.0,
+        "end": 152.0,
+        "lumber": true
+      },
+      {
+        "start": 152.0,
+        "end": 171.0,
+        "lumber": true
+      },
+      {
+        "start": 171.0,
+        "end": 190.0,
+        "lumber": true
+      },
+      {
+        "start": 190.0,
+        "end": 209.0,
+        "lumber": true
+      },
+      {
+        "start": 209.0,
+        "end": 228.0,
+        "lumber": true
+      },
+      {
+        "start": 228.0,
+        "end": 247.0,
+        "lumber": true
+      },
+      {
+        "start": 247.0,
+        "end": 266.0,
+        "lumber": true
+      },
+      {
+        "start": 266.0,
+        "end": 285.0,
+        "lumber": true
+      },
+      {
+        "start": 285.0,
+        "end": 304.0,
+        "lumber": true
+      },
+      {
+        "start": 304.0,
+        "end": 323.0,
+        "lumber": true
+      },
+      {
+        "start": 323.0,
+        "end": 342.0,
+        "lumber": true
+      },
+      {
+        "start": 342.0,
+        "end": 361.0,
+        "lumber": true
+      },
+      {
+        "start": 361.0,
+        "end": 380.0,
+        "lumber": true
+      },
+      {
+        "start": 380.0,
+        "end": 399.0,
+        "lumber": true
+      },
+      {
+        "start": 399.0,
+        "end": 418.0,
+        "lumber": true
+      },
+      {
+        "start": 418.0,
+        "end": 437.0,
+        "lumber": true
+      },
+      {
+        "start": 437.0,
+        "end": 456.0,
+        "lumber": true
+      },
+      {
+        "start": 456.0,
+        "end": 475.0,
+        "lumber": true
+      },
+      {
+        "start": 475.0,
+        "end": 494.0,
+        "lumber": true
+      },
+      {
+        "start": 494.0,
+        "end": 513.0,
+        "lumber": true
+      },
+      {
+        "start": 513.0,
+        "end": 532.0,
+        "lumber": true
+      },
+      {
+        "start": 532.0,
+        "end": 551.0,
+        "lumber": true
+      },
+      {
+        "start": 551.0,
+        "end": 570.0,
+        "lumber": true
+      },
+      {
+        "start": 570.0,
+        "end": 589.0,
+        "lumber": true
+      },
+      {
+        "start": 589.0,
+        "end": 608.0,
+        "lumber": true
+      },
+      {
+        "start": 608.0,
+        "end": 627.0,
+        "lumber": true
+      },
+      {
+        "start": 627.0,
+        "end": 646.0,
+        "lumber": true
+      },
+      {
+        "start": 646.0,
+        "end": 665.0,
+        "lumber": true
+      },
+      {
+        "start": 665.0,
+        "end": 684.0,
+        "lumber": true
+      },
+      {
+        "start": 684.0,
+        "end": 703.0,
+        "lumber": true
+      },
+      {
+        "start": 703.0,
+        "end": 722.0,
+        "lumber": true
+      },
+      {
+        "start": 722.0,
+        "end": 741.0,
+        "lumber": true
+      },
+      {
+        "start": 741.0,
+        "end": 760.0,
+        "lumber": true
+      }
+    ]
+  }
+]

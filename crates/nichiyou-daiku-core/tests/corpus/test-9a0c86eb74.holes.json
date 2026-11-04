@@ -1,1 +1,394 @@
-{"pieces": {"left_side": [{"face": "back", "center": [46.0, 0.0, 9.5], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [46.0, 0.0, 303.5], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [46.0, 0.0, 596.5], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [46.0, 0.0, 890.5], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [138.0, 0.0, 9.5], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [138.0, 0.0, 303.5], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [138.0, 0.0, 596.5], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [138.0, 0.0, 890.5], "diameter": 8.0, "depth": 15.0}], "bottom": [{"face": "down", "center": [46.0, 9.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "down", "center": [138.0, 9.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [46.0, 9.5, 562.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [138.0, 9.5, 562.0], "diameter": 8.0, "depth": 15.0}], "right_side": [{"face": "front", "center": [46.0, 19.0, 9.5], "diameter": 8.0, "depth": 15.0}, {"face": "front", "center": [46.0, 19.0, 303.5], "diameter": 8.0, "depth": 15.0}, {"face": "front", "center": [46.0, 19.0, 596.5], "diameter": 8.0, "depth": 15.0}, {"face": "front", "center": [46.0, 19.0, 890.5], "diameter": 8.0, "depth": 15.0}, {"face": "front", "center": [138.0, 19.0, 9.5], "diameter": 8.0, "depth": 15.0}, {"face": "front", "center": [138.0, 19.0, 303.5], "diameter": 8.0, "depth": 15.0}, {"face": "front", "center": [138.0, 19.0, 596.5], "diameter": 8.0, "depth": 15.0}, {"face": "front", "center": [138.0, 19.0, 890.5], "diameter": 8.0, "depth": 15.0}], "shelf_1": [{"face": "down", "center": [46.0, 9.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "down", "center": [138.0, 9.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [46.0, 9.5, 562.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [138.0, 9.5, 562.0], "diameter": 8.0, "depth": 15.0}], "shelf_2": [{"face": "down", "center": [46.0, 9.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "down", "center": [138.0, 9.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [46.0, 9.5, 562.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [138.0, 9.5, 562.0], "diameter": 8.0, "depth": 15.0}], "top": [{"face": "down", "center": [46.0, 9.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "down", "center": [138.0, 9.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [46.0, 9.5, 562.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [138.0, 9.5, 562.0], "diameter": 8.0, "depth": 15.0}]}, "fasteners": [{"base": "left_side", "target": "bottom", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "right_side", "target": "bottom", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "left_side", "target": "shelf_1", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "right_side", "target": "shelf_1", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "left_side", "target": "shelf_2", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "right_side", "target": "shelf_2", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "left_side", "target": "top", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "right_side", "target": "top", "kind": "dowel", "diameter": 8.0, "count": 2}]}
+{
+  "pieces": {
+    "left_side": [
+      {
+        "face": "back",
+        "center": [
+          46.0,
+          0.0,
+          9.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          46.0,
+          0.0,
+          303.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          46.0,
+          0.0,
+          596.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          46.0,
+          0.0,
+          890.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          138.0,
+          0.0,
+          9.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          138.0,
+          0.0,
+          303.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          138.0,
+          0.0,
+          596.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          138.0,
+          0.0,
+          890.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "bottom": [
+      {
+        "face": "down",
+        "center": [
+          46.0,
+          9.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "down",
+        "center": [
+          138.0,
+          9.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          46.0,
+          9.5,
+          562.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          138.0,
+          9.5,
+          562.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "right_side": [
+      {
+        "face": "front",
+        "center": [
+          46.0,
+          19.0,
+          9.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "front",
+        "center": [
+          46.0,
+          19.0,
+          303.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "front",
+        "center": [
+          46.0,
+          19.0,
+          596.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "front",
+        "center": [
+          46.0,
+          19.0,
+          890.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "front",
+        "center": [
+          138.0,
+          19.0,
+          9.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "front",
+        "center": [
+          138.0,
+          19.0,
+          303.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "front",
+        "center": [
+          138.0,
+          19.0,
+          596.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "front",
+        "center": [
+          138.0,
+          19.0,
+          890.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "shelf_1": [
+      {
+        "face": "down",
+        "center": [
+          46.0,
+          9.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "down",
+        "center": [
+          138.0,
+          9.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          46.0,
+          9.5,
+          562.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          138.0,
+          9.5,
+          562.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "shelf_2": [
+      {
+        "face": "down",
+        "center": [
+          46.0,
+          9.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "down",
+        "center": [
+          138.0,
+          9.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          46.0,
+          9.5,
+          562.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          138.0,
+          9.5,
+          562.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "top": [
+      {
+        "face": "down",
+        "center": [
+          46.0,
+          9.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "down",
+        "center": [
+          138.0,
+          9.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          46.0,
+          9.5,
+          562.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          138.0,
+          9.5,
+          562.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ]
+  },
+  "fasteners": [
+    {
+      "base": "left_side",
+      "target": "bottom",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "right_side",
+      "target": "bottom",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "left_side",
+      "target": "shelf_1",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "right_side",
+      "target": "shelf_1",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "left_side",
+      "target": "shelf_2",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "right_side",
+      "target": "shelf_2",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "left_side",
+      "target": "top",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "right_side",
+      "target": "top",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    }
+  ]
+}

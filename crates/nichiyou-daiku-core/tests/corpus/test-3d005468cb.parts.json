@@ -1,1 +1,50 @@
-{"parts": [{"index": 0, "title": "piece1   2x4   1000   φ8 ↧15 ×2", "letters": {"top": "A"}, "faces": [{"face": "top", "right": [0.0, 22.25, 66.75, 89.0], "up": [0.0, 19.0, 38.0]}]}, {"index": 1, "title": "piece2   2x4   800   φ8 ↧15 ×2", "letters": {"back": "A"}, "faces": [{"face": "back", "right": [0.0, 19.0, 800.0], "up": [0.0, 22.25, 66.75, 89.0]}]}]}
+{
+  "parts": [
+    {
+      "index": 0,
+      "title": "piece1   2x4   1000   φ8 ↧15 ×2",
+      "letters": {
+        "top": "A"
+      },
+      "faces": [
+        {
+          "face": "top",
+          "right": [
+            0.0,
+            22.25,
+            66.75,
+            89.0
+          ],
+          "up": [
+            0.0,
+            19.0,
+            38.0
+          ]
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "title": "piece2   2x4   800   φ8 ↧15 ×2",
+      "letters": {
+        "back": "A"
+      },
+      "faces": [
+        {
+          "face": "back",
+          "right": [
+            0.0,
+            19.0,
+            800.0
+          ],
+          "up": [
+            0.0,
+            22.25,
+            66.75,
+            89.0
+          ]
+        }
+      ]
+    }
+  ]
+}

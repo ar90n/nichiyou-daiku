@@ -1,1 +1,106 @@
-{"pieces": {"left_side": [{"face": "back", "center": [22.25, 0.0, 319.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [66.75, 0.0, 319.0], "diameter": 8.0, "depth": 15.0}], "shelf": [{"face": "down", "center": [22.25, 19.0, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "down", "center": [66.75, 19.0, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [22.25, 19.0, 600.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [66.75, 19.0, 600.0], "diameter": 8.0, "depth": 15.0}], "right_side": [{"face": "front", "center": [22.25, 38.0, 319.0], "diameter": 8.0, "depth": 15.0}, {"face": "front", "center": [66.75, 38.0, 319.0], "diameter": 8.0, "depth": 15.0}]}, "fasteners": [{"base": "left_side", "target": "shelf", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "right_side", "target": "shelf", "kind": "dowel", "diameter": 8.0, "count": 2}]}
+{
+  "pieces": {
+    "left_side": [
+      {
+        "face": "back",
+        "center": [
+          22.25,
+          0.0,
+          319.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          66.75,
+          0.0,
+          319.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "shelf": [
+      {
+        "face": "down",
+        "center": [
+          22.25,
+          19.0,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "down",
+        "center": [
+          66.75,
+          19.0,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          22.25,
+          19.0,
+          600.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          66.75,
+          19.0,
+          600.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "right_side": [
+      {
+        "face": "front",
+        "center": [
+          22.25,
+          38.0,
+          319.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "front",
+        "center": [
+          66.75,
+          38.0,
+          319.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ]
+  },
+  "fasteners": [
+    {
+      "base": "left_side",
+      "target": "shelf",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "right_side",
+      "target": "shelf",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    }
+  ]
+}

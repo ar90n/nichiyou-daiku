@@ -1,1 +1,59 @@
-{"pieces": {"apron_side": [{"face": "down", "center": [22.25, 19.0, 0.0], "diameter": 2.5, "depth": 27.0}, {"face": "down", "center": [66.75, 19.0, 0.0], "diameter": 2.5, "depth": 27.0}], "leg": [{"face": "back", "center": [19.0, 0.0, 614.25], "diameter": 2.5, "depth": null}, {"face": "back", "center": [19.0, 0.0, 658.75], "diameter": 2.5, "depth": null}]}, "fasteners": [{"base": "apron_side", "target": "leg", "kind": "screw", "diameter": 3.8, "count": 2}]}
+{
+  "pieces": {
+    "apron_side": [
+      {
+        "face": "down",
+        "center": [
+          22.25,
+          19.0,
+          0.0
+        ],
+        "diameter": 2.5,
+        "depth": 27.0
+      },
+      {
+        "face": "down",
+        "center": [
+          66.75,
+          19.0,
+          0.0
+        ],
+        "diameter": 2.5,
+        "depth": 27.0
+      }
+    ],
+    "leg": [
+      {
+        "face": "front",
+        "center": [
+          19.0,
+          38.0,
+          614.25
+        ],
+        "diameter": 2.5,
+        "depth": null,
+        "countersink": 7.5
+      },
+      {
+        "face": "front",
+        "center": [
+          19.0,
+          38.0,
+          658.75
+        ],
+        "diameter": 2.5,
+        "depth": null,
+        "countersink": 7.5
+      }
+    ]
+  },
+  "fasteners": [
+    {
+      "base": "apron_side",
+      "target": "leg",
+      "kind": "screw",
+      "diameter": 3.8,
+      "count": 2
+    }
+  ]
+}

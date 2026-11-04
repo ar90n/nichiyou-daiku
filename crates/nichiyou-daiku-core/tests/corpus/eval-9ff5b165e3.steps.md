@@ -14,9 +14,11 @@
 | rail_upper_back_left, rail_upper_back_right, rail_lower_back_left, rail_lower_back_right | 2x4 | 466.5 | 4 | [part-08.png](part-08.png) |
 | rail_upper_left, rail_upper_right, rail_upper_center | 2x4 | 274 | 3 | [part-09.png](part-09.png) |
 | rail_lower_front_left, rail_lower_front_right | 2x4 | 466.5 | 2 | [part-10.png](part-10.png) |
-| top_1, top_8 | 2x6 | 350 | 2 | [part-11.png](part-11.png) |
+| top_1 | 2x6 | 350 | 1 | [part-11.png](part-11.png) |
 | top_2, top_3, top_6, top_7, shelf_l1, shelf_l2, shelf_l3, shelf_r1, shelf_r2, shelf_r3 | 2x6 | 350 | 10 | [part-12.png](part-12.png) |
-| top_4, top_5 | 2x6 | 350 | 2 | [part-13.png](part-13.png) |
+| top_4 | 2x6 | 350 | 1 | [part-13.png](part-13.png) |
+| top_5 | 2x6 | 350 | 1 | [part-14.png](part-14.png) |
+| top_8 | 2x6 | 350 | 1 | [part-15.png](part-15.png) |
 
 ### leg_fl
 
@@ -58,7 +60,7 @@
 
 ![Part 10](part-10.png)
 
-### top_1, top_8 ×2
+### top_1
 
 ![Part 11](part-11.png)
 
@@ -66,9 +68,17 @@
 
 ![Part 12](part-12.png)
 
-### top_4, top_5 ×2
+### top_4
 
 ![Part 13](part-13.png)
+
+### top_5
+
+![Part 14](part-14.png)
+
+### top_8
+
+![Part 15](part-15.png)
 
 ## Step 1 - Left frame
 

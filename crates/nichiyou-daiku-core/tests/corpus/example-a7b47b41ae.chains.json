@@ -1,1 +1,208 @@
-[{"view": "from +y", "axis": "z", "side": "left", "stops": [0.0, 100.0, 189.0, 631.0, 720.0, 758.0], "segments": [{"start": 0.0, "end": 100.0, "lumber": false}, {"start": 100.0, "end": 189.0, "lumber": true}, {"start": 189.0, "end": 631.0, "lumber": false}, {"start": 631.0, "end": 720.0, "lumber": true}, {"start": 720.0, "end": 758.0, "lumber": true}]}, {"view": "from +y", "axis": "x", "side": "below", "stops": [0.0, 89.0, 711.0, 800.0], "segments": [{"start": 0.0, "end": 89.0, "lumber": true}, {"start": 89.0, "end": 711.0, "lumber": false}, {"start": 711.0, "end": 800.0, "lumber": true}]}, {"view": "from -x", "axis": "y", "side": "below", "stops": [0.0, 38.0, 562.0, 600.0], "segments": [{"start": 0.0, "end": 38.0, "lumber": true}, {"start": 38.0, "end": 562.0, "lumber": false}, {"start": 562.0, "end": 600.0, "lumber": true}]}, {"view": "from +z", "axis": "x", "side": "below", "stops": [0.0, 89.0, 101.571429, 190.571429, 203.142857, 292.142857, 304.714286, 393.714286, 406.285714, 495.285714, 507.857143, 596.857143, 609.428571, 698.428571, 711.0, 800.0], "segments": [{"start": 0.0, "end": 89.0, "lumber": true}, {"start": 89.0, "end": 101.571429, "lumber": false}, {"start": 101.571429, "end": 190.571429, "lumber": true}, {"start": 190.571429, "end": 203.142857, "lumber": false}, {"start": 203.142857, "end": 292.142857, "lumber": true}, {"start": 292.142857, "end": 304.714286, "lumber": false}, {"start": 304.714286, "end": 393.714286, "lumber": true}, {"start": 393.714286, "end": 406.285714, "lumber": false}, {"start": 406.285714, "end": 495.285714, "lumber": true}, {"start": 495.285714, "end": 507.857143, "lumber": false}, {"start": 507.857143, "end": 596.857143, "lumber": true}, {"start": 596.857143, "end": 609.428571, "lumber": false}, {"start": 609.428571, "end": 698.428571, "lumber": true}, {"start": 698.428571, "end": 711.0, "lumber": false}, {"start": 711.0, "end": 800.0, "lumber": true}]}, {"view": "from +z", "axis": "y", "side": "left", "stops": [0.0, 600.0], "segments": []}]
+[
+  {
+    "view": "from +y",
+    "axis": "z",
+    "side": "left",
+    "stops": [
+      0.0,
+      100.0,
+      189.0,
+      631.0,
+      720.0,
+      758.0
+    ],
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 100.0,
+        "lumber": false
+      },
+      {
+        "start": 100.0,
+        "end": 189.0,
+        "lumber": true
+      },
+      {
+        "start": 189.0,
+        "end": 631.0,
+        "lumber": false
+      },
+      {
+        "start": 631.0,
+        "end": 720.0,
+        "lumber": true
+      },
+      {
+        "start": 720.0,
+        "end": 758.0,
+        "lumber": true
+      }
+    ]
+  },
+  {
+    "view": "from +y",
+    "axis": "x",
+    "side": "below",
+    "stops": [
+      0.0,
+      89.0,
+      711.0,
+      800.0
+    ],
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 89.0,
+        "lumber": true
+      },
+      {
+        "start": 89.0,
+        "end": 711.0,
+        "lumber": false
+      },
+      {
+        "start": 711.0,
+        "end": 800.0,
+        "lumber": true
+      }
+    ]
+  },
+  {
+    "view": "from -x",
+    "axis": "y",
+    "side": "below",
+    "stops": [
+      0.0,
+      38.0,
+      562.0,
+      600.0
+    ],
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 38.0,
+        "lumber": true
+      },
+      {
+        "start": 38.0,
+        "end": 562.0,
+        "lumber": false
+      },
+      {
+        "start": 562.0,
+        "end": 600.0,
+        "lumber": true
+      }
+    ]
+  },
+  {
+    "view": "from +z",
+    "axis": "x",
+    "side": "below",
+    "stops": [
+      0.0,
+      89.0,
+      101.571429,
+      190.571429,
+      203.142857,
+      292.142857,
+      304.714286,
+      393.714286,
+      406.285714,
+      495.285714,
+      507.857143,
+      596.857143,
+      609.428571,
+      698.428571,
+      711.0,
+      800.0
+    ],
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 89.0,
+        "lumber": true
+      },
+      {
+        "start": 89.0,
+        "end": 101.571429,
+        "lumber": false
+      },
+      {
+        "start": 101.571429,
+        "end": 190.571429,
+        "lumber": true
+      },
+      {
+        "start": 190.571429,
+        "end": 203.142857,
+        "lumber": false
+      },
+      {
+        "start": 203.142857,
+        "end": 292.142857,
+        "lumber": true
+      },
+      {
+        "start": 292.142857,
+        "end": 304.714286,
+        "lumber": false
+      },
+      {
+        "start": 304.714286,
+        "end": 393.714286,
+        "lumber": true
+      },
+      {
+        "start": 393.714286,
+        "end": 406.285714,
+        "lumber": false
+      },
+      {
+        "start": 406.285714,
+        "end": 495.285714,
+        "lumber": true
+      },
+      {
+        "start": 495.285714,
+        "end": 507.857143,
+        "lumber": false
+      },
+      {
+        "start": 507.857143,
+        "end": 596.857143,
+        "lumber": true
+      },
+      {
+        "start": 596.857143,
+        "end": 609.428571,
+        "lumber": false
+      },
+      {
+        "start": 609.428571,
+        "end": 698.428571,
+        "lumber": true
+      },
+      {
+        "start": 698.428571,
+        "end": 711.0,
+        "lumber": false
+      },
+      {
+        "start": 711.0,
+        "end": 800.0,
+        "lumber": true
+      }
+    ]
+  },
+  {
+    "view": "from +z",
+    "axis": "y",
+    "side": "left",
+    "stops": [
+      0.0,
+      600.0
+    ],
+    "segments": []
+  }
+]

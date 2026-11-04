@@ -1,1 +1,250 @@
-{"parts": [{"index": 0, "title": "leg_1, leg_4 ×2   2x2   481   φ8 ↧15 ×12", "letters": {"back": "A", "left": "B"}, "faces": [{"face": "back", "right": [0.0, 43.0, 243.0, 443.0, 481.0], "up": [0.0, 9.5, 28.5, 38.0]}, {"face": "left", "right": [0.0, 62.0, 262.0, 462.0, 481.0], "up": [0.0, 9.5, 28.5, 38.0]}]}, {"index": 1, "title": "leg_2, leg_3 ×2   2x2   481   φ8 ↧15 ×12", "letters": {"back": "A", "right": "B"}, "faces": [{"face": "back", "right": [0.0, 43.0, 243.0, 443.0, 481.0], "up": [0.0, 9.5, 28.5, 38.0]}, {"face": "right", "right": [0.0, 62.0, 262.0, 462.0, 481.0], "up": [0.0, 9.5, 28.5, 38.0]}]}, {"index": 2, "title": "rail_t_front, rail_m_front, rail_b_front ×3   2x2   524   φ2 ↧26 ×10   φ8 ↧15 ×4", "letters": {"right": "A", "top": "B", "down": "C"}, "faces": [{"face": "right", "right": [0.0, 22.25, 66.75, 131.0, 175.5, 239.75, 284.25, 348.5, 393.0, 457.25, 501.75, 524.0], "up": [0.0, 19.0, 38.0]}, {"face": "top", "right": [0.0, 19.0, 38.0], "up": [0.0, 9.5, 28.5, 38.0]}, {"face": "down", "right": [0.0, 19.0, 38.0], "up": [0.0, 9.5, 28.5, 38.0]}]}, {"index": 3, "title": "rail_t_back, rail_m_back, rail_b_back ×3   2x2   524   φ8 ↧15 ×4", "letters": {"top": "A", "down": "B", "front": "C"}, "faces": [{"face": "top", "right": [0.0, 19.0, 38.0], "up": [0.0, 9.5, 28.5, 38.0]}, {"face": "down", "right": [0.0, 19.0, 38.0], "up": [0.0, 9.5, 28.5, 38.0]}]}, {"index": 4, "title": "rail_t_left, rail_t_right, rail_m_left, rail_m_right, rail_b_left, rail_b_right ×6   2x2   224   φ8 ↧15 ×4", "letters": {"top": "A", "down": "B", "front": "C"}, "faces": [{"face": "top", "right": [0.0, 19.0, 38.0], "up": [0.0, 9.5, 28.5, 38.0]}, {"face": "down", "right": [0.0, 19.0, 38.0], "up": [0.0, 9.5, 28.5, 38.0]}]}, {"index": 5, "title": "board_t_1, board_t_2, board_t_3, board_t_4, board_t_5, board_m_1, board_m_2, board_m_3, board_m_4, board_m_5, board_b_1, board_b_2, board_b_3, board_b_4, board_b_5 ×15   1x4   300   φ2 ×2", "letters": {"back": "A"}, "faces": [{"face": "back", "right": [0.0, 281.0, 300.0], "up": [0.0, 22.25, 66.75, 89.0]}]}]}
+{
+  "parts": [
+    {
+      "index": 0,
+      "title": "leg_1, leg_4 ×2   2x2   481   φ8 ↧15 ×12",
+      "letters": {
+        "back": "A",
+        "left": "B"
+      },
+      "faces": [
+        {
+          "face": "back",
+          "right": [
+            0.0,
+            43.0,
+            243.0,
+            443.0,
+            481.0
+          ],
+          "up": [
+            0.0,
+            9.5,
+            28.5,
+            38.0
+          ]
+        },
+        {
+          "face": "left",
+          "right": [
+            0.0,
+            62.0,
+            262.0,
+            462.0,
+            481.0
+          ],
+          "up": [
+            0.0,
+            9.5,
+            28.5,
+            38.0
+          ]
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "title": "leg_2, leg_3 ×2   2x2   481   φ8 ↧15 ×12",
+      "letters": {
+        "back": "A",
+        "right": "B"
+      },
+      "faces": [
+        {
+          "face": "back",
+          "right": [
+            0.0,
+            43.0,
+            243.0,
+            443.0,
+            481.0
+          ],
+          "up": [
+            0.0,
+            9.5,
+            28.5,
+            38.0
+          ]
+        },
+        {
+          "face": "right",
+          "right": [
+            0.0,
+            62.0,
+            262.0,
+            462.0,
+            481.0
+          ],
+          "up": [
+            0.0,
+            9.5,
+            28.5,
+            38.0
+          ]
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "title": "rail_t_front, rail_m_front, rail_b_front ×3   2x2   524   φ2 ↧26 ×10   φ8 ↧15 ×4",
+      "letters": {
+        "right": "A",
+        "top": "B",
+        "down": "C"
+      },
+      "faces": [
+        {
+          "face": "right",
+          "right": [
+            0.0,
+            22.25,
+            66.75,
+            131.0,
+            175.5,
+            239.75,
+            284.25,
+            348.5,
+            393.0,
+            457.25,
+            501.75,
+            524.0
+          ],
+          "up": [
+            0.0,
+            19.0,
+            38.0
+          ]
+        },
+        {
+          "face": "top",
+          "right": [
+            0.0,
+            19.0,
+            38.0
+          ],
+          "up": [
+            0.0,
+            9.5,
+            28.5,
+            38.0
+          ]
+        },
+        {
+          "face": "down",
+          "right": [
+            0.0,
+            19.0,
+            38.0
+          ],
+          "up": [
+            0.0,
+            9.5,
+            28.5,
+            38.0
+          ]
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "title": "rail_t_back, rail_m_back, rail_b_back ×3   2x2   524   φ8 ↧15 ×4",
+      "letters": {
+        "top": "A",
+        "down": "B",
+        "front": "C"
+      },
+      "faces": [
+        {
+          "face": "top",
+          "right": [
+            0.0,
+            19.0,
+            38.0
+          ],
+          "up": [
+            0.0,
+            9.5,
+            28.5,
+            38.0
+          ]
+        },
+        {
+          "face": "down",
+          "right": [
+            0.0,
+            19.0,
+            38.0
+          ],
+          "up": [
+            0.0,
+            9.5,
+            28.5,
+            38.0
+          ]
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "title": "rail_t_left, rail_t_right, rail_m_left, rail_m_right, rail_b_left, rail_b_right ×6   2x2   224   φ8 ↧15 ×4",
+      "letters": {
+        "top": "A",
+        "down": "B",
+        "front": "C"
+      },
+      "faces": [
+        {
+          "face": "top",
+          "right": [
+            0.0,
+            19.0,
+            38.0
+          ],
+          "up": [
+            0.0,
+            9.5,
+            28.5,
+            38.0
+          ]
+        },
+        {
+          "face": "down",
+          "right": [
+            0.0,
+            19.0,
+            38.0
+          ],
+          "up": [
+            0.0,
+            9.5,
+            28.5,
+            38.0
+          ]
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "title": "board_t_1, board_t_2, board_t_3, board_t_4, board_t_5, board_m_1, board_m_2, board_m_3, board_m_4, board_m_5, board_b_1, board_b_2, board_b_3, board_b_4, board_b_5 ×15   1x4   300   φ2 ×2",
+      "letters": {
+        "front": "A"
+      },
+      "faces": [
+        {
+          "face": "front",
+          "right": [
+            0.0,
+            281.0,
+            300.0
+          ],
+          "up": [
+            0.0,
+            22.25,
+            66.75,
+            89.0
+          ]
+        }
+      ]
+    }
+  ]
+}

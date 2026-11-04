@@ -1,1 +1,55 @@
-{"valid": true, "error": null, "overall_size": [689.0, 38.0, 720.0], "size_reference": "leg", "pieces": [{"id": "leg", "type": "2x4", "length": 720.0, "group": 0, "min": [600.0, 0.0, 0.0], "max": [689.0, 38.0, 720.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "apron", "type": "2x4", "length": 600.0, "group": 0, "min": [0.0, 0.0, 631.0], "max": [600.0, 38.0, 720.0], "faces": {"top": "-x", "right": "+z", "front": "+y"}}], "problems": []}
+{
+  "valid": true,
+  "error": null,
+  "overall_size": [
+    689.0,
+    38.0,
+    720.0
+  ],
+  "size_reference": "leg",
+  "pieces": [
+    {
+      "id": "leg",
+      "type": "2x4",
+      "length": 720.0,
+      "group": 0,
+      "min": [
+        600.0,
+        0.0,
+        0.0
+      ],
+      "max": [
+        689.0,
+        38.0,
+        720.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "apron",
+      "type": "2x4",
+      "length": 600.0,
+      "group": 0,
+      "min": [
+        0.0,
+        0.0,
+        631.0
+      ],
+      "max": [
+        600.0,
+        38.0,
+        720.0
+      ],
+      "faces": {
+        "top": "-x",
+        "right": "+z",
+        "front": "+y"
+      }
+    }
+  ],
+  "problems": []
+}

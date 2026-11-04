@@ -1,1 +1,160 @@
-{"valid": true, "error": null, "overall_size": [600.0, 184.0, 900.0], "size_reference": "back_cleat", "pieces": [{"id": "back_cleat", "type": "1x8", "length": 50.0, "group": 0, "min": [208.0, 0.0, 831.0], "max": [392.0, 19.0, 881.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "side_l", "type": "1x8", "length": 900.0, "group": 0, "min": [0.0, 0.0, 0.0], "max": [19.0, 184.0, 900.0], "faces": {"top": "+z", "right": "-y", "front": "+x"}}, {"id": "side_r", "type": "1x8", "length": 900.0, "group": 0, "min": [581.0, 0.0, 0.0], "max": [600.0, 184.0, 900.0], "faces": {"top": "+z", "right": "+y", "front": "-x"}}, {"id": "shelf_1", "type": "1x8", "length": 562.0, "group": 0, "min": [19.0, 0.0, 0.0], "max": [581.0, 184.0, 19.0], "faces": {"top": "+x", "right": "+y", "front": "+z"}}, {"id": "shelf_2", "type": "1x8", "length": 562.0, "group": 0, "min": [19.0, 0.0, 293.666667], "max": [581.0, 184.0, 312.666667], "faces": {"top": "+x", "right": "+y", "front": "+z"}}, {"id": "shelf_3", "type": "1x8", "length": 562.0, "group": 0, "min": [19.0, 0.0, 587.333333], "max": [581.0, 184.0, 606.333333], "faces": {"top": "+x", "right": "+y", "front": "+z"}}, {"id": "shelf_4", "type": "1x8", "length": 562.0, "group": 0, "min": [19.0, 0.0, 881.0], "max": [581.0, 184.0, 900.0], "faces": {"top": "+x", "right": "+y", "front": "+z"}}], "problems": []}
+{
+  "valid": true,
+  "error": null,
+  "overall_size": [
+    600.0,
+    184.0,
+    900.0
+  ],
+  "size_reference": "back_cleat",
+  "pieces": [
+    {
+      "id": "back_cleat",
+      "type": "1x8",
+      "length": 50.0,
+      "group": 0,
+      "min": [
+        208.0,
+        0.0,
+        831.0
+      ],
+      "max": [
+        392.0,
+        19.0,
+        881.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "side_l",
+      "type": "1x8",
+      "length": 900.0,
+      "group": 0,
+      "min": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "max": [
+        19.0,
+        184.0,
+        900.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "-y",
+        "front": "+x"
+      }
+    },
+    {
+      "id": "side_r",
+      "type": "1x8",
+      "length": 900.0,
+      "group": 0,
+      "min": [
+        581.0,
+        0.0,
+        0.0
+      ],
+      "max": [
+        600.0,
+        184.0,
+        900.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+y",
+        "front": "-x"
+      }
+    },
+    {
+      "id": "shelf_1",
+      "type": "1x8",
+      "length": 562.0,
+      "group": 0,
+      "min": [
+        19.0,
+        0.0,
+        0.0
+      ],
+      "max": [
+        581.0,
+        184.0,
+        19.0
+      ],
+      "faces": {
+        "top": "+x",
+        "right": "+y",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "shelf_2",
+      "type": "1x8",
+      "length": 562.0,
+      "group": 0,
+      "min": [
+        19.0,
+        0.0,
+        293.666667
+      ],
+      "max": [
+        581.0,
+        184.0,
+        312.666667
+      ],
+      "faces": {
+        "top": "+x",
+        "right": "+y",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "shelf_3",
+      "type": "1x8",
+      "length": 562.0,
+      "group": 0,
+      "min": [
+        19.0,
+        0.0,
+        587.333333
+      ],
+      "max": [
+        581.0,
+        184.0,
+        606.333333
+      ],
+      "faces": {
+        "top": "+x",
+        "right": "+y",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "shelf_4",
+      "type": "1x8",
+      "length": 562.0,
+      "group": 0,
+      "min": [
+        19.0,
+        0.0,
+        881.0
+      ],
+      "max": [
+        581.0,
+        184.0,
+        900.0
+      ],
+      "faces": {
+        "top": "+x",
+        "right": "+y",
+        "front": "+z"
+      }
+    }
+  ],
+  "problems": []
+}

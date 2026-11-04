@@ -1,11 +1,9 @@
-//! The CLI against what the Python version printed (tools/make_goldens.py
-//! --cli): validate, validate --json and report for every corpus case, and
-//! the option cases in tests/cli.
+//! What the CLI prints against the golden files: validate, validate --json
+//! and report for every corpus case, and the option cases in tests/cli.
 
-use std::collections::HashMap;
 use std::fs;
 use std::io::Write;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::process::{Command, Stdio};
 
 #[path = "../../nichiyou-daiku-core/tests/common/mod.rs"]
@@ -52,117 +50,60 @@ fn fixed_date(text: &str) -> String {
         .collect()
 }
 
-/// The same output, but for the names of anonymous pieces (random UUIDs in
-/// the Python version) and the syntax messages the corpus test allows.
-fn same_output(expected: &str, actual: &str) -> bool {
-    let expected = common::rename_uuids(expected, &mut HashMap::new());
-    let actual = common::rename_uuids(actual, &mut HashMap::new());
-    if expected == actual {
-        return true;
-    }
-    let (e, a): (Vec<&str>, Vec<&str>) = (expected.lines().collect(), actual.lines().collect());
-    e.len() == a.len()
-        && e.iter().zip(&a).all(|(e, a)| {
-            e == a || (e.contains("Syntax error at line") && common::same_syntax_message(e, a))
-        })
-}
-
-fn corpus_cases() -> Vec<(String, String)> {
-    let mut paths: Vec<PathBuf> = fs::read_dir(CORPUS)
-        .unwrap()
-        .map(|entry| entry.unwrap().path())
-        .filter(|path| path.extension().is_some_and(|ext| ext == "nd"))
-        .collect();
-    paths.sort();
-    paths
-        .into_iter()
-        .map(|path| {
-            (
-                path.file_stem().unwrap().to_string_lossy().into_owned(),
-                fs::read_to_string(&path).unwrap(),
-            )
-        })
-        .collect()
-}
-
-/// Run `args` on every corpus case and compare with NAME.<suffix>.
-fn check_corpus(args: &[&str], suffix: &str, expected: impl Fn(&str) -> Option<String>) {
-    let show = std::env::var("ND_CORPUS_SHOW").ok();
+/// Runs `args` on the corpus cases `wanted` picks and compares the output
+/// with NAME.<suffix>.
+fn check_corpus(args: &[&str], suffix: &str, wanted: impl Fn(&str) -> bool) {
     let (mut failures, mut checked) = (Vec::new(), 0);
-    for (name, source) in corpus_cases() {
-        let Some(want) = expected(&name) else {
-            continue;
-        };
-        checked += 1;
-        let got = run(args, &source, Path::new(CORPUS));
-        if !same_output(&want, &got) {
-            if show.as_deref().is_some_and(|part| name.contains(part)) {
-                println!("--- {name}\n{want}\n+++\n{got}");
-            }
-            failures.push(name);
+    for (name, source) in common::corpus(Path::new(CORPUS)) {
+        let got = wanted(&name).then(|| run(args, &source, Path::new(CORPUS)));
+        checked += usize::from(got.is_some());
+        let path = Path::new(CORPUS).join(format!("{name}.{suffix}"));
+        if let Err(error) = common::check_golden(&path, got.as_deref()) {
+            failures.push(error);
         }
     }
-    println!("{suffix}: {}/{checked}", checked - failures.len());
-    assert!(
-        failures.is_empty(),
-        "{} cases differ (ND_CORPUS_SHOW=<name> shows one): {:?}",
-        failures.len(),
-        &failures[..failures.len().min(20)]
-    );
-}
-
-fn golden(name: &str, suffix: &str) -> Option<String> {
-    fs::read_to_string(Path::new(CORPUS).join(format!("{name}.{suffix}"))).ok()
+    common::assert_none(&failures, checked);
 }
 
 #[test]
-fn validate_prints_what_the_python_version_prints() {
-    check_corpus(&["validate", "-"], "cli-validate.txt", |name| {
-        golden(name, "cli-validate.txt")
-    });
+fn validate_prints_its_golden_files() {
+    check_corpus(&["validate", "-"], "cli-validate.txt", |_| true);
 }
 
 #[test]
-fn validate_json_prints_the_python_reports_with_their_keys_in_order() {
-    // NAME.validate.json keeps pydantic's key order; the CLI indents it by 2
-    check_corpus(&["validate", "--json", "-"], "validate.json", |name| {
-        let text = golden(name, "validate.json")?;
-        let report: serde_json::Value = serde_json::from_str(&text).unwrap();
-        let code = if report["valid"] == true { 0 } else { 1 };
-        Some(format!(
-            "exit: {code}\n--- stdout\n{}\n--- stderr\n",
-            serde_json::to_string_pretty(&report).unwrap()
-        ))
-    });
+fn validate_json_prints_the_core_s_report() {
+    // The core's tests write NAME.validate.json, which may be mid-rewrite
+    if common::blessing() {
+        return;
+    }
+    let cases = common::corpus(Path::new(CORPUS));
+    let mut failures = Vec::new();
+    for (name, source) in &cases {
+        let path = Path::new(CORPUS).join(format!("{name}.validate.json"));
+        let report = fs::read_to_string(&path).unwrap();
+        let valid: serde_json::Value = serde_json::from_str(&report).unwrap();
+        let code = if valid["valid"] == true { 0 } else { 1 };
+        let want = format!("exit: {code}\n--- stdout\n{report}--- stderr\n");
+        let got = run(&["validate", "--json", "-"], source, Path::new(CORPUS));
+        if want != got {
+            failures.push(format!("{name}:\n{got}"));
+        }
+    }
+    common::assert_none(&failures, cases.len());
 }
 
 #[test]
-fn validate_json_is_the_text_the_python_cli_prints() {
+fn validate_json_prints_its_golden_files() {
     check_corpus(
         &["validate", "--json", "-"],
         "cli-validate-json.txt",
-        |name| golden(name, "cli-validate-json.txt"),
+        |name| name.starts_with("example-"),
     );
-}
-
-/// ND_BLESS=1 writes what the CLI prints over the report's golden files,
-/// which are the Rust CLI's own since countersinks (2026-11-02).
-fn blessing() -> bool {
-    std::env::var_os("ND_BLESS").is_some()
 }
 
 #[test]
 fn report_prints_its_golden_files() {
-    if blessing() {
-        for (name, source) in corpus_cases() {
-            let path = Path::new(CORPUS).join(format!("{name}.cli-report.txt"));
-            fs::write(path, run(&["report", "-"], &source, Path::new(CORPUS))).unwrap();
-        }
-        return;
-    }
-    check_corpus(&["report", "-"], "cli-report.txt", |name| {
-        golden(name, "cli-report.txt")
-    });
+    check_corpus(&["report", "-"], "cli-report.txt", |_| true);
 }
 
 #[derive(serde::Deserialize)]
@@ -173,19 +114,8 @@ struct OptionCase {
     text: Option<String>,
 }
 
-/// TOML parsers word their errors differently: the words in the brackets
-/// are the parser's.
-fn toml_reason_hidden(text: &str) -> String {
-    match (text.find("not valid TOML ("), text.find("). Write e.g.")) {
-        (Some(start), Some(end)) if start < end => {
-            format!("{}not valid TOML (…{}", &text[..start], &text[end..])
-        }
-        _ => text.to_string(),
-    }
-}
-
 #[test]
-fn options_print_what_the_python_version_prints() {
+fn options_print_their_golden_files() {
     let cases: Vec<OptionCase> =
         serde_json::from_str(&fs::read_to_string(Path::new(CLI_DIR).join("cases.json")).unwrap())
             .unwrap();
@@ -198,23 +128,13 @@ fn options_print_what_the_python_version_prints() {
             (None, None) => String::new(),
         };
         let args: Vec<&str> = case.args.iter().map(String::as_str).collect();
-        let want =
-            fs::read_to_string(Path::new(CLI_DIR).join(format!("{}.txt", case.name))).unwrap();
         let got = run(&args, &stdin, Path::new(CLI_DIR));
-        if blessing() && case.args.iter().any(|a| a == "report") {
-            fs::write(Path::new(CLI_DIR).join(format!("{}.txt", case.name)), &got).unwrap();
-            continue;
-        }
-        if !same_output(&toml_reason_hidden(&want), &toml_reason_hidden(&got)) {
-            failures.push(format!("--- {}\n{want}\n+++\n{got}", case.name));
+        let path = Path::new(CLI_DIR).join(format!("{}.txt", case.name));
+        if let Err(error) = common::check_golden(&path, Some(&got)) {
+            failures.push(error);
         }
     }
-    assert!(
-        failures.is_empty(),
-        "{} option cases differ:\n{}",
-        failures.len(),
-        failures.join("\n")
-    );
+    common::assert_none(&failures, cases.len());
 }
 
 #[test]
@@ -233,7 +153,7 @@ fn a_report_written_to_a_file_is_the_one_printed() {
         "exit: 0\n--- stdout\n--- stderr\nReport written to: out/report.md\n"
     );
     let report = fixed_date(&fs::read_to_string(dir.join("out/report.md")).unwrap());
-    // Python's write_text adds no final newline; click.echo does
+    // The file has no final newline; printing adds one
     assert_eq!(
         format!("exit: 0\n--- stdout\n{report}\n--- stderr\n"),
         printed

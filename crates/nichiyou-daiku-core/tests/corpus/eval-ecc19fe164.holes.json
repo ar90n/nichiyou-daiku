@@ -1,1 +1,106 @@
-{"pieces": {"leg": [{"face": "back", "center": [9.5, 0.0, 662.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [28.5, 0.0, 662.0], "diameter": 8.0, "depth": 15.0}, {"face": "left", "center": [0.0, 9.5, 662.0], "diameter": 8.0, "depth": 15.0}, {"face": "left", "center": [0.0, 28.5, 662.0], "diameter": 8.0, "depth": 15.0}], "af": [{"face": "down", "center": [19.0, 9.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "down", "center": [19.0, 28.5, 0.0], "diameter": 8.0, "depth": 15.0}], "al": [{"face": "down", "center": [19.0, 9.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "down", "center": [19.0, 28.5, 0.0], "diameter": 8.0, "depth": 15.0}]}, "fasteners": [{"base": "leg", "target": "af", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg", "target": "al", "kind": "dowel", "diameter": 8.0, "count": 2}]}
+{
+  "pieces": {
+    "leg": [
+      {
+        "face": "back",
+        "center": [
+          9.5,
+          0.0,
+          662.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          28.5,
+          0.0,
+          662.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "left",
+        "center": [
+          0.0,
+          9.5,
+          662.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "left",
+        "center": [
+          0.0,
+          28.5,
+          662.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "af": [
+      {
+        "face": "down",
+        "center": [
+          19.0,
+          9.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "down",
+        "center": [
+          19.0,
+          28.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "al": [
+      {
+        "face": "down",
+        "center": [
+          19.0,
+          9.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "down",
+        "center": [
+          19.0,
+          28.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ]
+  },
+  "fasteners": [
+    {
+      "base": "leg",
+      "target": "af",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg",
+      "target": "al",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    }
+  ]
+}

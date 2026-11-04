@@ -1,1 +1,88 @@
-{"valid": false, "error": null, "overall_size": null, "size_reference": null, "pieces": [{"id": "beam1", "type": "2x4", "length": 1000.0, "group": 0, "min": [0.0, 0.0, 0.0], "max": [89.0, 38.0, 1000.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "beam2", "type": "2x4", "length": 2000.0, "group": 1, "min": [189.0, 0.0, 0.0], "max": [278.0, 38.0, 2000.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "beam3", "type": "2x4", "length": 1500.0, "group": 2, "min": [378.0, 0.0, 0.0], "max": [467.0, 38.0, 1500.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}], "problems": [{"kind": "unconnected", "message": "Some pieces are not connected to each other, so their relative position is undefined (groups: beam1; beam2; beam3)", "groups": [["beam1"], ["beam2"], ["beam3"]]}]}
+{
+  "valid": false,
+  "error": null,
+  "overall_size": null,
+  "size_reference": null,
+  "pieces": [
+    {
+      "id": "beam1",
+      "type": "2x4",
+      "length": 1000.0,
+      "group": 0,
+      "min": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        38.0,
+        1000.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "beam2",
+      "type": "2x4",
+      "length": 2000.0,
+      "group": 1,
+      "min": [
+        189.0,
+        0.0,
+        0.0
+      ],
+      "max": [
+        278.0,
+        38.0,
+        2000.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "beam3",
+      "type": "2x4",
+      "length": 1500.0,
+      "group": 2,
+      "min": [
+        378.0,
+        0.0,
+        0.0
+      ],
+      "max": [
+        467.0,
+        38.0,
+        1500.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    }
+  ],
+  "problems": [
+    {
+      "kind": "unconnected",
+      "message": "Some pieces are not connected to each other, so their relative position is undefined (groups: beam1; beam2; beam3)",
+      "groups": [
+        [
+          "beam1"
+        ],
+        [
+          "beam2"
+        ],
+        [
+          "beam3"
+        ]
+      ]
+    }
+  ]
+}

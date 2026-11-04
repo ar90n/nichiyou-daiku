@@ -1,1 +1,41 @@
-{"labels": {"from +z": ["apron_front", "apron_back", "table_top_1", "table_top_2"], "from +y": ["leg_1", "leg_2", "apron_front", "table_top_1", "table_top_2"], "from -x +y +z": ["leg_1", "leg_2", "leg_3", "leg_4", "apron_front", "apron_back", "apron_right", "table_top_1", "table_top_2"], "from -x": ["leg_2", "leg_4", "apron_right", "table_top_2"]}, "unlabelled": ["apron_left"], "note": ["case.nd  800 x 600 x 758 mm (x × y × z)", "not labelled: apron_left"]}
+{
+  "labels": {
+    "from +z": [
+      "apron_front",
+      "apron_back",
+      "table_top_1",
+      "table_top_2"
+    ],
+    "from +y": [
+      "leg_1",
+      "leg_2",
+      "apron_front",
+      "table_top_1",
+      "table_top_2"
+    ],
+    "from -x +y +z": [
+      "leg_1",
+      "leg_2",
+      "leg_3",
+      "leg_4",
+      "apron_front",
+      "apron_back",
+      "apron_right",
+      "table_top_1",
+      "table_top_2"
+    ],
+    "from -x": [
+      "leg_2",
+      "leg_4",
+      "apron_right",
+      "table_top_2"
+    ]
+  },
+  "unlabelled": [
+    "apron_left"
+  ],
+  "note": [
+    "case.nd  800 x 600 x 758 mm (x × y × z)",
+    "not labelled: apron_left"
+  ]
+}

@@ -1,1 +1,87 @@
-{"parts": [{"pieces": ["base"], "type": "2x4", "length": 600.0, "count": 1, "drilled": true}, {"pieces": ["target"], "type": "1x4", "length": 300.0, "count": 1, "drilled": true}], "steps": [{"number": 1, "name": null, "kind": "first", "pieces": ["base", "target"], "connections": [["base", "target"]], "shown": ["base", "target"], "view": {"axis": "y", "side": 1}, "hardware": [{"name": "Slim screw 3.3x40", "count": 2}], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 19.0, 619.0], "segments": [{"start": 0.0, "end": 19.0, "lumber": true}, {"start": 19.0, "end": 619.0, "lumber": false}]}]}], "steps_declared": false, "steps_hint": null}
+{
+  "parts": [
+    {
+      "pieces": [
+        "base"
+      ],
+      "type": "2x4",
+      "length": 600.0,
+      "count": 1,
+      "drilled": true
+    },
+    {
+      "pieces": [
+        "target"
+      ],
+      "type": "1x4",
+      "length": 300.0,
+      "count": 1,
+      "drilled": true
+    }
+  ],
+  "steps": [
+    {
+      "number": 1,
+      "name": null,
+      "kind": "first",
+      "pieces": [
+        "base",
+        "target"
+      ],
+      "connections": [
+        [
+          "base",
+          "target"
+        ]
+      ],
+      "shown": [
+        "base",
+        "target"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [
+        {
+          "name": "Slim screw 3.3x40",
+          "count": 2
+        }
+      ],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            19.0,
+            619.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 19.0,
+              "lumber": true
+            },
+            {
+              "start": 19.0,
+              "end": 619.0,
+              "lumber": false
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "steps_declared": false,
+  "steps_hint": null
+}

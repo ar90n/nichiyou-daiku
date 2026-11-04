@@ -1,1 +1,366 @@
-{"parts": [{"pieces": ["post"], "type": "2x4", "length": 600.0, "count": 1, "drilled": true}, {"pieces": ["rail"], "type": "2x4", "length": 400.0, "count": 1, "drilled": true}, {"pieces": ["rail_low"], "type": "2x4", "length": 400.0, "count": 1, "drilled": true}, {"pieces": ["cleat"], "type": "2x4", "length": 400.0, "count": 1, "drilled": true}, {"pieces": ["rail_side"], "type": "2x4", "length": 400.0, "count": 1, "drilled": true}], "steps": [{"number": 1, "name": null, "kind": "first", "pieces": ["post", "rail"], "connections": [["post", "rail"]], "shown": ["post", "rail"], "view": {"axis": "x", "side": -1}, "hardware": [{"name": "Slim screw 3.3x50", "count": 2}], "dimensions": [{"axis": "y", "side": "below", "stops": [38.0, 76.0, 114.0], "segments": [{"start": 38.0, "end": 76.0, "lumber": true}, {"start": 76.0, "end": 114.0, "lumber": true}]}, {"axis": "z", "side": "left", "stops": [0.0, 300.0, 389.0, 600.0], "segments": [{"start": 0.0, "end": 300.0, "lumber": false}, {"start": 300.0, "end": 389.0, "lumber": true}, {"start": 389.0, "end": 600.0, "lumber": false}]}]}, {"number": 2, "name": null, "kind": "attach", "pieces": ["rail_low"], "connections": [["post", "rail_low"]], "shown": ["post", "rail", "rail_low"], "view": {"axis": "y", "side": 1}, "hardware": [{"name": "Screw 3.5x50", "count": 2}], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0, 400.0], "segments": [{"start": 0.0, "end": 89.0, "lumber": true}, {"start": 89.0, "end": 400.0, "lumber": false}]}, {"axis": "z", "side": "left", "stops": [0.0, 100.0, 189.0, 600.0], "segments": [{"start": 0.0, "end": 100.0, "lumber": false}, {"start": 100.0, "end": 189.0, "lumber": true}, {"start": 189.0, "end": 600.0, "lumber": false}]}]}, {"number": 3, "name": null, "kind": "attach", "pieces": ["cleat"], "connections": [["post", "cleat"]], "shown": ["post", "rail", "rail_low", "cleat"], "view": {"axis": "y", "side": -1}, "hardware": [{"name": "Coarse screw 3.8x57", "count": 2}], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0, 400.0], "segments": [{"start": 0.0, "end": 89.0, "lumber": true}, {"start": 89.0, "end": 400.0, "lumber": false}]}, {"axis": "z", "side": "left", "stops": [0.0, 200.0, 600.0], "segments": [{"start": 0.0, "end": 200.0, "lumber": false}, {"start": 200.0, "end": 600.0, "lumber": false}]}]}, {"number": 4, "name": null, "kind": "attach", "pieces": ["rail_side"], "connections": [["rail_side", "post"]], "shown": ["post", "rail", "rail_low", "cleat", "rail_side"], "view": {"axis": "y", "side": 1}, "hardware": [{"name": "Slim screw 3.8x65", "count": 2}], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0, 489.0], "segments": [{"start": 0.0, "end": 89.0, "lumber": true}, {"start": 89.0, "end": 489.0, "lumber": false}]}, {"axis": "z", "side": "left", "stops": [0.0, 211.0, 300.0, 600.0], "segments": [{"start": 0.0, "end": 211.0, "lumber": false}, {"start": 211.0, "end": 300.0, "lumber": true}, {"start": 300.0, "end": 600.0, "lumber": false}]}]}], "steps_declared": false, "steps_hint": "No steps block: each step adds one piece. Group pieces with a steps block, e.g. `steps { \"Frame\": post, rail, ... }`."}
+{
+  "parts": [
+    {
+      "pieces": [
+        "post"
+      ],
+      "type": "2x4",
+      "length": 600.0,
+      "count": 1,
+      "drilled": true
+    },
+    {
+      "pieces": [
+        "rail"
+      ],
+      "type": "2x4",
+      "length": 400.0,
+      "count": 1,
+      "drilled": true
+    },
+    {
+      "pieces": [
+        "rail_low"
+      ],
+      "type": "2x4",
+      "length": 400.0,
+      "count": 1,
+      "drilled": true
+    },
+    {
+      "pieces": [
+        "cleat"
+      ],
+      "type": "2x4",
+      "length": 400.0,
+      "count": 1,
+      "drilled": true
+    },
+    {
+      "pieces": [
+        "rail_side"
+      ],
+      "type": "2x4",
+      "length": 400.0,
+      "count": 1,
+      "drilled": true
+    }
+  ],
+  "steps": [
+    {
+      "number": 1,
+      "name": null,
+      "kind": "first",
+      "pieces": [
+        "post",
+        "rail"
+      ],
+      "connections": [
+        [
+          "post",
+          "rail"
+        ]
+      ],
+      "shown": [
+        "post",
+        "rail"
+      ],
+      "view": {
+        "axis": "x",
+        "side": -1
+      },
+      "hardware": [
+        {
+          "name": "Slim screw 3.3x50",
+          "count": 2
+        }
+      ],
+      "dimensions": [
+        {
+          "axis": "y",
+          "side": "below",
+          "stops": [
+            38.0,
+            76.0,
+            114.0
+          ],
+          "segments": [
+            {
+              "start": 38.0,
+              "end": 76.0,
+              "lumber": true
+            },
+            {
+              "start": 76.0,
+              "end": 114.0,
+              "lumber": true
+            }
+          ]
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            300.0,
+            389.0,
+            600.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 300.0,
+              "lumber": false
+            },
+            {
+              "start": 300.0,
+              "end": 389.0,
+              "lumber": true
+            },
+            {
+              "start": 389.0,
+              "end": 600.0,
+              "lumber": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "rail_low"
+      ],
+      "connections": [
+        [
+          "post",
+          "rail_low"
+        ]
+      ],
+      "shown": [
+        "post",
+        "rail",
+        "rail_low"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [
+        {
+          "name": "Screw 3.5x50",
+          "count": 2
+        }
+      ],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0,
+            400.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 89.0,
+              "lumber": true
+            },
+            {
+              "start": 89.0,
+              "end": 400.0,
+              "lumber": false
+            }
+          ]
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            100.0,
+            189.0,
+            600.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 100.0,
+              "lumber": false
+            },
+            {
+              "start": 100.0,
+              "end": 189.0,
+              "lumber": true
+            },
+            {
+              "start": 189.0,
+              "end": 600.0,
+              "lumber": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "cleat"
+      ],
+      "connections": [
+        [
+          "post",
+          "cleat"
+        ]
+      ],
+      "shown": [
+        "post",
+        "rail",
+        "rail_low",
+        "cleat"
+      ],
+      "view": {
+        "axis": "y",
+        "side": -1
+      },
+      "hardware": [
+        {
+          "name": "Coarse screw 3.8x57",
+          "count": 2
+        }
+      ],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0,
+            400.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 89.0,
+              "lumber": true
+            },
+            {
+              "start": 89.0,
+              "end": 400.0,
+              "lumber": false
+            }
+          ]
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            200.0,
+            600.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 200.0,
+              "lumber": false
+            },
+            {
+              "start": 200.0,
+              "end": 600.0,
+              "lumber": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "rail_side"
+      ],
+      "connections": [
+        [
+          "rail_side",
+          "post"
+        ]
+      ],
+      "shown": [
+        "post",
+        "rail",
+        "rail_low",
+        "cleat",
+        "rail_side"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [
+        {
+          "name": "Slim screw 3.8x65",
+          "count": 2
+        }
+      ],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0,
+            489.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 89.0,
+              "lumber": true
+            },
+            {
+              "start": 89.0,
+              "end": 489.0,
+              "lumber": false
+            }
+          ]
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            211.0,
+            300.0,
+            600.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 211.0,
+              "lumber": false
+            },
+            {
+              "start": 211.0,
+              "end": 300.0,
+              "lumber": true
+            },
+            {
+              "start": 300.0,
+              "end": 600.0,
+              "lumber": false
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "steps_declared": false,
+  "steps_hint": "No steps block: each step adds one piece. Group pieces with a steps block, e.g. `steps { \"Frame\": post, rail, ... }`."
+}

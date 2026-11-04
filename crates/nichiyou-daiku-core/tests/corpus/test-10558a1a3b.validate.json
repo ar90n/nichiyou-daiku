@@ -1,1 +1,13 @@
-{"valid": false, "error": {"kind": "validation", "message": "line 10, column 1: Offset 250.0mm exceeds piece dimension 200.0mm (piece 'u', edge front/right)", "line": 10, "column": 1}, "overall_size": null, "size_reference": null, "pieces": [], "problems": []}
+{
+  "valid": false,
+  "error": {
+    "kind": "validation",
+    "message": "line 10, column 1: Offset 250.0mm exceeds piece dimension 200.0mm (piece 'u', edge front/right)",
+    "line": 10,
+    "column": 1
+  },
+  "overall_size": null,
+  "size_reference": null,
+  "pieces": [],
+  "problems": []
+}

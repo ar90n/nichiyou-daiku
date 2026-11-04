@@ -1,1 +1,13 @@
-{"valid": false, "error": {"kind": "validation", "message": "line 7, column 1: ScrewConnection target contact_face must be a side face ('front', 'back', 'left' or 'right'), got 'down': the screw would run along the target's length. Make the piece the screw goes through the target, touching the base with a side face", "line": 7, "column": 1}, "overall_size": null, "size_reference": null, "pieces": [], "problems": []}
+{
+  "valid": false,
+  "error": {
+    "kind": "validation",
+    "message": "line 7, column 1: ScrewConnection target contact_face must be a side face ('front', 'back', 'left' or 'right'), got 'down': the screw would run along the target's length. Make the piece the screw goes through the target, touching the base with a side face",
+    "line": 7,
+    "column": 1
+  },
+  "overall_size": null,
+  "size_reference": null,
+  "pieces": [],
+  "problems": []
+}

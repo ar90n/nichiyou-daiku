@@ -1,1 +1,160 @@
-[{"view": "from +y", "axis": "z", "side": "left", "stops": [0.0, 70.0, 159.0, 173.0, 262.0, 300.0], "segments": [{"start": 0.0, "end": 70.0, "lumber": false}, {"start": 70.0, "end": 159.0, "lumber": true}, {"start": 159.0, "end": 173.0, "lumber": false}, {"start": 173.0, "end": 262.0, "lumber": true}, {"start": 262.0, "end": 300.0, "lumber": true}]}, {"view": "from +y", "axis": "x", "side": "below", "stops": [0.0, 89.0, 291.0, 380.0], "segments": [{"start": 0.0, "end": 89.0, "lumber": true}, {"start": 89.0, "end": 291.0, "lumber": false}, {"start": 291.0, "end": 380.0, "lumber": true}]}, {"view": "from -x", "axis": "y", "side": "below", "stops": [0.0, 38.0, 262.0, 300.0], "segments": [{"start": 0.0, "end": 38.0, "lumber": true}, {"start": 38.0, "end": 262.0, "lumber": false}, {"start": 262.0, "end": 300.0, "lumber": true}]}, {"view": "from +z", "axis": "x", "side": "below", "stops": [0.0, 89.0, 97.0, 186.0, 194.0, 283.0, 291.0, 380.0], "segments": [{"start": 0.0, "end": 89.0, "lumber": true}, {"start": 89.0, "end": 97.0, "lumber": false}, {"start": 97.0, "end": 186.0, "lumber": true}, {"start": 186.0, "end": 194.0, "lumber": false}, {"start": 194.0, "end": 283.0, "lumber": true}, {"start": 283.0, "end": 291.0, "lumber": false}, {"start": 291.0, "end": 380.0, "lumber": true}]}, {"view": "from +z", "axis": "y", "side": "left", "stops": [0.0, 300.0], "segments": []}]
+[
+  {
+    "view": "from +y",
+    "axis": "z",
+    "side": "left",
+    "stops": [
+      0.0,
+      70.0,
+      159.0,
+      173.0,
+      262.0,
+      300.0
+    ],
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 70.0,
+        "lumber": false
+      },
+      {
+        "start": 70.0,
+        "end": 159.0,
+        "lumber": true
+      },
+      {
+        "start": 159.0,
+        "end": 173.0,
+        "lumber": false
+      },
+      {
+        "start": 173.0,
+        "end": 262.0,
+        "lumber": true
+      },
+      {
+        "start": 262.0,
+        "end": 300.0,
+        "lumber": true
+      }
+    ]
+  },
+  {
+    "view": "from +y",
+    "axis": "x",
+    "side": "below",
+    "stops": [
+      0.0,
+      89.0,
+      291.0,
+      380.0
+    ],
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 89.0,
+        "lumber": true
+      },
+      {
+        "start": 89.0,
+        "end": 291.0,
+        "lumber": false
+      },
+      {
+        "start": 291.0,
+        "end": 380.0,
+        "lumber": true
+      }
+    ]
+  },
+  {
+    "view": "from -x",
+    "axis": "y",
+    "side": "below",
+    "stops": [
+      0.0,
+      38.0,
+      262.0,
+      300.0
+    ],
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 38.0,
+        "lumber": true
+      },
+      {
+        "start": 38.0,
+        "end": 262.0,
+        "lumber": false
+      },
+      {
+        "start": 262.0,
+        "end": 300.0,
+        "lumber": true
+      }
+    ]
+  },
+  {
+    "view": "from +z",
+    "axis": "x",
+    "side": "below",
+    "stops": [
+      0.0,
+      89.0,
+      97.0,
+      186.0,
+      194.0,
+      283.0,
+      291.0,
+      380.0
+    ],
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 89.0,
+        "lumber": true
+      },
+      {
+        "start": 89.0,
+        "end": 97.0,
+        "lumber": false
+      },
+      {
+        "start": 97.0,
+        "end": 186.0,
+        "lumber": true
+      },
+      {
+        "start": 186.0,
+        "end": 194.0,
+        "lumber": false
+      },
+      {
+        "start": 194.0,
+        "end": 283.0,
+        "lumber": true
+      },
+      {
+        "start": 283.0,
+        "end": 291.0,
+        "lumber": false
+      },
+      {
+        "start": 291.0,
+        "end": 380.0,
+        "lumber": true
+      }
+    ]
+  },
+  {
+    "view": "from +z",
+    "axis": "y",
+    "side": "left",
+    "stops": [
+      0.0,
+      300.0
+    ],
+    "segments": []
+  }
+]

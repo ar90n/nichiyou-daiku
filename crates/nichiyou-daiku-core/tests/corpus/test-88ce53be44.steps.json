@@ -1,1 +1,87 @@
-{"parts": [{"pieces": ["a"], "type": "2x4", "length": 400.0, "count": 1, "drilled": true}, {"pieces": ["b"], "type": "2x4", "length": 400.0, "count": 1, "drilled": true}], "steps": [{"number": 1, "name": null, "kind": "first", "pieces": ["a", "b"], "connections": [["a", "b"]], "shown": ["a", "b"], "view": {"axis": "y", "side": 1}, "hardware": [{"name": "Dowel 8x30", "count": 2}], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 400.0, 438.0], "segments": [{"start": 0.0, "end": 400.0, "lumber": false}, {"start": 400.0, "end": 438.0, "lumber": true}]}]}], "steps_declared": false, "steps_hint": null}
+{
+  "parts": [
+    {
+      "pieces": [
+        "a"
+      ],
+      "type": "2x4",
+      "length": 400.0,
+      "count": 1,
+      "drilled": true
+    },
+    {
+      "pieces": [
+        "b"
+      ],
+      "type": "2x4",
+      "length": 400.0,
+      "count": 1,
+      "drilled": true
+    }
+  ],
+  "steps": [
+    {
+      "number": 1,
+      "name": null,
+      "kind": "first",
+      "pieces": [
+        "a",
+        "b"
+      ],
+      "connections": [
+        [
+          "a",
+          "b"
+        ]
+      ],
+      "shown": [
+        "a",
+        "b"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [
+        {
+          "name": "Dowel 8x30",
+          "count": 2
+        }
+      ],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            400.0,
+            438.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 400.0,
+              "lumber": false
+            },
+            {
+              "start": 400.0,
+              "end": 438.0,
+              "lumber": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "steps_declared": false,
+  "steps_hint": null
+}

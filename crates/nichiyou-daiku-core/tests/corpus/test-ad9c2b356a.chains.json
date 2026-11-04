@@ -1,1 +1,64 @@
-[{"view": "from +y", "axis": "z", "side": "left", "stops": [0.0, 333.333333, 633.333333], "segments": [{"start": 0.0, "end": 333.333333, "lumber": false}, {"start": 333.333333, "end": 633.333333, "lumber": false}]}, {"view": "from +y", "axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"view": "from -x", "axis": "y", "side": "below", "stops": [0.0, 38.0], "segments": []}, {"view": "from +z", "axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"view": "from +z", "axis": "y", "side": "left", "stops": [0.0, 38.0], "segments": []}]
+[
+  {
+    "view": "from +y",
+    "axis": "z",
+    "side": "left",
+    "stops": [
+      0.0,
+      333.333333,
+      633.333333
+    ],
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 333.333333,
+        "lumber": false
+      },
+      {
+        "start": 333.333333,
+        "end": 633.333333,
+        "lumber": false
+      }
+    ]
+  },
+  {
+    "view": "from +y",
+    "axis": "x",
+    "side": "below",
+    "stops": [
+      0.0,
+      89.0
+    ],
+    "segments": []
+  },
+  {
+    "view": "from -x",
+    "axis": "y",
+    "side": "below",
+    "stops": [
+      0.0,
+      38.0
+    ],
+    "segments": []
+  },
+  {
+    "view": "from +z",
+    "axis": "x",
+    "side": "below",
+    "stops": [
+      0.0,
+      89.0
+    ],
+    "segments": []
+  },
+  {
+    "view": "from +z",
+    "axis": "y",
+    "side": "left",
+    "stops": [
+      0.0,
+      38.0
+    ],
+    "segments": []
+  }
+]

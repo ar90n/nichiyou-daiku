@@ -1,1 +1,76 @@
-{"valid": true, "error": null, "overall_size": [89.0, 800.0, 676.0], "size_reference": "shelf", "pieces": [{"id": "shelf", "type": "2x4", "length": 600.0, "group": 0, "min": [0.0, 300.0, 38.0], "max": [89.0, 338.0, 638.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "left_side", "type": "2x4", "length": 800.0, "group": 0, "min": [0.0, 0.0, 0.0], "max": [89.0, 800.0, 38.0], "faces": {"top": "+y", "right": "+x", "front": "-z"}}, {"id": "right_side", "type": "2x4", "length": 800.0, "group": 0, "min": [0.0, 0.0, 638.0], "max": [89.0, 800.0, 676.0], "faces": {"top": "+y", "right": "+x", "front": "-z"}}], "problems": []}
+{
+  "valid": true,
+  "error": null,
+  "overall_size": [
+    89.0,
+    800.0,
+    676.0
+  ],
+  "size_reference": "shelf",
+  "pieces": [
+    {
+      "id": "shelf",
+      "type": "2x4",
+      "length": 600.0,
+      "group": 0,
+      "min": [
+        0.0,
+        300.0,
+        38.0
+      ],
+      "max": [
+        89.0,
+        338.0,
+        638.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "left_side",
+      "type": "2x4",
+      "length": 800.0,
+      "group": 0,
+      "min": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        800.0,
+        38.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "+x",
+        "front": "-z"
+      }
+    },
+    {
+      "id": "right_side",
+      "type": "2x4",
+      "length": 800.0,
+      "group": 0,
+      "min": [
+        0.0,
+        0.0,
+        638.0
+      ],
+      "max": [
+        89.0,
+        800.0,
+        676.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "+x",
+        "front": "-z"
+      }
+    }
+  ],
+  "problems": []
+}

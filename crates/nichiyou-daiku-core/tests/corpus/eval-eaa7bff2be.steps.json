@@ -1,1 +1,1068 @@
-{"parts": [{"pieces": ["leg_1", "leg_4"], "type": "2x2", "length": 481.0, "count": 2, "drilled": true}, {"pieces": ["leg_2", "leg_3"], "type": "2x2", "length": 481.0, "count": 2, "drilled": true}, {"pieces": ["apron_bottom_front", "apron_mid_front", "apron_top_front"], "type": "2x2", "length": 524.0, "count": 3, "drilled": true}, {"pieces": ["apron_bottom_back", "apron_mid_back", "apron_top_back"], "type": "2x2", "length": 524.0, "count": 3, "drilled": true}, {"pieces": ["apron_bottom_left", "apron_bottom_right", "apron_mid_left", "apron_mid_right", "apron_top_left", "apron_top_right"], "type": "2x2", "length": 224.0, "count": 6, "drilled": true}, {"pieces": ["shelf_bottom_1", "shelf_bottom_2", "shelf_bottom_3", "shelf_bottom_4", "shelf_bottom_5", "shelf_mid_1", "shelf_mid_2", "shelf_mid_3", "shelf_mid_4", "shelf_mid_5", "shelf_top_1", "shelf_top_2", "shelf_top_3", "shelf_top_4", "shelf_top_5"], "type": "1x4", "length": 300.0, "count": 15, "drilled": true}], "steps": [{"number": 1, "name": "Left frame", "kind": "first", "pieces": ["leg_1", "leg_3", "apron_bottom_left", "apron_mid_left", "apron_top_left"], "connections": [["leg_1", "apron_bottom_left"], ["leg_3", "apron_bottom_left"], ["leg_1", "apron_mid_left"], ["leg_3", "apron_mid_left"], ["leg_1", "apron_top_left"], ["leg_3", "apron_top_left"]], "shown": ["leg_1", "leg_3", "apron_bottom_left", "apron_mid_left", "apron_top_left"], "view": {"axis": "x", "side": -1}, "hardware": [{"name": "Dowel 8x30", "count": 12}], "dimensions": [{"axis": "y", "side": "below", "stops": [0.0, 38.0, 262.0, 300.0], "segments": [{"start": 0.0, "end": 38.0, "lumber": true}, {"start": 38.0, "end": 262.0, "lumber": false}, {"start": 262.0, "end": 300.0, "lumber": true}]}, {"axis": "z", "side": "left", "stops": [0.0, 107.333333, 145.333333, 267.666667, 305.666667, 428.0, 466.0, 481.0], "segments": [{"start": 0.0, "end": 107.333333, "lumber": false}, {"start": 107.333333, "end": 145.333333, "lumber": true}, {"start": 145.333333, "end": 267.666667, "lumber": false}, {"start": 267.666667, "end": 305.666667, "lumber": true}, {"start": 305.666667, "end": 428.0, "lumber": false}, {"start": 428.0, "end": 466.0, "lumber": true}, {"start": 466.0, "end": 481.0, "lumber": false}]}]}, {"number": 2, "name": "Right frame", "kind": "sub-assembly", "pieces": ["leg_2", "leg_4", "apron_bottom_right", "apron_mid_right", "apron_top_right"], "connections": [["leg_2", "apron_bottom_right"], ["leg_4", "apron_bottom_right"], ["leg_2", "apron_mid_right"], ["leg_4", "apron_mid_right"], ["leg_2", "apron_top_right"], ["leg_4", "apron_top_right"]], "shown": ["leg_2", "leg_4", "apron_bottom_right", "apron_mid_right", "apron_top_right"], "view": {"axis": "x", "side": -1}, "hardware": [{"name": "Dowel 8x30", "count": 12}], "dimensions": [{"axis": "y", "side": "below", "stops": [0.0, 38.0, 262.0, 300.0], "segments": [{"start": 0.0, "end": 38.0, "lumber": true}, {"start": 38.0, "end": 262.0, "lumber": false}, {"start": 262.0, "end": 300.0, "lumber": true}]}, {"axis": "z", "side": "left", "stops": [0.0, 107.333333, 145.333333, 267.666667, 305.666667, 428.0, 466.0, 481.0], "segments": [{"start": 0.0, "end": 107.333333, "lumber": false}, {"start": 107.333333, "end": 145.333333, "lumber": true}, {"start": 145.333333, "end": 267.666667, "lumber": false}, {"start": 267.666667, "end": 305.666667, "lumber": true}, {"start": 305.666667, "end": 428.0, "lumber": false}, {"start": 428.0, "end": 466.0, "lumber": true}, {"start": 466.0, "end": 481.0, "lumber": false}]}]}, {"number": 3, "name": "Join frames", "kind": "join", "pieces": ["apron_bottom_front", "apron_bottom_back", "apron_mid_front", "apron_mid_back", "apron_top_front", "apron_top_back"], "connections": [["leg_1", "apron_bottom_front"], ["leg_2", "apron_bottom_front"], ["leg_3", "apron_bottom_back"], ["leg_4", "apron_bottom_back"], ["leg_1", "apron_mid_front"], ["leg_2", "apron_mid_front"], ["leg_3", "apron_mid_back"], ["leg_4", "apron_mid_back"], ["leg_1", "apron_top_front"], ["leg_2", "apron_top_front"], ["leg_3", "apron_top_back"], ["leg_4", "apron_top_back"]], "shown": ["leg_1", "leg_2", "leg_3", "leg_4", "apron_bottom_front", "apron_bottom_back", "apron_bottom_left", "apron_bottom_right", "apron_mid_front", "apron_mid_back", "apron_mid_left", "apron_mid_right", "apron_top_front", "apron_top_back", "apron_top_left", "apron_top_right"], "view": {"axis": "x", "side": -1}, "hardware": [{"name": "Dowel 8x30", "count": 24}], "dimensions": [{"axis": "y", "side": "below", "stops": [0.0, 38.0, 262.0, 300.0], "segments": [{"start": 0.0, "end": 38.0, "lumber": true}, {"start": 38.0, "end": 262.0, "lumber": false}, {"start": 262.0, "end": 300.0, "lumber": true}]}, {"axis": "z", "side": "left", "stops": [0.0, 122.333333, 160.333333, 282.666667, 320.666667, 443.0, 481.0], "segments": [{"start": 0.0, "end": 122.333333, "lumber": false}, {"start": 122.333333, "end": 160.333333, "lumber": true}, {"start": 160.333333, "end": 282.666667, "lumber": false}, {"start": 282.666667, "end": 320.666667, "lumber": true}, {"start": 320.666667, "end": 443.0, "lumber": false}, {"start": 443.0, "end": 481.0, "lumber": true}]}]}, {"number": 4, "name": "Bottom shelf", "kind": "attach", "pieces": ["shelf_bottom_1", "shelf_bottom_2", "shelf_bottom_3", "shelf_bottom_4", "shelf_bottom_5"], "connections": [["apron_bottom_front", "shelf_bottom_1"], ["apron_bottom_front", "shelf_bottom_2"], ["apron_bottom_front", "shelf_bottom_3"], ["apron_bottom_front", "shelf_bottom_4"], ["apron_bottom_front", "shelf_bottom_5"]], "shown": ["leg_1", "leg_2", "leg_3", "leg_4", "apron_bottom_front", "apron_bottom_back", "apron_bottom_left", "apron_bottom_right", "apron_mid_front", "apron_mid_back", "apron_mid_left", "apron_mid_right", "apron_top_front", "apron_top_back", "apron_top_left", "apron_top_right", "shelf_bottom_1", "shelf_bottom_2", "shelf_bottom_3", "shelf_bottom_4", "shelf_bottom_5"], "view": {"axis": "z", "side": -1}, "hardware": [{"name": "Dowel 8x30", "count": 10}], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 38.0, 51.166667, 140.166667, 153.333333, 242.333333, 255.5, 344.5, 357.666667, 446.666667, 459.833333, 548.833333, 562.0, 600.0], "segments": [{"start": 0.0, "end": 38.0, "lumber": false}, {"start": 38.0, "end": 51.166667, "lumber": false}, {"start": 51.166667, "end": 140.166667, "lumber": true}, {"start": 140.166667, "end": 153.333333, "lumber": false}, {"start": 153.333333, "end": 242.333333, "lumber": true}, {"start": 242.333333, "end": 255.5, "lumber": false}, {"start": 255.5, "end": 344.5, "lumber": true}, {"start": 344.5, "end": 357.666667, "lumber": false}, {"start": 357.666667, "end": 446.666667, "lumber": true}, {"start": 446.666667, "end": 459.833333, "lumber": false}, {"start": 459.833333, "end": 548.833333, "lumber": true}, {"start": 548.833333, "end": 562.0, "lumber": false}, {"start": 562.0, "end": 600.0, "lumber": false}]}, {"axis": "y", "side": "left", "stops": [0.0, 262.0, 300.0], "segments": [{"start": 0.0, "end": 262.0, "lumber": false}, {"start": 262.0, "end": 300.0, "lumber": true}]}]}, {"number": 5, "name": "Middle shelf", "kind": "attach", "pieces": ["shelf_mid_1", "shelf_mid_2", "shelf_mid_3", "shelf_mid_4", "shelf_mid_5"], "connections": [["apron_mid_front", "shelf_mid_1"], ["apron_mid_front", "shelf_mid_2"], ["apron_mid_front", "shelf_mid_3"], ["apron_mid_front", "shelf_mid_4"], ["apron_mid_front", "shelf_mid_5"]], "shown": ["leg_1", "leg_2", "leg_3", "leg_4", "apron_bottom_front", "apron_bottom_back", "apron_bottom_left", "apron_bottom_right", "apron_mid_front", "apron_mid_back", "apron_mid_left", "apron_mid_right", "apron_top_front", "apron_top_back", "apron_top_left", "apron_top_right", "shelf_bottom_1", "shelf_bottom_2", "shelf_bottom_3", "shelf_bottom_4", "shelf_bottom_5", "shelf_mid_1", "shelf_mid_2", "shelf_mid_3", "shelf_mid_4", "shelf_mid_5"], "view": {"axis": "z", "side": 1}, "hardware": [{"name": "Dowel 8x30", "count": 10}], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 38.0, 51.166667, 140.166667, 153.333333, 242.333333, 255.5, 344.5, 357.666667, 446.666667, 459.833333, 548.833333, 562.0, 600.0], "segments": [{"start": 0.0, "end": 38.0, "lumber": false}, {"start": 38.0, "end": 51.166667, "lumber": false}, {"start": 51.166667, "end": 140.166667, "lumber": true}, {"start": 140.166667, "end": 153.333333, "lumber": false}, {"start": 153.333333, "end": 242.333333, "lumber": true}, {"start": 242.333333, "end": 255.5, "lumber": false}, {"start": 255.5, "end": 344.5, "lumber": true}, {"start": 344.5, "end": 357.666667, "lumber": false}, {"start": 357.666667, "end": 446.666667, "lumber": true}, {"start": 446.666667, "end": 459.833333, "lumber": false}, {"start": 459.833333, "end": 548.833333, "lumber": true}, {"start": 548.833333, "end": 562.0, "lumber": false}, {"start": 562.0, "end": 600.0, "lumber": false}]}, {"axis": "y", "side": "left", "stops": [0.0, 262.0, 300.0], "segments": [{"start": 0.0, "end": 262.0, "lumber": false}, {"start": 262.0, "end": 300.0, "lumber": true}]}]}, {"number": 6, "name": "Top shelf", "kind": "attach", "pieces": ["shelf_top_1", "shelf_top_2", "shelf_top_3", "shelf_top_4", "shelf_top_5"], "connections": [["apron_top_front", "shelf_top_1"], ["apron_top_front", "shelf_top_2"], ["apron_top_front", "shelf_top_3"], ["apron_top_front", "shelf_top_4"], ["apron_top_front", "shelf_top_5"]], "shown": ["leg_1", "leg_2", "leg_3", "leg_4", "apron_bottom_front", "apron_bottom_back", "apron_bottom_left", "apron_bottom_right", "apron_mid_front", "apron_mid_back", "apron_mid_left", "apron_mid_right", "apron_top_front", "apron_top_back", "apron_top_left", "apron_top_right", "shelf_bottom_1", "shelf_bottom_2", "shelf_bottom_3", "shelf_bottom_4", "shelf_bottom_5", "shelf_mid_1", "shelf_mid_2", "shelf_mid_3", "shelf_mid_4", "shelf_mid_5", "shelf_top_1", "shelf_top_2", "shelf_top_3", "shelf_top_4", "shelf_top_5"], "view": {"axis": "z", "side": 1}, "hardware": [{"name": "Dowel 8x30", "count": 10}], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 38.0, 51.166667, 140.166667, 153.333333, 242.333333, 255.5, 344.5, 357.666667, 446.666667, 459.833333, 548.833333, 562.0, 600.0], "segments": [{"start": 0.0, "end": 38.0, "lumber": false}, {"start": 38.0, "end": 51.166667, "lumber": false}, {"start": 51.166667, "end": 140.166667, "lumber": true}, {"start": 140.166667, "end": 153.333333, "lumber": false}, {"start": 153.333333, "end": 242.333333, "lumber": true}, {"start": 242.333333, "end": 255.5, "lumber": false}, {"start": 255.5, "end": 344.5, "lumber": true}, {"start": 344.5, "end": 357.666667, "lumber": false}, {"start": 357.666667, "end": 446.666667, "lumber": true}, {"start": 446.666667, "end": 459.833333, "lumber": false}, {"start": 459.833333, "end": 548.833333, "lumber": true}, {"start": 548.833333, "end": 562.0, "lumber": false}, {"start": 562.0, "end": 600.0, "lumber": false}]}, {"axis": "y", "side": "left", "stops": [0.0, 262.0, 300.0], "segments": [{"start": 0.0, "end": 262.0, "lumber": false}, {"start": 262.0, "end": 300.0, "lumber": true}]}]}], "steps_declared": true, "steps_hint": null}
+{
+  "parts": [
+    {
+      "pieces": [
+        "leg_1",
+        "leg_4"
+      ],
+      "type": "2x2",
+      "length": 481.0,
+      "count": 2,
+      "drilled": true
+    },
+    {
+      "pieces": [
+        "leg_2",
+        "leg_3"
+      ],
+      "type": "2x2",
+      "length": 481.0,
+      "count": 2,
+      "drilled": true
+    },
+    {
+      "pieces": [
+        "apron_bottom_front",
+        "apron_mid_front",
+        "apron_top_front"
+      ],
+      "type": "2x2",
+      "length": 524.0,
+      "count": 3,
+      "drilled": true
+    },
+    {
+      "pieces": [
+        "apron_bottom_back",
+        "apron_mid_back",
+        "apron_top_back"
+      ],
+      "type": "2x2",
+      "length": 524.0,
+      "count": 3,
+      "drilled": true
+    },
+    {
+      "pieces": [
+        "apron_bottom_left",
+        "apron_bottom_right",
+        "apron_mid_left",
+        "apron_mid_right",
+        "apron_top_left",
+        "apron_top_right"
+      ],
+      "type": "2x2",
+      "length": 224.0,
+      "count": 6,
+      "drilled": true
+    },
+    {
+      "pieces": [
+        "shelf_bottom_1",
+        "shelf_bottom_2",
+        "shelf_bottom_3",
+        "shelf_bottom_4",
+        "shelf_bottom_5",
+        "shelf_mid_1",
+        "shelf_mid_2",
+        "shelf_mid_3",
+        "shelf_mid_4",
+        "shelf_mid_5",
+        "shelf_top_1",
+        "shelf_top_2",
+        "shelf_top_3",
+        "shelf_top_4",
+        "shelf_top_5"
+      ],
+      "type": "1x4",
+      "length": 300.0,
+      "count": 15,
+      "drilled": true
+    }
+  ],
+  "steps": [
+    {
+      "number": 1,
+      "name": "Left frame",
+      "kind": "first",
+      "pieces": [
+        "leg_1",
+        "leg_3",
+        "apron_bottom_left",
+        "apron_mid_left",
+        "apron_top_left"
+      ],
+      "connections": [
+        [
+          "leg_1",
+          "apron_bottom_left"
+        ],
+        [
+          "leg_3",
+          "apron_bottom_left"
+        ],
+        [
+          "leg_1",
+          "apron_mid_left"
+        ],
+        [
+          "leg_3",
+          "apron_mid_left"
+        ],
+        [
+          "leg_1",
+          "apron_top_left"
+        ],
+        [
+          "leg_3",
+          "apron_top_left"
+        ]
+      ],
+      "shown": [
+        "leg_1",
+        "leg_3",
+        "apron_bottom_left",
+        "apron_mid_left",
+        "apron_top_left"
+      ],
+      "view": {
+        "axis": "x",
+        "side": -1
+      },
+      "hardware": [
+        {
+          "name": "Dowel 8x30",
+          "count": 12
+        }
+      ],
+      "dimensions": [
+        {
+          "axis": "y",
+          "side": "below",
+          "stops": [
+            0.0,
+            38.0,
+            262.0,
+            300.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 38.0,
+              "lumber": true
+            },
+            {
+              "start": 38.0,
+              "end": 262.0,
+              "lumber": false
+            },
+            {
+              "start": 262.0,
+              "end": 300.0,
+              "lumber": true
+            }
+          ]
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            107.333333,
+            145.333333,
+            267.666667,
+            305.666667,
+            428.0,
+            466.0,
+            481.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 107.333333,
+              "lumber": false
+            },
+            {
+              "start": 107.333333,
+              "end": 145.333333,
+              "lumber": true
+            },
+            {
+              "start": 145.333333,
+              "end": 267.666667,
+              "lumber": false
+            },
+            {
+              "start": 267.666667,
+              "end": 305.666667,
+              "lumber": true
+            },
+            {
+              "start": 305.666667,
+              "end": 428.0,
+              "lumber": false
+            },
+            {
+              "start": 428.0,
+              "end": 466.0,
+              "lumber": true
+            },
+            {
+              "start": 466.0,
+              "end": 481.0,
+              "lumber": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "name": "Right frame",
+      "kind": "sub-assembly",
+      "pieces": [
+        "leg_2",
+        "leg_4",
+        "apron_bottom_right",
+        "apron_mid_right",
+        "apron_top_right"
+      ],
+      "connections": [
+        [
+          "leg_2",
+          "apron_bottom_right"
+        ],
+        [
+          "leg_4",
+          "apron_bottom_right"
+        ],
+        [
+          "leg_2",
+          "apron_mid_right"
+        ],
+        [
+          "leg_4",
+          "apron_mid_right"
+        ],
+        [
+          "leg_2",
+          "apron_top_right"
+        ],
+        [
+          "leg_4",
+          "apron_top_right"
+        ]
+      ],
+      "shown": [
+        "leg_2",
+        "leg_4",
+        "apron_bottom_right",
+        "apron_mid_right",
+        "apron_top_right"
+      ],
+      "view": {
+        "axis": "x",
+        "side": -1
+      },
+      "hardware": [
+        {
+          "name": "Dowel 8x30",
+          "count": 12
+        }
+      ],
+      "dimensions": [
+        {
+          "axis": "y",
+          "side": "below",
+          "stops": [
+            0.0,
+            38.0,
+            262.0,
+            300.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 38.0,
+              "lumber": true
+            },
+            {
+              "start": 38.0,
+              "end": 262.0,
+              "lumber": false
+            },
+            {
+              "start": 262.0,
+              "end": 300.0,
+              "lumber": true
+            }
+          ]
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            107.333333,
+            145.333333,
+            267.666667,
+            305.666667,
+            428.0,
+            466.0,
+            481.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 107.333333,
+              "lumber": false
+            },
+            {
+              "start": 107.333333,
+              "end": 145.333333,
+              "lumber": true
+            },
+            {
+              "start": 145.333333,
+              "end": 267.666667,
+              "lumber": false
+            },
+            {
+              "start": 267.666667,
+              "end": 305.666667,
+              "lumber": true
+            },
+            {
+              "start": 305.666667,
+              "end": 428.0,
+              "lumber": false
+            },
+            {
+              "start": 428.0,
+              "end": 466.0,
+              "lumber": true
+            },
+            {
+              "start": 466.0,
+              "end": 481.0,
+              "lumber": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "name": "Join frames",
+      "kind": "join",
+      "pieces": [
+        "apron_bottom_front",
+        "apron_bottom_back",
+        "apron_mid_front",
+        "apron_mid_back",
+        "apron_top_front",
+        "apron_top_back"
+      ],
+      "connections": [
+        [
+          "leg_1",
+          "apron_bottom_front"
+        ],
+        [
+          "leg_2",
+          "apron_bottom_front"
+        ],
+        [
+          "leg_3",
+          "apron_bottom_back"
+        ],
+        [
+          "leg_4",
+          "apron_bottom_back"
+        ],
+        [
+          "leg_1",
+          "apron_mid_front"
+        ],
+        [
+          "leg_2",
+          "apron_mid_front"
+        ],
+        [
+          "leg_3",
+          "apron_mid_back"
+        ],
+        [
+          "leg_4",
+          "apron_mid_back"
+        ],
+        [
+          "leg_1",
+          "apron_top_front"
+        ],
+        [
+          "leg_2",
+          "apron_top_front"
+        ],
+        [
+          "leg_3",
+          "apron_top_back"
+        ],
+        [
+          "leg_4",
+          "apron_top_back"
+        ]
+      ],
+      "shown": [
+        "leg_1",
+        "leg_2",
+        "leg_3",
+        "leg_4",
+        "apron_bottom_front",
+        "apron_bottom_back",
+        "apron_bottom_left",
+        "apron_bottom_right",
+        "apron_mid_front",
+        "apron_mid_back",
+        "apron_mid_left",
+        "apron_mid_right",
+        "apron_top_front",
+        "apron_top_back",
+        "apron_top_left",
+        "apron_top_right"
+      ],
+      "view": {
+        "axis": "x",
+        "side": -1
+      },
+      "hardware": [
+        {
+          "name": "Dowel 8x30",
+          "count": 24
+        }
+      ],
+      "dimensions": [
+        {
+          "axis": "y",
+          "side": "below",
+          "stops": [
+            0.0,
+            38.0,
+            262.0,
+            300.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 38.0,
+              "lumber": true
+            },
+            {
+              "start": 38.0,
+              "end": 262.0,
+              "lumber": false
+            },
+            {
+              "start": 262.0,
+              "end": 300.0,
+              "lumber": true
+            }
+          ]
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            122.333333,
+            160.333333,
+            282.666667,
+            320.666667,
+            443.0,
+            481.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 122.333333,
+              "lumber": false
+            },
+            {
+              "start": 122.333333,
+              "end": 160.333333,
+              "lumber": true
+            },
+            {
+              "start": 160.333333,
+              "end": 282.666667,
+              "lumber": false
+            },
+            {
+              "start": 282.666667,
+              "end": 320.666667,
+              "lumber": true
+            },
+            {
+              "start": 320.666667,
+              "end": 443.0,
+              "lumber": false
+            },
+            {
+              "start": 443.0,
+              "end": 481.0,
+              "lumber": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "name": "Bottom shelf",
+      "kind": "attach",
+      "pieces": [
+        "shelf_bottom_1",
+        "shelf_bottom_2",
+        "shelf_bottom_3",
+        "shelf_bottom_4",
+        "shelf_bottom_5"
+      ],
+      "connections": [
+        [
+          "apron_bottom_front",
+          "shelf_bottom_1"
+        ],
+        [
+          "apron_bottom_front",
+          "shelf_bottom_2"
+        ],
+        [
+          "apron_bottom_front",
+          "shelf_bottom_3"
+        ],
+        [
+          "apron_bottom_front",
+          "shelf_bottom_4"
+        ],
+        [
+          "apron_bottom_front",
+          "shelf_bottom_5"
+        ]
+      ],
+      "shown": [
+        "leg_1",
+        "leg_2",
+        "leg_3",
+        "leg_4",
+        "apron_bottom_front",
+        "apron_bottom_back",
+        "apron_bottom_left",
+        "apron_bottom_right",
+        "apron_mid_front",
+        "apron_mid_back",
+        "apron_mid_left",
+        "apron_mid_right",
+        "apron_top_front",
+        "apron_top_back",
+        "apron_top_left",
+        "apron_top_right",
+        "shelf_bottom_1",
+        "shelf_bottom_2",
+        "shelf_bottom_3",
+        "shelf_bottom_4",
+        "shelf_bottom_5"
+      ],
+      "view": {
+        "axis": "z",
+        "side": -1
+      },
+      "hardware": [
+        {
+          "name": "Dowel 8x30",
+          "count": 10
+        }
+      ],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            38.0,
+            51.166667,
+            140.166667,
+            153.333333,
+            242.333333,
+            255.5,
+            344.5,
+            357.666667,
+            446.666667,
+            459.833333,
+            548.833333,
+            562.0,
+            600.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 38.0,
+              "lumber": false
+            },
+            {
+              "start": 38.0,
+              "end": 51.166667,
+              "lumber": false
+            },
+            {
+              "start": 51.166667,
+              "end": 140.166667,
+              "lumber": true
+            },
+            {
+              "start": 140.166667,
+              "end": 153.333333,
+              "lumber": false
+            },
+            {
+              "start": 153.333333,
+              "end": 242.333333,
+              "lumber": true
+            },
+            {
+              "start": 242.333333,
+              "end": 255.5,
+              "lumber": false
+            },
+            {
+              "start": 255.5,
+              "end": 344.5,
+              "lumber": true
+            },
+            {
+              "start": 344.5,
+              "end": 357.666667,
+              "lumber": false
+            },
+            {
+              "start": 357.666667,
+              "end": 446.666667,
+              "lumber": true
+            },
+            {
+              "start": 446.666667,
+              "end": 459.833333,
+              "lumber": false
+            },
+            {
+              "start": 459.833333,
+              "end": 548.833333,
+              "lumber": true
+            },
+            {
+              "start": 548.833333,
+              "end": 562.0,
+              "lumber": false
+            },
+            {
+              "start": 562.0,
+              "end": 600.0,
+              "lumber": false
+            }
+          ]
+        },
+        {
+          "axis": "y",
+          "side": "left",
+          "stops": [
+            0.0,
+            262.0,
+            300.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 262.0,
+              "lumber": false
+            },
+            {
+              "start": 262.0,
+              "end": 300.0,
+              "lumber": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "name": "Middle shelf",
+      "kind": "attach",
+      "pieces": [
+        "shelf_mid_1",
+        "shelf_mid_2",
+        "shelf_mid_3",
+        "shelf_mid_4",
+        "shelf_mid_5"
+      ],
+      "connections": [
+        [
+          "apron_mid_front",
+          "shelf_mid_1"
+        ],
+        [
+          "apron_mid_front",
+          "shelf_mid_2"
+        ],
+        [
+          "apron_mid_front",
+          "shelf_mid_3"
+        ],
+        [
+          "apron_mid_front",
+          "shelf_mid_4"
+        ],
+        [
+          "apron_mid_front",
+          "shelf_mid_5"
+        ]
+      ],
+      "shown": [
+        "leg_1",
+        "leg_2",
+        "leg_3",
+        "leg_4",
+        "apron_bottom_front",
+        "apron_bottom_back",
+        "apron_bottom_left",
+        "apron_bottom_right",
+        "apron_mid_front",
+        "apron_mid_back",
+        "apron_mid_left",
+        "apron_mid_right",
+        "apron_top_front",
+        "apron_top_back",
+        "apron_top_left",
+        "apron_top_right",
+        "shelf_bottom_1",
+        "shelf_bottom_2",
+        "shelf_bottom_3",
+        "shelf_bottom_4",
+        "shelf_bottom_5",
+        "shelf_mid_1",
+        "shelf_mid_2",
+        "shelf_mid_3",
+        "shelf_mid_4",
+        "shelf_mid_5"
+      ],
+      "view": {
+        "axis": "z",
+        "side": 1
+      },
+      "hardware": [
+        {
+          "name": "Dowel 8x30",
+          "count": 10
+        }
+      ],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            38.0,
+            51.166667,
+            140.166667,
+            153.333333,
+            242.333333,
+            255.5,
+            344.5,
+            357.666667,
+            446.666667,
+            459.833333,
+            548.833333,
+            562.0,
+            600.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 38.0,
+              "lumber": false
+            },
+            {
+              "start": 38.0,
+              "end": 51.166667,
+              "lumber": false
+            },
+            {
+              "start": 51.166667,
+              "end": 140.166667,
+              "lumber": true
+            },
+            {
+              "start": 140.166667,
+              "end": 153.333333,
+              "lumber": false
+            },
+            {
+              "start": 153.333333,
+              "end": 242.333333,
+              "lumber": true
+            },
+            {
+              "start": 242.333333,
+              "end": 255.5,
+              "lumber": false
+            },
+            {
+              "start": 255.5,
+              "end": 344.5,
+              "lumber": true
+            },
+            {
+              "start": 344.5,
+              "end": 357.666667,
+              "lumber": false
+            },
+            {
+              "start": 357.666667,
+              "end": 446.666667,
+              "lumber": true
+            },
+            {
+              "start": 446.666667,
+              "end": 459.833333,
+              "lumber": false
+            },
+            {
+              "start": 459.833333,
+              "end": 548.833333,
+              "lumber": true
+            },
+            {
+              "start": 548.833333,
+              "end": 562.0,
+              "lumber": false
+            },
+            {
+              "start": 562.0,
+              "end": 600.0,
+              "lumber": false
+            }
+          ]
+        },
+        {
+          "axis": "y",
+          "side": "left",
+          "stops": [
+            0.0,
+            262.0,
+            300.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 262.0,
+              "lumber": false
+            },
+            {
+              "start": 262.0,
+              "end": 300.0,
+              "lumber": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "name": "Top shelf",
+      "kind": "attach",
+      "pieces": [
+        "shelf_top_1",
+        "shelf_top_2",
+        "shelf_top_3",
+        "shelf_top_4",
+        "shelf_top_5"
+      ],
+      "connections": [
+        [
+          "apron_top_front",
+          "shelf_top_1"
+        ],
+        [
+          "apron_top_front",
+          "shelf_top_2"
+        ],
+        [
+          "apron_top_front",
+          "shelf_top_3"
+        ],
+        [
+          "apron_top_front",
+          "shelf_top_4"
+        ],
+        [
+          "apron_top_front",
+          "shelf_top_5"
+        ]
+      ],
+      "shown": [
+        "leg_1",
+        "leg_2",
+        "leg_3",
+        "leg_4",
+        "apron_bottom_front",
+        "apron_bottom_back",
+        "apron_bottom_left",
+        "apron_bottom_right",
+        "apron_mid_front",
+        "apron_mid_back",
+        "apron_mid_left",
+        "apron_mid_right",
+        "apron_top_front",
+        "apron_top_back",
+        "apron_top_left",
+        "apron_top_right",
+        "shelf_bottom_1",
+        "shelf_bottom_2",
+        "shelf_bottom_3",
+        "shelf_bottom_4",
+        "shelf_bottom_5",
+        "shelf_mid_1",
+        "shelf_mid_2",
+        "shelf_mid_3",
+        "shelf_mid_4",
+        "shelf_mid_5",
+        "shelf_top_1",
+        "shelf_top_2",
+        "shelf_top_3",
+        "shelf_top_4",
+        "shelf_top_5"
+      ],
+      "view": {
+        "axis": "z",
+        "side": 1
+      },
+      "hardware": [
+        {
+          "name": "Dowel 8x30",
+          "count": 10
+        }
+      ],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            38.0,
+            51.166667,
+            140.166667,
+            153.333333,
+            242.333333,
+            255.5,
+            344.5,
+            357.666667,
+            446.666667,
+            459.833333,
+            548.833333,
+            562.0,
+            600.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 38.0,
+              "lumber": false
+            },
+            {
+              "start": 38.0,
+              "end": 51.166667,
+              "lumber": false
+            },
+            {
+              "start": 51.166667,
+              "end": 140.166667,
+              "lumber": true
+            },
+            {
+              "start": 140.166667,
+              "end": 153.333333,
+              "lumber": false
+            },
+            {
+              "start": 153.333333,
+              "end": 242.333333,
+              "lumber": true
+            },
+            {
+              "start": 242.333333,
+              "end": 255.5,
+              "lumber": false
+            },
+            {
+              "start": 255.5,
+              "end": 344.5,
+              "lumber": true
+            },
+            {
+              "start": 344.5,
+              "end": 357.666667,
+              "lumber": false
+            },
+            {
+              "start": 357.666667,
+              "end": 446.666667,
+              "lumber": true
+            },
+            {
+              "start": 446.666667,
+              "end": 459.833333,
+              "lumber": false
+            },
+            {
+              "start": 459.833333,
+              "end": 548.833333,
+              "lumber": true
+            },
+            {
+              "start": 548.833333,
+              "end": 562.0,
+              "lumber": false
+            },
+            {
+              "start": 562.0,
+              "end": 600.0,
+              "lumber": false
+            }
+          ]
+        },
+        {
+          "axis": "y",
+          "side": "left",
+          "stops": [
+            0.0,
+            262.0,
+            300.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 262.0,
+              "lumber": false
+            },
+            {
+              "start": 262.0,
+              "end": 300.0,
+              "lumber": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "steps_declared": true,
+  "steps_hint": null
+}

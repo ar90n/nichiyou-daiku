@@ -1,1 +1,212 @@
-{"valid": false, "error": null, "overall_size": [1051.0, 576.0, 700.0], "size_reference": "leg_fl", "pieces": [{"id": "leg_fl", "type": "2x4", "length": 681.0, "group": 0, "min": [51.0, 500.0, 0.0], "max": [140.0, 538.0, 681.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "apron_front", "type": "2x4", "length": 1000.0, "group": 0, "min": [51.0, 538.0, 592.0], "max": [1051.0, 576.0, 681.0], "faces": {"top": "+x", "right": "-z", "front": "+y"}}, {"id": "apron_left", "type": "2x4", "length": 348.0, "group": 0, "min": [51.0, 152.0, 592.0], "max": [89.0, 500.0, 681.0], "faces": {"top": "-y", "right": "+z", "front": "-x"}}, {"id": "leg_bl", "type": "2x4", "length": 681.0, "group": 0, "min": [51.0, 114.0, 0.0], "max": [140.0, 152.0, 681.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "apron_back", "type": "2x4", "length": 1000.0, "group": 0, "min": [51.0, 76.0, 592.0], "max": [1051.0, 114.0, 681.0], "faces": {"top": "+x", "right": "-z", "front": "+y"}}, {"id": "leg_fr", "type": "2x4", "length": 681.0, "group": 0, "min": [962.0, 500.0, 0.0], "max": [1051.0, 538.0, 681.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "leg_br", "type": "2x4", "length": 681.0, "group": 0, "min": [962.0, 114.0, 0.0], "max": [1051.0, 152.0, 681.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "apron_right", "type": "2x4", "length": 348.0, "group": 0, "min": [1013.0, 152.0, 592.0], "max": [1051.0, 500.0, 681.0], "faces": {"top": "-y", "right": "+z", "front": "-x"}}, {"id": "top_1", "type": "1x6", "length": 500.0, "group": 0, "min": [0.0, 0.0, 681.0], "max": [140.0, 500.0, 700.0], "faces": {"top": "-y", "right": "+x", "front": "+z"}}], "problems": [{"kind": "fastener", "message": "Connection leg_fl -> top_1: pieces do not share a contact area", "connection": ["leg_fl", "top_1"], "fastener": "screw"}]}
+{
+  "valid": false,
+  "error": null,
+  "overall_size": [
+    1051.0,
+    576.0,
+    700.0
+  ],
+  "size_reference": "leg_fl",
+  "pieces": [
+    {
+      "id": "leg_fl",
+      "type": "2x4",
+      "length": 681.0,
+      "group": 0,
+      "min": [
+        51.0,
+        500.0,
+        0.0
+      ],
+      "max": [
+        140.0,
+        538.0,
+        681.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "apron_front",
+      "type": "2x4",
+      "length": 1000.0,
+      "group": 0,
+      "min": [
+        51.0,
+        538.0,
+        592.0
+      ],
+      "max": [
+        1051.0,
+        576.0,
+        681.0
+      ],
+      "faces": {
+        "top": "+x",
+        "right": "-z",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "apron_left",
+      "type": "2x4",
+      "length": 348.0,
+      "group": 0,
+      "min": [
+        51.0,
+        152.0,
+        592.0
+      ],
+      "max": [
+        89.0,
+        500.0,
+        681.0
+      ],
+      "faces": {
+        "top": "-y",
+        "right": "+z",
+        "front": "-x"
+      }
+    },
+    {
+      "id": "leg_bl",
+      "type": "2x4",
+      "length": 681.0,
+      "group": 0,
+      "min": [
+        51.0,
+        114.0,
+        0.0
+      ],
+      "max": [
+        140.0,
+        152.0,
+        681.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "apron_back",
+      "type": "2x4",
+      "length": 1000.0,
+      "group": 0,
+      "min": [
+        51.0,
+        76.0,
+        592.0
+      ],
+      "max": [
+        1051.0,
+        114.0,
+        681.0
+      ],
+      "faces": {
+        "top": "+x",
+        "right": "-z",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "leg_fr",
+      "type": "2x4",
+      "length": 681.0,
+      "group": 0,
+      "min": [
+        962.0,
+        500.0,
+        0.0
+      ],
+      "max": [
+        1051.0,
+        538.0,
+        681.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "leg_br",
+      "type": "2x4",
+      "length": 681.0,
+      "group": 0,
+      "min": [
+        962.0,
+        114.0,
+        0.0
+      ],
+      "max": [
+        1051.0,
+        152.0,
+        681.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "apron_right",
+      "type": "2x4",
+      "length": 348.0,
+      "group": 0,
+      "min": [
+        1013.0,
+        152.0,
+        592.0
+      ],
+      "max": [
+        1051.0,
+        500.0,
+        681.0
+      ],
+      "faces": {
+        "top": "-y",
+        "right": "+z",
+        "front": "-x"
+      }
+    },
+    {
+      "id": "top_1",
+      "type": "1x6",
+      "length": 500.0,
+      "group": 0,
+      "min": [
+        0.0,
+        0.0,
+        681.0
+      ],
+      "max": [
+        140.0,
+        500.0,
+        700.0
+      ],
+      "faces": {
+        "top": "-y",
+        "right": "+x",
+        "front": "+z"
+      }
+    }
+  ],
+  "problems": [
+    {
+      "kind": "fastener",
+      "message": "Connection leg_fl -> top_1: pieces do not share a contact area",
+      "connection": [
+        "leg_fl",
+        "top_1"
+      ],
+      "fastener": "screw"
+    }
+  ]
+}

@@ -1,1 +1,185 @@
-{"parts": [{"pieces": ["shelf", "shelf2"], "type": "2x4", "length": 600.0, "count": 2, "drilled": true}, {"pieces": ["side"], "type": "2x4", "length": 800.0, "count": 1, "drilled": true}], "steps": [{"number": 1, "name": null, "kind": "first", "pieces": ["shelf", "side"], "connections": [["shelf", "side"]], "shown": ["shelf", "side"], "view": {"axis": "x", "side": -1}, "hardware": [{"name": "Screw 3.3x45", "count": 2}], "dimensions": [{"axis": "y", "side": "below", "stops": [0.0, 100.0, 138.0, 800.0], "segments": [{"start": 0.0, "end": 100.0, "lumber": false}, {"start": 100.0, "end": 138.0, "lumber": true}, {"start": 138.0, "end": 800.0, "lumber": false}]}, {"axis": "z", "side": "left", "stops": [0.0, 38.0, 638.0], "segments": [{"start": 0.0, "end": 38.0, "lumber": true}, {"start": 38.0, "end": 638.0, "lumber": false}]}]}, {"number": 2, "name": null, "kind": "attach", "pieces": ["shelf2"], "connections": [["shelf2", "side"]], "shown": ["shelf", "side", "shelf2"], "view": {"axis": "x", "side": -1}, "hardware": [{"name": "Screw 3.3x45", "count": 2}], "dimensions": [{"axis": "y", "side": "below", "stops": [0.0, 300.0, 338.0, 800.0], "segments": [{"start": 0.0, "end": 300.0, "lumber": false}, {"start": 300.0, "end": 338.0, "lumber": true}, {"start": 338.0, "end": 800.0, "lumber": false}]}, {"axis": "z", "side": "left", "stops": [0.0, 38.0, 638.0], "segments": [{"start": 0.0, "end": 38.0, "lumber": true}, {"start": 38.0, "end": 638.0, "lumber": false}]}]}], "steps_declared": false, "steps_hint": "No steps block: each step adds one piece. Group pieces with a steps block, e.g. `steps { \"Frame\": shelf, side, ... }`."}
+{
+  "parts": [
+    {
+      "pieces": [
+        "shelf",
+        "shelf2"
+      ],
+      "type": "2x4",
+      "length": 600.0,
+      "count": 2,
+      "drilled": true
+    },
+    {
+      "pieces": [
+        "side"
+      ],
+      "type": "2x4",
+      "length": 800.0,
+      "count": 1,
+      "drilled": true
+    }
+  ],
+  "steps": [
+    {
+      "number": 1,
+      "name": null,
+      "kind": "first",
+      "pieces": [
+        "shelf",
+        "side"
+      ],
+      "connections": [
+        [
+          "shelf",
+          "side"
+        ]
+      ],
+      "shown": [
+        "shelf",
+        "side"
+      ],
+      "view": {
+        "axis": "x",
+        "side": -1
+      },
+      "hardware": [
+        {
+          "name": "Screw 3.3x45",
+          "count": 2
+        }
+      ],
+      "dimensions": [
+        {
+          "axis": "y",
+          "side": "below",
+          "stops": [
+            0.0,
+            100.0,
+            138.0,
+            800.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 100.0,
+              "lumber": false
+            },
+            {
+              "start": 100.0,
+              "end": 138.0,
+              "lumber": true
+            },
+            {
+              "start": 138.0,
+              "end": 800.0,
+              "lumber": false
+            }
+          ]
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            38.0,
+            638.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 38.0,
+              "lumber": true
+            },
+            {
+              "start": 38.0,
+              "end": 638.0,
+              "lumber": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "shelf2"
+      ],
+      "connections": [
+        [
+          "shelf2",
+          "side"
+        ]
+      ],
+      "shown": [
+        "shelf",
+        "side",
+        "shelf2"
+      ],
+      "view": {
+        "axis": "x",
+        "side": -1
+      },
+      "hardware": [
+        {
+          "name": "Screw 3.3x45",
+          "count": 2
+        }
+      ],
+      "dimensions": [
+        {
+          "axis": "y",
+          "side": "below",
+          "stops": [
+            0.0,
+            300.0,
+            338.0,
+            800.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 300.0,
+              "lumber": false
+            },
+            {
+              "start": 300.0,
+              "end": 338.0,
+              "lumber": true
+            },
+            {
+              "start": 338.0,
+              "end": 800.0,
+              "lumber": false
+            }
+          ]
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            38.0,
+            638.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 38.0,
+              "lumber": true
+            },
+            {
+              "start": 38.0,
+              "end": 638.0,
+              "lumber": false
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "steps_declared": false,
+  "steps_hint": "No steps block: each step adds one piece. Group pieces with a steps block, e.g. `steps { \"Frame\": shelf, side, ... }`."
+}

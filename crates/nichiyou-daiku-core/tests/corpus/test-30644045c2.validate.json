@@ -1,1 +1,13 @@
-{"valid": false, "error": {"kind": "semantic", "message": "line 1, column 9: Undefined variable 'W' (define it before it is used)", "line": 1, "column": 9}, "overall_size": null, "size_reference": null, "pieces": [], "problems": []}
+{
+  "valid": false,
+  "error": {
+    "kind": "semantic",
+    "message": "line 1, column 9: Undefined variable 'W' (define it before it is used)",
+    "line": 1,
+    "column": 9
+  },
+  "overall_size": null,
+  "size_reference": null,
+  "pieces": [],
+  "problems": []
+}

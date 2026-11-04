@@ -1,1 +1,82 @@
-{"parts": [{"pieces": ["a"], "type": "2x4", "length": 333.333333, "count": 1, "drilled": false}, {"pieces": ["b"], "type": "2x4", "length": 300.0, "count": 1, "drilled": false}], "steps": [{"number": 1, "name": null, "kind": "first", "pieces": ["a", "b"], "connections": [["a", "b"]], "shown": ["a", "b"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 333.333333, 633.333333], "segments": [{"start": 0.0, "end": 333.333333, "lumber": false}, {"start": 333.333333, "end": 633.333333, "lumber": false}]}]}], "steps_declared": false, "steps_hint": null}
+{
+  "parts": [
+    {
+      "pieces": [
+        "a"
+      ],
+      "type": "2x4",
+      "length": 333.333333,
+      "count": 1,
+      "drilled": false
+    },
+    {
+      "pieces": [
+        "b"
+      ],
+      "type": "2x4",
+      "length": 300.0,
+      "count": 1,
+      "drilled": false
+    }
+  ],
+  "steps": [
+    {
+      "number": 1,
+      "name": null,
+      "kind": "first",
+      "pieces": [
+        "a",
+        "b"
+      ],
+      "connections": [
+        [
+          "a",
+          "b"
+        ]
+      ],
+      "shown": [
+        "a",
+        "b"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            333.333333,
+            633.333333
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 333.333333,
+              "lumber": false
+            },
+            {
+              "start": 333.333333,
+              "end": 633.333333,
+              "lumber": false
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "steps_declared": false,
+  "steps_hint": null
+}

@@ -1,1 +1,136 @@
-[{"view": "from +y", "axis": "z", "side": "left", "stops": [0.0, 100.0, 189.0, 208.0, 720.0], "segments": [{"start": 0.0, "end": 100.0, "lumber": false}, {"start": 100.0, "end": 189.0, "lumber": true}, {"start": 189.0, "end": 208.0, "lumber": true}, {"start": 208.0, "end": 720.0, "lumber": false}]}, {"view": "from +y", "axis": "x", "side": "below", "stops": [0.0, 89.0, 351.0], "segments": [{"start": 0.0, "end": 89.0, "lumber": true}, {"start": 89.0, "end": 351.0, "lumber": false}]}, {"view": "from -x", "axis": "y", "side": "below", "stops": [0.0, 38.0, 562.0, 600.0], "segments": [{"start": 0.0, "end": 38.0, "lumber": true}, {"start": 38.0, "end": 562.0, "lumber": false}, {"start": 562.0, "end": 600.0, "lumber": true}]}, {"view": "from +z", "axis": "x", "side": "below", "stops": [0.0, 89.0, 351.0], "segments": [{"start": 0.0, "end": 89.0, "lumber": true}, {"start": 89.0, "end": 351.0, "lumber": false}]}, {"view": "from +z", "axis": "y", "side": "left", "stops": [0.0, 38.0, 562.0, 600.0], "segments": [{"start": 0.0, "end": 38.0, "lumber": true}, {"start": 38.0, "end": 562.0, "lumber": false}, {"start": 562.0, "end": 600.0, "lumber": true}]}]
+[
+  {
+    "view": "from +y",
+    "axis": "z",
+    "side": "left",
+    "stops": [
+      0.0,
+      100.0,
+      189.0,
+      208.0,
+      720.0
+    ],
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 100.0,
+        "lumber": false
+      },
+      {
+        "start": 100.0,
+        "end": 189.0,
+        "lumber": true
+      },
+      {
+        "start": 189.0,
+        "end": 208.0,
+        "lumber": true
+      },
+      {
+        "start": 208.0,
+        "end": 720.0,
+        "lumber": false
+      }
+    ]
+  },
+  {
+    "view": "from +y",
+    "axis": "x",
+    "side": "below",
+    "stops": [
+      0.0,
+      89.0,
+      351.0
+    ],
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 89.0,
+        "lumber": true
+      },
+      {
+        "start": 89.0,
+        "end": 351.0,
+        "lumber": false
+      }
+    ]
+  },
+  {
+    "view": "from -x",
+    "axis": "y",
+    "side": "below",
+    "stops": [
+      0.0,
+      38.0,
+      562.0,
+      600.0
+    ],
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 38.0,
+        "lumber": true
+      },
+      {
+        "start": 38.0,
+        "end": 562.0,
+        "lumber": false
+      },
+      {
+        "start": 562.0,
+        "end": 600.0,
+        "lumber": true
+      }
+    ]
+  },
+  {
+    "view": "from +z",
+    "axis": "x",
+    "side": "below",
+    "stops": [
+      0.0,
+      89.0,
+      351.0
+    ],
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 89.0,
+        "lumber": true
+      },
+      {
+        "start": 89.0,
+        "end": 351.0,
+        "lumber": false
+      }
+    ]
+  },
+  {
+    "view": "from +z",
+    "axis": "y",
+    "side": "left",
+    "stops": [
+      0.0,
+      38.0,
+      562.0,
+      600.0
+    ],
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 38.0,
+        "lumber": true
+      },
+      {
+        "start": 38.0,
+        "end": 562.0,
+        "lumber": false
+      },
+      {
+        "start": 562.0,
+        "end": 600.0,
+        "lumber": true
+      }
+    ]
+  }
+]

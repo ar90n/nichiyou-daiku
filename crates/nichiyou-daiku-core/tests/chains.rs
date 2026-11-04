@@ -1,14 +1,16 @@
-//! The technical drawing's chain dimensions match the Python version's
-//! (NAME.chains.json, written by tools/make_goldens.py --steps-only).
+//! The technical drawing's chain dimensions for every corpus case that
+//! assembles, against NAME.chains.json.
 
-use std::fs;
-use std::path::PathBuf;
+use std::path::Path;
 
 use nichiyou_daiku_core::assembly::Assembly;
 use nichiyou_daiku_core::dimensioning::drawing_chains;
 use nichiyou_daiku_core::placement::overall_bounds;
 use nichiyou_daiku_core::pyfmt::round_mm;
 use serde_json::{Value, json};
+
+mod common;
+use common::{assert_none, check_golden, corpus, pretty};
 
 const DIR: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/corpus");
 const AXES: [&str; 3] = ["x", "y", "z"];
@@ -35,43 +37,23 @@ fn chains_json(assembly: &Assembly) -> Value {
         .collect()
 }
 
+fn chains(source: &str) -> Option<String> {
+    let model = nichiyou_daiku_core::dsl::parse(source).ok()?;
+    let assembly = Assembly::of(model).ok()?;
+    Some(pretty(&chains_json(&assembly)))
+}
+
 #[test]
-fn drawing_chains_match_the_python_version() {
-    let mut paths: Vec<PathBuf> = fs::read_dir(DIR)
-        .unwrap()
-        .map(|e| e.unwrap().path())
-        .filter(|p| p.extension().is_some_and(|e| e == "nd"))
-        .collect();
-    paths.sort();
-    let (mut checked, mut differ) = (0, Vec::new());
-    for path in paths {
-        let Ok(text) = fs::read_to_string(path.with_extension("chains.json")) else {
-            continue;
-        };
-        let want: Value = serde_json::from_str(&text).unwrap();
-        let model = nichiyou_daiku_core::dsl::parse(&fs::read_to_string(&path).unwrap()).unwrap();
-        let got = chains_json(&Assembly::of(model).unwrap());
-        if want != got {
-            differ.push(format!(
-                "{}\n  python: {want}\n  rust:   {got}",
-                path.display()
-            ));
+fn drawing_chains_match_their_golden_files() {
+    let (mut failures, mut checked) = (Vec::new(), 0);
+    for (name, source) in corpus(Path::new(DIR)) {
+        let got = chains(&source);
+        checked += usize::from(got.is_some());
+        let path = Path::new(DIR).join(format!("{name}.chains.json"));
+        if let Err(error) = check_golden(&path, got.as_deref()) {
+            failures.push(error);
         }
-        checked += 1;
     }
-    assert!(
-        checked >= 600,
-        "only {checked} cases have chains.json: run tools/make_goldens.py --steps-only"
-    );
-    assert!(
-        differ.is_empty(),
-        "{} of {checked} differ:\n{}",
-        differ.len(),
-        differ
-            .iter()
-            .take(3)
-            .cloned()
-            .collect::<Vec<_>>()
-            .join("\n")
-    );
+    assert!(checked >= 600, "only {checked} cases assemble");
+    assert_none(&failures, checked);
 }

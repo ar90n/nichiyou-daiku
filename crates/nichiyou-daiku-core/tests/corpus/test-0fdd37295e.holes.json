@@ -1,1 +1,261 @@
-{"pieces": {"a": [{"face": "back", "center": [19.0, 0.0, 33.25], "diameter": 8.0, "depth": 20.0}, {"face": "back", "center": [19.0, 0.0, 77.75], "diameter": 8.0, "depth": 20.0}, {"face": "front", "center": [19.0, 38.0, 33.25], "diameter": 8.0, "depth": 15.0}, {"face": "front", "center": [19.0, 38.0, 77.75], "diameter": 8.0, "depth": 15.0}], "b": [{"face": "down", "center": [22.25, 19.0, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "down", "center": [66.75, 19.0, 0.0], "diameter": 8.0, "depth": 15.0}], "c": [{"face": "down", "center": [22.25, 19.0, 0.0], "diameter": 8.0, "depth": 20.0}, {"face": "down", "center": [66.75, 19.0, 0.0], "diameter": 8.0, "depth": 20.0}], "shelf": [{"face": "down", "center": [22.25, 19.0, 0.0], "diameter": 2.0, "depth": 7.0}, {"face": "down", "center": [66.75, 19.0, 0.0], "diameter": 2.0, "depth": 7.0}], "side": [{"face": "back", "center": [22.25, 0.0, 119.0], "diameter": 2.0, "depth": null}, {"face": "back", "center": [22.25, 0.0, 319.0], "diameter": 2.5, "depth": null}, {"face": "back", "center": [22.25, 0.0, 519.0], "diameter": 2.5, "depth": null}, {"face": "back", "center": [66.75, 0.0, 119.0], "diameter": 2.0, "depth": null}, {"face": "back", "center": [66.75, 0.0, 319.0], "diameter": 2.5, "depth": null}, {"face": "back", "center": [66.75, 0.0, 519.0], "diameter": 2.5, "depth": null}], "shelf2": [{"face": "down", "center": [22.25, 19.0, 0.0], "diameter": 2.5, "depth": 19.0}, {"face": "down", "center": [66.75, 19.0, 0.0], "diameter": 2.5, "depth": 19.0}], "shelf3": [{"face": "down", "center": [22.25, 19.0, 0.0], "diameter": 2.5, "depth": 2.0}, {"face": "down", "center": [66.75, 19.0, 0.0], "diameter": 2.5, "depth": 2.0}]}, "fasteners": [{"base": "a", "target": "b", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "a", "target": "c", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "shelf", "target": "side", "kind": "screw", "diameter": 3.3, "count": 2}, {"base": "shelf2", "target": "side", "kind": "screw", "diameter": 3.8, "count": 2}, {"base": "shelf3", "target": "side", "kind": "screw", "diameter": 3.5, "count": 2}]}
+{
+  "pieces": {
+    "a": [
+      {
+        "face": "back",
+        "center": [
+          19.0,
+          0.0,
+          33.25
+        ],
+        "diameter": 8.0,
+        "depth": 20.0
+      },
+      {
+        "face": "back",
+        "center": [
+          19.0,
+          0.0,
+          77.75
+        ],
+        "diameter": 8.0,
+        "depth": 20.0
+      },
+      {
+        "face": "front",
+        "center": [
+          19.0,
+          38.0,
+          33.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "front",
+        "center": [
+          19.0,
+          38.0,
+          77.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "b": [
+      {
+        "face": "down",
+        "center": [
+          22.25,
+          19.0,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "down",
+        "center": [
+          66.75,
+          19.0,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "c": [
+      {
+        "face": "down",
+        "center": [
+          22.25,
+          19.0,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 20.0
+      },
+      {
+        "face": "down",
+        "center": [
+          66.75,
+          19.0,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 20.0
+      }
+    ],
+    "shelf": [
+      {
+        "face": "down",
+        "center": [
+          22.25,
+          19.0,
+          0.0
+        ],
+        "diameter": 2.0,
+        "depth": 7.0
+      },
+      {
+        "face": "down",
+        "center": [
+          66.75,
+          19.0,
+          0.0
+        ],
+        "diameter": 2.0,
+        "depth": 7.0
+      }
+    ],
+    "side": [
+      {
+        "face": "front",
+        "center": [
+          22.25,
+          38.0,
+          119.0
+        ],
+        "diameter": 2.0,
+        "depth": null,
+        "countersink": 6.5
+      },
+      {
+        "face": "front",
+        "center": [
+          22.25,
+          38.0,
+          319.0
+        ],
+        "diameter": 2.5,
+        "depth": null,
+        "countersink": 7.5
+      },
+      {
+        "face": "front",
+        "center": [
+          22.25,
+          38.0,
+          519.0
+        ],
+        "diameter": 2.5,
+        "depth": null,
+        "countersink": 7.0
+      },
+      {
+        "face": "front",
+        "center": [
+          66.75,
+          38.0,
+          119.0
+        ],
+        "diameter": 2.0,
+        "depth": null,
+        "countersink": 6.5
+      },
+      {
+        "face": "front",
+        "center": [
+          66.75,
+          38.0,
+          319.0
+        ],
+        "diameter": 2.5,
+        "depth": null,
+        "countersink": 7.5
+      },
+      {
+        "face": "front",
+        "center": [
+          66.75,
+          38.0,
+          519.0
+        ],
+        "diameter": 2.5,
+        "depth": null,
+        "countersink": 7.0
+      }
+    ],
+    "shelf2": [
+      {
+        "face": "down",
+        "center": [
+          22.25,
+          19.0,
+          0.0
+        ],
+        "diameter": 2.5,
+        "depth": 19.0
+      },
+      {
+        "face": "down",
+        "center": [
+          66.75,
+          19.0,
+          0.0
+        ],
+        "diameter": 2.5,
+        "depth": 19.0
+      }
+    ],
+    "shelf3": [
+      {
+        "face": "down",
+        "center": [
+          22.25,
+          19.0,
+          0.0
+        ],
+        "diameter": 2.5,
+        "depth": 2.0
+      },
+      {
+        "face": "down",
+        "center": [
+          66.75,
+          19.0,
+          0.0
+        ],
+        "diameter": 2.5,
+        "depth": 2.0
+      }
+    ]
+  },
+  "fasteners": [
+    {
+      "base": "a",
+      "target": "b",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "a",
+      "target": "c",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "shelf",
+      "target": "side",
+      "kind": "screw",
+      "diameter": 3.3,
+      "count": 2
+    },
+    {
+      "base": "shelf2",
+      "target": "side",
+      "kind": "screw",
+      "diameter": 3.8,
+      "count": 2
+    },
+    {
+      "base": "shelf3",
+      "target": "side",
+      "kind": "screw",
+      "diameter": 3.5,
+      "count": 2
+    }
+  ]
+}

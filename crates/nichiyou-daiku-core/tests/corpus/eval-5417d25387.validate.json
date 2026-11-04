@@ -1,1 +1,263 @@
-{"valid": false, "error": null, "overall_size": [551.0, 1000.0, 681.0], "size_reference": "leg_fl", "pieces": [{"id": "leg_fl", "type": "2x4", "length": 681.0, "group": 0, "min": [0.0, 962.0, 0.0], "max": [89.0, 1000.0, 681.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "leg_fr", "type": "2x4", "length": 681.0, "group": 0, "min": [0.0, 0.0, 0.0], "max": [89.0, 38.0, 681.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "leg_bl", "type": "2x4", "length": 681.0, "group": 0, "min": [462.0, 962.0, 0.0], "max": [551.0, 1000.0, 681.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "leg_br", "type": "2x4", "length": 681.0, "group": 0, "min": [462.0, 0.0, 0.0], "max": [551.0, 38.0, 681.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "apron_front", "type": "2x4", "length": 924.0, "group": 0, "min": [51.0, 38.0, 592.0], "max": [89.0, 962.0, 681.0], "faces": {"top": "-y", "right": "+z", "front": "-x"}}, {"id": "apron_back", "type": "2x4", "length": 924.0, "group": 0, "min": [513.0, 38.0, 592.0], "max": [551.0, 962.0, 681.0], "faces": {"top": "-y", "right": "+z", "front": "-x"}}, {"id": "apron_left", "type": "2x4", "length": 424.0, "group": 0, "min": [89.0, 38.0, 592.0], "max": [513.0, 76.0, 681.0], "faces": {"top": "+x", "right": "-z", "front": "+y"}}, {"id": "apron_right", "type": "2x4", "length": 424.0, "group": 0, "min": [89.0, 38.0, 592.0], "max": [513.0, 76.0, 681.0], "faces": {"top": "+x", "right": "-z", "front": "+y"}}], "problems": [{"kind": "hole_collision", "message": "Connection apron_front -> apron_right: dowel hole in 'apron_front' runs into a dowel hole of connection apron_front -> apron_left", "connection": ["apron_front", "apron_right"], "other_connection": ["apron_front", "apron_left"], "piece": "apron_front", "fastener": "dowel", "holes": [{"entry": [89.0, 57.0, 614.25], "direction": "-x", "depth": 15.0, "diameter": 8.0}, {"entry": [89.0, 57.0, 614.25], "direction": "-x", "depth": 15.0, "diameter": 8.0}]}, {"kind": "hole_collision", "message": "Connection apron_back -> apron_right: dowel hole in 'apron_back' runs into a dowel hole of connection apron_back -> apron_left", "connection": ["apron_back", "apron_right"], "other_connection": ["apron_back", "apron_left"], "piece": "apron_back", "fastener": "dowel", "holes": [{"entry": [513.0, 57.0, 614.25], "direction": "+x", "depth": 15.0, "diameter": 8.0}, {"entry": [513.0, 57.0, 614.25], "direction": "+x", "depth": 15.0, "diameter": 8.0}]}, {"kind": "overlap", "message": "Pieces 'apron_left' and 'apron_right' overlap (1433968mm³)", "pieces": ["apron_left", "apron_right"], "volume_mm3": 1433968.0}]}
+{
+  "valid": false,
+  "error": null,
+  "overall_size": [
+    551.0,
+    1000.0,
+    681.0
+  ],
+  "size_reference": "leg_fl",
+  "pieces": [
+    {
+      "id": "leg_fl",
+      "type": "2x4",
+      "length": 681.0,
+      "group": 0,
+      "min": [
+        0.0,
+        962.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        1000.0,
+        681.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "leg_fr",
+      "type": "2x4",
+      "length": 681.0,
+      "group": 0,
+      "min": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        38.0,
+        681.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "leg_bl",
+      "type": "2x4",
+      "length": 681.0,
+      "group": 0,
+      "min": [
+        462.0,
+        962.0,
+        0.0
+      ],
+      "max": [
+        551.0,
+        1000.0,
+        681.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "leg_br",
+      "type": "2x4",
+      "length": 681.0,
+      "group": 0,
+      "min": [
+        462.0,
+        0.0,
+        0.0
+      ],
+      "max": [
+        551.0,
+        38.0,
+        681.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "apron_front",
+      "type": "2x4",
+      "length": 924.0,
+      "group": 0,
+      "min": [
+        51.0,
+        38.0,
+        592.0
+      ],
+      "max": [
+        89.0,
+        962.0,
+        681.0
+      ],
+      "faces": {
+        "top": "-y",
+        "right": "+z",
+        "front": "-x"
+      }
+    },
+    {
+      "id": "apron_back",
+      "type": "2x4",
+      "length": 924.0,
+      "group": 0,
+      "min": [
+        513.0,
+        38.0,
+        592.0
+      ],
+      "max": [
+        551.0,
+        962.0,
+        681.0
+      ],
+      "faces": {
+        "top": "-y",
+        "right": "+z",
+        "front": "-x"
+      }
+    },
+    {
+      "id": "apron_left",
+      "type": "2x4",
+      "length": 424.0,
+      "group": 0,
+      "min": [
+        89.0,
+        38.0,
+        592.0
+      ],
+      "max": [
+        513.0,
+        76.0,
+        681.0
+      ],
+      "faces": {
+        "top": "+x",
+        "right": "-z",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "apron_right",
+      "type": "2x4",
+      "length": 424.0,
+      "group": 0,
+      "min": [
+        89.0,
+        38.0,
+        592.0
+      ],
+      "max": [
+        513.0,
+        76.0,
+        681.0
+      ],
+      "faces": {
+        "top": "+x",
+        "right": "-z",
+        "front": "+y"
+      }
+    }
+  ],
+  "problems": [
+    {
+      "kind": "hole_collision",
+      "message": "Connection apron_front -> apron_right: dowel hole in 'apron_front' runs into a dowel hole of connection apron_front -> apron_left",
+      "connection": [
+        "apron_front",
+        "apron_right"
+      ],
+      "other_connection": [
+        "apron_front",
+        "apron_left"
+      ],
+      "piece": "apron_front",
+      "fastener": "dowel",
+      "holes": [
+        {
+          "entry": [
+            89.0,
+            57.0,
+            614.25
+          ],
+          "direction": "-x",
+          "depth": 15.0,
+          "diameter": 8.0
+        },
+        {
+          "entry": [
+            89.0,
+            57.0,
+            614.25
+          ],
+          "direction": "-x",
+          "depth": 15.0,
+          "diameter": 8.0
+        }
+      ]
+    },
+    {
+      "kind": "hole_collision",
+      "message": "Connection apron_back -> apron_right: dowel hole in 'apron_back' runs into a dowel hole of connection apron_back -> apron_left",
+      "connection": [
+        "apron_back",
+        "apron_right"
+      ],
+      "other_connection": [
+        "apron_back",
+        "apron_left"
+      ],
+      "piece": "apron_back",
+      "fastener": "dowel",
+      "holes": [
+        {
+          "entry": [
+            513.0,
+            57.0,
+            614.25
+          ],
+          "direction": "+x",
+          "depth": 15.0,
+          "diameter": 8.0
+        },
+        {
+          "entry": [
+            513.0,
+            57.0,
+            614.25
+          ],
+          "direction": "+x",
+          "depth": 15.0,
+          "diameter": 8.0
+        }
+      ]
+    },
+    {
+      "kind": "overlap",
+      "message": "Pieces 'apron_left' and 'apron_right' overlap (1433968mm³)",
+      "pieces": [
+        "apron_left",
+        "apron_right"
+      ],
+      "volume_mm3": 1433968.0
+    }
+  ]
+}

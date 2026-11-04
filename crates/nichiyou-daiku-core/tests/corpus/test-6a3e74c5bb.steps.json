@@ -1,1 +1,105 @@
-{"parts": [{"pieces": ["leg"], "type": "2x4", "length": 700.0, "count": 1, "drilled": true}, {"pieces": ["apron"], "type": "2x4", "length": 500.0, "count": 1, "drilled": true}], "steps": [{"number": 1, "name": null, "kind": "first", "pieces": ["leg", "apron"], "connections": [["leg", "apron"]], "shown": ["leg", "apron"], "view": {"axis": "x", "side": -1}, "hardware": [{"name": "Dowel 8x30", "count": 2}], "dimensions": [{"axis": "y", "side": "below", "stops": [0.0, 38.0, 538.0], "segments": [{"start": 0.0, "end": 38.0, "lumber": true}, {"start": 38.0, "end": 538.0, "lumber": false}]}, {"axis": "z", "side": "left", "stops": [0.0, 11.0, 100.0, 700.0], "segments": [{"start": 0.0, "end": 11.0, "lumber": false}, {"start": 11.0, "end": 100.0, "lumber": true}, {"start": 100.0, "end": 700.0, "lumber": false}]}]}], "steps_declared": false, "steps_hint": null}
+{
+  "parts": [
+    {
+      "pieces": [
+        "leg"
+      ],
+      "type": "2x4",
+      "length": 700.0,
+      "count": 1,
+      "drilled": true
+    },
+    {
+      "pieces": [
+        "apron"
+      ],
+      "type": "2x4",
+      "length": 500.0,
+      "count": 1,
+      "drilled": true
+    }
+  ],
+  "steps": [
+    {
+      "number": 1,
+      "name": null,
+      "kind": "first",
+      "pieces": [
+        "leg",
+        "apron"
+      ],
+      "connections": [
+        [
+          "leg",
+          "apron"
+        ]
+      ],
+      "shown": [
+        "leg",
+        "apron"
+      ],
+      "view": {
+        "axis": "x",
+        "side": -1
+      },
+      "hardware": [
+        {
+          "name": "Dowel 8x30",
+          "count": 2
+        }
+      ],
+      "dimensions": [
+        {
+          "axis": "y",
+          "side": "below",
+          "stops": [
+            0.0,
+            38.0,
+            538.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 38.0,
+              "lumber": true
+            },
+            {
+              "start": 38.0,
+              "end": 538.0,
+              "lumber": false
+            }
+          ]
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            11.0,
+            100.0,
+            700.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 11.0,
+              "lumber": false
+            },
+            {
+              "start": 11.0,
+              "end": 100.0,
+              "lumber": true
+            },
+            {
+              "start": 100.0,
+              "end": 700.0,
+              "lumber": false
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "steps_declared": false,
+  "steps_hint": null
+}

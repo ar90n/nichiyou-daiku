@@ -3,4 +3,4 @@ exit: 1
 --- stderr
 ✗ Syntax error
 
-Syntax error at line 1, column 9: Unexpected end of input. Expected one of: ')', '+', '-'
+Syntax error at line 1, column 9: Unexpected end of input. Expected one of: ')', '*', '+', '-', '/'

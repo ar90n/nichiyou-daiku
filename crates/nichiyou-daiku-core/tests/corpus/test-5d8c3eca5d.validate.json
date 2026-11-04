@@ -1,1 +1,13 @@
-{"valid": false, "error": {"kind": "semantic", "message": "line 4, column 1: Duplicate connection between 'b' and 'a': only one connection per piece pair is supported", "line": 4, "column": 1}, "overall_size": null, "size_reference": null, "pieces": [], "problems": []}
+{
+  "valid": false,
+  "error": {
+    "kind": "semantic",
+    "message": "line 4, column 1: Duplicate connection between 'b' and 'a': only one connection per piece pair is supported",
+    "line": 4,
+    "column": 1
+  },
+  "overall_size": null,
+  "size_reference": null,
+  "pieces": [],
+  "problems": []
+}

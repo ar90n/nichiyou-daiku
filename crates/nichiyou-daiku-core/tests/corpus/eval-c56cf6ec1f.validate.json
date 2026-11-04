@@ -1,1 +1,13 @@
-{"valid": false, "error": {"kind": "syntax", "message": "Syntax error at line 1, column 41: Unexpected character '['. Expected one of: '(', '-', 'FromMax', 'FromMin', identifier, number, string", "line": 1, "column": 41}, "overall_size": null, "size_reference": null, "pieces": [], "problems": []}
+{
+  "valid": false,
+  "error": {
+    "kind": "syntax",
+    "message": "Syntax error at line 1, column 41: Unexpected character '['. Expected one of: '(', '-', 'FromMax', 'FromMin', identifier, number, string",
+    "line": 1,
+    "column": 41
+  },
+  "overall_size": null,
+  "size_reference": null,
+  "pieces": [],
+  "problems": []
+}

@@ -1,1 +1,52 @@
-[{"view": "from +y", "axis": "z", "side": "left", "stops": [0.0, 622.0], "segments": []}, {"view": "from +y", "axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"view": "from -x", "axis": "y", "side": "below", "stops": [0.0, 38.0], "segments": []}, {"view": "from +z", "axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"view": "from +z", "axis": "y", "side": "left", "stops": [0.0, 38.0], "segments": []}]
+[
+  {
+    "view": "from +y",
+    "axis": "z",
+    "side": "left",
+    "stops": [
+      0.0,
+      622.0
+    ],
+    "segments": []
+  },
+  {
+    "view": "from +y",
+    "axis": "x",
+    "side": "below",
+    "stops": [
+      0.0,
+      89.0
+    ],
+    "segments": []
+  },
+  {
+    "view": "from -x",
+    "axis": "y",
+    "side": "below",
+    "stops": [
+      0.0,
+      38.0
+    ],
+    "segments": []
+  },
+  {
+    "view": "from +z",
+    "axis": "x",
+    "side": "below",
+    "stops": [
+      0.0,
+      89.0
+    ],
+    "segments": []
+  },
+  {
+    "view": "from +z",
+    "axis": "y",
+    "side": "left",
+    "stops": [
+      0.0,
+      38.0
+    ],
+    "segments": []
+  }
+]

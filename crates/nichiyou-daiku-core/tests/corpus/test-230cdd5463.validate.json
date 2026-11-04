@@ -1,1 +1,13 @@
-{"valid": false, "error": {"kind": "syntax", "message": "Syntax error at line 1, column 4: Unexpected token '4'. Expected: piece type (1x4, 1x6, 1x8, 2x2, 2x4, 2x6)", "line": 1, "column": 4}, "overall_size": null, "size_reference": null, "pieces": [], "problems": []}
+{
+  "valid": false,
+  "error": {
+    "kind": "syntax",
+    "message": "Syntax error at line 1, column 4: Unexpected token '4'. Expected: piece type (1x4, 1x6, 1x8, 2x2, 2x4, 2x6)",
+    "line": 1,
+    "column": 4
+  },
+  "overall_size": null,
+  "size_reference": null,
+  "pieces": [],
+  "problems": []
+}

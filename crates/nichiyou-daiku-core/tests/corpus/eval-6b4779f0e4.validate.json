@@ -1,1 +1,664 @@
-{"valid": true, "error": null, "overall_size": [600.0, 300.0, 500.0], "size_reference": "leg_fl", "pieces": [{"id": "leg_fl", "type": "2x2", "length": 500.0, "group": 0, "min": [562.0, 262.0, 0.0], "max": [600.0, 300.0, 500.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "leg_fr", "type": "2x2", "length": 500.0, "group": 0, "min": [0.0, 262.0, 0.0], "max": [38.0, 300.0, 500.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "leg_bl", "type": "2x2", "length": 500.0, "group": 0, "min": [562.0, 0.0, 0.0], "max": [600.0, 38.0, 500.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "leg_br", "type": "2x2", "length": 500.0, "group": 0, "min": [0.0, 0.0, 0.0], "max": [38.0, 38.0, 500.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "rail_front_1", "type": "2x2", "length": 524.0, "group": 0, "min": [38.0, 262.0, 109.666667], "max": [562.0, 300.0, 147.666667], "faces": {"top": "-x", "right": "+z", "front": "+y"}}, {"id": "rail_front_2", "type": "2x2", "length": 524.0, "group": 0, "min": [38.0, 262.0, 276.333333], "max": [562.0, 300.0, 314.333333], "faces": {"top": "-x", "right": "+z", "front": "+y"}}, {"id": "rail_front_3", "type": "2x2", "length": 524.0, "group": 0, "min": [38.0, 262.0, 443.0], "max": [562.0, 300.0, 481.0], "faces": {"top": "-x", "right": "+z", "front": "+y"}}, {"id": "rail_back_1", "type": "2x2", "length": 524.0, "group": 0, "min": [38.0, 0.0, 109.666667], "max": [562.0, 38.0, 147.666667], "faces": {"top": "-x", "right": "+z", "front": "+y"}}, {"id": "rail_back_2", "type": "2x2", "length": 524.0, "group": 0, "min": [38.0, 0.0, 276.333333], "max": [562.0, 38.0, 314.333333], "faces": {"top": "-x", "right": "+z", "front": "+y"}}, {"id": "rail_back_3", "type": "2x2", "length": 524.0, "group": 0, "min": [38.0, 0.0, 443.0], "max": [562.0, 38.0, 481.0], "faces": {"top": "-x", "right": "+z", "front": "+y"}}, {"id": "rail_left_1", "type": "2x2", "length": 224.0, "group": 0, "min": [562.0, 38.0, 128.666667], "max": [600.0, 262.0, 166.666667], "faces": {"top": "-y", "right": "+z", "front": "-x"}}, {"id": "rail_left_2", "type": "2x2", "length": 224.0, "group": 0, "min": [562.0, 38.0, 295.333333], "max": [600.0, 262.0, 333.333333], "faces": {"top": "-y", "right": "+z", "front": "-x"}}, {"id": "rail_left_3", "type": "2x2", "length": 224.0, "group": 0, "min": [562.0, 38.0, 462.0], "max": [600.0, 262.0, 500.0], "faces": {"top": "-y", "right": "+z", "front": "-x"}}, {"id": "rail_right_1", "type": "2x2", "length": 224.0, "group": 0, "min": [0.0, 38.0, 128.666667], "max": [38.0, 262.0, 166.666667], "faces": {"top": "-y", "right": "+z", "front": "-x"}}, {"id": "rail_right_2", "type": "2x2", "length": 224.0, "group": 0, "min": [0.0, 38.0, 295.333333], "max": [38.0, 262.0, 333.333333], "faces": {"top": "-y", "right": "+z", "front": "-x"}}, {"id": "rail_right_3", "type": "2x2", "length": 224.0, "group": 0, "min": [0.0, 38.0, 462.0], "max": [38.0, 262.0, 500.0], "faces": {"top": "-y", "right": "+z", "front": "-x"}}, {"id": "shelf_1_1", "type": "1x4", "length": 300.0, "group": 0, "min": [473.0, 0.0, 147.666667], "max": [562.0, 300.0, 166.666667], "faces": {"top": "+y", "right": "-x", "front": "+z"}}, {"id": "shelf_1_2", "type": "1x4", "length": 300.0, "group": 0, "min": [364.25, 0.0, 147.666667], "max": [453.25, 300.0, 166.666667], "faces": {"top": "+y", "right": "-x", "front": "+z"}}, {"id": "shelf_1_3", "type": "1x4", "length": 300.0, "group": 0, "min": [255.5, 0.0, 147.666667], "max": [344.5, 300.0, 166.666667], "faces": {"top": "+y", "right": "-x", "front": "+z"}}, {"id": "shelf_1_4", "type": "1x4", "length": 300.0, "group": 0, "min": [146.75, 0.0, 147.666667], "max": [235.75, 300.0, 166.666667], "faces": {"top": "+y", "right": "-x", "front": "+z"}}, {"id": "shelf_1_5", "type": "1x4", "length": 300.0, "group": 0, "min": [38.0, 0.0, 147.666667], "max": [127.0, 300.0, 166.666667], "faces": {"top": "+y", "right": "-x", "front": "+z"}}, {"id": "shelf_2_1", "type": "1x4", "length": 300.0, "group": 0, "min": [473.0, 0.0, 314.333333], "max": [562.0, 300.0, 333.333333], "faces": {"top": "+y", "right": "-x", "front": "+z"}}, {"id": "shelf_2_2", "type": "1x4", "length": 300.0, "group": 0, "min": [364.25, 0.0, 314.333333], "max": [453.25, 300.0, 333.333333], "faces": {"top": "+y", "right": "-x", "front": "+z"}}, {"id": "shelf_2_3", "type": "1x4", "length": 300.0, "group": 0, "min": [255.5, 0.0, 314.333333], "max": [344.5, 300.0, 333.333333], "faces": {"top": "+y", "right": "-x", "front": "+z"}}, {"id": "shelf_2_4", "type": "1x4", "length": 300.0, "group": 0, "min": [146.75, 0.0, 314.333333], "max": [235.75, 300.0, 333.333333], "faces": {"top": "+y", "right": "-x", "front": "+z"}}, {"id": "shelf_2_5", "type": "1x4", "length": 300.0, "group": 0, "min": [38.0, 0.0, 314.333333], "max": [127.0, 300.0, 333.333333], "faces": {"top": "+y", "right": "-x", "front": "+z"}}, {"id": "shelf_3_1", "type": "1x4", "length": 300.0, "group": 0, "min": [473.0, 0.0, 481.0], "max": [562.0, 300.0, 500.0], "faces": {"top": "+y", "right": "-x", "front": "+z"}}, {"id": "shelf_3_2", "type": "1x4", "length": 300.0, "group": 0, "min": [364.25, 0.0, 481.0], "max": [453.25, 300.0, 500.0], "faces": {"top": "+y", "right": "-x", "front": "+z"}}, {"id": "shelf_3_3", "type": "1x4", "length": 300.0, "group": 0, "min": [255.5, 0.0, 481.0], "max": [344.5, 300.0, 500.0], "faces": {"top": "+y", "right": "-x", "front": "+z"}}, {"id": "shelf_3_4", "type": "1x4", "length": 300.0, "group": 0, "min": [146.75, 0.0, 481.0], "max": [235.75, 300.0, 500.0], "faces": {"top": "+y", "right": "-x", "front": "+z"}}, {"id": "shelf_3_5", "type": "1x4", "length": 300.0, "group": 0, "min": [38.0, 0.0, 481.0], "max": [127.0, 300.0, 500.0], "faces": {"top": "+y", "right": "-x", "front": "+z"}}], "problems": []}
+{
+  "valid": true,
+  "error": null,
+  "overall_size": [
+    600.0,
+    300.0,
+    500.0
+  ],
+  "size_reference": "leg_fl",
+  "pieces": [
+    {
+      "id": "leg_fl",
+      "type": "2x2",
+      "length": 500.0,
+      "group": 0,
+      "min": [
+        562.0,
+        262.0,
+        0.0
+      ],
+      "max": [
+        600.0,
+        300.0,
+        500.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "leg_fr",
+      "type": "2x2",
+      "length": 500.0,
+      "group": 0,
+      "min": [
+        0.0,
+        262.0,
+        0.0
+      ],
+      "max": [
+        38.0,
+        300.0,
+        500.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "leg_bl",
+      "type": "2x2",
+      "length": 500.0,
+      "group": 0,
+      "min": [
+        562.0,
+        0.0,
+        0.0
+      ],
+      "max": [
+        600.0,
+        38.0,
+        500.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "leg_br",
+      "type": "2x2",
+      "length": 500.0,
+      "group": 0,
+      "min": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "max": [
+        38.0,
+        38.0,
+        500.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "rail_front_1",
+      "type": "2x2",
+      "length": 524.0,
+      "group": 0,
+      "min": [
+        38.0,
+        262.0,
+        109.666667
+      ],
+      "max": [
+        562.0,
+        300.0,
+        147.666667
+      ],
+      "faces": {
+        "top": "-x",
+        "right": "+z",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "rail_front_2",
+      "type": "2x2",
+      "length": 524.0,
+      "group": 0,
+      "min": [
+        38.0,
+        262.0,
+        276.333333
+      ],
+      "max": [
+        562.0,
+        300.0,
+        314.333333
+      ],
+      "faces": {
+        "top": "-x",
+        "right": "+z",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "rail_front_3",
+      "type": "2x2",
+      "length": 524.0,
+      "group": 0,
+      "min": [
+        38.0,
+        262.0,
+        443.0
+      ],
+      "max": [
+        562.0,
+        300.0,
+        481.0
+      ],
+      "faces": {
+        "top": "-x",
+        "right": "+z",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "rail_back_1",
+      "type": "2x2",
+      "length": 524.0,
+      "group": 0,
+      "min": [
+        38.0,
+        0.0,
+        109.666667
+      ],
+      "max": [
+        562.0,
+        38.0,
+        147.666667
+      ],
+      "faces": {
+        "top": "-x",
+        "right": "+z",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "rail_back_2",
+      "type": "2x2",
+      "length": 524.0,
+      "group": 0,
+      "min": [
+        38.0,
+        0.0,
+        276.333333
+      ],
+      "max": [
+        562.0,
+        38.0,
+        314.333333
+      ],
+      "faces": {
+        "top": "-x",
+        "right": "+z",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "rail_back_3",
+      "type": "2x2",
+      "length": 524.0,
+      "group": 0,
+      "min": [
+        38.0,
+        0.0,
+        443.0
+      ],
+      "max": [
+        562.0,
+        38.0,
+        481.0
+      ],
+      "faces": {
+        "top": "-x",
+        "right": "+z",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "rail_left_1",
+      "type": "2x2",
+      "length": 224.0,
+      "group": 0,
+      "min": [
+        562.0,
+        38.0,
+        128.666667
+      ],
+      "max": [
+        600.0,
+        262.0,
+        166.666667
+      ],
+      "faces": {
+        "top": "-y",
+        "right": "+z",
+        "front": "-x"
+      }
+    },
+    {
+      "id": "rail_left_2",
+      "type": "2x2",
+      "length": 224.0,
+      "group": 0,
+      "min": [
+        562.0,
+        38.0,
+        295.333333
+      ],
+      "max": [
+        600.0,
+        262.0,
+        333.333333
+      ],
+      "faces": {
+        "top": "-y",
+        "right": "+z",
+        "front": "-x"
+      }
+    },
+    {
+      "id": "rail_left_3",
+      "type": "2x2",
+      "length": 224.0,
+      "group": 0,
+      "min": [
+        562.0,
+        38.0,
+        462.0
+      ],
+      "max": [
+        600.0,
+        262.0,
+        500.0
+      ],
+      "faces": {
+        "top": "-y",
+        "right": "+z",
+        "front": "-x"
+      }
+    },
+    {
+      "id": "rail_right_1",
+      "type": "2x2",
+      "length": 224.0,
+      "group": 0,
+      "min": [
+        0.0,
+        38.0,
+        128.666667
+      ],
+      "max": [
+        38.0,
+        262.0,
+        166.666667
+      ],
+      "faces": {
+        "top": "-y",
+        "right": "+z",
+        "front": "-x"
+      }
+    },
+    {
+      "id": "rail_right_2",
+      "type": "2x2",
+      "length": 224.0,
+      "group": 0,
+      "min": [
+        0.0,
+        38.0,
+        295.333333
+      ],
+      "max": [
+        38.0,
+        262.0,
+        333.333333
+      ],
+      "faces": {
+        "top": "-y",
+        "right": "+z",
+        "front": "-x"
+      }
+    },
+    {
+      "id": "rail_right_3",
+      "type": "2x2",
+      "length": 224.0,
+      "group": 0,
+      "min": [
+        0.0,
+        38.0,
+        462.0
+      ],
+      "max": [
+        38.0,
+        262.0,
+        500.0
+      ],
+      "faces": {
+        "top": "-y",
+        "right": "+z",
+        "front": "-x"
+      }
+    },
+    {
+      "id": "shelf_1_1",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        473.0,
+        0.0,
+        147.666667
+      ],
+      "max": [
+        562.0,
+        300.0,
+        166.666667
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-x",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "shelf_1_2",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        364.25,
+        0.0,
+        147.666667
+      ],
+      "max": [
+        453.25,
+        300.0,
+        166.666667
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-x",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "shelf_1_3",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        255.5,
+        0.0,
+        147.666667
+      ],
+      "max": [
+        344.5,
+        300.0,
+        166.666667
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-x",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "shelf_1_4",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        146.75,
+        0.0,
+        147.666667
+      ],
+      "max": [
+        235.75,
+        300.0,
+        166.666667
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-x",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "shelf_1_5",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        38.0,
+        0.0,
+        147.666667
+      ],
+      "max": [
+        127.0,
+        300.0,
+        166.666667
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-x",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "shelf_2_1",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        473.0,
+        0.0,
+        314.333333
+      ],
+      "max": [
+        562.0,
+        300.0,
+        333.333333
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-x",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "shelf_2_2",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        364.25,
+        0.0,
+        314.333333
+      ],
+      "max": [
+        453.25,
+        300.0,
+        333.333333
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-x",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "shelf_2_3",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        255.5,
+        0.0,
+        314.333333
+      ],
+      "max": [
+        344.5,
+        300.0,
+        333.333333
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-x",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "shelf_2_4",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        146.75,
+        0.0,
+        314.333333
+      ],
+      "max": [
+        235.75,
+        300.0,
+        333.333333
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-x",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "shelf_2_5",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        38.0,
+        0.0,
+        314.333333
+      ],
+      "max": [
+        127.0,
+        300.0,
+        333.333333
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-x",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "shelf_3_1",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        473.0,
+        0.0,
+        481.0
+      ],
+      "max": [
+        562.0,
+        300.0,
+        500.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-x",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "shelf_3_2",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        364.25,
+        0.0,
+        481.0
+      ],
+      "max": [
+        453.25,
+        300.0,
+        500.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-x",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "shelf_3_3",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        255.5,
+        0.0,
+        481.0
+      ],
+      "max": [
+        344.5,
+        300.0,
+        500.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-x",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "shelf_3_4",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        146.75,
+        0.0,
+        481.0
+      ],
+      "max": [
+        235.75,
+        300.0,
+        500.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-x",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "shelf_3_5",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        38.0,
+        0.0,
+        481.0
+      ],
+      "max": [
+        127.0,
+        300.0,
+        500.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-x",
+        "front": "+z"
+      }
+    }
+  ],
+  "problems": []
+}

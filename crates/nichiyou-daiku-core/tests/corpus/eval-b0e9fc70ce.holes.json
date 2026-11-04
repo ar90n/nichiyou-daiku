@@ -1,1 +1,1468 @@
-{"pieces": {"top_front_l": [{"face": "back", "center": [121.0, 0.0, 22.25], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [121.0, 0.0, 66.75], "diameter": 8.0, "depth": 15.0}], "leg_fl": [{"face": "back", "center": [70.0, 0.0, 145.25], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [70.0, 0.0, 189.75], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [70.0, 0.0, 295.25], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [70.0, 0.0, 339.75], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [89.0, 19.0, 261.25], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [89.0, 19.0, 305.75], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [22.25, 19.0, 362.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [66.75, 19.0, 362.0], "diameter": 8.0, "depth": 15.0}], "top_front_r": [{"face": "back", "center": [121.0, 0.0, 22.25], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [121.0, 0.0, 66.75], "diameter": 8.0, "depth": 15.0}], "leg_fc": [{"face": "back", "center": [70.0, 0.0, 145.25], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [70.0, 0.0, 189.75], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [70.0, 0.0, 295.25], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [70.0, 0.0, 339.75], "diameter": 8.0, "depth": 15.0}, {"face": "left", "center": [0.0, 19.0, 261.25], "diameter": 8.0, "depth": 15.0}, {"face": "left", "center": [0.0, 19.0, 305.75], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [89.0, 19.0, 261.25], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [89.0, 19.0, 305.75], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [22.25, 19.0, 362.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [66.75, 19.0, 362.0], "diameter": 8.0, "depth": 15.0}], "top_back_l": [{"face": "back", "center": [19.0, 0.0, 22.25], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [19.0, 0.0, 66.75], "diameter": 8.0, "depth": 15.0}], "leg_bl": [{"face": "front", "center": [70.0, 38.0, 145.25], "diameter": 8.0, "depth": 15.0}, {"face": "front", "center": [70.0, 38.0, 189.75], "diameter": 8.0, "depth": 15.0}, {"face": "front", "center": [70.0, 38.0, 295.25], "diameter": 8.0, "depth": 15.0}, {"face": "front", "center": [70.0, 38.0, 339.75], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [89.0, 19.0, 261.25], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [89.0, 19.0, 305.75], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [22.25, 19.0, 362.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [66.75, 19.0, 362.0], "diameter": 8.0, "depth": 15.0}], "top_back_r": [{"face": "back", "center": [19.0, 0.0, 22.25], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [19.0, 0.0, 66.75], "diameter": 8.0, "depth": 15.0}], "leg_bc": [{"face": "front", "center": [70.0, 38.0, 145.25], "diameter": 8.0, "depth": 15.0}, {"face": "front", "center": [70.0, 38.0, 189.75], "diameter": 8.0, "depth": 15.0}, {"face": "front", "center": [70.0, 38.0, 295.25], "diameter": 8.0, "depth": 15.0}, {"face": "front", "center": [70.0, 38.0, 339.75], "diameter": 8.0, "depth": 15.0}, {"face": "left", "center": [0.0, 19.0, 261.25], "diameter": 8.0, "depth": 15.0}, {"face": "left", "center": [0.0, 19.0, 305.75], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [89.0, 19.0, 261.25], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [89.0, 19.0, 305.75], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [22.25, 19.0, 362.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [66.75, 19.0, 362.0], "diameter": 8.0, "depth": 15.0}], "apron_shelf_front_l": [{"face": "down", "center": [22.25, 19.0, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "down", "center": [66.75, 19.0, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [89.0, 19.0, 46.625], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [89.0, 19.0, 116.625], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [89.0, 19.0, 198.25], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [89.0, 19.0, 268.25], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [89.0, 19.0, 349.875], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [89.0, 19.0, 419.875], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [22.25, 19.0, 466.5], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [66.75, 19.0, 466.5], "diameter": 8.0, "depth": 15.0}], "apron_shelf_front_r": [{"face": "down", "center": [22.25, 19.0, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "down", "center": [66.75, 19.0, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [89.0, 19.0, 46.625], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [89.0, 19.0, 116.625], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [89.0, 19.0, 198.25], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [89.0, 19.0, 268.25], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [89.0, 19.0, 349.875], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [89.0, 19.0, 419.875], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [22.25, 19.0, 466.5], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [66.75, 19.0, 466.5], "diameter": 8.0, "depth": 15.0}], "leg_fr": [{"face": "back", "center": [70.0, 0.0, 145.25], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [70.0, 0.0, 189.75], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [70.0, 0.0, 295.25], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [70.0, 0.0, 339.75], "diameter": 8.0, "depth": 15.0}, {"face": "left", "center": [0.0, 19.0, 261.25], "diameter": 8.0, "depth": 15.0}, {"face": "left", "center": [0.0, 19.0, 305.75], "diameter": 8.0, "depth": 15.0}], "apron_shelf_back_l": [{"face": "down", "center": [22.25, 19.0, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "down", "center": [66.75, 19.0, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [22.25, 19.0, 466.5], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [66.75, 19.0, 466.5], "diameter": 8.0, "depth": 15.0}], "apron_shelf_back_r": [{"face": "down", "center": [22.25, 19.0, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "down", "center": [66.75, 19.0, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [22.25, 19.0, 466.5], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [66.75, 19.0, 466.5], "diameter": 8.0, "depth": 15.0}], "leg_br": [{"face": "front", "center": [70.0, 38.0, 145.25], "diameter": 8.0, "depth": 15.0}, {"face": "front", "center": [70.0, 38.0, 189.75], "diameter": 8.0, "depth": 15.0}, {"face": "front", "center": [70.0, 38.0, 295.25], "diameter": 8.0, "depth": 15.0}, {"face": "front", "center": [70.0, 38.0, 339.75], "diameter": 8.0, "depth": 15.0}, {"face": "left", "center": [0.0, 19.0, 261.25], "diameter": 8.0, "depth": 15.0}, {"face": "left", "center": [0.0, 19.0, 305.75], "diameter": 8.0, "depth": 15.0}], "shelf_l1": [{"face": "back", "center": [35.0, 0.0, 331.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [105.0, 0.0, 331.0], "diameter": 8.0, "depth": 15.0}], "shelf_l2": [{"face": "back", "center": [35.0, 0.0, 331.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [105.0, 0.0, 331.0], "diameter": 8.0, "depth": 15.0}], "shelf_l3": [{"face": "back", "center": [35.0, 0.0, 331.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [105.0, 0.0, 331.0], "diameter": 8.0, "depth": 15.0}], "shelf_r1": [{"face": "back", "center": [35.0, 0.0, 331.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [105.0, 0.0, 331.0], "diameter": 8.0, "depth": 15.0}], "shelf_r2": [{"face": "back", "center": [35.0, 0.0, 331.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [105.0, 0.0, 331.0], "diameter": 8.0, "depth": 15.0}], "shelf_r3": [{"face": "back", "center": [35.0, 0.0, 331.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [105.0, 0.0, 331.0], "diameter": 8.0, "depth": 15.0}], "brace_top_left": [{"face": "down", "center": [22.25, 19.0, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "down", "center": [66.75, 19.0, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [22.25, 19.0, 274.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [66.75, 19.0, 274.0], "diameter": 8.0, "depth": 15.0}], "brace_top_center": [{"face": "down", "center": [22.25, 19.0, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "down", "center": [66.75, 19.0, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [22.25, 19.0, 274.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [66.75, 19.0, 274.0], "diameter": 8.0, "depth": 15.0}], "brace_top_right": [{"face": "down", "center": [22.25, 19.0, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "down", "center": [66.75, 19.0, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [22.25, 19.0, 274.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [66.75, 19.0, 274.0], "diameter": 8.0, "depth": 15.0}], "brace_shelf_left": [{"face": "down", "center": [22.25, 19.0, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "down", "center": [66.75, 19.0, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [22.25, 19.0, 274.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [66.75, 19.0, 274.0], "diameter": 8.0, "depth": 15.0}], "brace_shelf_center": [{"face": "down", "center": [22.25, 19.0, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "down", "center": [66.75, 19.0, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [22.25, 19.0, 274.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [66.75, 19.0, 274.0], "diameter": 8.0, "depth": 15.0}], "brace_shelf_right": [{"face": "down", "center": [22.25, 19.0, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "down", "center": [66.75, 19.0, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [22.25, 19.0, 274.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [66.75, 19.0, 274.0], "diameter": 8.0, "depth": 15.0}]}, "fasteners": [{"base": "top_front_l", "target": "leg_fl", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "top_front_r", "target": "leg_fc", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "top_back_l", "target": "leg_bl", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "top_back_r", "target": "leg_bc", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_fl", "target": "apron_shelf_front_l", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_fc", "target": "apron_shelf_front_l", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_fc", "target": "apron_shelf_front_r", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_fr", "target": "apron_shelf_front_r", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_bl", "target": "apron_shelf_back_l", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_bc", "target": "apron_shelf_back_l", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_bc", "target": "apron_shelf_back_r", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_br", "target": "apron_shelf_back_r", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "apron_shelf_front_l", "target": "shelf_l1", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "apron_shelf_front_l", "target": "shelf_l2", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "apron_shelf_front_l", "target": "shelf_l3", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "apron_shelf_front_r", "target": "shelf_r1", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "apron_shelf_front_r", "target": "shelf_r2", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "apron_shelf_front_r", "target": "shelf_r3", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_fl", "target": "brace_top_left", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_bl", "target": "brace_top_left", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_fc", "target": "brace_top_center", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_bc", "target": "brace_top_center", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_fr", "target": "brace_top_right", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_br", "target": "brace_top_right", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_fl", "target": "brace_shelf_left", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_bl", "target": "brace_shelf_left", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_fc", "target": "brace_shelf_center", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_bc", "target": "brace_shelf_center", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_fr", "target": "brace_shelf_right", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "leg_br", "target": "brace_shelf_right", "kind": "dowel", "diameter": 8.0, "count": 2}]}
+{
+  "pieces": {
+    "top_front_l": [
+      {
+        "face": "back",
+        "center": [
+          121.0,
+          0.0,
+          22.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          121.0,
+          0.0,
+          66.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "leg_fl": [
+      {
+        "face": "back",
+        "center": [
+          70.0,
+          0.0,
+          145.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          70.0,
+          0.0,
+          189.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          70.0,
+          0.0,
+          295.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          70.0,
+          0.0,
+          339.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          89.0,
+          19.0,
+          261.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          89.0,
+          19.0,
+          305.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          22.25,
+          19.0,
+          362.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          66.75,
+          19.0,
+          362.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "top_front_r": [
+      {
+        "face": "back",
+        "center": [
+          121.0,
+          0.0,
+          22.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          121.0,
+          0.0,
+          66.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "leg_fc": [
+      {
+        "face": "back",
+        "center": [
+          70.0,
+          0.0,
+          145.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          70.0,
+          0.0,
+          189.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          70.0,
+          0.0,
+          295.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          70.0,
+          0.0,
+          339.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "left",
+        "center": [
+          0.0,
+          19.0,
+          261.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "left",
+        "center": [
+          0.0,
+          19.0,
+          305.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          89.0,
+          19.0,
+          261.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          89.0,
+          19.0,
+          305.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          22.25,
+          19.0,
+          362.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          66.75,
+          19.0,
+          362.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "top_back_l": [
+      {
+        "face": "back",
+        "center": [
+          19.0,
+          0.0,
+          22.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          19.0,
+          0.0,
+          66.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "leg_bl": [
+      {
+        "face": "front",
+        "center": [
+          70.0,
+          38.0,
+          145.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "front",
+        "center": [
+          70.0,
+          38.0,
+          189.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "front",
+        "center": [
+          70.0,
+          38.0,
+          295.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "front",
+        "center": [
+          70.0,
+          38.0,
+          339.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          89.0,
+          19.0,
+          261.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          89.0,
+          19.0,
+          305.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          22.25,
+          19.0,
+          362.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          66.75,
+          19.0,
+          362.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "top_back_r": [
+      {
+        "face": "back",
+        "center": [
+          19.0,
+          0.0,
+          22.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          19.0,
+          0.0,
+          66.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "leg_bc": [
+      {
+        "face": "front",
+        "center": [
+          70.0,
+          38.0,
+          145.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "front",
+        "center": [
+          70.0,
+          38.0,
+          189.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "front",
+        "center": [
+          70.0,
+          38.0,
+          295.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "front",
+        "center": [
+          70.0,
+          38.0,
+          339.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "left",
+        "center": [
+          0.0,
+          19.0,
+          261.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "left",
+        "center": [
+          0.0,
+          19.0,
+          305.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          89.0,
+          19.0,
+          261.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          89.0,
+          19.0,
+          305.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          22.25,
+          19.0,
+          362.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          66.75,
+          19.0,
+          362.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "apron_shelf_front_l": [
+      {
+        "face": "down",
+        "center": [
+          22.25,
+          19.0,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "down",
+        "center": [
+          66.75,
+          19.0,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          89.0,
+          19.0,
+          46.625
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          89.0,
+          19.0,
+          116.625
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          89.0,
+          19.0,
+          198.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          89.0,
+          19.0,
+          268.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          89.0,
+          19.0,
+          349.875
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          89.0,
+          19.0,
+          419.875
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          22.25,
+          19.0,
+          466.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          66.75,
+          19.0,
+          466.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "apron_shelf_front_r": [
+      {
+        "face": "down",
+        "center": [
+          22.25,
+          19.0,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "down",
+        "center": [
+          66.75,
+          19.0,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          89.0,
+          19.0,
+          46.625
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          89.0,
+          19.0,
+          116.625
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          89.0,
+          19.0,
+          198.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          89.0,
+          19.0,
+          268.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          89.0,
+          19.0,
+          349.875
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          89.0,
+          19.0,
+          419.875
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          22.25,
+          19.0,
+          466.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          66.75,
+          19.0,
+          466.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "leg_fr": [
+      {
+        "face": "back",
+        "center": [
+          70.0,
+          0.0,
+          145.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          70.0,
+          0.0,
+          189.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          70.0,
+          0.0,
+          295.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          70.0,
+          0.0,
+          339.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "left",
+        "center": [
+          0.0,
+          19.0,
+          261.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "left",
+        "center": [
+          0.0,
+          19.0,
+          305.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "apron_shelf_back_l": [
+      {
+        "face": "down",
+        "center": [
+          22.25,
+          19.0,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "down",
+        "center": [
+          66.75,
+          19.0,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          22.25,
+          19.0,
+          466.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          66.75,
+          19.0,
+          466.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "apron_shelf_back_r": [
+      {
+        "face": "down",
+        "center": [
+          22.25,
+          19.0,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "down",
+        "center": [
+          66.75,
+          19.0,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          22.25,
+          19.0,
+          466.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          66.75,
+          19.0,
+          466.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "leg_br": [
+      {
+        "face": "front",
+        "center": [
+          70.0,
+          38.0,
+          145.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "front",
+        "center": [
+          70.0,
+          38.0,
+          189.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "front",
+        "center": [
+          70.0,
+          38.0,
+          295.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "front",
+        "center": [
+          70.0,
+          38.0,
+          339.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "left",
+        "center": [
+          0.0,
+          19.0,
+          261.25
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "left",
+        "center": [
+          0.0,
+          19.0,
+          305.75
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "shelf_l1": [
+      {
+        "face": "back",
+        "center": [
+          35.0,
+          0.0,
+          331.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          105.0,
+          0.0,
+          331.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "shelf_l2": [
+      {
+        "face": "back",
+        "center": [
+          35.0,
+          0.0,
+          331.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          105.0,
+          0.0,
+          331.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "shelf_l3": [
+      {
+        "face": "back",
+        "center": [
+          35.0,
+          0.0,
+          331.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          105.0,
+          0.0,
+          331.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "shelf_r1": [
+      {
+        "face": "back",
+        "center": [
+          35.0,
+          0.0,
+          331.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          105.0,
+          0.0,
+          331.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "shelf_r2": [
+      {
+        "face": "back",
+        "center": [
+          35.0,
+          0.0,
+          331.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          105.0,
+          0.0,
+          331.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "shelf_r3": [
+      {
+        "face": "back",
+        "center": [
+          35.0,
+          0.0,
+          331.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          105.0,
+          0.0,
+          331.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "brace_top_left": [
+      {
+        "face": "down",
+        "center": [
+          22.25,
+          19.0,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "down",
+        "center": [
+          66.75,
+          19.0,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          22.25,
+          19.0,
+          274.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          66.75,
+          19.0,
+          274.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "brace_top_center": [
+      {
+        "face": "down",
+        "center": [
+          22.25,
+          19.0,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "down",
+        "center": [
+          66.75,
+          19.0,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          22.25,
+          19.0,
+          274.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          66.75,
+          19.0,
+          274.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "brace_top_right": [
+      {
+        "face": "down",
+        "center": [
+          22.25,
+          19.0,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "down",
+        "center": [
+          66.75,
+          19.0,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          22.25,
+          19.0,
+          274.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          66.75,
+          19.0,
+          274.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "brace_shelf_left": [
+      {
+        "face": "down",
+        "center": [
+          22.25,
+          19.0,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "down",
+        "center": [
+          66.75,
+          19.0,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          22.25,
+          19.0,
+          274.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          66.75,
+          19.0,
+          274.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "brace_shelf_center": [
+      {
+        "face": "down",
+        "center": [
+          22.25,
+          19.0,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "down",
+        "center": [
+          66.75,
+          19.0,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          22.25,
+          19.0,
+          274.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          66.75,
+          19.0,
+          274.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "brace_shelf_right": [
+      {
+        "face": "down",
+        "center": [
+          22.25,
+          19.0,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "down",
+        "center": [
+          66.75,
+          19.0,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          22.25,
+          19.0,
+          274.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          66.75,
+          19.0,
+          274.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ]
+  },
+  "fasteners": [
+    {
+      "base": "top_front_l",
+      "target": "leg_fl",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "top_front_r",
+      "target": "leg_fc",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "top_back_l",
+      "target": "leg_bl",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "top_back_r",
+      "target": "leg_bc",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_fl",
+      "target": "apron_shelf_front_l",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_fc",
+      "target": "apron_shelf_front_l",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_fc",
+      "target": "apron_shelf_front_r",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_fr",
+      "target": "apron_shelf_front_r",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_bl",
+      "target": "apron_shelf_back_l",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_bc",
+      "target": "apron_shelf_back_l",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_bc",
+      "target": "apron_shelf_back_r",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_br",
+      "target": "apron_shelf_back_r",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "apron_shelf_front_l",
+      "target": "shelf_l1",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "apron_shelf_front_l",
+      "target": "shelf_l2",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "apron_shelf_front_l",
+      "target": "shelf_l3",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "apron_shelf_front_r",
+      "target": "shelf_r1",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "apron_shelf_front_r",
+      "target": "shelf_r2",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "apron_shelf_front_r",
+      "target": "shelf_r3",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_fl",
+      "target": "brace_top_left",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_bl",
+      "target": "brace_top_left",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_fc",
+      "target": "brace_top_center",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_bc",
+      "target": "brace_top_center",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_fr",
+      "target": "brace_top_right",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_br",
+      "target": "brace_top_right",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_fl",
+      "target": "brace_shelf_left",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_bl",
+      "target": "brace_shelf_left",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_fc",
+      "target": "brace_shelf_center",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_bc",
+      "target": "brace_shelf_center",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_fr",
+      "target": "brace_shelf_right",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "leg_br",
+      "target": "brace_shelf_right",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    }
+  ]
+}

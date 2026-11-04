@@ -1,1 +1,503 @@
-{"valid": false, "error": null, "overall_size": [1000.0, 500.0, 700.0], "size_reference": "leg_fl", "pieces": [{"id": "leg_fl", "type": "2x4", "length": 681.0, "group": 0, "min": [38.0, 424.0, 0.0], "max": [127.0, 462.0, 681.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "leg_fr", "type": "2x4", "length": 681.0, "group": 0, "min": [873.0, 424.0, 0.0], "max": [962.0, 462.0, 681.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "leg_bl", "type": "2x4", "length": 681.0, "group": 0, "min": [38.0, 38.0, 0.0], "max": [127.0, 76.0, 681.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "leg_br", "type": "2x4", "length": 681.0, "group": 0, "min": [873.0, 38.0, 0.0], "max": [962.0, 76.0, 681.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "apron_left", "type": "2x4", "length": 500.0, "group": 0, "min": [0.0, 0.0, 592.0], "max": [38.0, 500.0, 681.0], "faces": {"top": "-y", "right": "+z", "front": "-x"}}, {"id": "apron_right", "type": "2x4", "length": 500.0, "group": 0, "min": [962.0, 0.0, 592.0], "max": [1000.0, 500.0, 681.0], "faces": {"top": "-y", "right": "+z", "front": "-x"}}, {"id": "apron_front", "type": "2x4", "length": 924.0, "group": 0, "min": [38.0, 462.0, 592.0], "max": [962.0, 500.0, 681.0], "faces": {"top": "+x", "right": "-z", "front": "+y"}}, {"id": "apron_back", "type": "2x4", "length": 924.0, "group": 0, "min": [38.0, 0.0, 592.0], "max": [962.0, 38.0, 681.0], "faces": {"top": "+x", "right": "-z", "front": "+y"}}, {"id": "top_1", "type": "1x6", "length": 500.0, "group": 0, "min": [860.0, 0.0, 681.0], "max": [1000.0, 500.0, 700.0], "faces": {"top": "+y", "right": "-x", "front": "+z"}}, {"id": "top_2", "type": "1x6", "length": 500.0, "group": 0, "min": [716.6667, 0.0, 681.0], "max": [856.6667, 500.0, 700.0], "faces": {"top": "+y", "right": "-x", "front": "+z"}}, {"id": "top_3", "type": "1x6", "length": 500.0, "group": 0, "min": [573.3333, 0.0, 681.0], "max": [713.3333, 500.0, 700.0], "faces": {"top": "+y", "right": "-x", "front": "+z"}}, {"id": "top_4", "type": "1x6", "length": 500.0, "group": 0, "min": [430.0, 0.0, 681.0], "max": [570.0, 500.0, 700.0], "faces": {"top": "+y", "right": "-x", "front": "+z"}}, {"id": "top_5", "type": "1x6", "length": 500.0, "group": 0, "min": [286.6667, 0.0, 681.0], "max": [426.6667, 500.0, 700.0], "faces": {"top": "+y", "right": "-x", "front": "+z"}}, {"id": "top_6", "type": "1x6", "length": 500.0, "group": 0, "min": [143.3333, 0.0, 681.0], "max": [283.3333, 500.0, 700.0], "faces": {"top": "+y", "right": "-x", "front": "+z"}}, {"id": "top_7", "type": "1x6", "length": 500.0, "group": 0, "min": [0.0, 0.0, 681.0], "max": [140.0, 500.0, 700.0], "faces": {"top": "+y", "right": "-x", "front": "+z"}}], "problems": [{"kind": "conflict", "message": "Connection apron_back -> top_1: edge (x) is off by 860mm (loop: apron_back -> apron_left -> apron_front -> top_1)", "connection": ["apron_back", "top_1"], "constraint": "edge", "axis": "x", "mismatch_mm": -860.0, "loop": ["apron_back", "apron_left", "apron_front", "top_1"]}, {"kind": "conflict", "message": "Connection apron_back -> top_2: edge (x) is off by 573.3mm (loop: apron_back -> apron_left -> apron_front -> top_2)", "connection": ["apron_back", "top_2"], "constraint": "edge", "axis": "x", "mismatch_mm": -573.3334, "loop": ["apron_back", "apron_left", "apron_front", "top_2"]}, {"kind": "conflict", "message": "Connection apron_back -> top_3: edge (x) is off by 286.7mm (loop: apron_back -> apron_left -> apron_front -> top_3)", "connection": ["apron_back", "top_3"], "constraint": "edge", "axis": "x", "mismatch_mm": -286.6666, "loop": ["apron_back", "apron_left", "apron_front", "top_3"]}, {"kind": "conflict", "message": "Connection apron_back -> top_5: edge (x) is off by 286.7mm (loop: apron_back -> apron_left -> apron_front -> top_5)", "connection": ["apron_back", "top_5"], "constraint": "edge", "axis": "x", "mismatch_mm": 286.6666, "loop": ["apron_back", "apron_left", "apron_front", "top_5"]}, {"kind": "conflict", "message": "Connection apron_back -> top_6: edge (x) is off by 573.3mm (loop: apron_back -> apron_left -> apron_front -> top_6)", "connection": ["apron_back", "top_6"], "constraint": "edge", "axis": "x", "mismatch_mm": 573.3334, "loop": ["apron_back", "apron_left", "apron_front", "top_6"]}, {"kind": "conflict", "message": "Connection apron_back -> top_7: edge (x) is off by 860mm (loop: apron_back -> apron_left -> apron_front -> top_7)", "connection": ["apron_back", "top_7"], "constraint": "edge", "axis": "x", "mismatch_mm": 860.0, "loop": ["apron_back", "apron_left", "apron_front", "top_7"]}, {"kind": "hole_collision", "message": "Connection apron_front -> top_7: screw hole in 'apron_front' runs into a screw hole of connection apron_front -> apron_left", "connection": ["apron_front", "top_7"], "other_connection": ["apron_front", "apron_left"], "piece": "apron_front", "fastener": "screw", "holes": [{"entry": [63.5, 481.0, 681.0], "direction": "-z", "depth": 26.0, "diameter": 3.3}, {"entry": [38.0, 481.0, 658.75], "direction": "+x", "depth": 27.0, "diameter": 3.8}]}, {"kind": "hole_collision", "message": "Connection apron_front -> top_1: screw hole in 'apron_front' runs into a screw hole of connection apron_front -> apron_right", "connection": ["apron_front", "top_1"], "other_connection": ["apron_front", "apron_right"], "piece": "apron_front", "fastener": "screw", "holes": [{"entry": [936.5, 481.0, 681.0], "direction": "-z", "depth": 26.0, "diameter": 3.3}, {"entry": [962.0, 481.0, 658.75], "direction": "-x", "depth": 27.0, "diameter": 3.8}]}]}
+{
+  "valid": false,
+  "error": null,
+  "overall_size": [
+    1000.0,
+    500.0,
+    700.0
+  ],
+  "size_reference": "leg_fl",
+  "pieces": [
+    {
+      "id": "leg_fl",
+      "type": "2x4",
+      "length": 681.0,
+      "group": 0,
+      "min": [
+        38.0,
+        424.0,
+        0.0
+      ],
+      "max": [
+        127.0,
+        462.0,
+        681.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "leg_fr",
+      "type": "2x4",
+      "length": 681.0,
+      "group": 0,
+      "min": [
+        873.0,
+        424.0,
+        0.0
+      ],
+      "max": [
+        962.0,
+        462.0,
+        681.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "leg_bl",
+      "type": "2x4",
+      "length": 681.0,
+      "group": 0,
+      "min": [
+        38.0,
+        38.0,
+        0.0
+      ],
+      "max": [
+        127.0,
+        76.0,
+        681.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "leg_br",
+      "type": "2x4",
+      "length": 681.0,
+      "group": 0,
+      "min": [
+        873.0,
+        38.0,
+        0.0
+      ],
+      "max": [
+        962.0,
+        76.0,
+        681.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "apron_left",
+      "type": "2x4",
+      "length": 500.0,
+      "group": 0,
+      "min": [
+        0.0,
+        0.0,
+        592.0
+      ],
+      "max": [
+        38.0,
+        500.0,
+        681.0
+      ],
+      "faces": {
+        "top": "-y",
+        "right": "+z",
+        "front": "-x"
+      }
+    },
+    {
+      "id": "apron_right",
+      "type": "2x4",
+      "length": 500.0,
+      "group": 0,
+      "min": [
+        962.0,
+        0.0,
+        592.0
+      ],
+      "max": [
+        1000.0,
+        500.0,
+        681.0
+      ],
+      "faces": {
+        "top": "-y",
+        "right": "+z",
+        "front": "-x"
+      }
+    },
+    {
+      "id": "apron_front",
+      "type": "2x4",
+      "length": 924.0,
+      "group": 0,
+      "min": [
+        38.0,
+        462.0,
+        592.0
+      ],
+      "max": [
+        962.0,
+        500.0,
+        681.0
+      ],
+      "faces": {
+        "top": "+x",
+        "right": "-z",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "apron_back",
+      "type": "2x4",
+      "length": 924.0,
+      "group": 0,
+      "min": [
+        38.0,
+        0.0,
+        592.0
+      ],
+      "max": [
+        962.0,
+        38.0,
+        681.0
+      ],
+      "faces": {
+        "top": "+x",
+        "right": "-z",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "top_1",
+      "type": "1x6",
+      "length": 500.0,
+      "group": 0,
+      "min": [
+        860.0,
+        0.0,
+        681.0
+      ],
+      "max": [
+        1000.0,
+        500.0,
+        700.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-x",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "top_2",
+      "type": "1x6",
+      "length": 500.0,
+      "group": 0,
+      "min": [
+        716.6667,
+        0.0,
+        681.0
+      ],
+      "max": [
+        856.6667,
+        500.0,
+        700.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-x",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "top_3",
+      "type": "1x6",
+      "length": 500.0,
+      "group": 0,
+      "min": [
+        573.3333,
+        0.0,
+        681.0
+      ],
+      "max": [
+        713.3333,
+        500.0,
+        700.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-x",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "top_4",
+      "type": "1x6",
+      "length": 500.0,
+      "group": 0,
+      "min": [
+        430.0,
+        0.0,
+        681.0
+      ],
+      "max": [
+        570.0,
+        500.0,
+        700.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-x",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "top_5",
+      "type": "1x6",
+      "length": 500.0,
+      "group": 0,
+      "min": [
+        286.6667,
+        0.0,
+        681.0
+      ],
+      "max": [
+        426.6667,
+        500.0,
+        700.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-x",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "top_6",
+      "type": "1x6",
+      "length": 500.0,
+      "group": 0,
+      "min": [
+        143.3333,
+        0.0,
+        681.0
+      ],
+      "max": [
+        283.3333,
+        500.0,
+        700.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-x",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "top_7",
+      "type": "1x6",
+      "length": 500.0,
+      "group": 0,
+      "min": [
+        0.0,
+        0.0,
+        681.0
+      ],
+      "max": [
+        140.0,
+        500.0,
+        700.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-x",
+        "front": "+z"
+      }
+    }
+  ],
+  "problems": [
+    {
+      "kind": "conflict",
+      "message": "Connection apron_back -> top_1: edge (x) is off by 860mm (loop: apron_back -> apron_left -> apron_front -> top_1)",
+      "connection": [
+        "apron_back",
+        "top_1"
+      ],
+      "constraint": "edge",
+      "axis": "x",
+      "mismatch_mm": -860.0,
+      "loop": [
+        "apron_back",
+        "apron_left",
+        "apron_front",
+        "top_1"
+      ]
+    },
+    {
+      "kind": "conflict",
+      "message": "Connection apron_back -> top_2: edge (x) is off by 573.3mm (loop: apron_back -> apron_left -> apron_front -> top_2)",
+      "connection": [
+        "apron_back",
+        "top_2"
+      ],
+      "constraint": "edge",
+      "axis": "x",
+      "mismatch_mm": -573.3334,
+      "loop": [
+        "apron_back",
+        "apron_left",
+        "apron_front",
+        "top_2"
+      ]
+    },
+    {
+      "kind": "conflict",
+      "message": "Connection apron_back -> top_3: edge (x) is off by 286.7mm (loop: apron_back -> apron_left -> apron_front -> top_3)",
+      "connection": [
+        "apron_back",
+        "top_3"
+      ],
+      "constraint": "edge",
+      "axis": "x",
+      "mismatch_mm": -286.6666,
+      "loop": [
+        "apron_back",
+        "apron_left",
+        "apron_front",
+        "top_3"
+      ]
+    },
+    {
+      "kind": "conflict",
+      "message": "Connection apron_back -> top_5: edge (x) is off by 286.7mm (loop: apron_back -> apron_left -> apron_front -> top_5)",
+      "connection": [
+        "apron_back",
+        "top_5"
+      ],
+      "constraint": "edge",
+      "axis": "x",
+      "mismatch_mm": 286.6666,
+      "loop": [
+        "apron_back",
+        "apron_left",
+        "apron_front",
+        "top_5"
+      ]
+    },
+    {
+      "kind": "conflict",
+      "message": "Connection apron_back -> top_6: edge (x) is off by 573.3mm (loop: apron_back -> apron_left -> apron_front -> top_6)",
+      "connection": [
+        "apron_back",
+        "top_6"
+      ],
+      "constraint": "edge",
+      "axis": "x",
+      "mismatch_mm": 573.3334,
+      "loop": [
+        "apron_back",
+        "apron_left",
+        "apron_front",
+        "top_6"
+      ]
+    },
+    {
+      "kind": "conflict",
+      "message": "Connection apron_back -> top_7: edge (x) is off by 860mm (loop: apron_back -> apron_left -> apron_front -> top_7)",
+      "connection": [
+        "apron_back",
+        "top_7"
+      ],
+      "constraint": "edge",
+      "axis": "x",
+      "mismatch_mm": 860.0,
+      "loop": [
+        "apron_back",
+        "apron_left",
+        "apron_front",
+        "top_7"
+      ]
+    },
+    {
+      "kind": "hole_collision",
+      "message": "Connection apron_front -> top_7: screw hole in 'apron_front' runs into a screw hole of connection apron_front -> apron_left",
+      "connection": [
+        "apron_front",
+        "top_7"
+      ],
+      "other_connection": [
+        "apron_front",
+        "apron_left"
+      ],
+      "piece": "apron_front",
+      "fastener": "screw",
+      "holes": [
+        {
+          "entry": [
+            63.5,
+            481.0,
+            681.0
+          ],
+          "direction": "-z",
+          "depth": 26.0,
+          "diameter": 3.3
+        },
+        {
+          "entry": [
+            38.0,
+            481.0,
+            658.75
+          ],
+          "direction": "+x",
+          "depth": 27.0,
+          "diameter": 3.8
+        }
+      ]
+    },
+    {
+      "kind": "hole_collision",
+      "message": "Connection apron_front -> top_1: screw hole in 'apron_front' runs into a screw hole of connection apron_front -> apron_right",
+      "connection": [
+        "apron_front",
+        "top_1"
+      ],
+      "other_connection": [
+        "apron_front",
+        "apron_right"
+      ],
+      "piece": "apron_front",
+      "fastener": "screw",
+      "holes": [
+        {
+          "entry": [
+            936.5,
+            481.0,
+            681.0
+          ],
+          "direction": "-z",
+          "depth": 26.0,
+          "diameter": 3.3
+        },
+        {
+          "entry": [
+            962.0,
+            481.0,
+            658.75
+          ],
+          "direction": "-x",
+          "depth": 27.0,
+          "diameter": 3.8
+        }
+      ]
+    }
+  ]
+}

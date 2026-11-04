@@ -1,1 +1,28 @@
-{"labels": {"from +z": ["leg", "apron", "top"], "from +y": ["leg", "apron", "top"], "from -x +y +z": ["leg", "apron", "top"], "from -x": ["leg", "apron", "top"]}, "unlabelled": [], "note": ["case.nd  711 x 600 x 758 mm (x × y × z)"]}
+{
+  "labels": {
+    "from +z": [
+      "leg",
+      "apron",
+      "top"
+    ],
+    "from +y": [
+      "leg",
+      "apron",
+      "top"
+    ],
+    "from -x +y +z": [
+      "leg",
+      "apron",
+      "top"
+    ],
+    "from -x": [
+      "leg",
+      "apron",
+      "top"
+    ]
+  },
+  "unlabelled": [],
+  "note": [
+    "case.nd  711 x 600 x 758 mm (x × y × z)"
+  ]
+}

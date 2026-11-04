@@ -1,1 +1,50 @@
-{"parts": [{"index": 0, "title": "back_stiffener   1x8   274.7   φ8 ↧15 ×2", "letters": {"down": "A"}, "faces": [{"face": "down", "right": [0.0, 46.0, 138.0, 184.0], "up": [0.0, 9.5, 19.0]}]}, {"index": 1, "title": "shelf_1   1x8   562   φ8 ↧15 ×2", "letters": {"front": "A"}, "faces": [{"face": "front", "right": [0.0, 424.0, 516.0, 562.0], "up": [0.0, 9.5, 184.0]}]}]}
+{
+  "parts": [
+    {
+      "index": 0,
+      "title": "back_stiffener   1x8   274.7   φ8 ↧15 ×2",
+      "letters": {
+        "down": "A"
+      },
+      "faces": [
+        {
+          "face": "down",
+          "right": [
+            0.0,
+            46.0,
+            138.0,
+            184.0
+          ],
+          "up": [
+            0.0,
+            9.5,
+            19.0
+          ]
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "title": "shelf_1   1x8   562   φ8 ↧15 ×2",
+      "letters": {
+        "front": "A"
+      },
+      "faces": [
+        {
+          "face": "front",
+          "right": [
+            0.0,
+            424.0,
+            516.0,
+            562.0
+          ],
+          "up": [
+            0.0,
+            9.5,
+            184.0
+          ]
+        }
+      ]
+    }
+  ]
+}

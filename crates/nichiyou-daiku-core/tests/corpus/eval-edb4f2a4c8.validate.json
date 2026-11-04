@@ -1,1 +1,108 @@
-{"valid": false, "error": null, "overall_size": null, "size_reference": null, "pieces": [{"id": "leg_fl", "type": "2x4", "length": 681.0, "group": 0, "min": [0.0, 348.0, 0.0], "max": [89.0, 386.0, 681.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "apron_front", "type": "2x4", "length": 1000.0, "group": 0, "min": [0.0, 386.0, 592.0], "max": [1000.0, 424.0, 681.0], "faces": {"top": "+x", "right": "-z", "front": "+y"}}, {"id": "apron_left", "type": "2x4", "length": 348.0, "group": 0, "min": [0.0, 0.0, 592.0], "max": [38.0, 348.0, 681.0], "faces": {"top": "-y", "right": "+z", "front": "-x"}}, {"id": "leg_bl", "type": "2x4", "length": 681.0, "group": 1, "min": [1100.0, 348.0, 0.0], "max": [1189.0, 386.0, 681.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}], "problems": [{"kind": "unconnected", "message": "Some pieces are not connected to each other, so their relative position is undefined (groups: leg_fl, apron_front, apron_left; leg_bl)", "groups": [["leg_fl", "apron_front", "apron_left"], ["leg_bl"]]}]}
+{
+  "valid": false,
+  "error": null,
+  "overall_size": null,
+  "size_reference": null,
+  "pieces": [
+    {
+      "id": "leg_fl",
+      "type": "2x4",
+      "length": 681.0,
+      "group": 0,
+      "min": [
+        0.0,
+        348.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        386.0,
+        681.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "apron_front",
+      "type": "2x4",
+      "length": 1000.0,
+      "group": 0,
+      "min": [
+        0.0,
+        386.0,
+        592.0
+      ],
+      "max": [
+        1000.0,
+        424.0,
+        681.0
+      ],
+      "faces": {
+        "top": "+x",
+        "right": "-z",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "apron_left",
+      "type": "2x4",
+      "length": 348.0,
+      "group": 0,
+      "min": [
+        0.0,
+        0.0,
+        592.0
+      ],
+      "max": [
+        38.0,
+        348.0,
+        681.0
+      ],
+      "faces": {
+        "top": "-y",
+        "right": "+z",
+        "front": "-x"
+      }
+    },
+    {
+      "id": "leg_bl",
+      "type": "2x4",
+      "length": 681.0,
+      "group": 1,
+      "min": [
+        1100.0,
+        348.0,
+        0.0
+      ],
+      "max": [
+        1189.0,
+        386.0,
+        681.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    }
+  ],
+  "problems": [
+    {
+      "kind": "unconnected",
+      "message": "Some pieces are not connected to each other, so their relative position is undefined (groups: leg_fl, apron_front, apron_left; leg_bl)",
+      "groups": [
+        [
+          "leg_fl",
+          "apron_front",
+          "apron_left"
+        ],
+        [
+          "leg_bl"
+        ]
+      ]
+    }
+  ]
+}

@@ -1,1 +1,112 @@
-[{"view": "from +y", "axis": "z", "side": "left", "stops": [0.0, 300.0, 600.0], "segments": [{"start": 0.0, "end": 300.0, "lumber": false}, {"start": 300.0, "end": 600.0, "lumber": false}]}, {"view": "from +y", "axis": "x", "side": "below", "stops": [0.0, 89.0, 178.0], "segments": [{"start": 0.0, "end": 89.0, "lumber": true}, {"start": 89.0, "end": 178.0, "lumber": true}]}, {"view": "from -x", "axis": "y", "side": "below", "stops": [0.0, 38.0, 76.0], "segments": [{"start": 0.0, "end": 38.0, "lumber": true}, {"start": 38.0, "end": 76.0, "lumber": true}]}, {"view": "from +z", "axis": "x", "side": "below", "stops": [0.0, 89.0, 178.0], "segments": [{"start": 0.0, "end": 89.0, "lumber": false}, {"start": 89.0, "end": 178.0, "lumber": true}]}, {"view": "from +z", "axis": "y", "side": "left", "stops": [0.0, 38.0, 76.0], "segments": [{"start": 0.0, "end": 38.0, "lumber": true}, {"start": 38.0, "end": 76.0, "lumber": false}]}]
+[
+  {
+    "view": "from +y",
+    "axis": "z",
+    "side": "left",
+    "stops": [
+      0.0,
+      300.0,
+      600.0
+    ],
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 300.0,
+        "lumber": false
+      },
+      {
+        "start": 300.0,
+        "end": 600.0,
+        "lumber": false
+      }
+    ]
+  },
+  {
+    "view": "from +y",
+    "axis": "x",
+    "side": "below",
+    "stops": [
+      0.0,
+      89.0,
+      178.0
+    ],
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 89.0,
+        "lumber": true
+      },
+      {
+        "start": 89.0,
+        "end": 178.0,
+        "lumber": true
+      }
+    ]
+  },
+  {
+    "view": "from -x",
+    "axis": "y",
+    "side": "below",
+    "stops": [
+      0.0,
+      38.0,
+      76.0
+    ],
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 38.0,
+        "lumber": true
+      },
+      {
+        "start": 38.0,
+        "end": 76.0,
+        "lumber": true
+      }
+    ]
+  },
+  {
+    "view": "from +z",
+    "axis": "x",
+    "side": "below",
+    "stops": [
+      0.0,
+      89.0,
+      178.0
+    ],
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 89.0,
+        "lumber": false
+      },
+      {
+        "start": 89.0,
+        "end": 178.0,
+        "lumber": true
+      }
+    ]
+  },
+  {
+    "view": "from +z",
+    "axis": "y",
+    "side": "left",
+    "stops": [
+      0.0,
+      38.0,
+      76.0
+    ],
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 38.0,
+        "lumber": true
+      },
+      {
+        "start": 38.0,
+        "end": 76.0,
+        "lumber": false
+      }
+    ]
+  }
+]

@@ -15,10 +15,11 @@
 | apron_back_l, apron_back_r, lower_back_l, lower_back_r | 2x4 | 466.5 | 4 | [part-09.png](part-09.png) |
 | apron_side_l, apron_side_c, apron_side_r, lower_side_l, lower_side_c, lower_side_r | 2x4 | 274 | 6 | [part-10.png](part-10.png) |
 | lower_front_l, lower_front_r | 2x4 | 466.5 | 2 | [part-11.png](part-11.png) |
-| top_1, top_8 | 2x6 | 350 | 2 | [part-12.png](part-12.png) |
+| top_1 | 2x6 | 350 | 1 | [part-12.png](part-12.png) |
 | top_2, top_3, top_6, top_7, shelf_1, shelf_2, shelf_3, shelf_4, shelf_5, shelf_6 | 2x6 | 350 | 10 | [part-13.png](part-13.png) |
 | top_4 | 2x6 | 350 | 1 | [part-14.png](part-14.png) |
 | top_5 | 2x6 | 350 | 1 | [part-15.png](part-15.png) |
+| top_8 | 2x6 | 350 | 1 | [part-16.png](part-16.png) |
 
 ### leg_fl
 
@@ -64,7 +65,7 @@
 
 ![Part 11](part-11.png)
 
-### top_1, top_8 ×2
+### top_1
 
 ![Part 12](part-12.png)
 
@@ -79,6 +80,10 @@
 ### top_5
 
 ![Part 15](part-15.png)
+
+### top_8
+
+![Part 16](part-16.png)
 
 ## Step 1 - Left frame
 

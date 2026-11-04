@@ -1,1 +1,86 @@
-{"valid": false, "error": null, "overall_size": null, "size_reference": null, "pieces": [{"id": "a", "type": "2x4", "length": 500.0, "group": 0, "min": [0.0, 0.0, 0.0], "max": [89.0, 38.0, 500.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "b", "type": "2x4", "length": 300.0, "group": 0, "min": [0.0, 38.0, 11.0], "max": [38.0, 338.0, 100.0], "faces": {"top": "+y", "right": "-z", "front": "-x"}}, {"id": "spare", "type": "2x4", "length": 300.0, "group": 1, "min": [189.0, 0.0, 0.0], "max": [278.0, 38.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}], "problems": [{"kind": "unconnected", "message": "Some pieces are not connected to each other, so their relative position is undefined (groups: a, b; spare)", "groups": [["a", "b"], ["spare"]]}]}
+{
+  "valid": false,
+  "error": null,
+  "overall_size": null,
+  "size_reference": null,
+  "pieces": [
+    {
+      "id": "a",
+      "type": "2x4",
+      "length": 500.0,
+      "group": 0,
+      "min": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        38.0,
+        500.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "b",
+      "type": "2x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        38.0,
+        11.0
+      ],
+      "max": [
+        38.0,
+        338.0,
+        100.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-z",
+        "front": "-x"
+      }
+    },
+    {
+      "id": "spare",
+      "type": "2x4",
+      "length": 300.0,
+      "group": 1,
+      "min": [
+        189.0,
+        0.0,
+        0.0
+      ],
+      "max": [
+        278.0,
+        38.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    }
+  ],
+  "problems": [
+    {
+      "kind": "unconnected",
+      "message": "Some pieces are not connected to each other, so their relative position is undefined (groups: a, b; spare)",
+      "groups": [
+        [
+          "a",
+          "b"
+        ],
+        [
+          "spare"
+        ]
+      ]
+    }
+  ]
+}

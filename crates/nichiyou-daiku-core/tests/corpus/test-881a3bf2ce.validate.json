@@ -1,1 +1,55 @@
-{"valid": true, "error": null, "overall_size": [89.0, 838.0, 1000.0], "size_reference": "a", "pieces": [{"id": "a", "type": "2x4", "length": 1000.0, "group": 0, "min": [0.0, 0.0, 0.0], "max": [89.0, 38.0, 1000.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "b", "type": "2x4", "length": 800.0, "group": 0, "min": [0.0, 38.0, 561.0], "max": [38.0, 838.0, 650.0], "faces": {"top": "+y", "right": "-z", "front": "-x"}}], "problems": []}
+{
+  "valid": true,
+  "error": null,
+  "overall_size": [
+    89.0,
+    838.0,
+    1000.0
+  ],
+  "size_reference": "a",
+  "pieces": [
+    {
+      "id": "a",
+      "type": "2x4",
+      "length": 1000.0,
+      "group": 0,
+      "min": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        38.0,
+        1000.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "b",
+      "type": "2x4",
+      "length": 800.0,
+      "group": 0,
+      "min": [
+        0.0,
+        38.0,
+        561.0
+      ],
+      "max": [
+        38.0,
+        838.0,
+        650.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-z",
+        "front": "-x"
+      }
+    }
+  ],
+  "problems": []
+}

@@ -1,1 +1,853 @@
-{"valid": true, "error": null, "overall_size": [89.0, 760.0, 300.0], "size_reference": "shelf_board_00", "pieces": [{"id": "shelf_board_00", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 0.0, 0.0], "max": [89.0, 19.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_01", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 19.0, 0.0], "max": [89.0, 38.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_02", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 38.0, 0.0], "max": [89.0, 57.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_03", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 57.0, 0.0], "max": [89.0, 76.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_04", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 76.0, 0.0], "max": [89.0, 95.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_05", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 95.0, 0.0], "max": [89.0, 114.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_06", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 114.0, 0.0], "max": [89.0, 133.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_07", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 133.0, 0.0], "max": [89.0, 152.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_08", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 152.0, 0.0], "max": [89.0, 171.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_09", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 171.0, 0.0], "max": [89.0, 190.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_10", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 190.0, 0.0], "max": [89.0, 209.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_11", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 209.0, 0.0], "max": [89.0, 228.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_12", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 228.0, 0.0], "max": [89.0, 247.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_13", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 247.0, 0.0], "max": [89.0, 266.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_14", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 266.0, 0.0], "max": [89.0, 285.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_15", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 285.0, 0.0], "max": [89.0, 304.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_16", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 304.0, 0.0], "max": [89.0, 323.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_17", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 323.0, 0.0], "max": [89.0, 342.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_18", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 342.0, 0.0], "max": [89.0, 361.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_19", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 361.0, 0.0], "max": [89.0, 380.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_20", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 380.0, 0.0], "max": [89.0, 399.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_21", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 399.0, 0.0], "max": [89.0, 418.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_22", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 418.0, 0.0], "max": [89.0, 437.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_23", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 437.0, 0.0], "max": [89.0, 456.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_24", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 456.0, 0.0], "max": [89.0, 475.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_25", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 475.0, 0.0], "max": [89.0, 494.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_26", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 494.0, 0.0], "max": [89.0, 513.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_27", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 513.0, 0.0], "max": [89.0, 532.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_28", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 532.0, 0.0], "max": [89.0, 551.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_29", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 551.0, 0.0], "max": [89.0, 570.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_30", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 570.0, 0.0], "max": [89.0, 589.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_31", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 589.0, 0.0], "max": [89.0, 608.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_32", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 608.0, 0.0], "max": [89.0, 627.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_33", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 627.0, 0.0], "max": [89.0, 646.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_34", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 646.0, 0.0], "max": [89.0, 665.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_35", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 665.0, 0.0], "max": [89.0, 684.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_36", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 684.0, 0.0], "max": [89.0, 703.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_37", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 703.0, 0.0], "max": [89.0, 722.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_38", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 722.0, 0.0], "max": [89.0, 741.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_board_39", "type": "1x4", "length": 300.0, "group": 0, "min": [0.0, 741.0, 0.0], "max": [89.0, 760.0, 300.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}], "problems": []}
+{
+  "valid": true,
+  "error": null,
+  "overall_size": [
+    89.0,
+    760.0,
+    300.0
+  ],
+  "size_reference": "shelf_board_00",
+  "pieces": [
+    {
+      "id": "shelf_board_00",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        19.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_01",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        19.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        38.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_02",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        38.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        57.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_03",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        57.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        76.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_04",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        76.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        95.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_05",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        95.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        114.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_06",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        114.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        133.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_07",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        133.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        152.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_08",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        152.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        171.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_09",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        171.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        190.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_10",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        190.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        209.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_11",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        209.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        228.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_12",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        228.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        247.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_13",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        247.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        266.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_14",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        266.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        285.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_15",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        285.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        304.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_16",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        304.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        323.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_17",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        323.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        342.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_18",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        342.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        361.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_19",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        361.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        380.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_20",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        380.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        399.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_21",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        399.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        418.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_22",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        418.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        437.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_23",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        437.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        456.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_24",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        456.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        475.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_25",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        475.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        494.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_26",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        494.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        513.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_27",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        513.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        532.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_28",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        532.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        551.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_29",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        551.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        570.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_30",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        570.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        589.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_31",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        589.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        608.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_32",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        608.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        627.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_33",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        627.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        646.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_34",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        646.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        665.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_35",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        665.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        684.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_36",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        684.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        703.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_37",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        703.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        722.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_38",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        722.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        741.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_board_39",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        741.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        760.0,
+        300.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    }
+  ],
+  "problems": []
+}

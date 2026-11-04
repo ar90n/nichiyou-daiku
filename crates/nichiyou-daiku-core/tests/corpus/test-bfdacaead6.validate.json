@@ -1,1 +1,13 @@
-{"valid": false, "error": {"kind": "validation", "message": "line 4, column 5: contact_face 'back' and edge_shared_face 'front' must be adjacent faces", "line": 4, "column": 5}, "overall_size": null, "size_reference": null, "pieces": [], "problems": []}
+{
+  "valid": false,
+  "error": {
+    "kind": "validation",
+    "message": "line 4, column 5: contact_face 'back' and edge_shared_face 'front' must be adjacent faces",
+    "line": 4,
+    "column": 5
+  },
+  "overall_size": null,
+  "size_reference": null,
+  "pieces": [],
+  "problems": []
+}

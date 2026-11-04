@@ -1,1 +1,190 @@
-[{"view": "from +y", "axis": "z", "side": "left", "stops": [0.0, 43.0, 81.0, 100.0, 292.0, 381.0, 400.0], "segments": [{"start": 0.0, "end": 43.0, "lumber": false}, {"start": 43.0, "end": 81.0, "lumber": true}, {"start": 81.0, "end": 100.0, "lumber": true}, {"start": 100.0, "end": 292.0, "lumber": false}, {"start": 292.0, "end": 381.0, "lumber": true}, {"start": 381.0, "end": 400.0, "lumber": true}]}, {"view": "from +y", "axis": "x", "side": "below", "stops": [0.0, 89.0, 811.0, 900.0], "segments": [{"start": 0.0, "end": 89.0, "lumber": true}, {"start": 89.0, "end": 811.0, "lumber": false}, {"start": 811.0, "end": 900.0, "lumber": true}]}, {"view": "from -x", "axis": "y", "side": "below", "stops": [0.0, 38.0, 412.0, 450.0], "segments": [{"start": 0.0, "end": 38.0, "lumber": true}, {"start": 38.0, "end": 412.0, "lumber": false}, {"start": 412.0, "end": 450.0, "lumber": true}]}, {"view": "from +z", "axis": "x", "side": "below", "stops": [0.0, 140.0, 152.0, 292.0, 304.0, 444.0, 456.0, 596.0, 608.0, 748.0, 760.0, 900.0], "segments": [{"start": 0.0, "end": 140.0, "lumber": true}, {"start": 140.0, "end": 152.0, "lumber": false}, {"start": 152.0, "end": 292.0, "lumber": true}, {"start": 292.0, "end": 304.0, "lumber": false}, {"start": 304.0, "end": 444.0, "lumber": true}, {"start": 444.0, "end": 456.0, "lumber": false}, {"start": 456.0, "end": 596.0, "lumber": true}, {"start": 596.0, "end": 608.0, "lumber": false}, {"start": 608.0, "end": 748.0, "lumber": true}, {"start": 748.0, "end": 760.0, "lumber": false}, {"start": 760.0, "end": 900.0, "lumber": true}]}, {"view": "from +z", "axis": "y", "side": "left", "stops": [0.0, 450.0], "segments": []}]
+[
+  {
+    "view": "from +y",
+    "axis": "z",
+    "side": "left",
+    "stops": [
+      0.0,
+      43.0,
+      81.0,
+      100.0,
+      292.0,
+      381.0,
+      400.0
+    ],
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 43.0,
+        "lumber": false
+      },
+      {
+        "start": 43.0,
+        "end": 81.0,
+        "lumber": true
+      },
+      {
+        "start": 81.0,
+        "end": 100.0,
+        "lumber": true
+      },
+      {
+        "start": 100.0,
+        "end": 292.0,
+        "lumber": false
+      },
+      {
+        "start": 292.0,
+        "end": 381.0,
+        "lumber": true
+      },
+      {
+        "start": 381.0,
+        "end": 400.0,
+        "lumber": true
+      }
+    ]
+  },
+  {
+    "view": "from +y",
+    "axis": "x",
+    "side": "below",
+    "stops": [
+      0.0,
+      89.0,
+      811.0,
+      900.0
+    ],
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 89.0,
+        "lumber": true
+      },
+      {
+        "start": 89.0,
+        "end": 811.0,
+        "lumber": false
+      },
+      {
+        "start": 811.0,
+        "end": 900.0,
+        "lumber": true
+      }
+    ]
+  },
+  {
+    "view": "from -x",
+    "axis": "y",
+    "side": "below",
+    "stops": [
+      0.0,
+      38.0,
+      412.0,
+      450.0
+    ],
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 38.0,
+        "lumber": true
+      },
+      {
+        "start": 38.0,
+        "end": 412.0,
+        "lumber": false
+      },
+      {
+        "start": 412.0,
+        "end": 450.0,
+        "lumber": true
+      }
+    ]
+  },
+  {
+    "view": "from +z",
+    "axis": "x",
+    "side": "below",
+    "stops": [
+      0.0,
+      140.0,
+      152.0,
+      292.0,
+      304.0,
+      444.0,
+      456.0,
+      596.0,
+      608.0,
+      748.0,
+      760.0,
+      900.0
+    ],
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 140.0,
+        "lumber": true
+      },
+      {
+        "start": 140.0,
+        "end": 152.0,
+        "lumber": false
+      },
+      {
+        "start": 152.0,
+        "end": 292.0,
+        "lumber": true
+      },
+      {
+        "start": 292.0,
+        "end": 304.0,
+        "lumber": false
+      },
+      {
+        "start": 304.0,
+        "end": 444.0,
+        "lumber": true
+      },
+      {
+        "start": 444.0,
+        "end": 456.0,
+        "lumber": false
+      },
+      {
+        "start": 456.0,
+        "end": 596.0,
+        "lumber": true
+      },
+      {
+        "start": 596.0,
+        "end": 608.0,
+        "lumber": false
+      },
+      {
+        "start": 608.0,
+        "end": 748.0,
+        "lumber": true
+      },
+      {
+        "start": 748.0,
+        "end": 760.0,
+        "lumber": false
+      },
+      {
+        "start": 760.0,
+        "end": 900.0,
+        "lumber": true
+      }
+    ]
+  },
+  {
+    "view": "from +z",
+    "axis": "y",
+    "side": "left",
+    "stops": [
+      0.0,
+      450.0
+    ],
+    "segments": []
+  }
+]

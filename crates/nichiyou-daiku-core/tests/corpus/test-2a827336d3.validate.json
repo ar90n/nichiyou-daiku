@@ -1,1 +1,286 @@
-{"valid": true, "error": null, "overall_size": [127.0, 300.0, 1200.0], "size_reference": "rail", "pieces": [{"id": "rail", "type": "2x4", "length": 1200.0, "group": 0, "min": [0.0, 262.0, 0.0], "max": [89.0, 300.0, 1200.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "slat_with_a_long_name_00", "type": "2x2", "length": 300.0, "group": 0, "min": [89.0, 0.0, 0.0], "max": [127.0, 300.0, 38.0], "faces": {"top": "+y", "right": "+z", "front": "+x"}}, {"id": "slat_with_a_long_name_01", "type": "2x2", "length": 300.0, "group": 0, "min": [89.0, 0.0, 90.0], "max": [127.0, 300.0, 128.0], "faces": {"top": "+y", "right": "+z", "front": "+x"}}, {"id": "slat_with_a_long_name_02", "type": "2x2", "length": 300.0, "group": 0, "min": [89.0, 0.0, 180.0], "max": [127.0, 300.0, 218.0], "faces": {"top": "+y", "right": "+z", "front": "+x"}}, {"id": "slat_with_a_long_name_03", "type": "2x2", "length": 300.0, "group": 0, "min": [89.0, 0.0, 270.0], "max": [127.0, 300.0, 308.0], "faces": {"top": "+y", "right": "+z", "front": "+x"}}, {"id": "slat_with_a_long_name_04", "type": "2x2", "length": 300.0, "group": 0, "min": [89.0, 0.0, 360.0], "max": [127.0, 300.0, 398.0], "faces": {"top": "+y", "right": "+z", "front": "+x"}}, {"id": "slat_with_a_long_name_05", "type": "2x2", "length": 300.0, "group": 0, "min": [89.0, 0.0, 450.0], "max": [127.0, 300.0, 488.0], "faces": {"top": "+y", "right": "+z", "front": "+x"}}, {"id": "slat_with_a_long_name_06", "type": "2x2", "length": 300.0, "group": 0, "min": [89.0, 0.0, 540.0], "max": [127.0, 300.0, 578.0], "faces": {"top": "+y", "right": "+z", "front": "+x"}}, {"id": "slat_with_a_long_name_07", "type": "2x2", "length": 300.0, "group": 0, "min": [89.0, 0.0, 630.0], "max": [127.0, 300.0, 668.0], "faces": {"top": "+y", "right": "+z", "front": "+x"}}, {"id": "slat_with_a_long_name_08", "type": "2x2", "length": 300.0, "group": 0, "min": [89.0, 0.0, 720.0], "max": [127.0, 300.0, 758.0], "faces": {"top": "+y", "right": "+z", "front": "+x"}}, {"id": "slat_with_a_long_name_09", "type": "2x2", "length": 300.0, "group": 0, "min": [89.0, 0.0, 810.0], "max": [127.0, 300.0, 848.0], "faces": {"top": "+y", "right": "+z", "front": "+x"}}, {"id": "slat_with_a_long_name_10", "type": "2x2", "length": 300.0, "group": 0, "min": [89.0, 0.0, 900.0], "max": [127.0, 300.0, 938.0], "faces": {"top": "+y", "right": "+z", "front": "+x"}}, {"id": "slat_with_a_long_name_11", "type": "2x2", "length": 300.0, "group": 0, "min": [89.0, 0.0, 990.0], "max": [127.0, 300.0, 1028.0], "faces": {"top": "+y", "right": "+z", "front": "+x"}}], "problems": []}
+{
+  "valid": true,
+  "error": null,
+  "overall_size": [
+    127.0,
+    300.0,
+    1200.0
+  ],
+  "size_reference": "rail",
+  "pieces": [
+    {
+      "id": "rail",
+      "type": "2x4",
+      "length": 1200.0,
+      "group": 0,
+      "min": [
+        0.0,
+        262.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        300.0,
+        1200.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "slat_with_a_long_name_00",
+      "type": "2x2",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        89.0,
+        0.0,
+        0.0
+      ],
+      "max": [
+        127.0,
+        300.0,
+        38.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "+z",
+        "front": "+x"
+      }
+    },
+    {
+      "id": "slat_with_a_long_name_01",
+      "type": "2x2",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        89.0,
+        0.0,
+        90.0
+      ],
+      "max": [
+        127.0,
+        300.0,
+        128.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "+z",
+        "front": "+x"
+      }
+    },
+    {
+      "id": "slat_with_a_long_name_02",
+      "type": "2x2",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        89.0,
+        0.0,
+        180.0
+      ],
+      "max": [
+        127.0,
+        300.0,
+        218.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "+z",
+        "front": "+x"
+      }
+    },
+    {
+      "id": "slat_with_a_long_name_03",
+      "type": "2x2",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        89.0,
+        0.0,
+        270.0
+      ],
+      "max": [
+        127.0,
+        300.0,
+        308.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "+z",
+        "front": "+x"
+      }
+    },
+    {
+      "id": "slat_with_a_long_name_04",
+      "type": "2x2",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        89.0,
+        0.0,
+        360.0
+      ],
+      "max": [
+        127.0,
+        300.0,
+        398.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "+z",
+        "front": "+x"
+      }
+    },
+    {
+      "id": "slat_with_a_long_name_05",
+      "type": "2x2",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        89.0,
+        0.0,
+        450.0
+      ],
+      "max": [
+        127.0,
+        300.0,
+        488.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "+z",
+        "front": "+x"
+      }
+    },
+    {
+      "id": "slat_with_a_long_name_06",
+      "type": "2x2",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        89.0,
+        0.0,
+        540.0
+      ],
+      "max": [
+        127.0,
+        300.0,
+        578.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "+z",
+        "front": "+x"
+      }
+    },
+    {
+      "id": "slat_with_a_long_name_07",
+      "type": "2x2",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        89.0,
+        0.0,
+        630.0
+      ],
+      "max": [
+        127.0,
+        300.0,
+        668.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "+z",
+        "front": "+x"
+      }
+    },
+    {
+      "id": "slat_with_a_long_name_08",
+      "type": "2x2",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        89.0,
+        0.0,
+        720.0
+      ],
+      "max": [
+        127.0,
+        300.0,
+        758.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "+z",
+        "front": "+x"
+      }
+    },
+    {
+      "id": "slat_with_a_long_name_09",
+      "type": "2x2",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        89.0,
+        0.0,
+        810.0
+      ],
+      "max": [
+        127.0,
+        300.0,
+        848.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "+z",
+        "front": "+x"
+      }
+    },
+    {
+      "id": "slat_with_a_long_name_10",
+      "type": "2x2",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        89.0,
+        0.0,
+        900.0
+      ],
+      "max": [
+        127.0,
+        300.0,
+        938.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "+z",
+        "front": "+x"
+      }
+    },
+    {
+      "id": "slat_with_a_long_name_11",
+      "type": "2x2",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        89.0,
+        0.0,
+        990.0
+      ],
+      "max": [
+        127.0,
+        300.0,
+        1028.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "+z",
+        "front": "+x"
+      }
+    }
+  ],
+  "problems": []
+}

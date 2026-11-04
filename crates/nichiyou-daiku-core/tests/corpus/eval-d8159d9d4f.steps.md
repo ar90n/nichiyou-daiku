@@ -6,21 +6,26 @@ No steps block: each step adds one piece. Group pieces with a steps block, e.g. 
 
 | Pieces | Lumber | Length (mm) | Count | Drawing |
 |--------|--------|-------------|-------|---------|
-| leg_fl, leg_fr, leg_bl, leg_br | 2x4 | 681 | 4 | [part-01.png](part-01.png) |
-| apron_left, apron_right | 2x4 | 424 | 2 | [part-02.png](part-02.png) |
-| apron_front, apron_back | 2x4 | 924 | 2 | [part-03.png](part-03.png) |
+| leg_fl, leg_br | 2x4 | 681 | 2 | [part-01.png](part-01.png) |
+| leg_fr, leg_bl | 2x4 | 681 | 2 | [part-02.png](part-02.png) |
+| apron_left, apron_right | 2x4 | 424 | 2 | [part-03.png](part-03.png) |
+| apron_front, apron_back | 2x4 | 924 | 2 | [part-04.png](part-04.png) |
 
-### leg_fl, leg_fr, leg_bl, leg_br ×4
+### leg_fl, leg_br ×2
 
 ![Part 1](part-01.png)
 
-### apron_left, apron_right ×2
+### leg_fr, leg_bl ×2
 
 ![Part 2](part-02.png)
 
-### apron_front, apron_back ×2
+### apron_left, apron_right ×2
 
 ![Part 3](part-03.png)
+
+### apron_front, apron_back ×2
+
+![Part 4](part-04.png)
 
 ## Step 1
 

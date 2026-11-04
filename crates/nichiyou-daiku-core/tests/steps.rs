@@ -1,70 +1,39 @@
-//! The parts, steps and fasteners view gives match the Python version's
-//! (NAME.steps.json, written by tools/make_goldens.py).
+//! The parts and steps the viewer gets (`view`) for every corpus case that
+//! assembles, against NAME.steps.json.
 
-use std::collections::HashMap;
-use std::fs;
-use std::path::PathBuf;
+use std::path::Path;
+
+use serde_json::{Map, Value};
 
 mod common;
-use common::normalize;
+use common::{assert_none, check_golden, corpus, pretty};
 
 const DIR: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/corpus");
 const KEYS: [&str; 4] = ["parts", "steps", "steps_declared", "steps_hint"];
 
-/// The view with the pieces' holes as the Python version records them: the
-/// parts and steps compared here come from those, while the view's own hole
-/// list stays countersunk (diagnostics' tests cover it).
-fn python_form_view(source: &str) -> serde_json::Value {
-    let located = nichiyou_daiku_core::dsl::parse_located(source).expect("a source that assembles");
-    let mut assembly = nichiyou_daiku_core::assembly::Assembly::of(located.model.clone())
-        .expect("a source that assembles");
-    common::python_holes(&mut assembly);
-    nichiyou_daiku_core::diagnostics::view_report(&assembly, &located.pieces, &located.connections)
+fn steps(source: &str) -> Option<String> {
+    let view = nichiyou_daiku_core::view(source);
+    if !view["error"].is_null() {
+        return None;
+    }
+    let picked: Map<String, Value> = KEYS
+        .iter()
+        .map(|key| (key.to_string(), view[*key].clone()))
+        .collect();
+    Some(pretty(&Value::Object(picked)))
 }
 
 #[test]
-fn parts_steps_and_fasteners_match_the_python_version() {
-    let mut paths: Vec<PathBuf> = fs::read_dir(DIR)
-        .unwrap()
-        .map(|e| e.unwrap().path())
-        .filter(|p| p.extension().is_some_and(|e| e == "nd"))
-        .collect();
-    paths.sort();
-    let mut checked = 0;
-    let mut differ = Vec::new();
-    for path in paths {
-        let golden = path.with_extension("steps.json");
-        let Ok(text) = fs::read_to_string(&golden) else {
-            continue;
-        };
-        let expected = normalize(serde_json::from_str(&text).unwrap(), &mut HashMap::new());
-        let view = normalize(
-            python_form_view(&fs::read_to_string(&path).unwrap()),
-            &mut HashMap::new(),
-        );
-        if let Some(key) = KEYS.iter().find(|key| view[**key] != expected[**key]) {
-            differ.push(format!(
-                "{}: {key}\n  rust:   {}\n  python: {}",
-                path.display(),
-                view[*key],
-                expected[*key]
-            ));
+fn parts_and_steps_match_their_golden_files() {
+    let (mut failures, mut checked) = (Vec::new(), 0);
+    for (name, source) in corpus(Path::new(DIR)) {
+        let got = steps(&source);
+        checked += usize::from(got.is_some());
+        let path = Path::new(DIR).join(format!("{name}.steps.json"));
+        if let Err(error) = check_golden(&path, got.as_deref()) {
+            failures.push(error);
         }
-        checked += 1;
     }
-    assert!(
-        checked >= 600,
-        "only {checked} cases have steps goldens: run tools/make_goldens.py --steps-only"
-    );
-    assert!(
-        differ.is_empty(),
-        "{} of {checked} cases differ:\n{}",
-        differ.len(),
-        differ
-            .iter()
-            .take(5)
-            .cloned()
-            .collect::<Vec<_>>()
-            .join("\n")
-    );
+    assert!(checked >= 600, "only {checked} cases assemble");
+    assert_none(&failures, checked);
 }

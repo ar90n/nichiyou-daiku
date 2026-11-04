@@ -1,1 +1,50 @@
-{"parts": [{"index": 0, "title": "base   2x4   600   φ3.5 ↧101 ×2", "letters": {"down": "A"}, "faces": [{"face": "down", "right": [0.0, 22.25, 66.75, 89.0], "up": [0.0, 19.0, 38.0]}]}, {"index": 1, "title": "target   1x4   300   φ3.5 ×2", "letters": {"back": "A"}, "faces": [{"face": "back", "right": [0.0, 281.0, 300.0], "up": [0.0, 22.25, 66.75, 89.0]}]}]}
+{
+  "parts": [
+    {
+      "index": 0,
+      "title": "base   2x4   600   φ3.5 ↧101 ×2",
+      "letters": {
+        "down": "A"
+      },
+      "faces": [
+        {
+          "face": "down",
+          "right": [
+            0.0,
+            22.25,
+            66.75,
+            89.0
+          ],
+          "up": [
+            0.0,
+            19.0,
+            38.0
+          ]
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "title": "target   1x4   300   φ3.5 ×2",
+      "letters": {
+        "front": "A"
+      },
+      "faces": [
+        {
+          "face": "front",
+          "right": [
+            0.0,
+            281.0,
+            300.0
+          ],
+          "up": [
+            0.0,
+            22.25,
+            66.75,
+            89.0
+          ]
+        }
+      ]
+    }
+  ]
+}

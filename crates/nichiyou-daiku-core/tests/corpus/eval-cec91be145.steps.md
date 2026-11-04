@@ -12,8 +12,9 @@
 | apron_back, lower_back | 2x2 | 324 | 2 | [part-06.png](part-06.png) |
 | apron_left, apron_right, lower_left, lower_right | 2x2 | 224 | 4 | [part-07.png](part-07.png) |
 | lower_front | 2x2 | 324 | 1 | [part-08.png](part-08.png) |
-| top_1, top_4 | 1x4 | 300 | 2 | [part-09.png](part-09.png) |
+| top_1 | 1x4 | 300 | 1 | [part-09.png](part-09.png) |
 | top_2, top_3, shelf_1, shelf_2, shelf_3 | 1x4 | 300 | 5 | [part-10.png](part-10.png) |
+| top_4 | 1x4 | 300 | 1 | [part-11.png](part-11.png) |
 
 ### leg_fl
 
@@ -47,13 +48,17 @@
 
 ![Part 8](part-08.png)
 
-### top_1, top_4 ×2
+### top_1
 
 ![Part 9](part-09.png)
 
 ### top_2, top_3, shelf_1, shelf_2, shelf_3 ×5
 
 ![Part 10](part-10.png)
+
+### top_4
+
+![Part 11](part-11.png)
 
 ## Step 1 - Left side frame
 

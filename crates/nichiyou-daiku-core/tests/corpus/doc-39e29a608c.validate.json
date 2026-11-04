@@ -1,1 +1,34 @@
-{"valid": true, "error": null, "overall_size": [89.0, 38.0, 720.0], "size_reference": "leg", "pieces": [{"id": "leg", "type": "2x4", "length": 720.0, "group": 0, "min": [0.0, 0.0, 0.0], "max": [89.0, 38.0, 720.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}], "problems": []}
+{
+  "valid": true,
+  "error": null,
+  "overall_size": [
+    89.0,
+    38.0,
+    720.0
+  ],
+  "size_reference": "leg",
+  "pieces": [
+    {
+      "id": "leg",
+      "type": "2x4",
+      "length": 720.0,
+      "group": 0,
+      "min": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        38.0,
+        720.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    }
+  ],
+  "problems": []
+}

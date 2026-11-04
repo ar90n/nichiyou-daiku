@@ -1,1 +1,50 @@
-{"parts": [{"index": 0, "title": "base   2x4   600   φ3 ↧22 ×2", "letters": {"front": "A"}, "faces": [{"face": "front", "right": [0.0, 75.0, 225.0, 600.0], "up": [0.0, 25.0, 89.0]}]}, {"index": 2, "title": "leg2   2x4   300   φ3 ×2", "letters": {"back": "A"}, "faces": [{"face": "back", "right": [0.0, 75.0, 225.0, 300.0], "up": [0.0, 64.0, 89.0]}]}]}
+{
+  "parts": [
+    {
+      "index": 0,
+      "title": "base   2x4   600   φ3 ↧22 ×2",
+      "letters": {
+        "front": "A"
+      },
+      "faces": [
+        {
+          "face": "front",
+          "right": [
+            0.0,
+            75.0,
+            225.0,
+            600.0
+          ],
+          "up": [
+            0.0,
+            25.0,
+            89.0
+          ]
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "title": "leg2   2x4   300   φ3 ×2",
+      "letters": {
+        "front": "A"
+      },
+      "faces": [
+        {
+          "face": "front",
+          "right": [
+            0.0,
+            75.0,
+            225.0,
+            300.0
+          ],
+          "up": [
+            0.0,
+            25.0,
+            89.0
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -4,41 +4,56 @@
 
 | Pieces | Lumber | Length (mm) | Count | Drawing |
 |--------|--------|-------------|-------|---------|
-| leg_fl, leg_bl | 2x4 | 681 | 2 | [part-01.png](part-01.png) |
-| leg_fr, leg_br | 2x4 | 681 | 2 | [part-02.png](part-02.png) |
-| apron_left | 2x4 | 424 | 1 | [part-03.png](part-03.png) |
-| apron_right | 2x4 | 424 | 1 | [part-04.png](part-04.png) |
-| apron_front, apron_back | 2x4 | 822 | 2 | [part-05.png](part-05.png) |
-| top_front, top_back | 1x6 | 1000 | 2 | [part-06.png](part-06.png) |
-| top_middle | 1x6 | 1000 | 1 | [part-07.png](part-07.png) |
+| leg_fl | 2x4 | 681 | 1 | [part-01.png](part-01.png) |
+| leg_fr | 2x4 | 681 | 1 | [part-02.png](part-02.png) |
+| leg_bl | 2x4 | 681 | 1 | [part-03.png](part-03.png) |
+| leg_br | 2x4 | 681 | 1 | [part-04.png](part-04.png) |
+| apron_left | 2x4 | 424 | 1 | [part-05.png](part-05.png) |
+| apron_right | 2x4 | 424 | 1 | [part-06.png](part-06.png) |
+| apron_front, apron_back | 2x4 | 822 | 2 | [part-07.png](part-07.png) |
+| top_front | 1x6 | 1000 | 1 | [part-08.png](part-08.png) |
+| top_middle | 1x6 | 1000 | 1 | [part-09.png](part-09.png) |
+| top_back | 1x6 | 1000 | 1 | [part-10.png](part-10.png) |
 
-### leg_fl, leg_bl ×2
+### leg_fl
 
 ![Part 1](part-01.png)
 
-### leg_fr, leg_br ×2
+### leg_fr
 
 ![Part 2](part-02.png)
 
-### apron_left
+### leg_bl
 
 ![Part 3](part-03.png)
 
-### apron_right
+### leg_br
 
 ![Part 4](part-04.png)
 
-### apron_front, apron_back ×2
+### apron_left
 
 ![Part 5](part-05.png)
 
-### top_front, top_back ×2
+### apron_right
 
 ![Part 6](part-06.png)
 
-### top_middle
+### apron_front, apron_back ×2
 
 ![Part 7](part-07.png)
+
+### top_front
+
+![Part 8](part-08.png)
+
+### top_middle
+
+![Part 9](part-09.png)
+
+### top_back
+
+![Part 10](part-10.png)
 
 ## Step 1 - Left frame
 

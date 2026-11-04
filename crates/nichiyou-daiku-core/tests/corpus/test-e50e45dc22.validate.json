@@ -1,1 +1,55 @@
-{"valid": true, "error": null, "overall_size": [89.0, 538.0, 400.0], "size_reference": "rail", "pieces": [{"id": "rail", "type": "2x4", "length": 400.0, "group": 0, "min": [0.0, 0.0, 0.0], "max": [89.0, 38.0, 400.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "post", "type": "2x4", "length": 500.0, "group": 0, "min": [0.0, 38.0, 311.0], "max": [38.0, 538.0, 400.0], "faces": {"top": "+y", "right": "-z", "front": "-x"}}], "problems": []}
+{
+  "valid": true,
+  "error": null,
+  "overall_size": [
+    89.0,
+    538.0,
+    400.0
+  ],
+  "size_reference": "rail",
+  "pieces": [
+    {
+      "id": "rail",
+      "type": "2x4",
+      "length": 400.0,
+      "group": 0,
+      "min": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        38.0,
+        400.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "post",
+      "type": "2x4",
+      "length": 500.0,
+      "group": 0,
+      "min": [
+        0.0,
+        38.0,
+        311.0
+      ],
+      "max": [
+        38.0,
+        538.0,
+        400.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-z",
+        "front": "-x"
+      }
+    }
+  ],
+  "problems": []
+}

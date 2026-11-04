@@ -1,1 +1,13 @@
-{"valid": false, "error": {"kind": "semantic", "message": "line 8, column 1: Step 'Frame' names unknown piece 'rial'; did you mean 'rail'?", "line": 8, "column": 1}, "overall_size": null, "size_reference": null, "pieces": [], "problems": []}
+{
+  "valid": false,
+  "error": {
+    "kind": "semantic",
+    "message": "line 8, column 1: Step 'Frame' names unknown piece 'rial'; did you mean 'rail'?",
+    "line": 8,
+    "column": 1
+  },
+  "overall_size": null,
+  "size_reference": null,
+  "pieces": [],
+  "problems": []
+}

@@ -1,1 +1,57 @@
-{"pieces": {"side_l": [{"face": "back", "center": [35.0, 0.0, 309.5], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [105.0, 0.0, 309.5], "diameter": 8.0, "depth": 15.0}], "shelf": [{"face": "down", "center": [35.0, 9.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "down", "center": [105.0, 9.5, 0.0], "diameter": 8.0, "depth": 15.0}]}, "fasteners": [{"base": "side_l", "target": "shelf", "kind": "dowel", "diameter": 8.0, "count": 2}]}
+{
+  "pieces": {
+    "side_l": [
+      {
+        "face": "back",
+        "center": [
+          35.0,
+          0.0,
+          309.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          105.0,
+          0.0,
+          309.5
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "shelf": [
+      {
+        "face": "down",
+        "center": [
+          35.0,
+          9.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "down",
+        "center": [
+          105.0,
+          9.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ]
+  },
+  "fasteners": [
+    {
+      "base": "side_l",
+      "target": "shelf",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    }
+  ]
+}

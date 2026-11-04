@@ -1,6 +1,5 @@
 //! Every piece of every design in the corpus is a closed solid, and the
-//! examples' volumes and boxes match the Python version's 3D
-//! (NAME.solids.json, written by tools/make_goldens.py --cli).
+//! examples' volumes and boxes match NAME.solids.json.
 
 use std::collections::HashMap;
 use std::fs;
@@ -9,7 +8,7 @@ use std::path::PathBuf;
 use nichiyou_daiku_core::assembly::Assembly;
 use nichiyou_daiku_core::pyfmt::round_mm;
 use nichiyou_daiku_export::model;
-use serde_json::{Value, json};
+use serde_json::json;
 
 #[path = "../../nichiyou-daiku-core/tests/common/mod.rs"]
 mod common;
@@ -62,62 +61,37 @@ fn every_piece_is_a_closed_solid() {
 }
 
 #[test]
-fn solids_match_the_python_version() {
-    let mut differ = Vec::new();
-    let mut checked = 0;
-    for (path, mut assembly) in designs() {
-        let Ok(text) = fs::read_to_string(path.with_extension("solids.json")) else {
-            continue;
-        };
-        common::python_holes(&mut assembly);
-        let made = model(&assembly);
-        let mut pieces = serde_json::Map::new();
-        for solid in &made.solids {
-            let extreme = |i: usize, f: fn(f64, f64) -> f64, start: f64| {
-                round_mm(solid.vertices.iter().map(|v| v[i]).fold(start, f))
-            };
-            pieces.insert(
-                solid.name.clone(),
-                json!({
-                    "volume": solid.volume,
-                    "min": (0..3).map(|i| extreme(i, f64::min, f64::MAX)).collect::<Vec<_>>(),
-                    "max": (0..3).map(|i| extreme(i, f64::max, f64::MIN)).collect::<Vec<_>>(),
-                }),
-            );
-        }
-        let want: Value =
-            common::normalize(serde_json::from_str(&text).unwrap(), &mut HashMap::new());
-        let got = common::normalize(json!({ "pieces": pieces }), &mut HashMap::new());
-        for (id, w) in want["pieces"].as_object().unwrap() {
-            let g = &got["pieces"][id];
-            let (wv, gv) = (
-                w["volume"].as_f64().unwrap(),
-                g["volume"].as_f64().unwrap_or(-1.0),
-            );
-            if (wv - gv).abs() > 1e-6 * wv + 1e-2 || w["min"] != g["min"] || w["max"] != g["max"] {
-                differ.push(format!(
-                    "{} {id}\n  python: {w}\n  rust:   {g}",
-                    path.display()
-                ));
+fn solids_match_their_golden_files() {
+    let (mut failures, mut checked) = (Vec::new(), 0);
+    for (path, assembly) in designs() {
+        let name = path.file_stem().unwrap().to_string_lossy().into_owned();
+        let got = common::shown(&name).then(|| {
+            let mut pieces = serde_json::Map::new();
+            for solid in &model(&assembly).solids {
+                let extreme = |i: usize, f: fn(f64, f64) -> f64, start: f64| {
+                    round_mm(solid.vertices.iter().map(|v| v[i]).fold(start, f))
+                };
+                pieces.insert(
+                    solid.name.clone(),
+                    json!({
+                        // To a thousandth of a mm³: the last bits of a sum vary between machines
+                        "volume": (solid.volume * 1000.0).round() / 1000.0,
+                        "min": (0..3).map(|i| extreme(i, f64::min, f64::MAX)).collect::<Vec<_>>(),
+                        "max": (0..3).map(|i| extreme(i, f64::max, f64::MIN)).collect::<Vec<_>>(),
+                    }),
+                );
             }
+            common::pretty(&json!({ "pieces": pieces }))
+        });
+        checked += usize::from(got.is_some());
+        if let Err(error) =
+            common::check_golden(&path.with_extension("solids.json"), got.as_deref())
+        {
+            failures.push(error);
         }
-        checked += 1;
     }
-    assert!(
-        checked >= 20,
-        "only {checked} cases have solids.json: run tools/make_goldens.py --cli"
-    );
-    assert!(
-        differ.is_empty(),
-        "{} differ:\n{}",
-        differ.len(),
-        differ
-            .iter()
-            .take(5)
-            .cloned()
-            .collect::<Vec<_>>()
-            .join("\n")
-    );
+    assert!(checked >= 20, "only {checked} shown cases");
+    common::assert_none(&failures, checked);
 }
 
 #[test]

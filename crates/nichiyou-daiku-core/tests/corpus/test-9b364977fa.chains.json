@@ -1,1 +1,88 @@
-[{"view": "from +y", "axis": "z", "side": "left", "stops": [0.0, 19.0, 619.0], "segments": [{"start": 0.0, "end": 19.0, "lumber": true}, {"start": 19.0, "end": 619.0, "lumber": false}]}, {"view": "from +y", "axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"view": "from -x", "axis": "y", "side": "below", "stops": [0.0, 262.0, 300.0], "segments": [{"start": 0.0, "end": 262.0, "lumber": false}, {"start": 262.0, "end": 300.0, "lumber": true}]}, {"view": "from +z", "axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"view": "from +z", "axis": "y", "side": "left", "stops": [0.0, 262.0, 300.0], "segments": [{"start": 0.0, "end": 262.0, "lumber": false}, {"start": 262.0, "end": 300.0, "lumber": true}]}]
+[
+  {
+    "view": "from +y",
+    "axis": "z",
+    "side": "left",
+    "stops": [
+      0.0,
+      19.0,
+      619.0
+    ],
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 19.0,
+        "lumber": true
+      },
+      {
+        "start": 19.0,
+        "end": 619.0,
+        "lumber": false
+      }
+    ]
+  },
+  {
+    "view": "from +y",
+    "axis": "x",
+    "side": "below",
+    "stops": [
+      0.0,
+      89.0
+    ],
+    "segments": []
+  },
+  {
+    "view": "from -x",
+    "axis": "y",
+    "side": "below",
+    "stops": [
+      0.0,
+      262.0,
+      300.0
+    ],
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 262.0,
+        "lumber": false
+      },
+      {
+        "start": 262.0,
+        "end": 300.0,
+        "lumber": true
+      }
+    ]
+  },
+  {
+    "view": "from +z",
+    "axis": "x",
+    "side": "below",
+    "stops": [
+      0.0,
+      89.0
+    ],
+    "segments": []
+  },
+  {
+    "view": "from +z",
+    "axis": "y",
+    "side": "left",
+    "stops": [
+      0.0,
+      262.0,
+      300.0
+    ],
+    "segments": [
+      {
+        "start": 0.0,
+        "end": 262.0,
+        "lumber": false
+      },
+      {
+        "start": 262.0,
+        "end": 300.0,
+        "lumber": true
+      }
+    ]
+  }
+]

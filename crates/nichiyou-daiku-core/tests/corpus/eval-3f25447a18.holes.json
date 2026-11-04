@@ -1,1 +1,106 @@
-{"pieces": {"leg": [{"face": "left", "center": [0.0, 9.5, 662.0], "diameter": 8.0, "depth": 15.0}, {"face": "left", "center": [0.0, 28.5, 662.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [9.5, 19.0, 681.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [28.5, 19.0, 681.0], "diameter": 8.0, "depth": 15.0}], "apron": [{"face": "down", "center": [19.0, 9.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "down", "center": [19.0, 28.5, 0.0], "diameter": 8.0, "depth": 15.0}], "board": [{"face": "back", "center": [9.5, 0.0, 19.0], "diameter": 8.0, "depth": 15.0}, {"face": "back", "center": [28.5, 0.0, 19.0], "diameter": 8.0, "depth": 15.0}]}, "fasteners": [{"base": "leg", "target": "apron", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "board", "target": "leg", "kind": "dowel", "diameter": 8.0, "count": 2}]}
+{
+  "pieces": {
+    "leg": [
+      {
+        "face": "left",
+        "center": [
+          0.0,
+          9.5,
+          662.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "left",
+        "center": [
+          0.0,
+          28.5,
+          662.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          9.5,
+          19.0,
+          681.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          28.5,
+          19.0,
+          681.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "apron": [
+      {
+        "face": "down",
+        "center": [
+          19.0,
+          9.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "down",
+        "center": [
+          19.0,
+          28.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "board": [
+      {
+        "face": "back",
+        "center": [
+          9.5,
+          0.0,
+          19.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "back",
+        "center": [
+          28.5,
+          0.0,
+          19.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ]
+  },
+  "fasteners": [
+    {
+      "base": "leg",
+      "target": "apron",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "board",
+      "target": "leg",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    }
+  ]
+}

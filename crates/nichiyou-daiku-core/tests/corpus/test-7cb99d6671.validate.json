@@ -1,1 +1,13 @@
-{"valid": false, "error": {"kind": "syntax", "message": "Syntax error at line 3, column 5: Unexpected token 'XF'. Expected one of: '{', face letter (T, D, L, R, F, B)", "line": 3, "column": 5}, "overall_size": null, "size_reference": null, "pieces": [], "problems": []}
+{
+  "valid": false,
+  "error": {
+    "kind": "syntax",
+    "message": "Syntax error at line 3, column 5: Unexpected token 'XF'. Expected one of: '{', face letter (T, D, L, R, F, B)",
+    "line": 3,
+    "column": 5
+  },
+  "overall_size": null,
+  "size_reference": null,
+  "pieces": [],
+  "problems": []
+}

@@ -1,1 +1,65 @@
-{"valid": false, "error": null, "overall_size": [89.0, 838.0, 1089.0], "size_reference": "a", "pieces": [{"id": "a", "type": "2x4", "length": 1000.0, "group": 0, "min": [0.0, 0.0, 89.0], "max": [89.0, 38.0, 1089.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "b", "type": "2x4", "length": 800.0, "group": 0, "min": [0.0, 38.0, 0.0], "max": [38.0, 838.0, 89.0], "faces": {"top": "+y", "right": "-z", "front": "-x"}}], "problems": [{"kind": "fastener", "message": "Connection a -> b: pieces do not share a contact area", "connection": ["a", "b"], "fastener": "dowel"}]}
+{
+  "valid": false,
+  "error": null,
+  "overall_size": [
+    89.0,
+    838.0,
+    1089.0
+  ],
+  "size_reference": "a",
+  "pieces": [
+    {
+      "id": "a",
+      "type": "2x4",
+      "length": 1000.0,
+      "group": 0,
+      "min": [
+        0.0,
+        0.0,
+        89.0
+      ],
+      "max": [
+        89.0,
+        38.0,
+        1089.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "b",
+      "type": "2x4",
+      "length": 800.0,
+      "group": 0,
+      "min": [
+        0.0,
+        38.0,
+        0.0
+      ],
+      "max": [
+        38.0,
+        838.0,
+        89.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-z",
+        "front": "-x"
+      }
+    }
+  ],
+  "problems": [
+    {
+      "kind": "fastener",
+      "message": "Connection a -> b: pieces do not share a contact area",
+      "connection": [
+        "a",
+        "b"
+      ],
+      "fastener": "dowel"
+    }
+  ]
+}

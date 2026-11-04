@@ -1,1 +1,128 @@
-{"pieces": {"rail_a": [{"face": "down", "center": [22.25, 19.0, 0.0], "diameter": 2.5, "depth": 27.0}, {"face": "down", "center": [66.75, 19.0, 0.0], "diameter": 2.5, "depth": 27.0}], "post": [{"face": "back", "center": [19.0, 0.0, 233.25], "diameter": 2.5, "depth": null}, {"face": "back", "center": [19.0, 0.0, 277.75], "diameter": 2.5, "depth": null}, {"face": "left", "center": [0.0, 19.0, 233.25], "diameter": 10.0, "depth": 51.0}, {"face": "left", "center": [0.0, 19.0, 277.75], "diameter": 10.0, "depth": 51.0}, {"face": "right", "center": [89.0, 19.0, 233.25], "diameter": 2.5, "depth": null}, {"face": "right", "center": [89.0, 19.0, 277.75], "diameter": 2.5, "depth": null}], "rail_b": [{"face": "down", "center": [22.25, 19.0, 0.0], "diameter": 2.5, "depth": 27.0}, {"face": "down", "center": [66.75, 19.0, 0.0], "diameter": 2.5, "depth": 27.0}]}, "fasteners": [{"base": "rail_a", "target": "post", "kind": "screw", "diameter": 3.8, "count": 2}, {"base": "rail_b", "target": "post", "kind": "screw", "diameter": 3.8, "count": 2}]}
+{
+  "pieces": {
+    "rail_a": [
+      {
+        "face": "down",
+        "center": [
+          22.25,
+          19.0,
+          0.0
+        ],
+        "diameter": 2.5,
+        "depth": 27.0
+      },
+      {
+        "face": "down",
+        "center": [
+          66.75,
+          19.0,
+          0.0
+        ],
+        "diameter": 2.5,
+        "depth": 27.0
+      }
+    ],
+    "post": [
+      {
+        "face": "front",
+        "center": [
+          19.0,
+          38.0,
+          233.25
+        ],
+        "diameter": 2.5,
+        "depth": null,
+        "countersink": 7.5
+      },
+      {
+        "face": "front",
+        "center": [
+          19.0,
+          38.0,
+          277.75
+        ],
+        "diameter": 2.5,
+        "depth": null,
+        "countersink": 7.5
+      },
+      {
+        "face": "left",
+        "center": [
+          0.0,
+          19.0,
+          233.25
+        ],
+        "diameter": 10.0,
+        "depth": 51.0
+      },
+      {
+        "face": "left",
+        "center": [
+          0.0,
+          19.0,
+          277.75
+        ],
+        "diameter": 10.0,
+        "depth": 51.0
+      },
+      {
+        "face": "right",
+        "center": [
+          89.0,
+          19.0,
+          233.25
+        ],
+        "diameter": 2.5,
+        "depth": null
+      },
+      {
+        "face": "right",
+        "center": [
+          89.0,
+          19.0,
+          277.75
+        ],
+        "diameter": 2.5,
+        "depth": null
+      }
+    ],
+    "rail_b": [
+      {
+        "face": "down",
+        "center": [
+          22.25,
+          19.0,
+          0.0
+        ],
+        "diameter": 2.5,
+        "depth": 27.0
+      },
+      {
+        "face": "down",
+        "center": [
+          66.75,
+          19.0,
+          0.0
+        ],
+        "diameter": 2.5,
+        "depth": 27.0
+      }
+    ]
+  },
+  "fasteners": [
+    {
+      "base": "rail_a",
+      "target": "post",
+      "kind": "screw",
+      "diameter": 3.8,
+      "count": 2
+    },
+    {
+      "base": "rail_b",
+      "target": "post",
+      "kind": "screw",
+      "diameter": 3.8,
+      "count": 2
+    }
+  ]
+}

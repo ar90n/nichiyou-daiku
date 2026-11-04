@@ -1,1 +1,95 @@
-{"valid": false, "error": null, "overall_size": [178.0, 76.0, 600.0], "size_reference": "base", "pieces": [{"id": "base", "type": "2x4", "length": 600.0, "group": 0, "min": [89.0, 0.0, 0.0], "max": [178.0, 38.0, 600.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "leg1", "type": "2x4", "length": 300.0, "group": 0, "min": [0.0, 38.0, 0.0], "max": [89.0, 76.0, 300.0], "faces": {"top": "-z", "right": "-x", "front": "+y"}}, {"id": "leg2", "type": "2x4", "length": 300.0, "group": 0, "min": [50.0, 38.0, 0.0], "max": [139.0, 76.0, 300.0], "faces": {"top": "-z", "right": "-x", "front": "+y"}}], "problems": [{"kind": "fastener", "message": "Connection base -> leg1: pieces do not share a contact area", "connection": ["base", "leg1"], "fastener": "screw"}, {"kind": "overlap", "message": "Pieces 'leg1' and 'leg2' overlap (444600mm³)", "pieces": ["leg1", "leg2"], "volume_mm3": 444600.0}]}
+{
+  "valid": false,
+  "error": null,
+  "overall_size": [
+    178.0,
+    76.0,
+    600.0
+  ],
+  "size_reference": "base",
+  "pieces": [
+    {
+      "id": "base",
+      "type": "2x4",
+      "length": 600.0,
+      "group": 0,
+      "min": [
+        89.0,
+        0.0,
+        0.0
+      ],
+      "max": [
+        178.0,
+        38.0,
+        600.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "leg1",
+      "type": "2x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        0.0,
+        38.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        76.0,
+        300.0
+      ],
+      "faces": {
+        "top": "-z",
+        "right": "-x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "leg2",
+      "type": "2x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        50.0,
+        38.0,
+        0.0
+      ],
+      "max": [
+        139.0,
+        76.0,
+        300.0
+      ],
+      "faces": {
+        "top": "-z",
+        "right": "-x",
+        "front": "+y"
+      }
+    }
+  ],
+  "problems": [
+    {
+      "kind": "fastener",
+      "message": "Connection base -> leg1: pieces do not share a contact area",
+      "connection": [
+        "base",
+        "leg1"
+      ],
+      "fastener": "screw"
+    },
+    {
+      "kind": "overlap",
+      "message": "Pieces 'leg1' and 'leg2' overlap (444600mm³)",
+      "pieces": [
+        "leg1",
+        "leg2"
+      ],
+      "volume_mm3": 444600.0
+    }
+  ]
+}

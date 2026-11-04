@@ -1,1 +1,13 @@
-{"valid": false, "error": {"kind": "validation", "message": "line 1, column 8: Unknown piece property 'colour' (allowed: length, note)", "line": 1, "column": 8}, "overall_size": null, "size_reference": null, "pieces": [], "problems": []}
+{
+  "valid": false,
+  "error": {
+    "kind": "validation",
+    "message": "line 1, column 8: Unknown piece property 'colour' (allowed: length, note)",
+    "line": 1,
+    "column": 8
+  },
+  "overall_size": null,
+  "size_reference": null,
+  "pieces": [],
+  "problems": []
+}

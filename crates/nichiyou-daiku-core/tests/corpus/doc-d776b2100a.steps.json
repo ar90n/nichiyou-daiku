@@ -1,1 +1,138 @@
-{"parts": [{"pieces": ["leg_1", "leg_2"], "type": "2x4", "length": 720.0, "count": 2, "drilled": false}, {"pieces": ["shelf"], "type": "1x4", "length": 600.0, "count": 1, "drilled": false}], "steps": [{"number": 1, "name": null, "kind": "first", "pieces": ["leg_1"], "connections": [], "shown": ["leg_1"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 720.0], "segments": []}]}, {"number": 2, "name": null, "kind": "sub-assembly", "pieces": ["shelf"], "connections": [], "shown": ["shelf"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [189.0, 278.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 600.0], "segments": []}]}, {"number": 3, "name": null, "kind": "sub-assembly", "pieces": ["leg_2"], "connections": [], "shown": ["leg_2"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [378.0, 467.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 720.0], "segments": []}]}], "steps_declared": false, "steps_hint": "No steps block: each step adds one piece. Group pieces with a steps block, e.g. `steps { \"Frame\": leg_1, ... }`."}
+{
+  "parts": [
+    {
+      "pieces": [
+        "leg_1",
+        "leg_2"
+      ],
+      "type": "2x4",
+      "length": 720.0,
+      "count": 2,
+      "drilled": false
+    },
+    {
+      "pieces": [
+        "shelf"
+      ],
+      "type": "1x4",
+      "length": 600.0,
+      "count": 1,
+      "drilled": false
+    }
+  ],
+  "steps": [
+    {
+      "number": 1,
+      "name": null,
+      "kind": "first",
+      "pieces": [
+        "leg_1"
+      ],
+      "connections": [],
+      "shown": [
+        "leg_1"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            720.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "name": null,
+      "kind": "sub-assembly",
+      "pieces": [
+        "shelf"
+      ],
+      "connections": [],
+      "shown": [
+        "shelf"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            189.0,
+            278.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            600.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "name": null,
+      "kind": "sub-assembly",
+      "pieces": [
+        "leg_2"
+      ],
+      "connections": [],
+      "shown": [
+        "leg_2"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            378.0,
+            467.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            720.0
+          ],
+          "segments": []
+        }
+      ]
+    }
+  ],
+  "steps_declared": false,
+  "steps_hint": "No steps block: each step adds one piece. Group pieces with a steps block, e.g. `steps { \"Frame\": leg_1, ... }`."
+}

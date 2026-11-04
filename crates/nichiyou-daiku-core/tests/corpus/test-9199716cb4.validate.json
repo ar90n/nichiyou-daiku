@@ -1,1 +1,76 @@
-{"valid": true, "error": null, "overall_size": [178.0, 999.75, 2001.75], "size_reference": "beam1", "pieces": [{"id": "beam1", "type": "2x4", "length": 1000.5, "group": 0, "min": [58.25, 961.75, 0.0], "max": [147.25, 999.75, 1000.5], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "beam2", "type": "2x4", "length": 999.75, "group": 0, "min": [0.0, 0.0, 1000.5], "max": [89.0, 999.75, 1038.5], "faces": {"top": "-y", "right": "+x", "front": "+z"}}, {"id": "beam3", "type": "2x4", "length": 1001.25, "group": 0, "min": [89.0, 938.75, 1000.5], "max": [178.0, 976.75, 2001.75], "faces": {"top": "-z", "right": "+x", "front": "-y"}}], "problems": []}
+{
+  "valid": true,
+  "error": null,
+  "overall_size": [
+    178.0,
+    999.75,
+    2001.75
+  ],
+  "size_reference": "beam1",
+  "pieces": [
+    {
+      "id": "beam1",
+      "type": "2x4",
+      "length": 1000.5,
+      "group": 0,
+      "min": [
+        58.25,
+        961.75,
+        0.0
+      ],
+      "max": [
+        147.25,
+        999.75,
+        1000.5
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "beam2",
+      "type": "2x4",
+      "length": 999.75,
+      "group": 0,
+      "min": [
+        0.0,
+        0.0,
+        1000.5
+      ],
+      "max": [
+        89.0,
+        999.75,
+        1038.5
+      ],
+      "faces": {
+        "top": "-y",
+        "right": "+x",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "beam3",
+      "type": "2x4",
+      "length": 1001.25,
+      "group": 0,
+      "min": [
+        89.0,
+        938.75,
+        1000.5
+      ],
+      "max": [
+        178.0,
+        976.75,
+        2001.75
+      ],
+      "faces": {
+        "top": "-z",
+        "right": "+x",
+        "front": "-y"
+      }
+    }
+  ],
+  "problems": []
+}

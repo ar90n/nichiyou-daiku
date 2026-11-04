@@ -1,1 +1,724 @@
-{"parts": [{"pieces": ["leg_1", "leg_2", "leg_3", "leg_4"], "type": "2x4", "length": 720.0, "count": 4, "drilled": false}, {"pieces": ["apron_front", "apron_back"], "type": "2x4", "length": 622.0, "count": 2, "drilled": false}, {"pieces": ["apron_left", "apron_right"], "type": "2x4", "length": 524.0, "count": 2, "drilled": false}, {"pieces": ["table_top_1", "table_top_2"], "type": "2x4", "length": 600.0, "count": 2, "drilled": false}], "steps": [{"number": 1, "name": null, "kind": "first", "pieces": ["leg_1", "apron_front"], "connections": [["leg_1", "apron_front"]], "shown": ["leg_1", "apron_front"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [89.0, 711.0, 800.0], "segments": [{"start": 89.0, "end": 711.0, "lumber": false}, {"start": 711.0, "end": 800.0, "lumber": true}]}, {"axis": "z", "side": "left", "stops": [0.0, 631.0, 720.0], "segments": [{"start": 0.0, "end": 631.0, "lumber": false}, {"start": 631.0, "end": 720.0, "lumber": true}]}]}, {"number": 2, "name": null, "kind": "attach", "pieces": ["leg_2"], "connections": [["leg_2", "apron_front"]], "shown": ["leg_1", "leg_2", "apron_front"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0, 711.0, 800.0], "segments": [{"start": 0.0, "end": 89.0, "lumber": true}, {"start": 89.0, "end": 711.0, "lumber": false}, {"start": 711.0, "end": 800.0, "lumber": false}]}, {"axis": "z", "side": "left", "stops": [0.0, 631.0, 720.0], "segments": [{"start": 0.0, "end": 631.0, "lumber": false}, {"start": 631.0, "end": 720.0, "lumber": true}]}]}, {"number": 3, "name": null, "kind": "attach", "pieces": ["apron_left"], "connections": [["leg_1", "apron_left"]], "shown": ["leg_1", "leg_2", "apron_front", "apron_left"], "view": {"axis": "x", "side": -1}, "hardware": [], "dimensions": [{"axis": "y", "side": "below", "stops": [38.0, 562.0, 600.0], "segments": [{"start": 38.0, "end": 562.0, "lumber": false}, {"start": 562.0, "end": 600.0, "lumber": true}]}, {"axis": "z", "side": "left", "stops": [0.0, 631.0, 720.0], "segments": [{"start": 0.0, "end": 631.0, "lumber": false}, {"start": 631.0, "end": 720.0, "lumber": true}]}]}, {"number": 4, "name": null, "kind": "attach", "pieces": ["leg_3"], "connections": [["leg_3", "apron_left"]], "shown": ["leg_1", "leg_2", "leg_3", "apron_front", "apron_left"], "view": {"axis": "y", "side": -1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 711.0, 762.0, 800.0], "segments": [{"start": 0.0, "end": 711.0, "lumber": false}, {"start": 711.0, "end": 762.0, "lumber": false}, {"start": 762.0, "end": 800.0, "lumber": true}]}, {"axis": "z", "side": "left", "stops": [0.0, 631.0, 720.0], "segments": [{"start": 0.0, "end": 631.0, "lumber": false}, {"start": 631.0, "end": 720.0, "lumber": true}]}]}, {"number": 5, "name": null, "kind": "attach", "pieces": ["apron_back"], "connections": [["leg_3", "apron_back"]], "shown": ["leg_1", "leg_2", "leg_3", "apron_front", "apron_back", "apron_left"], "view": {"axis": "y", "side": -1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0, 711.0, 800.0], "segments": [{"start": 0.0, "end": 89.0, "lumber": false}, {"start": 89.0, "end": 711.0, "lumber": false}, {"start": 711.0, "end": 800.0, "lumber": true}]}, {"axis": "z", "side": "left", "stops": [0.0, 631.0, 720.0], "segments": [{"start": 0.0, "end": 631.0, "lumber": false}, {"start": 631.0, "end": 720.0, "lumber": true}]}]}, {"number": 6, "name": null, "kind": "attach", "pieces": ["leg_4"], "connections": [["leg_4", "apron_back"]], "shown": ["leg_1", "leg_2", "leg_3", "leg_4", "apron_front", "apron_back", "apron_left"], "view": {"axis": "y", "side": -1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0, 711.0, 800.0], "segments": [{"start": 0.0, "end": 89.0, "lumber": true}, {"start": 89.0, "end": 711.0, "lumber": false}, {"start": 711.0, "end": 800.0, "lumber": false}]}, {"axis": "z", "side": "left", "stops": [0.0, 631.0, 720.0], "segments": [{"start": 0.0, "end": 631.0, "lumber": false}, {"start": 631.0, "end": 720.0, "lumber": true}]}]}, {"number": 7, "name": null, "kind": "attach", "pieces": ["apron_right"], "connections": [["leg_2", "apron_right"], ["leg_4", "apron_right"]], "shown": ["leg_1", "leg_2", "leg_3", "leg_4", "apron_front", "apron_back", "apron_left", "apron_right"], "view": {"axis": "x", "side": -1}, "hardware": [], "dimensions": [{"axis": "y", "side": "below", "stops": [0.0, 38.0, 562.0, 600.0], "segments": [{"start": 0.0, "end": 38.0, "lumber": true}, {"start": 38.0, "end": 562.0, "lumber": false}, {"start": 562.0, "end": 600.0, "lumber": true}]}, {"axis": "z", "side": "left", "stops": [0.0, 631.0, 720.0], "segments": [{"start": 0.0, "end": 631.0, "lumber": false}, {"start": 631.0, "end": 720.0, "lumber": true}]}]}, {"number": 8, "name": null, "kind": "attach", "pieces": ["table_top_1"], "connections": [["table_top_1", "leg_1"]], "shown": ["leg_1", "leg_2", "leg_3", "leg_4", "apron_front", "apron_back", "apron_left", "apron_right", "table_top_1"], "view": {"axis": "z", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 711.0, 800.0], "segments": [{"start": 0.0, "end": 711.0, "lumber": false}, {"start": 711.0, "end": 800.0, "lumber": true}]}, {"axis": "y", "side": "left", "stops": [0.0, 562.0, 600.0], "segments": [{"start": 0.0, "end": 562.0, "lumber": false}, {"start": 562.0, "end": 600.0, "lumber": true}]}]}, {"number": 9, "name": null, "kind": "attach", "pieces": ["table_top_2"], "connections": [["table_top_2", "leg_2"]], "shown": ["leg_1", "leg_2", "leg_3", "leg_4", "apron_front", "apron_back", "apron_left", "apron_right", "table_top_1", "table_top_2"], "view": {"axis": "z", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 89.0, 800.0], "segments": [{"start": 0.0, "end": 89.0, "lumber": true}, {"start": 89.0, "end": 800.0, "lumber": false}]}, {"axis": "y", "side": "left", "stops": [0.0, 562.0, 600.0], "segments": [{"start": 0.0, "end": 562.0, "lumber": false}, {"start": 562.0, "end": 600.0, "lumber": true}]}]}], "steps_declared": false, "steps_hint": "No steps block: each step adds one piece. Group pieces with a steps block, e.g. `steps { \"Frame\": leg_1, apron_front, ... }`."}
+{
+  "parts": [
+    {
+      "pieces": [
+        "leg_1",
+        "leg_2",
+        "leg_3",
+        "leg_4"
+      ],
+      "type": "2x4",
+      "length": 720.0,
+      "count": 4,
+      "drilled": false
+    },
+    {
+      "pieces": [
+        "apron_front",
+        "apron_back"
+      ],
+      "type": "2x4",
+      "length": 622.0,
+      "count": 2,
+      "drilled": false
+    },
+    {
+      "pieces": [
+        "apron_left",
+        "apron_right"
+      ],
+      "type": "2x4",
+      "length": 524.0,
+      "count": 2,
+      "drilled": false
+    },
+    {
+      "pieces": [
+        "table_top_1",
+        "table_top_2"
+      ],
+      "type": "2x4",
+      "length": 600.0,
+      "count": 2,
+      "drilled": false
+    }
+  ],
+  "steps": [
+    {
+      "number": 1,
+      "name": null,
+      "kind": "first",
+      "pieces": [
+        "leg_1",
+        "apron_front"
+      ],
+      "connections": [
+        [
+          "leg_1",
+          "apron_front"
+        ]
+      ],
+      "shown": [
+        "leg_1",
+        "apron_front"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            89.0,
+            711.0,
+            800.0
+          ],
+          "segments": [
+            {
+              "start": 89.0,
+              "end": 711.0,
+              "lumber": false
+            },
+            {
+              "start": 711.0,
+              "end": 800.0,
+              "lumber": true
+            }
+          ]
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            631.0,
+            720.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 631.0,
+              "lumber": false
+            },
+            {
+              "start": 631.0,
+              "end": 720.0,
+              "lumber": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "leg_2"
+      ],
+      "connections": [
+        [
+          "leg_2",
+          "apron_front"
+        ]
+      ],
+      "shown": [
+        "leg_1",
+        "leg_2",
+        "apron_front"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0,
+            711.0,
+            800.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 89.0,
+              "lumber": true
+            },
+            {
+              "start": 89.0,
+              "end": 711.0,
+              "lumber": false
+            },
+            {
+              "start": 711.0,
+              "end": 800.0,
+              "lumber": false
+            }
+          ]
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            631.0,
+            720.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 631.0,
+              "lumber": false
+            },
+            {
+              "start": 631.0,
+              "end": 720.0,
+              "lumber": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "apron_left"
+      ],
+      "connections": [
+        [
+          "leg_1",
+          "apron_left"
+        ]
+      ],
+      "shown": [
+        "leg_1",
+        "leg_2",
+        "apron_front",
+        "apron_left"
+      ],
+      "view": {
+        "axis": "x",
+        "side": -1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "y",
+          "side": "below",
+          "stops": [
+            38.0,
+            562.0,
+            600.0
+          ],
+          "segments": [
+            {
+              "start": 38.0,
+              "end": 562.0,
+              "lumber": false
+            },
+            {
+              "start": 562.0,
+              "end": 600.0,
+              "lumber": true
+            }
+          ]
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            631.0,
+            720.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 631.0,
+              "lumber": false
+            },
+            {
+              "start": 631.0,
+              "end": 720.0,
+              "lumber": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "leg_3"
+      ],
+      "connections": [
+        [
+          "leg_3",
+          "apron_left"
+        ]
+      ],
+      "shown": [
+        "leg_1",
+        "leg_2",
+        "leg_3",
+        "apron_front",
+        "apron_left"
+      ],
+      "view": {
+        "axis": "y",
+        "side": -1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            711.0,
+            762.0,
+            800.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 711.0,
+              "lumber": false
+            },
+            {
+              "start": 711.0,
+              "end": 762.0,
+              "lumber": false
+            },
+            {
+              "start": 762.0,
+              "end": 800.0,
+              "lumber": true
+            }
+          ]
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            631.0,
+            720.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 631.0,
+              "lumber": false
+            },
+            {
+              "start": 631.0,
+              "end": 720.0,
+              "lumber": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "apron_back"
+      ],
+      "connections": [
+        [
+          "leg_3",
+          "apron_back"
+        ]
+      ],
+      "shown": [
+        "leg_1",
+        "leg_2",
+        "leg_3",
+        "apron_front",
+        "apron_back",
+        "apron_left"
+      ],
+      "view": {
+        "axis": "y",
+        "side": -1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0,
+            711.0,
+            800.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 89.0,
+              "lumber": false
+            },
+            {
+              "start": 89.0,
+              "end": 711.0,
+              "lumber": false
+            },
+            {
+              "start": 711.0,
+              "end": 800.0,
+              "lumber": true
+            }
+          ]
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            631.0,
+            720.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 631.0,
+              "lumber": false
+            },
+            {
+              "start": 631.0,
+              "end": 720.0,
+              "lumber": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "leg_4"
+      ],
+      "connections": [
+        [
+          "leg_4",
+          "apron_back"
+        ]
+      ],
+      "shown": [
+        "leg_1",
+        "leg_2",
+        "leg_3",
+        "leg_4",
+        "apron_front",
+        "apron_back",
+        "apron_left"
+      ],
+      "view": {
+        "axis": "y",
+        "side": -1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0,
+            711.0,
+            800.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 89.0,
+              "lumber": true
+            },
+            {
+              "start": 89.0,
+              "end": 711.0,
+              "lumber": false
+            },
+            {
+              "start": 711.0,
+              "end": 800.0,
+              "lumber": false
+            }
+          ]
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            631.0,
+            720.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 631.0,
+              "lumber": false
+            },
+            {
+              "start": 631.0,
+              "end": 720.0,
+              "lumber": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 7,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "apron_right"
+      ],
+      "connections": [
+        [
+          "leg_2",
+          "apron_right"
+        ],
+        [
+          "leg_4",
+          "apron_right"
+        ]
+      ],
+      "shown": [
+        "leg_1",
+        "leg_2",
+        "leg_3",
+        "leg_4",
+        "apron_front",
+        "apron_back",
+        "apron_left",
+        "apron_right"
+      ],
+      "view": {
+        "axis": "x",
+        "side": -1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "y",
+          "side": "below",
+          "stops": [
+            0.0,
+            38.0,
+            562.0,
+            600.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 38.0,
+              "lumber": true
+            },
+            {
+              "start": 38.0,
+              "end": 562.0,
+              "lumber": false
+            },
+            {
+              "start": 562.0,
+              "end": 600.0,
+              "lumber": true
+            }
+          ]
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            631.0,
+            720.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 631.0,
+              "lumber": false
+            },
+            {
+              "start": 631.0,
+              "end": 720.0,
+              "lumber": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 8,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "table_top_1"
+      ],
+      "connections": [
+        [
+          "table_top_1",
+          "leg_1"
+        ]
+      ],
+      "shown": [
+        "leg_1",
+        "leg_2",
+        "leg_3",
+        "leg_4",
+        "apron_front",
+        "apron_back",
+        "apron_left",
+        "apron_right",
+        "table_top_1"
+      ],
+      "view": {
+        "axis": "z",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            711.0,
+            800.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 711.0,
+              "lumber": false
+            },
+            {
+              "start": 711.0,
+              "end": 800.0,
+              "lumber": true
+            }
+          ]
+        },
+        {
+          "axis": "y",
+          "side": "left",
+          "stops": [
+            0.0,
+            562.0,
+            600.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 562.0,
+              "lumber": false
+            },
+            {
+              "start": 562.0,
+              "end": 600.0,
+              "lumber": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 9,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "table_top_2"
+      ],
+      "connections": [
+        [
+          "table_top_2",
+          "leg_2"
+        ]
+      ],
+      "shown": [
+        "leg_1",
+        "leg_2",
+        "leg_3",
+        "leg_4",
+        "apron_front",
+        "apron_back",
+        "apron_left",
+        "apron_right",
+        "table_top_1",
+        "table_top_2"
+      ],
+      "view": {
+        "axis": "z",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            89.0,
+            800.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 89.0,
+              "lumber": true
+            },
+            {
+              "start": 89.0,
+              "end": 800.0,
+              "lumber": false
+            }
+          ]
+        },
+        {
+          "axis": "y",
+          "side": "left",
+          "stops": [
+            0.0,
+            562.0,
+            600.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 562.0,
+              "lumber": false
+            },
+            {
+              "start": 562.0,
+              "end": 600.0,
+              "lumber": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "steps_declared": false,
+  "steps_hint": "No steps block: each step adds one piece. Group pieces with a steps block, e.g. `steps { \"Frame\": leg_1, apron_front, ... }`."
+}

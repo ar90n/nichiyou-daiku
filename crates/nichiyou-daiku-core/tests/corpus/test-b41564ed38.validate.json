@@ -1,1 +1,13 @@
-{"valid": false, "error": {"kind": "syntax", "message": "Syntax error at line 3, column 15: Unexpected character '@'. Expected one of: 'D(', 'S(', 'V', ']-'", "line": 3, "column": 15}, "overall_size": null, "size_reference": null, "pieces": [], "problems": []}
+{
+  "valid": false,
+  "error": {
+    "kind": "syntax",
+    "message": "Syntax error at line 3, column 15: Unexpected character '@'. Expected one of: 'D(', 'S(', 'V', ']-'",
+    "line": 3,
+    "column": 15
+  },
+  "overall_size": null,
+  "size_reference": null,
+  "pieces": [],
+  "problems": []
+}

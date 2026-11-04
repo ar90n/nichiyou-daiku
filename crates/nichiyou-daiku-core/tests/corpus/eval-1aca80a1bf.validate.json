@@ -1,1 +1,664 @@
-{"valid": true, "error": null, "overall_size": [600.0, 300.0, 500.0], "size_reference": "leg_fl", "pieces": [{"id": "leg_fl", "type": "2x2", "length": 481.0, "group": 0, "min": [562.0, 262.0, 0.0], "max": [600.0, 300.0, 481.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "leg_fr", "type": "2x2", "length": 481.0, "group": 0, "min": [0.0, 262.0, 0.0], "max": [38.0, 300.0, 481.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "leg_bl", "type": "2x2", "length": 481.0, "group": 0, "min": [562.0, 0.0, 0.0], "max": [600.0, 38.0, 481.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "leg_br", "type": "2x2", "length": 481.0, "group": 0, "min": [0.0, 0.0, 0.0], "max": [38.0, 38.0, 481.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "rail_top_front", "type": "2x2", "length": 524.0, "group": 0, "min": [38.0, 262.0, 443.0], "max": [562.0, 300.0, 481.0], "faces": {"top": "-x", "right": "+z", "front": "+y"}}, {"id": "rail_top_back", "type": "2x2", "length": 524.0, "group": 0, "min": [38.0, 0.0, 443.0], "max": [562.0, 38.0, 481.0], "faces": {"top": "-x", "right": "+z", "front": "+y"}}, {"id": "rail_top_left", "type": "2x2", "length": 224.0, "group": 0, "min": [562.0, 38.0, 405.0], "max": [600.0, 262.0, 443.0], "faces": {"top": "-y", "right": "+z", "front": "-x"}}, {"id": "rail_top_right", "type": "2x2", "length": 224.0, "group": 0, "min": [0.0, 38.0, 405.0], "max": [38.0, 262.0, 443.0], "faces": {"top": "-y", "right": "+z", "front": "-x"}}, {"id": "rail_mid_front", "type": "2x2", "length": 524.0, "group": 0, "min": [38.0, 262.0, 221.5], "max": [562.0, 300.0, 259.5], "faces": {"top": "-x", "right": "+z", "front": "+y"}}, {"id": "rail_mid_back", "type": "2x2", "length": 524.0, "group": 0, "min": [38.0, 0.0, 221.5], "max": [562.0, 38.0, 259.5], "faces": {"top": "-x", "right": "+z", "front": "+y"}}, {"id": "rail_mid_left", "type": "2x2", "length": 224.0, "group": 0, "min": [562.0, 38.0, 183.5], "max": [600.0, 262.0, 221.5], "faces": {"top": "-y", "right": "+z", "front": "-x"}}, {"id": "rail_mid_right", "type": "2x2", "length": 224.0, "group": 0, "min": [0.0, 38.0, 183.5], "max": [38.0, 262.0, 221.5], "faces": {"top": "-y", "right": "+z", "front": "-x"}}, {"id": "rail_bot_front", "type": "2x2", "length": 524.0, "group": 0, "min": [38.0, 262.0, 0.0], "max": [562.0, 300.0, 38.0], "faces": {"top": "-x", "right": "+z", "front": "+y"}}, {"id": "rail_bot_back", "type": "2x2", "length": 524.0, "group": 0, "min": [38.0, 0.0, 0.0], "max": [562.0, 38.0, 38.0], "faces": {"top": "-x", "right": "+z", "front": "+y"}}, {"id": "rail_bot_left", "type": "2x2", "length": 224.0, "group": 0, "min": [562.0, 38.0, 38.0], "max": [600.0, 262.0, 76.0], "faces": {"top": "-y", "right": "+z", "front": "-x"}}, {"id": "rail_bot_right", "type": "2x2", "length": 224.0, "group": 0, "min": [0.0, 38.0, 38.0], "max": [38.0, 262.0, 76.0], "faces": {"top": "-y", "right": "+z", "front": "-x"}}, {"id": "board_top_1", "type": "1x4", "length": 300.0, "group": 0, "min": [459.8333, 0.0, 481.0], "max": [548.8333, 300.0, 500.0], "faces": {"top": "+y", "right": "-x", "front": "+z"}}, {"id": "board_top_2", "type": "1x4", "length": 300.0, "group": 0, "min": [357.6667, 0.0, 481.0], "max": [446.6667, 300.0, 500.0], "faces": {"top": "+y", "right": "-x", "front": "+z"}}, {"id": "board_top_3", "type": "1x4", "length": 300.0, "group": 0, "min": [255.5, 0.0, 481.0], "max": [344.5, 300.0, 500.0], "faces": {"top": "+y", "right": "-x", "front": "+z"}}, {"id": "board_top_4", "type": "1x4", "length": 300.0, "group": 0, "min": [153.3333, 0.0, 481.0], "max": [242.3333, 300.0, 500.0], "faces": {"top": "+y", "right": "-x", "front": "+z"}}, {"id": "board_top_5", "type": "1x4", "length": 300.0, "group": 0, "min": [51.1667, 0.0, 481.0], "max": [140.1667, 300.0, 500.0], "faces": {"top": "+y", "right": "-x", "front": "+z"}}, {"id": "board_mid_1", "type": "1x4", "length": 300.0, "group": 0, "min": [459.8333, 0.0, 259.5], "max": [548.8333, 300.0, 278.5], "faces": {"top": "+y", "right": "-x", "front": "+z"}}, {"id": "board_mid_2", "type": "1x4", "length": 300.0, "group": 0, "min": [357.6667, 0.0, 259.5], "max": [446.6667, 300.0, 278.5], "faces": {"top": "+y", "right": "-x", "front": "+z"}}, {"id": "board_mid_3", "type": "1x4", "length": 300.0, "group": 0, "min": [255.5, 0.0, 259.5], "max": [344.5, 300.0, 278.5], "faces": {"top": "+y", "right": "-x", "front": "+z"}}, {"id": "board_mid_4", "type": "1x4", "length": 300.0, "group": 0, "min": [153.3333, 0.0, 259.5], "max": [242.3333, 300.0, 278.5], "faces": {"top": "+y", "right": "-x", "front": "+z"}}, {"id": "board_mid_5", "type": "1x4", "length": 300.0, "group": 0, "min": [51.1667, 0.0, 259.5], "max": [140.1667, 300.0, 278.5], "faces": {"top": "+y", "right": "-x", "front": "+z"}}, {"id": "board_bot_1", "type": "1x4", "length": 300.0, "group": 0, "min": [459.8333, 0.0, 38.0], "max": [548.8333, 300.0, 57.0], "faces": {"top": "+y", "right": "-x", "front": "+z"}}, {"id": "board_bot_2", "type": "1x4", "length": 300.0, "group": 0, "min": [357.6667, 0.0, 38.0], "max": [446.6667, 300.0, 57.0], "faces": {"top": "+y", "right": "-x", "front": "+z"}}, {"id": "board_bot_3", "type": "1x4", "length": 300.0, "group": 0, "min": [255.5, 0.0, 38.0], "max": [344.5, 300.0, 57.0], "faces": {"top": "+y", "right": "-x", "front": "+z"}}, {"id": "board_bot_4", "type": "1x4", "length": 300.0, "group": 0, "min": [153.3333, 0.0, 38.0], "max": [242.3333, 300.0, 57.0], "faces": {"top": "+y", "right": "-x", "front": "+z"}}, {"id": "board_bot_5", "type": "1x4", "length": 300.0, "group": 0, "min": [51.1667, 0.0, 38.0], "max": [140.1667, 300.0, 57.0], "faces": {"top": "+y", "right": "-x", "front": "+z"}}], "problems": []}
+{
+  "valid": true,
+  "error": null,
+  "overall_size": [
+    600.0,
+    300.0,
+    500.0
+  ],
+  "size_reference": "leg_fl",
+  "pieces": [
+    {
+      "id": "leg_fl",
+      "type": "2x2",
+      "length": 481.0,
+      "group": 0,
+      "min": [
+        562.0,
+        262.0,
+        0.0
+      ],
+      "max": [
+        600.0,
+        300.0,
+        481.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "leg_fr",
+      "type": "2x2",
+      "length": 481.0,
+      "group": 0,
+      "min": [
+        0.0,
+        262.0,
+        0.0
+      ],
+      "max": [
+        38.0,
+        300.0,
+        481.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "leg_bl",
+      "type": "2x2",
+      "length": 481.0,
+      "group": 0,
+      "min": [
+        562.0,
+        0.0,
+        0.0
+      ],
+      "max": [
+        600.0,
+        38.0,
+        481.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "leg_br",
+      "type": "2x2",
+      "length": 481.0,
+      "group": 0,
+      "min": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "max": [
+        38.0,
+        38.0,
+        481.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "rail_top_front",
+      "type": "2x2",
+      "length": 524.0,
+      "group": 0,
+      "min": [
+        38.0,
+        262.0,
+        443.0
+      ],
+      "max": [
+        562.0,
+        300.0,
+        481.0
+      ],
+      "faces": {
+        "top": "-x",
+        "right": "+z",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "rail_top_back",
+      "type": "2x2",
+      "length": 524.0,
+      "group": 0,
+      "min": [
+        38.0,
+        0.0,
+        443.0
+      ],
+      "max": [
+        562.0,
+        38.0,
+        481.0
+      ],
+      "faces": {
+        "top": "-x",
+        "right": "+z",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "rail_top_left",
+      "type": "2x2",
+      "length": 224.0,
+      "group": 0,
+      "min": [
+        562.0,
+        38.0,
+        405.0
+      ],
+      "max": [
+        600.0,
+        262.0,
+        443.0
+      ],
+      "faces": {
+        "top": "-y",
+        "right": "+z",
+        "front": "-x"
+      }
+    },
+    {
+      "id": "rail_top_right",
+      "type": "2x2",
+      "length": 224.0,
+      "group": 0,
+      "min": [
+        0.0,
+        38.0,
+        405.0
+      ],
+      "max": [
+        38.0,
+        262.0,
+        443.0
+      ],
+      "faces": {
+        "top": "-y",
+        "right": "+z",
+        "front": "-x"
+      }
+    },
+    {
+      "id": "rail_mid_front",
+      "type": "2x2",
+      "length": 524.0,
+      "group": 0,
+      "min": [
+        38.0,
+        262.0,
+        221.5
+      ],
+      "max": [
+        562.0,
+        300.0,
+        259.5
+      ],
+      "faces": {
+        "top": "-x",
+        "right": "+z",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "rail_mid_back",
+      "type": "2x2",
+      "length": 524.0,
+      "group": 0,
+      "min": [
+        38.0,
+        0.0,
+        221.5
+      ],
+      "max": [
+        562.0,
+        38.0,
+        259.5
+      ],
+      "faces": {
+        "top": "-x",
+        "right": "+z",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "rail_mid_left",
+      "type": "2x2",
+      "length": 224.0,
+      "group": 0,
+      "min": [
+        562.0,
+        38.0,
+        183.5
+      ],
+      "max": [
+        600.0,
+        262.0,
+        221.5
+      ],
+      "faces": {
+        "top": "-y",
+        "right": "+z",
+        "front": "-x"
+      }
+    },
+    {
+      "id": "rail_mid_right",
+      "type": "2x2",
+      "length": 224.0,
+      "group": 0,
+      "min": [
+        0.0,
+        38.0,
+        183.5
+      ],
+      "max": [
+        38.0,
+        262.0,
+        221.5
+      ],
+      "faces": {
+        "top": "-y",
+        "right": "+z",
+        "front": "-x"
+      }
+    },
+    {
+      "id": "rail_bot_front",
+      "type": "2x2",
+      "length": 524.0,
+      "group": 0,
+      "min": [
+        38.0,
+        262.0,
+        0.0
+      ],
+      "max": [
+        562.0,
+        300.0,
+        38.0
+      ],
+      "faces": {
+        "top": "-x",
+        "right": "+z",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "rail_bot_back",
+      "type": "2x2",
+      "length": 524.0,
+      "group": 0,
+      "min": [
+        38.0,
+        0.0,
+        0.0
+      ],
+      "max": [
+        562.0,
+        38.0,
+        38.0
+      ],
+      "faces": {
+        "top": "-x",
+        "right": "+z",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "rail_bot_left",
+      "type": "2x2",
+      "length": 224.0,
+      "group": 0,
+      "min": [
+        562.0,
+        38.0,
+        38.0
+      ],
+      "max": [
+        600.0,
+        262.0,
+        76.0
+      ],
+      "faces": {
+        "top": "-y",
+        "right": "+z",
+        "front": "-x"
+      }
+    },
+    {
+      "id": "rail_bot_right",
+      "type": "2x2",
+      "length": 224.0,
+      "group": 0,
+      "min": [
+        0.0,
+        38.0,
+        38.0
+      ],
+      "max": [
+        38.0,
+        262.0,
+        76.0
+      ],
+      "faces": {
+        "top": "-y",
+        "right": "+z",
+        "front": "-x"
+      }
+    },
+    {
+      "id": "board_top_1",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        459.8333,
+        0.0,
+        481.0
+      ],
+      "max": [
+        548.8333,
+        300.0,
+        500.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-x",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "board_top_2",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        357.6667,
+        0.0,
+        481.0
+      ],
+      "max": [
+        446.6667,
+        300.0,
+        500.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-x",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "board_top_3",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        255.5,
+        0.0,
+        481.0
+      ],
+      "max": [
+        344.5,
+        300.0,
+        500.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-x",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "board_top_4",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        153.3333,
+        0.0,
+        481.0
+      ],
+      "max": [
+        242.3333,
+        300.0,
+        500.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-x",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "board_top_5",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        51.1667,
+        0.0,
+        481.0
+      ],
+      "max": [
+        140.1667,
+        300.0,
+        500.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-x",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "board_mid_1",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        459.8333,
+        0.0,
+        259.5
+      ],
+      "max": [
+        548.8333,
+        300.0,
+        278.5
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-x",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "board_mid_2",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        357.6667,
+        0.0,
+        259.5
+      ],
+      "max": [
+        446.6667,
+        300.0,
+        278.5
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-x",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "board_mid_3",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        255.5,
+        0.0,
+        259.5
+      ],
+      "max": [
+        344.5,
+        300.0,
+        278.5
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-x",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "board_mid_4",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        153.3333,
+        0.0,
+        259.5
+      ],
+      "max": [
+        242.3333,
+        300.0,
+        278.5
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-x",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "board_mid_5",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        51.1667,
+        0.0,
+        259.5
+      ],
+      "max": [
+        140.1667,
+        300.0,
+        278.5
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-x",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "board_bot_1",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        459.8333,
+        0.0,
+        38.0
+      ],
+      "max": [
+        548.8333,
+        300.0,
+        57.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-x",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "board_bot_2",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        357.6667,
+        0.0,
+        38.0
+      ],
+      "max": [
+        446.6667,
+        300.0,
+        57.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-x",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "board_bot_3",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        255.5,
+        0.0,
+        38.0
+      ],
+      "max": [
+        344.5,
+        300.0,
+        57.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-x",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "board_bot_4",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        153.3333,
+        0.0,
+        38.0
+      ],
+      "max": [
+        242.3333,
+        300.0,
+        57.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-x",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "board_bot_5",
+      "type": "1x4",
+      "length": 300.0,
+      "group": 0,
+      "min": [
+        51.1667,
+        0.0,
+        38.0
+      ],
+      "max": [
+        140.1667,
+        300.0,
+        57.0
+      ],
+      "faces": {
+        "top": "+y",
+        "right": "-x",
+        "front": "+z"
+      }
+    }
+  ],
+  "problems": []
+}

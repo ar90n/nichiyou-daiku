@@ -1,196 +1,91 @@
-//! Helpers the corpus tests share.
+//! Helpers the golden-file tests share. The golden files hold the Rust
+//! version's own output: `ND_BLESS=1 cargo test` writes what the tests get
+//! over them, to review in the diff before committing.
 
 // Each test crate uses a part of these
 #![allow(dead_code)]
 
-use std::collections::{BTreeSet, HashMap};
-
-use nichiyou_daiku_core::assembly::Assembly;
-use nichiyou_daiku_core::geometry::SurfacePoint;
+use std::fs;
+use std::path::{Path, PathBuf};
 
 use serde_json::Value;
 
-// The Python version names anonymous pieces with random UUIDs: both sides
-// get anon-1, anon-2, ... in the order the IDs first appear
-fn is_uuid_at(bytes: &[u8], at: usize) -> bool {
-    const GROUPS: [usize; 5] = [8, 4, 4, 4, 12];
-    let mut i = at;
-    for (n, len) in GROUPS.iter().enumerate() {
-        for _ in 0..*len {
-            match bytes.get(i) {
-                Some(b) if b.is_ascii_digit() || (b'a'..=b'f').contains(b) => i += 1,
-                _ => return false,
-            }
-        }
-        if n < 4 {
-            if bytes.get(i) != Some(&b'-') {
-                return false;
-            }
-            i += 1;
-        }
-    }
-    true
+pub fn blessing() -> bool {
+    std::env::var_os("ND_BLESS").is_some()
 }
 
-pub fn rename_uuids(text: &str, names: &mut HashMap<String, String>) -> String {
-    let bytes = text.as_bytes();
-    let (mut out, mut i) = (String::new(), 0);
-    while i < bytes.len() {
-        if is_uuid_at(bytes, i) {
-            let id = &text[i..i + 36];
-            let next = names.len() + 1;
-            out.push_str(
-                names
-                    .entry(id.to_string())
-                    .or_insert_with(|| format!("anon-{next}")),
-            );
-            i += 36;
-        } else {
-            let ch = text[i..].chars().next().unwrap();
-            out.push(ch);
-            i += ch.len_utf8();
-        }
-    }
-    out
+/// JSON as the golden files keep it: indented, with a final newline.
+pub fn pretty(value: &Value) -> String {
+    serde_json::to_string_pretty(value).unwrap() + "\n"
 }
 
-pub fn normalize(value: Value, names: &mut HashMap<String, String>) -> Value {
-    match value {
-        Value::String(s) => Value::String(rename_uuids(&s, names)),
-        Value::Array(items) => {
-            Value::Array(items.into_iter().map(|v| normalize(v, names)).collect())
+/// Compares what a test got with the golden file at `path`, None meaning
+/// the case has no such file; when blessing, writes or removes it instead.
+pub fn check_golden(path: &Path, got: Option<&str>) -> Result<(), String> {
+    if blessing() {
+        match got {
+            Some(text) => fs::write(path, text).unwrap(),
+            None if path.exists() => fs::remove_file(path).unwrap(),
+            None => {}
         }
-        Value::Object(map) => Value::Object(
-            map.into_iter()
-                .map(|(k, v)| (rename_uuids(&k, names), normalize(v, names)))
-                .collect(),
-        ),
-        other => other,
+        return Ok(());
+    }
+    let name = path.display();
+    match (fs::read_to_string(path).ok(), got) {
+        (None, None) => Ok(()),
+        (Some(_), None) => Err(format!(
+            "{name} belongs to no output any more; run with ND_BLESS=1 to remove it"
+        )),
+        (None, Some(_)) => Err(format!(
+            "{name} is missing; run with ND_BLESS=1 to write it"
+        )),
+        (Some(want), Some(got)) if want == got => Ok(()),
+        (Some(want), Some(got)) => {
+            let same = want
+                .lines()
+                .zip(got.lines())
+                .take_while(|(w, g)| w == g)
+                .count();
+            Err(format!(
+                "{name} differs at line {}:\n  golden: {}\n  got:    {}",
+                same + 1,
+                want.lines().nth(same).unwrap_or("<end>"),
+                got.lines().nth(same).unwrap_or("<end>")
+            ))
+        }
     }
 }
 
-/// The descriptions a syntax error lists, as Python prints them.
-pub const DESCRIPTIONS: &[&str] = &[
-    "end of input",
-    "identifier",
-    "number",
-    "string",
-    "piece type (1x4, 1x6, 1x8, 2x2, 2x4, 2x6)",
-    "face letter (T, D, L, R, F, B)",
-    "screw type (Slim, Coarse)",
-    "'?' (unknown)",
-    "':'",
-    "','",
-    "'>'",
-    "'<'",
-    "'V'",
-    "'D('",
-    "'='",
-    "'FromMax'",
-    "'FromMin'",
-    "'{'",
-    "'('",
-    "'-'",
-    "'+'",
-    "'}'",
-    "')'",
-    "'S('",
-    "'/'",
-    "'*'",
-    "'steps'",
-    "'x'",
-    "'-['",
-    "']-'",
-    "'\"type\"'",
-    "'\"vanilla\"'",
-    "'\"dowel\"'",
-    "'\"radius\"'",
-    "'\"depth\"'",
-    "'\"screw\"'",
-    "'\"diameter\"'",
-    "'\"length\"'",
-];
-pub const HINTS: &[&str] = &[
-    ". '?' (unknown) works",
-    ". 'steps' starts the steps block",
-    ". A compact offset",
-];
-
-pub struct SyntaxMessage {
-    pub prefix: String,
-    pub found: String,
-    pub expected: BTreeSet<String>,
-    pub rest: String,
+/// The corpus's designs (`NAME.nd` in `dir`): their names and sources, by name.
+pub fn corpus(dir: &Path) -> Vec<(String, String)> {
+    let mut paths: Vec<PathBuf> = fs::read_dir(dir)
+        .unwrap()
+        .map(|entry| entry.unwrap().path())
+        .filter(|path| path.extension().is_some_and(|ext| ext == "nd"))
+        .collect();
+    paths.sort();
+    paths
+        .into_iter()
+        .map(|path| {
+            (
+                path.file_stem().unwrap().to_string_lossy().into_owned(),
+                fs::read_to_string(&path).unwrap(),
+            )
+        })
+        .collect()
 }
 
-pub fn split_syntax(message: &str) -> SyntaxMessage {
-    let (prefix, body) = match message.find(": ") {
-        Some(i) if message.starts_with("Syntax error") => (&message[..i + 2], &message[i + 2..]),
-        _ => ("", message),
-    };
-    let mut end = body.len();
-    for marker in [". Expected"].iter().chain(HINTS) {
-        if let Some(i) = body.find(marker) {
-            end = end.min(i);
-        }
-    }
-    let (found, mut rest) = (&body[..end], &body[end..]);
-    let mut expected = BTreeSet::new();
-    for label in [". Expected one of: ", ". Expected: "] {
-        if let Some(mut list) = rest.strip_prefix(label) {
-            while let Some(item) = DESCRIPTIONS
-                .iter()
-                .filter(|d| list.starts_with(**d))
-                .max_by_key(|d| d.len())
-            {
-                expected.insert(item.to_string());
-                list = &list[item.len()..];
-                match list.strip_prefix(", ") {
-                    Some(more) => list = more,
-                    None => break,
-                }
-            }
-            rest = list;
-            break;
-        }
-    }
-    SyntaxMessage {
-        prefix: prefix.into(),
-        found: found.into(),
-        expected,
-        rest: rest.into(),
-    }
+/// The examples' and the docs' designs, which also get images and solids.
+pub fn shown(name: &str) -> bool {
+    name.starts_with("example-") || name.starts_with("doc-")
 }
 
-/// Whether two syntax error messages agree as the corpus test asks: the same
-/// place, token and hints, and every token the Python version expects (the
-/// Rust parser may list more).
-pub fn same_syntax_message(expected: &str, actual: &str) -> bool {
-    let (e, a) = (split_syntax(expected), split_syntax(actual));
-    e.prefix == a.prefix
-        && e.found == a.found
-        && e.rest == a.rest
-        && e.expected.is_subset(&a.expected)
-}
-
-/// The holes as the Python version records them, which has no countersinks
-/// (2026-11-02): a countersunk screw hole back on the target's contact face.
-pub fn python_holes(assembly: &mut Assembly) {
-    let model = &assembly.model;
-    for (piece_id, holes) in assembly.pilot_holes.iter_mut() {
-        let shape = model.piece(piece_id).expect("a piece with holes").shape();
-        let size = [shape.width, shape.height, shape.length];
-        for (at, hole) in holes.iter_mut() {
-            if hole.countersink.take().is_some() {
-                let face = at.face.opposite();
-                let mut point = at.to_point(shape);
-                point[face.axis()] = if face.is_positive() {
-                    size[face.axis()]
-                } else {
-                    0.0
-                };
-                *at = SurfacePoint::from_point(shape, face, point);
-            }
-        }
-    }
+/// Fails listing the first differences, if any, of `checked` comparisons.
+pub fn assert_none(failures: &[String], checked: usize) {
+    assert!(
+        failures.is_empty(),
+        "{} of {checked} differ (ND_BLESS=1 cargo test rewrites the golden files; review the diff):\n{}",
+        failures.len(),
+        failures[..failures.len().min(5)].join("\n")
+    );
 }

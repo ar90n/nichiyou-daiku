@@ -1,1 +1,215 @@
-{"parts": [{"pieces": ["post_a", "post_b"], "type": "2x4", "length": 400.0, "count": 2, "drilled": false}, {"pieces": ["rail"], "type": "2x4", "length": 224.0, "count": 1, "drilled": false}, {"pieces": ["block"], "type": "2x4", "length": 100.0, "count": 1, "drilled": false}], "steps": [{"number": 1, "name": "Frame", "kind": "first", "pieces": ["post_a", "rail", "post_b"], "connections": [["post_a", "rail"], ["post_b", "rail"]], "shown": ["post_a", "post_b", "rail"], "view": {"axis": "x", "side": -1}, "hardware": [], "dimensions": [{"axis": "y", "side": "below", "stops": [0.0, 38.0, 262.0, 300.0], "segments": [{"start": 0.0, "end": 38.0, "lumber": true}, {"start": 38.0, "end": 262.0, "lumber": false}, {"start": 262.0, "end": 300.0, "lumber": true}]}, {"axis": "z", "side": "left", "stops": [0.0, 150.0, 239.0, 400.0], "segments": [{"start": 0.0, "end": 150.0, "lumber": false}, {"start": 150.0, "end": 239.0, "lumber": true}, {"start": 239.0, "end": 400.0, "lumber": false}]}]}, {"number": 2, "name": "Block", "kind": "attach", "pieces": ["block"], "connections": [["rail", "block"]], "shown": ["post_a", "post_b", "rail", "block"], "view": {"axis": "z", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 51.0, 89.0, 151.0], "segments": [{"start": 0.0, "end": 51.0, "lumber": false}, {"start": 51.0, "end": 89.0, "lumber": true}, {"start": 89.0, "end": 151.0, "lumber": false}]}, {"axis": "y", "side": "left", "stops": [0.0, 38.0, 123.0, 212.0, 262.0, 300.0], "segments": [{"start": 0.0, "end": 38.0, "lumber": false}, {"start": 38.0, "end": 123.0, "lumber": false}, {"start": 123.0, "end": 212.0, "lumber": true}, {"start": 212.0, "end": 262.0, "lumber": false}, {"start": 262.0, "end": 300.0, "lumber": false}]}]}], "steps_declared": true, "steps_hint": null}
+{
+  "parts": [
+    {
+      "pieces": [
+        "post_a",
+        "post_b"
+      ],
+      "type": "2x4",
+      "length": 400.0,
+      "count": 2,
+      "drilled": false
+    },
+    {
+      "pieces": [
+        "rail"
+      ],
+      "type": "2x4",
+      "length": 224.0,
+      "count": 1,
+      "drilled": false
+    },
+    {
+      "pieces": [
+        "block"
+      ],
+      "type": "2x4",
+      "length": 100.0,
+      "count": 1,
+      "drilled": false
+    }
+  ],
+  "steps": [
+    {
+      "number": 1,
+      "name": "Frame",
+      "kind": "first",
+      "pieces": [
+        "post_a",
+        "rail",
+        "post_b"
+      ],
+      "connections": [
+        [
+          "post_a",
+          "rail"
+        ],
+        [
+          "post_b",
+          "rail"
+        ]
+      ],
+      "shown": [
+        "post_a",
+        "post_b",
+        "rail"
+      ],
+      "view": {
+        "axis": "x",
+        "side": -1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "y",
+          "side": "below",
+          "stops": [
+            0.0,
+            38.0,
+            262.0,
+            300.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 38.0,
+              "lumber": true
+            },
+            {
+              "start": 38.0,
+              "end": 262.0,
+              "lumber": false
+            },
+            {
+              "start": 262.0,
+              "end": 300.0,
+              "lumber": true
+            }
+          ]
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            150.0,
+            239.0,
+            400.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 150.0,
+              "lumber": false
+            },
+            {
+              "start": 150.0,
+              "end": 239.0,
+              "lumber": true
+            },
+            {
+              "start": 239.0,
+              "end": 400.0,
+              "lumber": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "name": "Block",
+      "kind": "attach",
+      "pieces": [
+        "block"
+      ],
+      "connections": [
+        [
+          "rail",
+          "block"
+        ]
+      ],
+      "shown": [
+        "post_a",
+        "post_b",
+        "rail",
+        "block"
+      ],
+      "view": {
+        "axis": "z",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            51.0,
+            89.0,
+            151.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 51.0,
+              "lumber": false
+            },
+            {
+              "start": 51.0,
+              "end": 89.0,
+              "lumber": true
+            },
+            {
+              "start": 89.0,
+              "end": 151.0,
+              "lumber": false
+            }
+          ]
+        },
+        {
+          "axis": "y",
+          "side": "left",
+          "stops": [
+            0.0,
+            38.0,
+            123.0,
+            212.0,
+            262.0,
+            300.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 38.0,
+              "lumber": false
+            },
+            {
+              "start": 38.0,
+              "end": 123.0,
+              "lumber": false
+            },
+            {
+              "start": 123.0,
+              "end": 212.0,
+              "lumber": true
+            },
+            {
+              "start": 212.0,
+              "end": 262.0,
+              "lumber": false
+            },
+            {
+              "start": 262.0,
+              "end": 300.0,
+              "lumber": false
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "steps_declared": true,
+  "steps_hint": null
+}

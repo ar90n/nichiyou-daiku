@@ -1,1 +1,116 @@
-{"valid": false, "error": null, "overall_size": [600.0, 184.0, 1193.666667], "size_reference": "back_stiffener", "pieces": [{"id": "back_stiffener", "type": "1x8", "length": 274.666667, "group": 0, "min": [397.0, 0.0, 919.0], "max": [581.0, 19.0, 1193.666667], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_1", "type": "1x8", "length": 562.0, "group": 0, "min": [19.0, 0.0, 900.0], "max": [581.0, 184.0, 919.0], "faces": {"top": "+x", "right": "+y", "front": "+z"}}, {"id": "side_l", "type": "1x8", "length": 900.0, "group": 0, "min": [0.0, 0.0, 0.0], "max": [19.0, 184.0, 900.0], "faces": {"top": "-z", "right": "+y", "front": "+x"}}, {"id": "side_r", "type": "1x8", "length": 900.0, "group": 0, "min": [581.0, 0.0, 0.0], "max": [600.0, 184.0, 900.0], "faces": {"top": "-z", "right": "+y", "front": "+x"}}], "problems": [{"kind": "fastener", "message": "Connection shelf_1 -> side_l: pieces do not share a contact area", "connection": ["shelf_1", "side_l"], "fastener": "screw"}, {"kind": "fastener", "message": "Connection shelf_1 -> side_r: pieces do not share a contact area", "connection": ["shelf_1", "side_r"], "fastener": "screw"}]}
+{
+  "valid": false,
+  "error": null,
+  "overall_size": [
+    600.0,
+    184.0,
+    1193.666667
+  ],
+  "size_reference": "back_stiffener",
+  "pieces": [
+    {
+      "id": "back_stiffener",
+      "type": "1x8",
+      "length": 274.666667,
+      "group": 0,
+      "min": [
+        397.0,
+        0.0,
+        919.0
+      ],
+      "max": [
+        581.0,
+        19.0,
+        1193.666667
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_1",
+      "type": "1x8",
+      "length": 562.0,
+      "group": 0,
+      "min": [
+        19.0,
+        0.0,
+        900.0
+      ],
+      "max": [
+        581.0,
+        184.0,
+        919.0
+      ],
+      "faces": {
+        "top": "+x",
+        "right": "+y",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "side_l",
+      "type": "1x8",
+      "length": 900.0,
+      "group": 0,
+      "min": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "max": [
+        19.0,
+        184.0,
+        900.0
+      ],
+      "faces": {
+        "top": "-z",
+        "right": "+y",
+        "front": "+x"
+      }
+    },
+    {
+      "id": "side_r",
+      "type": "1x8",
+      "length": 900.0,
+      "group": 0,
+      "min": [
+        581.0,
+        0.0,
+        0.0
+      ],
+      "max": [
+        600.0,
+        184.0,
+        900.0
+      ],
+      "faces": {
+        "top": "-z",
+        "right": "+y",
+        "front": "+x"
+      }
+    }
+  ],
+  "problems": [
+    {
+      "kind": "fastener",
+      "message": "Connection shelf_1 -> side_l: pieces do not share a contact area",
+      "connection": [
+        "shelf_1",
+        "side_l"
+      ],
+      "fastener": "screw"
+    },
+    {
+      "kind": "fastener",
+      "message": "Connection shelf_1 -> side_r: pieces do not share a contact area",
+      "connection": [
+        "shelf_1",
+        "side_r"
+      ],
+      "fastener": "screw"
+    }
+  ]
+}

@@ -13,9 +13,11 @@
 | apron_ub_l, apron_ub_r, apron_lb_l, apron_lb_r | 2x4 | 466.5 | 4 | [part-07.png](part-07.png) |
 | apron_ul, apron_ur, apron_ll, apron_lr | 2x4 | 274 | 4 | [part-08.png](part-08.png) |
 | apron_lf_l, apron_lf_r | 2x4 | 466.5 | 2 | [part-09.png](part-09.png) |
-| top_1, top_8 | 2x6 | 350 | 2 | [part-10.png](part-10.png) |
+| top_1 | 2x6 | 350 | 1 | [part-10.png](part-10.png) |
 | top_2, top_3, top_6, top_7, shelf_1, shelf_2, shelf_3, shelf_4, shelf_5, shelf_6 | 2x6 | 350 | 10 | [part-11.png](part-11.png) |
-| top_4, top_5 | 2x6 | 350 | 2 | [part-12.png](part-12.png) |
+| top_4 | 2x6 | 350 | 1 | [part-12.png](part-12.png) |
+| top_5 | 2x6 | 350 | 1 | [part-13.png](part-13.png) |
+| top_8 | 2x6 | 350 | 1 | [part-14.png](part-14.png) |
 
 ### leg_fl
 
@@ -53,7 +55,7 @@
 
 ![Part 9](part-09.png)
 
-### top_1, top_8 ×2
+### top_1
 
 ![Part 10](part-10.png)
 
@@ -61,9 +63,17 @@
 
 ![Part 11](part-11.png)
 
-### top_4, top_5 ×2
+### top_4
 
 ![Part 12](part-12.png)
+
+### top_5
+
+![Part 13](part-13.png)
+
+### top_8
+
+![Part 14](part-14.png)
 
 ## Step 1 - Left frame
 

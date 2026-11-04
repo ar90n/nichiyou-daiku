@@ -1,1 +1,106 @@
-{"pieces": {"post_l": [{"face": "right", "center": [89.0, 9.5, 281.0], "diameter": 8.0, "depth": 15.0}, {"face": "right", "center": [89.0, 28.5, 281.0], "diameter": 8.0, "depth": 15.0}], "rung": [{"face": "down", "center": [19.0, 9.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "down", "center": [19.0, 28.5, 0.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [19.0, 9.5, 400.0], "diameter": 8.0, "depth": 15.0}, {"face": "top", "center": [19.0, 28.5, 400.0], "diameter": 8.0, "depth": 15.0}], "post_r": [{"face": "left", "center": [0.0, 9.5, 281.0], "diameter": 8.0, "depth": 15.0}, {"face": "left", "center": [0.0, 28.5, 281.0], "diameter": 8.0, "depth": 15.0}]}, "fasteners": [{"base": "post_l", "target": "rung", "kind": "dowel", "diameter": 8.0, "count": 2}, {"base": "post_r", "target": "rung", "kind": "dowel", "diameter": 8.0, "count": 2}]}
+{
+  "pieces": {
+    "post_l": [
+      {
+        "face": "right",
+        "center": [
+          89.0,
+          9.5,
+          281.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "right",
+        "center": [
+          89.0,
+          28.5,
+          281.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "rung": [
+      {
+        "face": "down",
+        "center": [
+          19.0,
+          9.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "down",
+        "center": [
+          19.0,
+          28.5,
+          0.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          19.0,
+          9.5,
+          400.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "top",
+        "center": [
+          19.0,
+          28.5,
+          400.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ],
+    "post_r": [
+      {
+        "face": "left",
+        "center": [
+          0.0,
+          9.5,
+          281.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      },
+      {
+        "face": "left",
+        "center": [
+          0.0,
+          28.5,
+          281.0
+        ],
+        "diameter": 8.0,
+        "depth": 15.0
+      }
+    ]
+  },
+  "fasteners": [
+    {
+      "base": "post_l",
+      "target": "rung",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    },
+    {
+      "base": "post_r",
+      "target": "rung",
+      "kind": "dowel",
+      "diameter": 8.0,
+      "count": 2
+    }
+  ]
+}

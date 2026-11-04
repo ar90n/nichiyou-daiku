@@ -1,1 +1,55 @@
-{"valid": true, "error": null, "overall_size": [140.0, 431.0, 600.0], "size_reference": "side_l", "pieces": [{"id": "side_l", "type": "1x6", "length": 600.0, "group": 0, "min": [0.0, 412.0, 0.0], "max": [140.0, 431.0, 600.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf", "type": "1x6", "length": 412.0, "group": 0, "min": [0.0, 0.0, 300.0], "max": [140.0, 412.0, 319.0], "faces": {"top": "-y", "right": "+x", "front": "+z"}}], "problems": []}
+{
+  "valid": true,
+  "error": null,
+  "overall_size": [
+    140.0,
+    431.0,
+    600.0
+  ],
+  "size_reference": "side_l",
+  "pieces": [
+    {
+      "id": "side_l",
+      "type": "1x6",
+      "length": 600.0,
+      "group": 0,
+      "min": [
+        0.0,
+        412.0,
+        0.0
+      ],
+      "max": [
+        140.0,
+        431.0,
+        600.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf",
+      "type": "1x6",
+      "length": 412.0,
+      "group": 0,
+      "min": [
+        0.0,
+        0.0,
+        300.0
+      ],
+      "max": [
+        140.0,
+        412.0,
+        319.0
+      ],
+      "faces": {
+        "top": "-y",
+        "right": "+x",
+        "front": "+z"
+      }
+    }
+  ],
+  "problems": []
+}

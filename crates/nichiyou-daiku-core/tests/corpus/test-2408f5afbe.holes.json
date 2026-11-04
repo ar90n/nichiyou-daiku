@@ -1,1 +1,59 @@
-{"pieces": {"base": [{"face": "down", "center": [22.25, 19.0, 0.0], "diameter": 3.0, "depth": 81.0}, {"face": "down", "center": [66.75, 19.0, 0.0], "diameter": 3.0, "depth": 81.0}], "target": [{"face": "back", "center": [22.25, 0.0, 281.0], "diameter": 3.0, "depth": null}, {"face": "back", "center": [66.75, 0.0, 281.0], "diameter": 3.0, "depth": null}]}, "fasteners": [{"base": "base", "target": "target", "kind": "screw", "diameter": 4.5, "count": 2}]}
+{
+  "pieces": {
+    "base": [
+      {
+        "face": "down",
+        "center": [
+          22.25,
+          19.0,
+          0.0
+        ],
+        "diameter": 3.0,
+        "depth": 81.0
+      },
+      {
+        "face": "down",
+        "center": [
+          66.75,
+          19.0,
+          0.0
+        ],
+        "diameter": 3.0,
+        "depth": 81.0
+      }
+    ],
+    "target": [
+      {
+        "face": "front",
+        "center": [
+          22.25,
+          19.0,
+          281.0
+        ],
+        "diameter": 3.0,
+        "depth": null,
+        "countersink": 9.0
+      },
+      {
+        "face": "front",
+        "center": [
+          66.75,
+          19.0,
+          281.0
+        ],
+        "diameter": 3.0,
+        "depth": null,
+        "countersink": 9.0
+      }
+    ]
+  },
+  "fasteners": [
+    {
+      "base": "base",
+      "target": "target",
+      "kind": "screw",
+      "diameter": 4.5,
+      "count": 2
+    }
+  ]
+}

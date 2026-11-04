@@ -1,1 +1,201 @@
-{"parts": [{"pieces": ["frame1", "frame2"], "type": "2x4", "length": 1000.0, "count": 2, "drilled": false}, {"pieces": ["panel1", "panel2"], "type": "1x4", "length": 500.0, "count": 2, "drilled": false}], "steps": [{"number": 1, "name": null, "kind": "first", "pieces": ["frame1", "frame2"], "connections": [["frame1", "frame2"]], "shown": ["frame1", "frame2"], "view": {"axis": "z", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [450.0, 539.0, 628.0], "segments": [{"start": 450.0, "end": 539.0, "lumber": true}, {"start": 539.0, "end": 628.0, "lumber": true}]}, {"axis": "y", "side": "left", "stops": [0.0, 38.0], "segments": []}]}, {"number": 2, "name": null, "kind": "attach", "pieces": ["panel1"], "connections": [["frame1", "panel1"]], "shown": ["frame1", "frame2", "panel1"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 450.0, 500.0, 539.0, 628.0], "segments": [{"start": 0.0, "end": 450.0, "lumber": false}, {"start": 450.0, "end": 500.0, "lumber": false}, {"start": 500.0, "end": 539.0, "lumber": false}, {"start": 539.0, "end": 628.0, "lumber": false}]}, {"axis": "z", "side": "left", "stops": [0.0, 89.0, 1000.0], "segments": [{"start": 0.0, "end": 89.0, "lumber": true}, {"start": 89.0, "end": 1000.0, "lumber": false}]}]}, {"number": 3, "name": null, "kind": "sub-assembly", "pieces": ["panel2"], "connections": [], "shown": ["panel2"], "view": {"axis": "y", "side": 1}, "hardware": [], "dimensions": [{"axis": "x", "side": "below", "stops": [728.0, 817.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 500.0], "segments": []}]}], "steps_declared": false, "steps_hint": "No steps block: each step adds one piece. Group pieces with a steps block, e.g. `steps { \"Frame\": frame1, frame2, ... }`."}
+{
+  "parts": [
+    {
+      "pieces": [
+        "frame1",
+        "frame2"
+      ],
+      "type": "2x4",
+      "length": 1000.0,
+      "count": 2,
+      "drilled": false
+    },
+    {
+      "pieces": [
+        "panel1",
+        "panel2"
+      ],
+      "type": "1x4",
+      "length": 500.0,
+      "count": 2,
+      "drilled": false
+    }
+  ],
+  "steps": [
+    {
+      "number": 1,
+      "name": null,
+      "kind": "first",
+      "pieces": [
+        "frame1",
+        "frame2"
+      ],
+      "connections": [
+        [
+          "frame1",
+          "frame2"
+        ]
+      ],
+      "shown": [
+        "frame1",
+        "frame2"
+      ],
+      "view": {
+        "axis": "z",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            450.0,
+            539.0,
+            628.0
+          ],
+          "segments": [
+            {
+              "start": 450.0,
+              "end": 539.0,
+              "lumber": true
+            },
+            {
+              "start": 539.0,
+              "end": 628.0,
+              "lumber": true
+            }
+          ]
+        },
+        {
+          "axis": "y",
+          "side": "left",
+          "stops": [
+            0.0,
+            38.0
+          ],
+          "segments": []
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "panel1"
+      ],
+      "connections": [
+        [
+          "frame1",
+          "panel1"
+        ]
+      ],
+      "shown": [
+        "frame1",
+        "frame2",
+        "panel1"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            450.0,
+            500.0,
+            539.0,
+            628.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 450.0,
+              "lumber": false
+            },
+            {
+              "start": 450.0,
+              "end": 500.0,
+              "lumber": false
+            },
+            {
+              "start": 500.0,
+              "end": 539.0,
+              "lumber": false
+            },
+            {
+              "start": 539.0,
+              "end": 628.0,
+              "lumber": false
+            }
+          ]
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            89.0,
+            1000.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 89.0,
+              "lumber": true
+            },
+            {
+              "start": 89.0,
+              "end": 1000.0,
+              "lumber": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "name": null,
+      "kind": "sub-assembly",
+      "pieces": [
+        "panel2"
+      ],
+      "connections": [],
+      "shown": [
+        "panel2"
+      ],
+      "view": {
+        "axis": "y",
+        "side": 1
+      },
+      "hardware": [],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            728.0,
+            817.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            500.0
+          ],
+          "segments": []
+        }
+      ]
+    }
+  ],
+  "steps_declared": false,
+  "steps_hint": "No steps block: each step adds one piece. Group pieces with a steps block, e.g. `steps { \"Frame\": frame1, frame2, ... }`."
+}

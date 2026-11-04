@@ -1,1 +1,13 @@
-{"valid": false, "error": {"kind": "validation", "message": "line 14, column 1: The length of 'apron_front' is not fixed by its connections", "line": 14, "column": 1}, "overall_size": null, "size_reference": null, "pieces": [], "problems": []}
+{
+  "valid": false,
+  "error": {
+    "kind": "validation",
+    "message": "line 14, column 1: The length of 'apron_front' is not fixed by its connections",
+    "line": 14,
+    "column": 1
+  },
+  "overall_size": null,
+  "size_reference": null,
+  "pieces": [],
+  "problems": []
+}

@@ -1,1 +1,310 @@
-{"pieces": {"shelf_bottom": [{"face": "down", "center": [35.0, 9.5, 0.0], "diameter": 2.0, "depth": 26.0}, {"face": "down", "center": [105.0, 9.5, 0.0], "diameter": 2.0, "depth": 26.0}, {"face": "top", "center": [35.0, 9.5, 412.0], "diameter": 2.0, "depth": 26.0}, {"face": "top", "center": [105.0, 9.5, 412.0], "diameter": 2.0, "depth": 26.0}], "side_left": [{"face": "back", "center": [35.0, 0.0, 9.5], "diameter": 2.0, "depth": null}, {"face": "back", "center": [35.0, 0.0, 300.0], "diameter": 2.0, "depth": null}, {"face": "back", "center": [35.0, 0.0, 590.5], "diameter": 2.0, "depth": null}, {"face": "back", "center": [105.0, 0.0, 9.5], "diameter": 2.0, "depth": null}, {"face": "back", "center": [105.0, 0.0, 300.0], "diameter": 2.0, "depth": null}, {"face": "back", "center": [105.0, 0.0, 590.5], "diameter": 2.0, "depth": null}], "side_right": [{"face": "front", "center": [35.0, 19.0, 9.5], "diameter": 2.0, "depth": null}, {"face": "front", "center": [35.0, 19.0, 300.0], "diameter": 2.0, "depth": null}, {"face": "front", "center": [35.0, 19.0, 590.5], "diameter": 2.0, "depth": null}, {"face": "front", "center": [105.0, 19.0, 9.5], "diameter": 2.0, "depth": null}, {"face": "front", "center": [105.0, 19.0, 300.0], "diameter": 2.0, "depth": null}, {"face": "front", "center": [105.0, 19.0, 590.5], "diameter": 2.0, "depth": null}], "shelf_middle": [{"face": "down", "center": [35.0, 9.5, 0.0], "diameter": 2.0, "depth": 26.0}, {"face": "down", "center": [105.0, 9.5, 0.0], "diameter": 2.0, "depth": 26.0}, {"face": "top", "center": [35.0, 9.5, 412.0], "diameter": 2.0, "depth": 26.0}, {"face": "top", "center": [105.0, 9.5, 412.0], "diameter": 2.0, "depth": 26.0}], "shelf_top": [{"face": "down", "center": [35.0, 9.5, 0.0], "diameter": 2.0, "depth": 26.0}, {"face": "down", "center": [105.0, 9.5, 0.0], "diameter": 2.0, "depth": 26.0}, {"face": "top", "center": [35.0, 9.5, 412.0], "diameter": 2.0, "depth": 26.0}, {"face": "top", "center": [105.0, 9.5, 412.0], "diameter": 2.0, "depth": 26.0}]}, "fasteners": [{"base": "shelf_bottom", "target": "side_left", "kind": "screw", "diameter": 3.3, "count": 2}, {"base": "shelf_bottom", "target": "side_right", "kind": "screw", "diameter": 3.3, "count": 2}, {"base": "shelf_middle", "target": "side_left", "kind": "screw", "diameter": 3.3, "count": 2}, {"base": "shelf_middle", "target": "side_right", "kind": "screw", "diameter": 3.3, "count": 2}, {"base": "shelf_top", "target": "side_left", "kind": "screw", "diameter": 3.3, "count": 2}, {"base": "shelf_top", "target": "side_right", "kind": "screw", "diameter": 3.3, "count": 2}]}
+{
+  "pieces": {
+    "shelf_bottom": [
+      {
+        "face": "down",
+        "center": [
+          35.0,
+          9.5,
+          0.0
+        ],
+        "diameter": 2.0,
+        "depth": 26.0
+      },
+      {
+        "face": "down",
+        "center": [
+          105.0,
+          9.5,
+          0.0
+        ],
+        "diameter": 2.0,
+        "depth": 26.0
+      },
+      {
+        "face": "top",
+        "center": [
+          35.0,
+          9.5,
+          412.0
+        ],
+        "diameter": 2.0,
+        "depth": 26.0
+      },
+      {
+        "face": "top",
+        "center": [
+          105.0,
+          9.5,
+          412.0
+        ],
+        "diameter": 2.0,
+        "depth": 26.0
+      }
+    ],
+    "side_left": [
+      {
+        "face": "front",
+        "center": [
+          35.0,
+          19.0,
+          9.5
+        ],
+        "diameter": 2.0,
+        "depth": null,
+        "countersink": 6.5
+      },
+      {
+        "face": "front",
+        "center": [
+          35.0,
+          19.0,
+          300.0
+        ],
+        "diameter": 2.0,
+        "depth": null,
+        "countersink": 6.5
+      },
+      {
+        "face": "front",
+        "center": [
+          35.0,
+          19.0,
+          590.5
+        ],
+        "diameter": 2.0,
+        "depth": null,
+        "countersink": 6.5
+      },
+      {
+        "face": "front",
+        "center": [
+          105.0,
+          19.0,
+          9.5
+        ],
+        "diameter": 2.0,
+        "depth": null,
+        "countersink": 6.5
+      },
+      {
+        "face": "front",
+        "center": [
+          105.0,
+          19.0,
+          300.0
+        ],
+        "diameter": 2.0,
+        "depth": null,
+        "countersink": 6.5
+      },
+      {
+        "face": "front",
+        "center": [
+          105.0,
+          19.0,
+          590.5
+        ],
+        "diameter": 2.0,
+        "depth": null,
+        "countersink": 6.5
+      }
+    ],
+    "side_right": [
+      {
+        "face": "back",
+        "center": [
+          35.0,
+          0.0,
+          9.5
+        ],
+        "diameter": 2.0,
+        "depth": null,
+        "countersink": 6.5
+      },
+      {
+        "face": "back",
+        "center": [
+          35.0,
+          0.0,
+          300.0
+        ],
+        "diameter": 2.0,
+        "depth": null,
+        "countersink": 6.5
+      },
+      {
+        "face": "back",
+        "center": [
+          35.0,
+          0.0,
+          590.5
+        ],
+        "diameter": 2.0,
+        "depth": null,
+        "countersink": 6.5
+      },
+      {
+        "face": "back",
+        "center": [
+          105.0,
+          0.0,
+          9.5
+        ],
+        "diameter": 2.0,
+        "depth": null,
+        "countersink": 6.5
+      },
+      {
+        "face": "back",
+        "center": [
+          105.0,
+          0.0,
+          300.0
+        ],
+        "diameter": 2.0,
+        "depth": null,
+        "countersink": 6.5
+      },
+      {
+        "face": "back",
+        "center": [
+          105.0,
+          0.0,
+          590.5
+        ],
+        "diameter": 2.0,
+        "depth": null,
+        "countersink": 6.5
+      }
+    ],
+    "shelf_middle": [
+      {
+        "face": "down",
+        "center": [
+          35.0,
+          9.5,
+          0.0
+        ],
+        "diameter": 2.0,
+        "depth": 26.0
+      },
+      {
+        "face": "down",
+        "center": [
+          105.0,
+          9.5,
+          0.0
+        ],
+        "diameter": 2.0,
+        "depth": 26.0
+      },
+      {
+        "face": "top",
+        "center": [
+          35.0,
+          9.5,
+          412.0
+        ],
+        "diameter": 2.0,
+        "depth": 26.0
+      },
+      {
+        "face": "top",
+        "center": [
+          105.0,
+          9.5,
+          412.0
+        ],
+        "diameter": 2.0,
+        "depth": 26.0
+      }
+    ],
+    "shelf_top": [
+      {
+        "face": "down",
+        "center": [
+          35.0,
+          9.5,
+          0.0
+        ],
+        "diameter": 2.0,
+        "depth": 26.0
+      },
+      {
+        "face": "down",
+        "center": [
+          105.0,
+          9.5,
+          0.0
+        ],
+        "diameter": 2.0,
+        "depth": 26.0
+      },
+      {
+        "face": "top",
+        "center": [
+          35.0,
+          9.5,
+          412.0
+        ],
+        "diameter": 2.0,
+        "depth": 26.0
+      },
+      {
+        "face": "top",
+        "center": [
+          105.0,
+          9.5,
+          412.0
+        ],
+        "diameter": 2.0,
+        "depth": 26.0
+      }
+    ]
+  },
+  "fasteners": [
+    {
+      "base": "shelf_bottom",
+      "target": "side_left",
+      "kind": "screw",
+      "diameter": 3.3,
+      "count": 2
+    },
+    {
+      "base": "shelf_bottom",
+      "target": "side_right",
+      "kind": "screw",
+      "diameter": 3.3,
+      "count": 2
+    },
+    {
+      "base": "shelf_middle",
+      "target": "side_left",
+      "kind": "screw",
+      "diameter": 3.3,
+      "count": 2
+    },
+    {
+      "base": "shelf_middle",
+      "target": "side_right",
+      "kind": "screw",
+      "diameter": 3.3,
+      "count": 2
+    },
+    {
+      "base": "shelf_top",
+      "target": "side_left",
+      "kind": "screw",
+      "diameter": 3.3,
+      "count": 2
+    },
+    {
+      "base": "shelf_top",
+      "target": "side_right",
+      "kind": "screw",
+      "diameter": 3.3,
+      "count": 2
+    }
+  ]
+}

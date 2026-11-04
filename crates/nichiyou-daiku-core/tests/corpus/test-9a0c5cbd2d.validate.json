@@ -1,1 +1,13 @@
-{"valid": false, "error": {"kind": "validation", "message": "line 2, column 1: The length of 'b' is not fixed by its connections", "line": 2, "column": 1}, "overall_size": null, "size_reference": null, "pieces": [], "problems": []}
+{
+  "valid": false,
+  "error": {
+    "kind": "validation",
+    "message": "line 2, column 1: The length of 'b' is not fixed by its connections",
+    "line": 2,
+    "column": 1
+  },
+  "overall_size": null,
+  "size_reference": null,
+  "pieces": [],
+  "problems": []
+}

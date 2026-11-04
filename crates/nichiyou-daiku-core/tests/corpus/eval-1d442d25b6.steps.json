@@ -1,1 +1,161 @@
-{"parts": [{"pieces": ["shelf_1"], "type": "1x6", "length": 450.0, "count": 1, "drilled": true}, {"pieces": ["side_l", "side_r"], "type": "1x6", "length": 600.0, "count": 2, "drilled": true}], "steps": [{"number": 1, "name": null, "kind": "first", "pieces": ["shelf_1", "side_l"], "connections": [["shelf_1", "side_l"]], "shown": ["shelf_1", "side_l"], "view": {"axis": "x", "side": -1}, "hardware": [{"name": "Slim screw 3.3x30", "count": 2}], "dimensions": [{"axis": "y", "side": "below", "stops": [0.0, 19.0, 600.0], "segments": [{"start": 0.0, "end": 19.0, "lumber": true}, {"start": 19.0, "end": 600.0, "lumber": false}]}, {"axis": "z", "side": "left", "stops": [0.0, 19.0, 469.0], "segments": [{"start": 0.0, "end": 19.0, "lumber": true}, {"start": 19.0, "end": 469.0, "lumber": false}]}]}, {"number": 2, "name": null, "kind": "attach", "pieces": ["side_r"], "connections": [["shelf_1", "side_r"]], "shown": ["shelf_1", "side_l", "side_r"], "view": {"axis": "z", "side": 1}, "hardware": [{"name": "Slim screw 3.3x30", "count": 2}], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 140.0], "segments": []}, {"axis": "y", "side": "left", "stops": [0.0, 19.0, 600.0], "segments": [{"start": 0.0, "end": 19.0, "lumber": true}, {"start": 19.0, "end": 600.0, "lumber": false}]}]}], "steps_declared": false, "steps_hint": "No steps block: each step adds one piece. Group pieces with a steps block, e.g. `steps { \"Frame\": shelf_1, side_l, ... }`."}
+{
+  "parts": [
+    {
+      "pieces": [
+        "shelf_1"
+      ],
+      "type": "1x6",
+      "length": 450.0,
+      "count": 1,
+      "drilled": true
+    },
+    {
+      "pieces": [
+        "side_l",
+        "side_r"
+      ],
+      "type": "1x6",
+      "length": 600.0,
+      "count": 2,
+      "drilled": true
+    }
+  ],
+  "steps": [
+    {
+      "number": 1,
+      "name": null,
+      "kind": "first",
+      "pieces": [
+        "shelf_1",
+        "side_l"
+      ],
+      "connections": [
+        [
+          "shelf_1",
+          "side_l"
+        ]
+      ],
+      "shown": [
+        "shelf_1",
+        "side_l"
+      ],
+      "view": {
+        "axis": "x",
+        "side": -1
+      },
+      "hardware": [
+        {
+          "name": "Slim screw 3.3x30",
+          "count": 2
+        }
+      ],
+      "dimensions": [
+        {
+          "axis": "y",
+          "side": "below",
+          "stops": [
+            0.0,
+            19.0,
+            600.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 19.0,
+              "lumber": true
+            },
+            {
+              "start": 19.0,
+              "end": 600.0,
+              "lumber": false
+            }
+          ]
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            19.0,
+            469.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 19.0,
+              "lumber": true
+            },
+            {
+              "start": 19.0,
+              "end": 469.0,
+              "lumber": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "name": null,
+      "kind": "attach",
+      "pieces": [
+        "side_r"
+      ],
+      "connections": [
+        [
+          "shelf_1",
+          "side_r"
+        ]
+      ],
+      "shown": [
+        "shelf_1",
+        "side_l",
+        "side_r"
+      ],
+      "view": {
+        "axis": "z",
+        "side": 1
+      },
+      "hardware": [
+        {
+          "name": "Slim screw 3.3x30",
+          "count": 2
+        }
+      ],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            140.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "y",
+          "side": "left",
+          "stops": [
+            0.0,
+            19.0,
+            600.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 19.0,
+              "lumber": true
+            },
+            {
+              "start": 19.0,
+              "end": 600.0,
+              "lumber": false
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "steps_declared": false,
+  "steps_hint": "No steps block: each step adds one piece. Group pieces with a steps block, e.g. `steps { \"Frame\": shelf_1, side_l, ... }`."
+}

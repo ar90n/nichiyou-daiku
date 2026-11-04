@@ -1,1 +1,34 @@
-{"valid": true, "error": null, "overall_size": [89.0, 38.0, 1500.0], "size_reference": "949fb4d7-50fb-4b75-93bc-a3d3e215483e", "pieces": [{"id": "949fb4d7-50fb-4b75-93bc-a3d3e215483e", "type": "2x4", "length": 1500.0, "group": 0, "min": [0.0, 0.0, 0.0], "max": [89.0, 38.0, 1500.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}], "problems": []}
+{
+  "valid": true,
+  "error": null,
+  "overall_size": [
+    89.0,
+    38.0,
+    1500.0
+  ],
+  "size_reference": "00000000-0000-4000-8000-000000000001",
+  "pieces": [
+    {
+      "id": "00000000-0000-4000-8000-000000000001",
+      "type": "2x4",
+      "length": 1500.0,
+      "group": 0,
+      "min": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        38.0,
+        1500.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    }
+  ],
+  "problems": []
+}

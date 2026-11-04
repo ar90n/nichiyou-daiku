@@ -1,1 +1,338 @@
-{"parts": [{"pieces": ["side_l", "side_r"], "type": "1x6", "length": 600.0, "count": 2, "drilled": true}, {"pieces": ["shelf_bottom", "shelf_middle", "shelf_top"], "type": "1x6", "length": 412.0, "count": 3, "drilled": true}], "steps": [{"number": 1, "name": "Bottom shelf on the left side", "kind": "first", "pieces": ["side_l", "shelf_bottom"], "connections": [["shelf_bottom", "side_l"]], "shown": ["side_l", "shelf_bottom"], "view": {"axis": "x", "side": -1}, "hardware": [{"name": "Slim screw 3.3x40", "count": 2}], "dimensions": [{"axis": "y", "side": "below", "stops": [19.0, 431.0, 450.0], "segments": [{"start": 19.0, "end": 431.0, "lumber": false}, {"start": 431.0, "end": 450.0, "lumber": true}]}, {"axis": "z", "side": "left", "stops": [0.0, 19.0, 600.0], "segments": [{"start": 0.0, "end": 19.0, "lumber": true}, {"start": 19.0, "end": 600.0, "lumber": false}]}]}, {"number": 2, "name": "Right side", "kind": "attach", "pieces": ["side_r"], "connections": [["shelf_bottom", "side_r"]], "shown": ["side_l", "side_r", "shelf_bottom"], "view": {"axis": "y", "side": -1}, "hardware": [{"name": "Slim screw 3.3x40", "count": 2}], "dimensions": [{"axis": "x", "side": "below", "stops": [0.0, 140.0], "segments": []}, {"axis": "z", "side": "left", "stops": [0.0, 19.0, 600.0], "segments": [{"start": 0.0, "end": 19.0, "lumber": true}, {"start": 19.0, "end": 600.0, "lumber": false}]}]}, {"number": 3, "name": "Middle shelf", "kind": "attach", "pieces": ["shelf_middle"], "connections": [["shelf_middle", "side_l"], ["shelf_middle", "side_r"]], "shown": ["side_l", "side_r", "shelf_bottom", "shelf_middle"], "view": {"axis": "x", "side": -1}, "hardware": [{"name": "Slim screw 3.3x40", "count": 4}], "dimensions": [{"axis": "y", "side": "below", "stops": [0.0, 19.0, 431.0, 450.0], "segments": [{"start": 0.0, "end": 19.0, "lumber": true}, {"start": 19.0, "end": 431.0, "lumber": false}, {"start": 431.0, "end": 450.0, "lumber": true}]}, {"axis": "z", "side": "left", "stops": [0.0, 290.5, 309.5, 600.0], "segments": [{"start": 0.0, "end": 290.5, "lumber": false}, {"start": 290.5, "end": 309.5, "lumber": true}, {"start": 309.5, "end": 600.0, "lumber": false}]}]}, {"number": 4, "name": "Top shelf", "kind": "attach", "pieces": ["shelf_top"], "connections": [["shelf_top", "side_l"], ["shelf_top", "side_r"]], "shown": ["side_l", "side_r", "shelf_bottom", "shelf_middle", "shelf_top"], "view": {"axis": "x", "side": -1}, "hardware": [{"name": "Slim screw 3.3x40", "count": 4}], "dimensions": [{"axis": "y", "side": "below", "stops": [0.0, 19.0, 431.0, 450.0], "segments": [{"start": 0.0, "end": 19.0, "lumber": true}, {"start": 19.0, "end": 431.0, "lumber": false}, {"start": 431.0, "end": 450.0, "lumber": true}]}, {"axis": "z", "side": "left", "stops": [0.0, 581.0, 600.0], "segments": [{"start": 0.0, "end": 581.0, "lumber": false}, {"start": 581.0, "end": 600.0, "lumber": true}]}]}], "steps_declared": true, "steps_hint": null}
+{
+  "parts": [
+    {
+      "pieces": [
+        "side_l",
+        "side_r"
+      ],
+      "type": "1x6",
+      "length": 600.0,
+      "count": 2,
+      "drilled": true
+    },
+    {
+      "pieces": [
+        "shelf_bottom",
+        "shelf_middle",
+        "shelf_top"
+      ],
+      "type": "1x6",
+      "length": 412.0,
+      "count": 3,
+      "drilled": true
+    }
+  ],
+  "steps": [
+    {
+      "number": 1,
+      "name": "Bottom shelf on the left side",
+      "kind": "first",
+      "pieces": [
+        "side_l",
+        "shelf_bottom"
+      ],
+      "connections": [
+        [
+          "shelf_bottom",
+          "side_l"
+        ]
+      ],
+      "shown": [
+        "side_l",
+        "shelf_bottom"
+      ],
+      "view": {
+        "axis": "x",
+        "side": -1
+      },
+      "hardware": [
+        {
+          "name": "Slim screw 3.3x40",
+          "count": 2
+        }
+      ],
+      "dimensions": [
+        {
+          "axis": "y",
+          "side": "below",
+          "stops": [
+            19.0,
+            431.0,
+            450.0
+          ],
+          "segments": [
+            {
+              "start": 19.0,
+              "end": 431.0,
+              "lumber": false
+            },
+            {
+              "start": 431.0,
+              "end": 450.0,
+              "lumber": true
+            }
+          ]
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            19.0,
+            600.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 19.0,
+              "lumber": true
+            },
+            {
+              "start": 19.0,
+              "end": 600.0,
+              "lumber": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "name": "Right side",
+      "kind": "attach",
+      "pieces": [
+        "side_r"
+      ],
+      "connections": [
+        [
+          "shelf_bottom",
+          "side_r"
+        ]
+      ],
+      "shown": [
+        "side_l",
+        "side_r",
+        "shelf_bottom"
+      ],
+      "view": {
+        "axis": "y",
+        "side": -1
+      },
+      "hardware": [
+        {
+          "name": "Slim screw 3.3x40",
+          "count": 2
+        }
+      ],
+      "dimensions": [
+        {
+          "axis": "x",
+          "side": "below",
+          "stops": [
+            0.0,
+            140.0
+          ],
+          "segments": []
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            19.0,
+            600.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 19.0,
+              "lumber": true
+            },
+            {
+              "start": 19.0,
+              "end": 600.0,
+              "lumber": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "name": "Middle shelf",
+      "kind": "attach",
+      "pieces": [
+        "shelf_middle"
+      ],
+      "connections": [
+        [
+          "shelf_middle",
+          "side_l"
+        ],
+        [
+          "shelf_middle",
+          "side_r"
+        ]
+      ],
+      "shown": [
+        "side_l",
+        "side_r",
+        "shelf_bottom",
+        "shelf_middle"
+      ],
+      "view": {
+        "axis": "x",
+        "side": -1
+      },
+      "hardware": [
+        {
+          "name": "Slim screw 3.3x40",
+          "count": 4
+        }
+      ],
+      "dimensions": [
+        {
+          "axis": "y",
+          "side": "below",
+          "stops": [
+            0.0,
+            19.0,
+            431.0,
+            450.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 19.0,
+              "lumber": true
+            },
+            {
+              "start": 19.0,
+              "end": 431.0,
+              "lumber": false
+            },
+            {
+              "start": 431.0,
+              "end": 450.0,
+              "lumber": true
+            }
+          ]
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            290.5,
+            309.5,
+            600.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 290.5,
+              "lumber": false
+            },
+            {
+              "start": 290.5,
+              "end": 309.5,
+              "lumber": true
+            },
+            {
+              "start": 309.5,
+              "end": 600.0,
+              "lumber": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "name": "Top shelf",
+      "kind": "attach",
+      "pieces": [
+        "shelf_top"
+      ],
+      "connections": [
+        [
+          "shelf_top",
+          "side_l"
+        ],
+        [
+          "shelf_top",
+          "side_r"
+        ]
+      ],
+      "shown": [
+        "side_l",
+        "side_r",
+        "shelf_bottom",
+        "shelf_middle",
+        "shelf_top"
+      ],
+      "view": {
+        "axis": "x",
+        "side": -1
+      },
+      "hardware": [
+        {
+          "name": "Slim screw 3.3x40",
+          "count": 4
+        }
+      ],
+      "dimensions": [
+        {
+          "axis": "y",
+          "side": "below",
+          "stops": [
+            0.0,
+            19.0,
+            431.0,
+            450.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 19.0,
+              "lumber": true
+            },
+            {
+              "start": 19.0,
+              "end": 431.0,
+              "lumber": false
+            },
+            {
+              "start": 431.0,
+              "end": 450.0,
+              "lumber": true
+            }
+          ]
+        },
+        {
+          "axis": "z",
+          "side": "left",
+          "stops": [
+            0.0,
+            581.0,
+            600.0
+          ],
+          "segments": [
+            {
+              "start": 0.0,
+              "end": 581.0,
+              "lumber": false
+            },
+            {
+              "start": 581.0,
+              "end": 600.0,
+              "lumber": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "steps_declared": true,
+  "steps_hint": null
+}

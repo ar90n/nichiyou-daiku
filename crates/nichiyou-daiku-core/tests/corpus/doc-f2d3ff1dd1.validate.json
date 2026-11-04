@@ -1,1 +1,97 @@
-{"valid": true, "error": null, "overall_size": [89.0, 676.0, 800.0], "size_reference": "side_l", "pieces": [{"id": "side_l", "type": "2x4", "length": 800.0, "group": 0, "min": [0.0, 638.0, 0.0], "max": [89.0, 676.0, 800.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "side_r", "type": "2x4", "length": 800.0, "group": 0, "min": [0.0, 0.0, 0.0], "max": [89.0, 38.0, 800.0], "faces": {"top": "+z", "right": "+x", "front": "+y"}}, {"id": "shelf_bottom", "type": "2x4", "length": 600.0, "group": 0, "min": [0.0, 38.0, 100.0], "max": [89.0, 638.0, 138.0], "faces": {"top": "-y", "right": "+x", "front": "+z"}}, {"id": "shelf_top", "type": "2x4", "length": 600.0, "group": 0, "min": [0.0, 38.0, 762.0], "max": [89.0, 638.0, 800.0], "faces": {"top": "-y", "right": "+x", "front": "+z"}}], "problems": []}
+{
+  "valid": true,
+  "error": null,
+  "overall_size": [
+    89.0,
+    676.0,
+    800.0
+  ],
+  "size_reference": "side_l",
+  "pieces": [
+    {
+      "id": "side_l",
+      "type": "2x4",
+      "length": 800.0,
+      "group": 0,
+      "min": [
+        0.0,
+        638.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        676.0,
+        800.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "side_r",
+      "type": "2x4",
+      "length": 800.0,
+      "group": 0,
+      "min": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "max": [
+        89.0,
+        38.0,
+        800.0
+      ],
+      "faces": {
+        "top": "+z",
+        "right": "+x",
+        "front": "+y"
+      }
+    },
+    {
+      "id": "shelf_bottom",
+      "type": "2x4",
+      "length": 600.0,
+      "group": 0,
+      "min": [
+        0.0,
+        38.0,
+        100.0
+      ],
+      "max": [
+        89.0,
+        638.0,
+        138.0
+      ],
+      "faces": {
+        "top": "-y",
+        "right": "+x",
+        "front": "+z"
+      }
+    },
+    {
+      "id": "shelf_top",
+      "type": "2x4",
+      "length": 600.0,
+      "group": 0,
+      "min": [
+        0.0,
+        38.0,
+        762.0
+      ],
+      "max": [
+        89.0,
+        638.0,
+        800.0
+      ],
+      "faces": {
+        "top": "-y",
+        "right": "+x",
+        "front": "+z"
+      }
+    }
+  ],
+  "problems": []
+}

@@ -14,8 +14,9 @@
 | lower_front | 2x2 | 722 | 1 | [part-08.png](part-08.png) |
 | lower_back | 2x2 | 722 | 1 | [part-09.png](part-09.png) |
 | lower_left, lower_right | 2x2 | 374 | 2 | [part-10.png](part-10.png) |
-| top_1, top_6 | 1x6 | 450 | 2 | [part-11.png](part-11.png) |
+| top_1 | 1x6 | 450 | 1 | [part-11.png](part-11.png) |
 | top_2, top_3, top_4, top_5, shelf_1, shelf_2, shelf_3, shelf_4, shelf_5 | 1x6 | 450 | 9 | [part-12.png](part-12.png) |
+| top_6 | 1x6 | 450 | 1 | [part-13.png](part-13.png) |
 
 ### leg_fl
 
@@ -57,13 +58,17 @@
 
 ![Part 10](part-10.png)
 
-### top_1, top_6 ×2
+### top_1
 
 ![Part 11](part-11.png)
 
 ### top_2, top_3, top_4, top_5, shelf_1, shelf_2, shelf_3, shelf_4, shelf_5 ×9
 
 ![Part 12](part-12.png)
+
+### top_6
+
+![Part 13](part-13.png)
 
 ## Step 1 - Left frame
 
