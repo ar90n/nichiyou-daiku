@@ -29,16 +29,17 @@ fn install(dir: &Path, extra: &[PathBuf], args: &[&str]) -> Output {
         )
         .env(
             "NICHIYOU_DAIKU_LATEST",
-            format!("file://{}", dir.join("latest.json").display()),
+            format!("file://{}", dir.join("latest").display()),
         )
         .output()
         .unwrap()
 }
 
+/// GitHub's /releases/latest, which moves to the newest release's tag page.
 fn newest(dir: &Path, version: &str) {
     fs::write(
-        dir.join("latest.json"),
-        format!("{{\n  \"url\": \"x\",\n  \"tag_name\": \"v{version}\",\n  \"name\": \"v{version}\"\n}}\n"),
+        dir.join("latest"),
+        format!("https://github.com/ar90n/nichiyou-daiku/releases/tag/v{version}"),
     )
     .unwrap();
 }
@@ -224,4 +225,45 @@ fn piped_into_sh_it_installs() {
     let out = child.wait_with_output().unwrap();
     assert!(out.status.success(), "{}", text(&out.stderr));
     assert_eq!(runs(&to.join("nichiyou-daiku")), "prebuilt [validate]\n");
+}
+
+#[test]
+fn a_latest_page_that_leads_to_no_release_is_named() {
+    let dir = folder("nolatest", "Linux", "x86_64");
+    fs::write(
+        dir.join("latest"),
+        "https://github.com/ar90n/nichiyou-daiku/releases",
+    )
+    .unwrap();
+    let out = install(&dir, &[], &[]);
+    assert_eq!(out.status.code(), Some(1));
+    let err = text(&out.stderr);
+    assert!(err.contains("cannot find the newest release"), "{err}");
+    assert!(err.contains("--version"), "{err}");
+}
+
+#[test]
+fn an_older_python_cli_in_the_folder_is_not_written_over() {
+    // uv tool install puts the Python version in ~/.local/bin too; uv would
+    // later remove whatever stands there as its own
+    let dir = folder("inplace", "Linux", "x86_64");
+    release(&dir, "1.2.3", "x86_64-unknown-linux-musl");
+    let to = dir.join(".local/bin");
+    fs::create_dir_all(&to).unwrap();
+    let python = "#!/bin/sh\necho 'Error: No such option: --version' >&2\nexit 2\n";
+    executable(&to.join("nichiyou-daiku"), python);
+    let out = install(&dir, std::slice::from_ref(&to), &["--version", "1.2.3"]);
+    assert_eq!(out.status.code(), Some(1));
+    let err = text(&out.stderr);
+    assert!(
+        err.contains(&format!(
+            "{} does not answer --version: it is the Python version (remove it with: uv tool uninstall nichiyou-daiku) or a broken copy (delete it); then run this again",
+            to.join("nichiyou-daiku").display()
+        )),
+        "{err}"
+    );
+    assert_eq!(
+        fs::read_to_string(to.join("nichiyou-daiku")).unwrap(),
+        python
+    );
 }

@@ -103,21 +103,28 @@ unpack() {
   place "$work/out/nichiyou-daiku$exe" "$2" || { reason="cannot put it in $2"; return 1; }
 }
 
-# Sets version to the newest release's. On failure, $reason says why
+# Sets version to the newest release's: the tag GitHub's /releases/latest
+# moves to (its API would be limited to 60 calls an hour). On failure,
+# $reason says why
 latest() {
-  url=${NICHIYOU_DAIKU_LATEST:-https://api.github.com/repos/ar90n/nichiyou-daiku/releases/latest}
-  page=$(mktemp) || { reason="cannot make a temporary file"; return 1; }
-  reason="cannot fetch $url"
-  if ! fetch "$url" "$page"; then
-    rm -f "$page"
+  url=${NICHIYOU_DAIKU_LATEST:-$releases_page/latest}
+  reason="cannot reach $url"
+  if command -v curl >/dev/null 2>&1; then
+    final=$(curl -fsSL -o /dev/null -w '%{url_effective}' "$url") || return 1
+  elif command -v wget >/dev/null 2>&1; then
+    # -S shows each redirect's Location; -q would hide it too
+    final=$(wget -S -O /dev/null "$url" 2>&1 | sed -n 's/^ *Location: *\([^ ]*\).*/\1/p' | tail -n 1)
+  else
+    reason="neither curl nor wget is installed"
     return 1
   fi
-  version=$(sed -n 's/.*"tag_name": *"v\{0,1\}\([^"]*\)".*/\1/p' "$page" | head -n 1)
-  rm -f "$page"
-  if [ -z "$version" ]; then
-    reason="$url names no release"
-    return 1
-  fi
+  case $final in
+    */tag/v?*) version=${final##*/tag/v} ;;
+    *)
+      reason="$url leads to no release"
+      return 1
+      ;;
+  esac
 }
 
 fail() {
@@ -166,7 +173,13 @@ main() {
     fail "no prebuilt nichiyou-daiku for $system $machine; build it from source as the README says"
   fi
   if [ -z "$version" ]; then
-    latest || fail "cannot find the newest release ($reason); see $releases_page"
+    latest || fail "cannot find the newest release ($reason); name one with --version, see $releases_page"
+  fi
+  # uv tool install puts the Python version here too, and uv tool uninstall
+  # would later remove whatever stands in its place
+  old=$to/nichiyou-daiku$exe
+  if [ -f "$old" ] && [ -x "$old" ] && ! "$old" --version >/dev/null 2>&1; then
+    fail "$old does not answer --version: it is the Python version (remove it with: uv tool uninstall nichiyou-daiku) or a broken copy (delete it); then run this again"
   fi
   download "$version" "$to" || fail "could not install v$version ($reason); see $releases_page"
   printf 'nichiyou-daiku: installed v%s for %s in %s\n' "$version" "$target" "$to" >&2

@@ -66,8 +66,8 @@ Python を消した後は Rust 版の出力が正解になる。
     lint（ruff・pyright）。
   - `tools/check_step.py`: 部材名を `validate --json` から取る。build123d はそのときだけ（`uv run --with build123d`）。
 - `pyproject.toml` はパッケージではなくし（`[tool.uv] package = false`）、評価と CI の依存だけを持つ。
-- `Makefile`: `check` は `rust-check`・`web-check` と評価・道具の lint。`test`（pytest）は消し、`format` は ruff
-  （評価・道具）と cargo fmt。
+- `Makefile`: `check` は `rust-check`・`web-check` と評価・道具の lint、`test` は評価のテスト（`evals/tests`。
+  `tests/evals` から移した。評価を Python で残す以上、そのテストも残す）。`format` は ruff（評価・道具）と cargo fmt。
 
 ## CLI に足すもの
 
@@ -92,6 +92,9 @@ Python を消した後は Rust 版の出力が正解になる。
   - OS とアーキテクチャから target を決め、アーカイブと SHA256SUMS を落とし、合えば置く。合わなければ置かずに止まる。
   - 置き場所が PATH に無ければ足し方を言う。PATH に `--version` に答えない `nichiyou-daiku`（古い Python 版）があれば
     `uv tool uninstall nichiyou-daiku` を案内する。
+  - 置き場所に `--version` に答えない `nichiyou-daiku`（古い Python 版。`uv tool install` も `~/.local/bin` に置く。または
+    壊れた写し）があれば、上書きせずに止まり、`uv tool uninstall nichiyou-daiku` か消すよう言う（最終レビュー。上書きすると、
+    後の uninstall が新しい CLI を消す）。
   - 知らない OS・アーキテクチャでは理由と Releases のページを言って止まる。
   - 落とす先は `NICHIYOU_DAIKU_RELEASES` で差し替えられる（テスト用、今の入口と同じ）。
 

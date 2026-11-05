@@ -57,6 +57,8 @@ Then ask for furniture, e.g. "Design a 500 x 400 x 600 side table from 2x4". The
 
 ## Installation
 
+If you installed the Python version with uv, remove it first: `uv tool uninstall nichiyou-daiku` (it sits where the script installs, and the script stops when it finds it there). It stays available, with its Python API, as v0.1.0: `uv tool install "git+https://github.com/ar90n/nichiyou-daiku@v0.1.0"`, under the same command name, so install one or the other.
+
 On Linux and macOS (x86_64 or arm64):
 
 ```bash
@@ -64,8 +66,6 @@ curl -fsSL https://raw.githubusercontent.com/ar90n/nichiyou-daiku/main/install.s
 ```
 
 It installs the newest release's CLI into `~/.local/bin`, checked against the release's checksums, and says if that folder is not on your PATH. `--version 0.2.0` installs another version and `--to <folder>` another place (`... | sh -s -- --to ~/bin`). Run it again to update. On Windows, download `nichiyou-daiku-<version>-x86_64-pc-windows-msvc.zip` from the [releases](https://github.com/ar90n/nichiyou-daiku/releases) and put `nichiyou-daiku.exe` on your PATH. `nichiyou-daiku --version` tells which version you have.
-
-If you installed the Python version with uv, remove it: `uv tool uninstall nichiyou-daiku`. It stays available, with its Python API, as v0.1.0: `uv tool install "git+https://github.com/ar90n/nichiyou-daiku@v0.1.0"`.
 
 To build it from source, with Rust and Node.js 24 or later:
 

@@ -17,13 +17,20 @@ pub fn executable(path: &Path, script: &str) {
 /// need no curl (CI's container has none)
 pub const CURL: &str = r#"#!/bin/sh
 out=
+effective=
 while [ $# -gt 1 ]; do
   case $1 in
     -o) out=$2; shift 2 ;;
+    -w) effective=1; shift 2 ;;
     *) shift ;;
   esac
 done
-cp "${1#file://}" "$out" 2>/dev/null
+if [ -n "$effective" ]; then
+  # Stands in for -w '%{url_effective}': the file holds where the URL leads
+  cat "${1#file://}" 2>/dev/null
+else
+  cp "${1#file://}" "$out" 2>/dev/null
+fi
 "#;
 
 /// A fresh folder: bin/ with a uname saying `system` and `machine` and a
