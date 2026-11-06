@@ -2,8 +2,8 @@
 # The nichiyou-daiku CLI for the Claude Code plugin: this plugin's version,
 # downloaded once from its GitHub release into the cache, else built from
 # the plugin's source when cargo is there. Never a CLI found on PATH, which
-# may be another version (or the Python one): the skill is written for this
-# one. NICHIYOU_DAIKU_BIN names a CLI to run instead (a development build)
+# may be another version: the skill is written for this one.
+# NICHIYOU_DAIKU_BIN names a CLI to run instead (a development build)
 set -eu
 
 if [ -n "${NICHIYOU_DAIKU_BIN:-}" ]; then

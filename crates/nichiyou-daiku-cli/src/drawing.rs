@@ -26,9 +26,6 @@ pub struct Args {
     /// Designer name (default: nichiyou-daiku)
     #[arg(long, default_value = "nichiyou-daiku")]
     designed_by: String,
-    /// Accepted as before; boards are drawn with square edges
-    #[arg(long, default_value_t = 5.0)]
-    fillet_radius: f64,
     /// Drawing page size (default: A3)
     #[arg(long, default_value = "A3", ignore_case = true, value_parser = ["A4", "A3", "A2", "A1"])]
     page_size: String,

@@ -1,4 +1,4 @@
-//! The nichiyou-daiku command line (the Python version's cli/dsl_cli.py).
+//! The nichiyou-daiku command line.
 
 mod drawing;
 mod echo;
@@ -30,9 +30,6 @@ use crate::echo::Echo;
 // click keeps the last of a repeated option, as wrappers adding to defaults expect
 #[command(name = "nichiyou-daiku", version, args_override_self = true)]
 struct Cli {
-    /// Show tracebacks for unexpected errors
-    #[arg(short, long)]
-    debug: bool,
     /// Show progress messages
     #[arg(short, long)]
     verbose: bool,
@@ -97,8 +94,6 @@ enum Commands {
 
 fn main() -> ExitCode {
     let cli = Cli::parse();
-    // Accepted as the Python version's: a Rust error has no traceback to add
-    let _ = cli.debug;
     let echo = Echo::new(cli.quiet, cli.verbose);
     ExitCode::from(match &cli.command {
         Commands::Validate(args) => validate::run(args, &echo),

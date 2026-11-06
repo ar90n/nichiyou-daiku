@@ -156,34 +156,6 @@ fn a_folder_off_the_path_is_named() {
 }
 
 #[test]
-fn an_older_python_cli_on_the_path_is_named() {
-    let dir = folder("python", "Linux", "x86_64");
-    release(&dir, "1.2.3", "x86_64-unknown-linux-musl");
-    let old = dir.join("old");
-    fs::create_dir_all(&old).unwrap();
-    // click answers an unknown option with exit 2
-    executable(
-        &old.join("nichiyou-daiku"),
-        "#!/bin/sh\necho 'Error: No such option: --version' >&2\nexit 2\n",
-    );
-    let to = dir.join("tools");
-    let out = install(
-        &dir,
-        &[old.clone(), to.clone()],
-        &["--version", "1.2.3", "--to", to.to_str().unwrap()],
-    );
-    let err = text(&out.stderr);
-    assert!(out.status.success(), "{err}");
-    assert!(
-        err.contains(&format!(
-            "{} is an older nichiyou-daiku (the Python version); remove it with: uv tool uninstall nichiyou-daiku",
-            old.join("nichiyou-daiku").display()
-        )),
-        "{err}"
-    );
-}
-
-#[test]
 fn piped_into_sh_it_installs() {
     // As in curl -fsSL …/install.sh | sh -s -- --to DIR
     let dir = folder("piped", "Linux", "x86_64");
@@ -243,27 +215,13 @@ fn a_latest_page_that_leads_to_no_release_is_named() {
 }
 
 #[test]
-fn an_older_python_cli_in_the_folder_is_not_written_over() {
-    // uv tool install puts the Python version in ~/.local/bin too; uv would
-    // later remove whatever stands there as its own
-    let dir = folder("inplace", "Linux", "x86_64");
+fn a_cli_already_in_the_folder_is_replaced() {
+    let dir = folder("replace", "Linux", "x86_64");
     release(&dir, "1.2.3", "x86_64-unknown-linux-musl");
     let to = dir.join(".local/bin");
     fs::create_dir_all(&to).unwrap();
-    let python = "#!/bin/sh\necho 'Error: No such option: --version' >&2\nexit 2\n";
-    executable(&to.join("nichiyou-daiku"), python);
+    executable(&to.join("nichiyou-daiku"), "#!/bin/sh\nexit 2\n");
     let out = install(&dir, std::slice::from_ref(&to), &["--version", "1.2.3"]);
-    assert_eq!(out.status.code(), Some(1));
-    let err = text(&out.stderr);
-    assert!(
-        err.contains(&format!(
-            "{} does not answer --version: it is the Python version (remove it with: uv tool uninstall nichiyou-daiku) or a broken copy (delete it); then run this again",
-            to.join("nichiyou-daiku").display()
-        )),
-        "{err}"
-    );
-    assert_eq!(
-        fs::read_to_string(to.join("nichiyou-daiku")).unwrap(),
-        python
-    );
+    assert!(out.status.success(), "{}", text(&out.stderr));
+    assert_eq!(runs(&to.join("nichiyou-daiku")), "prebuilt [validate]\n");
 }

@@ -16,8 +16,8 @@ Python を消した後は Rust 版の出力が正解になる。
    ファイルを Releases から落とし、SHA256SUMS で確かめて置く。Rust も uv も要らない。Releases から手で落とすだけの
    案は使う人の手間が増え、`cargo install` を足す案はビューアーが組み込まれず `view` が使えないので選ばなかった。
    Windows は Releases から手で落とす（スクリプトは作らない）。
-2. **Python 版はタグ `v0.1.0` で残す**（ユーザー）。main を入れ替える前の最後の Python 版に付け、README に Python API が
-   要る人向けの入れ方を 1 行書く。手入れはしない。
+2. **Python 版はタグ `v0.1.0` で残す**（ユーザー）。main を入れ替える前の最後の Python 版に付ける。手入れはせず、
+   README でも案内しない（決定 9）。
 3. **プラグインの入口はプラグイン自身の版だけを使う**（ユーザー）。PATH を見ない。`uv tool install` で入れた古い
    Python 版が PATH にあっても動かず、スキルの説明と CLI の版が必ず合う。開発と評価では `NICHIYOU_DAIKU_BIN` で
    手元のビルドに差し替える。版が合うときだけ PATH を使う案は仕組みが複雑で、PATH 優先のまま案内だけする案は
@@ -32,10 +32,13 @@ Python を消した後は Rust 版の出力が正解になる。
 6. **評価（`evals/design`）は Python のまま、設計の確かめは CLI の `validate --json` で行う**（親の仕様の決定 6）。
    評価が Python のライブラリを読まなくなるように、`validate --json` に接続の種類（`connections`）と手順の数
    （`steps`）を足す。設計スキルのエージェントにも役立つ。
-7. **CLI に `--version` を足す**。インストールのスクリプトが古い Python 版（`--version` に答えない）を見分け、利用者が
-   版を確かめるのに使う。
+7. **CLI に `--version` を足す**。利用者が版を確かめるのに使う。
 8. **リリースを公開してから main を動かす**。プラグインの入口は自分の版のリリースが無いと CLI を落とせないので、
    main を先に動かすと、その間にプラグインを更新した人の CLI が動かない。
+9. **Python 版との後方互換は考えない**（ユーザー、2026-11-06。届けた後に）。Python 版はもう配っておらず、その利用者のための
+   仕組みは要らない。`install.sh` は古い Python 版を見分けず（PATH の案内も、置き場所で止まることもしない。置き場所に
+   あるものは上書きする）、README は Python 版に触れず、CLI は Python 版の呼び出しのためだけに受けていた
+   `--fillet-radius`（`render`・`steps`・`drawing`・`export`）と `-d`/`--debug` を受けない。
 
 ## 正解ファイルとテスト
 
@@ -90,11 +93,7 @@ Python を消した後は Rust 版の出力が正解になる。
   - 版: 最新のリリース（`/releases/latest` の転送先のタグ）。`--version` か `NICHIYOU_DAIKU_VERSION` で指定できる。
   - 置き場所: `~/.local/bin`。`--to` か `NICHIYOU_DAIKU_INSTALL_DIR` で変える。
   - OS とアーキテクチャから target を決め、アーカイブと SHA256SUMS を落とし、合えば置く。合わなければ置かずに止まる。
-  - 置き場所が PATH に無ければ足し方を言う。PATH に `--version` に答えない `nichiyou-daiku`（古い Python 版）があれば
-    `uv tool uninstall nichiyou-daiku` を案内する。
-  - 置き場所に `--version` に答えない `nichiyou-daiku`（古い Python 版。`uv tool install` も `~/.local/bin` に置く。または
-    壊れた写し）があれば、上書きせずに止まり、`uv tool uninstall nichiyou-daiku` か消すよう言う（最終レビュー。上書きすると、
-    後の uninstall が新しい CLI を消す）。
+  - 置き場所が PATH に無ければ足し方を言う。置き場所にあるものは上書きする（決定 9）。
   - 知らない OS・アーキテクチャでは理由と Releases のページを言って止まる。
   - 落とす先は `NICHIYOU_DAIKU_RELEASES` で差し替えられる（テスト用、今の入口と同じ）。
 
@@ -103,9 +102,8 @@ Python を消した後は Rust 版の出力が正解になる。
 - README: Python と codecov のバッジ、`uv tool install` の説明、「Typed Python API」、「(needs the viz extra)」を消す。
   インストールは `install.sh`、Windows は Releases から手で、ソースから（cargo と `make web`）。プラグインの節は
   初回に CLI を落とす（数秒）。ビューアーの節は `nichiyou-daiku view` を中心にし、Pages での公開を書き添える。
-  Python API が要る人は `uv tool install "git+https://github.com/ar90n/nichiyou-daiku@v0.1.0"`。
 - `docs/dsl-specification.md`（英語、正本）: CLI の節を Rust 版に合わせる（「requires build123d」を消す、`view` は
-  ブラウザのビューアー、`export` は角を丸めず `--fillet-radius` は受けるが使わない、`--version`、`validate --json` の
+  ブラウザのビューアー、`export` は角を丸めない、`--fillet-radius` と `--debug` は無い（決定 9）、`--version`、`validate --json` の
   `connections` と `steps`、API 仕様へのリンクを消す）。
 - `skills/design/SKILL.md`: `uv tool install --force` で入れ直す案内と「初回は build123d を入れるので数分」を消し、
   CLI が落とせないときの案内（入口が言う文に沿う）に替える。
@@ -134,7 +132,8 @@ Python を消した後は Rust 版の出力が正解になる。
 - 入口（偽の curl と uname、今の `plugin_bin.rs` と同じ）: 同じ版のキャッシュを使う、無ければ落とす、PATH の古い
   `nichiyou-daiku` を使わない、`NICHIYOU_DAIKU_BIN` を動かす。
 - `install.sh`: 最新の版を読んで置く、版の指定、チェックサムの不一致で置かない、知らない OS、PATH に無いときの案内、
-  古い Python 版の案内。
+  置き場所にあるものを上書きする。
+- CLI に Python 版の呼び出しのためだけのオプション（`--fillet-radius`・`--debug`）が無い。
 - 評価: `--self-check` が新しい `checks.py` で通る（既知の設計で判定が変わらない）。
 - 道具: `tools/check_step.py` が例のすべてで通る（`uv run --with build123d`）。
 

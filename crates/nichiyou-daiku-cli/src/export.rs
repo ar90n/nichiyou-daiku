@@ -18,9 +18,6 @@ pub struct Args {
     /// Export format. If not specified, detected from the output file extension (.stl, .step, .stp). An error is raised if it contradicts the output extension.
     #[arg(short, long, ignore_case = true, value_parser = ["stl", "step", "stp"])]
     format: Option<String>,
-    /// Accepted as before; boards are exported with square edges
-    #[arg(long, default_value_t = 5.0)]
-    fillet_radius: f64,
 }
 
 #[derive(Clone, Copy, PartialEq)]

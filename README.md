@@ -57,8 +57,6 @@ Then ask for furniture, e.g. "Design a 500 x 400 x 600 side table from 2x4". The
 
 ## Installation
 
-If you installed the Python version with uv, remove it first: `uv tool uninstall nichiyou-daiku` (it sits where the script installs, and the script stops when it finds it there). It stays available, with its Python API, as v0.1.0: `uv tool install "git+https://github.com/ar90n/nichiyou-daiku@v0.1.0"`, under the same command name, so install one or the other.
-
 On Linux and macOS (x86_64 or arm64):
 
 ```bash

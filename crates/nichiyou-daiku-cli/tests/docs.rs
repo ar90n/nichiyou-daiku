@@ -377,22 +377,23 @@ fn every_command_is_in_the_cli_reference() {
 
 #[test]
 fn the_docs_need_no_python() {
-    // The Python version (v0.1.0) is gone: no build123d, no viz extra, no
-    // install with uv but the line that points to v0.1.0
+    // The Python version is gone and nothing is kept for it: no build123d,
+    // no install with uv, none of its options
     let mut found = Vec::new();
     for path in markdown() {
         for (n, line) in fs::read_to_string(&path).unwrap().lines().enumerate() {
-            // The line pointing to v0.1.0 may name what it has
-            let python = !line.contains("@v0.1.0")
-                && [
-                    "build123d",
-                    "viz extra",
-                    "[viz]",
-                    "Python API",
-                    "uv tool install",
-                ]
-                .iter()
-                .any(|w| line.contains(w));
+            let python = [
+                "build123d",
+                "viz extra",
+                "[viz]",
+                "Python version",
+                "Python API",
+                "uv tool",
+                "fillet",
+                "--debug",
+            ]
+            .iter()
+            .any(|w| line.contains(w));
             if python {
                 found.push(format!("{}:{}: {line}", path.display(), n + 1));
             }

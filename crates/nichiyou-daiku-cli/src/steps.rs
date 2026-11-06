@@ -25,9 +25,6 @@ pub struct Args {
     /// Width of each image in pixels.
     #[arg(long, default_value_t = 1600, value_parser = clap::value_parser!(u32).range(400..))]
     size: u32,
-    /// Accepted as before; boards are drawn with square edges
-    #[arg(long, default_value_t = 5.0)]
-    fillet_radius: f64,
 }
 
 /// What was written and what the user should hear about it.

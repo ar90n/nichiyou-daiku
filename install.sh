@@ -132,25 +132,12 @@ fail() {
   exit 1
 }
 
-# Says what would keep the new CLI from running: its folder off PATH, or an
-# older nichiyou-daiku (the Python version, which has no --version) on PATH
+# Says how to put the folder on PATH when it is not there
 advise() {
   case :$PATH: in
     *":$1:"*) ;;
     *) printf 'nichiyou-daiku: %s is not on PATH; add it, e.g. with export PATH="%s:$PATH" in your shell profile\n' "$1" "$1" >&2 ;;
   esac
-  set -f
-  saved_ifs=$IFS
-  IFS=:
-  for dir in $PATH; do
-    if [ -n "$dir" ] && [ "$dir" != "$1" ] && [ -x "$dir/nichiyou-daiku" ] &&
-      ! "$dir/nichiyou-daiku" --version >/dev/null 2>&1; then
-      printf 'nichiyou-daiku: %s is an older nichiyou-daiku (the Python version); remove it with: uv tool uninstall nichiyou-daiku\n' "$dir/nichiyou-daiku" >&2
-      break
-    fi
-  done
-  IFS=$saved_ifs
-  set +f
 }
 
 main() {
@@ -174,12 +161,6 @@ main() {
   fi
   if [ -z "$version" ]; then
     latest || fail "cannot find the newest release ($reason); name one with --version, see $releases_page"
-  fi
-  # uv tool install puts the Python version here too, and uv tool uninstall
-  # would later remove whatever stands in its place
-  old=$to/nichiyou-daiku$exe
-  if [ -f "$old" ] && [ -x "$old" ] && ! "$old" --version >/dev/null 2>&1; then
-    fail "$old does not answer --version: it is the Python version (remove it with: uv tool uninstall nichiyou-daiku) or a broken copy (delete it); then run this again"
   fi
   download "$version" "$to" || fail "could not install v$version ($reason); see $releases_page"
   printf 'nichiyou-daiku: installed v%s for %s in %s\n' "$version" "$target" "$to" >&2
