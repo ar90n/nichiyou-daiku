@@ -7,6 +7,10 @@
 set -eu
 
 if [ -n "${NICHIYOU_DAIKU_BIN:-}" ]; then
+  if [ ! -f "$NICHIYOU_DAIKU_BIN" ] || [ ! -x "$NICHIYOU_DAIKU_BIN" ]; then
+    printf 'nichiyou-daiku: NICHIYOU_DAIKU_BIN names %s, which is not an executable file; point it at a built CLI (e.g. target/release/nichiyou-daiku) or unset it.\n' "$NICHIYOU_DAIKU_BIN" >&2
+    exit 127
+  fi
   exec "$NICHIYOU_DAIKU_BIN" "$@"
 fi
 
@@ -31,7 +35,7 @@ if [ -z "$version" ]; then
   exit 127
 fi
 
-NICHIYOU_DAIKU_LIBRARY=1
+NICHIYOU_DAIKU_LIBRARY=$$
 . "$root/install.sh"
 detect
 
@@ -53,9 +57,15 @@ fi
 
 if command -v cargo >/dev/null 2>&1; then
   printf 'nichiyou-daiku: could not download %s (%s); building it from source, which takes a few minutes\n' "$what" "$reason" >&2
-  CARGO_TARGET_DIR=$cache/build cargo build --release --quiet -p nichiyou-daiku-cli --manifest-path "$root/Cargo.toml" >&2
-  place "$cache/build/release/nichiyou-daiku$exe" "$cache"
-  exec "$binary" "$@"
+  if CARGO_TARGET_DIR=$cache/build cargo build --release --quiet -p nichiyou-daiku-cli --manifest-path "$root/Cargo.toml" >&2 &&
+    place "$cache/build/release/nichiyou-daiku$exe" "$cache"; then
+    exec "$binary" "$@"
+  fi
+  printf '%s\n' \
+    "nichiyou-daiku: could not build it from source either." \
+    "Download the CLI for your system from $releases_page/tag/v$version and put it at $binary," \
+    "or fix what cargo said above and run the command again." >&2
+  exit 127
 fi
 
 printf '%s\n' \

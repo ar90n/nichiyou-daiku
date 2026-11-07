@@ -132,6 +132,10 @@ fn an_unknown_system_is_named() {
         "{err}"
     );
     assert!(err.contains("build it from source"), "{err}");
+    assert!(
+        err.contains("https://github.com/ar90n/nichiyou-daiku/releases"),
+        "{err}"
+    );
 }
 
 #[test]
@@ -224,4 +228,110 @@ fn a_cli_already_in_the_folder_is_replaced() {
     let out = install(&dir, std::slice::from_ref(&to), &["--version", "1.2.3"]);
     assert!(out.status.success(), "{}", text(&out.stderr));
     assert_eq!(runs(&to.join("nichiyou-daiku")), "prebuilt [validate]\n");
+}
+
+/// install.sh with only the system's tools and dir/bin on PATH, as
+/// `install` runs it, and `env` on top.
+fn install_with(dir: &Path, path: &str, env: &[(&str, &str)], args: &[&str]) -> Output {
+    let mut command = Command::new("sh");
+    command
+        .arg(INSTALL)
+        .args(args)
+        .env_clear()
+        .env(
+            "PATH",
+            format!("{}:{path}/usr/bin:/bin", dir.join("bin").display()),
+        )
+        .env("HOME", dir)
+        .env(
+            "NICHIYOU_DAIKU_RELEASES",
+            format!("file://{}", dir.join("releases").display()),
+        );
+    for (key, value) in env {
+        command.env(key, value);
+    }
+    command.output().unwrap()
+}
+
+#[test]
+fn a_library_setting_in_the_environment_does_not_stop_it() {
+    // The entry point reads the script for its functions only; a variable
+    // of that name left in someone's environment must not do the same
+    let dir = folder("library", "Linux", "x86_64");
+    release(&dir, "1.2.3", "x86_64-unknown-linux-musl");
+    let to = dir.join("tools");
+    let out = install_with(
+        &dir,
+        "",
+        &[("NICHIYOU_DAIKU_LIBRARY", "1")],
+        &["--version", "1.2.3", "--to", to.to_str().unwrap()],
+    );
+    assert!(out.status.success(), "{}", text(&out.stderr));
+    assert!(to.join("nichiyou-daiku").is_file());
+}
+
+#[test]
+fn a_folder_on_the_path_with_a_trailing_slash_is_on_it() {
+    let dir = folder("slash", "Linux", "x86_64");
+    release(&dir, "1.2.3", "x86_64-unknown-linux-musl");
+    let to = dir.join("tools");
+    let out = install_with(
+        &dir,
+        &format!("{}/:", to.display()),
+        &[],
+        &["--version", "1.2.3", "--to", to.to_str().unwrap()],
+    );
+    let err = text(&out.stderr);
+    assert!(out.status.success(), "{err}");
+    assert!(!err.contains("is not on PATH"), "{err}");
+}
+
+#[test]
+fn a_stopped_download_leaves_nothing_behind() {
+    let dir = folder("stopped", "Linux", "x86_64");
+    release(&dir, "1.2.3", "x86_64-unknown-linux-musl");
+    // A curl that says it started, then takes a moment
+    let marker = dir.join("started");
+    executable(
+        &dir.join("bin/curl"),
+        &format!(
+            "#!/bin/sh\ntouch '{}'\nsleep 1\n{}",
+            marker.display(),
+            CURL.trim_start_matches("#!/bin/sh\n")
+        ),
+    );
+    let temp = dir.join("tmp");
+    fs::create_dir_all(&temp).unwrap();
+    let to = dir.join("tools");
+    let child = Command::new("sh")
+        .arg(INSTALL)
+        .args(["--version", "1.2.3", "--to", to.to_str().unwrap()])
+        .env_clear()
+        .env(
+            "PATH",
+            format!("{}:/usr/bin:/bin", dir.join("bin").display()),
+        )
+        .env("HOME", &dir)
+        .env("TMPDIR", &temp)
+        .env(
+            "NICHIYOU_DAIKU_RELEASES",
+            format!("file://{}", dir.join("releases").display()),
+        )
+        .stderr(Stdio::piped())
+        .spawn()
+        .unwrap();
+    while !marker.exists() {
+        std::thread::sleep(std::time::Duration::from_millis(20));
+    }
+    // The shell's kill: CI's slim image has no kill command of its own
+    let killed = Command::new("sh")
+        .args(["-c", &format!("kill -TERM {}", child.id())])
+        .status()
+        .unwrap();
+    assert!(killed.success());
+    let out = child.wait_with_output().unwrap();
+    assert!(!out.status.success());
+    let left: Vec<_> = fs::read_dir(&temp).unwrap().collect();
+    assert!(left.is_empty(), "{left:?}");
+    assert!(!to.join("nichiyou-daiku").exists());
 }

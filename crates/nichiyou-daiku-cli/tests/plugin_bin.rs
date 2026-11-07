@@ -233,3 +233,43 @@ fn a_link_to_the_entry_point_finds_its_plugin() {
         text(&out.stderr)
     );
 }
+
+#[test]
+fn a_nichiyou_daiku_bin_that_is_not_there_is_named() {
+    let out = Command::new("sh")
+        .arg(ENTRY)
+        .arg("validate")
+        .env_clear()
+        .env("PATH", "/usr/bin:/bin")
+        .env("NICHIYOU_DAIKU_BIN", "/nowhere/nichiyou-daiku")
+        .output()
+        .unwrap();
+    assert_eq!(out.status.code(), Some(127));
+    let err = text(&out.stderr);
+    assert!(
+        err.contains(
+            "NICHIYOU_DAIKU_BIN names /nowhere/nichiyou-daiku, which is not an executable file"
+        ),
+        "{err}"
+    );
+}
+
+#[test]
+fn a_failed_build_says_what_to_do() {
+    let dir = folder("build", "Linux", "x86_64");
+    executable(
+        &dir.join("bin/cargo"),
+        "#!/bin/sh\necho 'error: no network' >&2\nexit 101\n",
+    );
+    let out = run(&dir, &["validate"]);
+    assert_eq!(out.status.code(), Some(127));
+    let err = text(&out.stderr);
+    assert!(
+        err.contains("could not build it from source either"),
+        "{err}"
+    );
+    assert!(
+        err.contains("Download the CLI for your system from"),
+        "{err}"
+    );
+}

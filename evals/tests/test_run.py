@@ -81,9 +81,8 @@ def fake(monkeypatch, seen, tmp_path_factory):
                         "evals",
                         ".claude",
                         "CLAUDE.md",
-                        # The spec's requirement table and the tests' cases
+                        # The spec's requirement table
                         "docs/superpowers",
-                        "tests/evals",
                     )
                     if (plugin / name).exists()
                 ],

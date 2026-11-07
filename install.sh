@@ -5,8 +5,9 @@
 #   curl -fsSL https://raw.githubusercontent.com/ar90n/nichiyou-daiku/main/install.sh | sh
 #   sh install.sh --version 0.2.0 --to ~/bin
 #
-# The plugin's entry point (bin/nichiyou-daiku) reads this file with
-# NICHIYOU_DAIKU_LIBRARY set, for its functions only
+# The plugin's entry point (bin/nichiyou-daiku) reads this file for its
+# functions only, with NICHIYOU_DAIKU_LIBRARY set to its own process ID: a
+# variable of that name in the environment cannot match the new shell's
 set -eu
 
 releases_page=https://github.com/ar90n/nichiyou-daiku/releases
@@ -70,12 +71,17 @@ download() {
     return 1
   fi
   work=$(mktemp -d) || { reason="cannot make a temporary folder"; return 1; }
+  dest=$2
+  # A stop halfway leaves no temporary folder or half-placed CLI
+  trap 'rm -rf "$work" "$dest/nichiyou-daiku$exe.part.$$"; exit 1' INT TERM HUP
   if unpack "$1" "$2"; then
-    rm -rf "$work"
-    return 0
+    status=0
+  else
+    status=1
   fi
+  trap - INT TERM HUP
   rm -rf "$work"
-  return 1
+  return $status
 }
 
 unpack() {
@@ -134,8 +140,10 @@ fail() {
 
 # Says how to put the folder on PATH when it is not there
 advise() {
-  case :$PATH: in
-    *":$1:"*) ;;
+  # Trailing slashes name the same folder
+  on_path=$(printf ':%s:' "$PATH" | sed 's|/*:|:|g')
+  case $on_path in
+    *":${1%/}:"*) ;;
     *) printf 'nichiyou-daiku: %s is not on PATH; add it, e.g. with export PATH="%s:$PATH" in your shell profile\n' "$1" "$1" >&2 ;;
   esac
 }
@@ -157,7 +165,7 @@ main() {
   reason=
   detect
   if [ -z "$os" ] || [ -z "$arch" ]; then
-    fail "no prebuilt nichiyou-daiku for $system $machine; build it from source as the README says"
+    fail "no prebuilt nichiyou-daiku for $system $machine; build it from source as the README says, or see $releases_page"
   fi
   if [ -z "$version" ]; then
     latest || fail "cannot find the newest release ($reason); name one with --version, see $releases_page"
@@ -167,6 +175,6 @@ main() {
   advise "$to"
 }
 
-if [ -z "${NICHIYOU_DAIKU_LIBRARY:-}" ]; then
+if [ "${NICHIYOU_DAIKU_LIBRARY:-}" != "$$" ]; then
   main "$@"
 fi

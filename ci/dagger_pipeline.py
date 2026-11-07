@@ -9,13 +9,17 @@ import dagger
 from dagger import Config, Container, Directory
 
 WASM_BINDGEN_VERSION = "0.2.130"
+# One Debian release for both: the evaluation runs the CLI the Rust image
+# builds, which needs the C library it was linked against
+RUST_IMAGE = "rust:1.99-slim-trixie"
+PYTHON_IMAGE = "python:3.13-slim-trixie"
 
 
 async def rust_pipeline(client: dagger.Client, source_dir: Directory) -> Container:
     """Check, test and build the Rust crates (the next generation)."""
     return (
         client.container()
-        .from_("rust:1.99-slim")
+        .from_(RUST_IMAGE)
         .with_mounted_directory("/src", source_dir)
         .with_workdir("/src")
         .with_exec(["rustup", "component", "add", "rustfmt", "clippy"])
@@ -40,7 +44,7 @@ async def web_pipeline(client: dagger.Client, source_dir: Directory) -> Containe
     """Build the core as WebAssembly, then check, test and build the viewer."""
     wasm = (
         client.container()
-        .from_("rust:1.99-slim")
+        .from_(RUST_IMAGE)
         .with_mounted_directory("/src", source_dir)
         .with_workdir("/src")
         # Compiling wasm-bindgen's CLI takes minutes; keep it between runs
@@ -106,7 +110,7 @@ async def evals_pipeline(
     )
     return (
         client.container()
-        .from_("python:3.13-slim")
+        .from_(PYTHON_IMAGE)
         .with_mounted_directory("/src", source_dir)
         .with_workdir("/src")
         .with_exec(["apt-get", "update", "-qq"])
@@ -168,6 +172,11 @@ async def main() -> None:
             print(f"\n{name}:")
             try:
                 await container.stdout()
+            except dagger.ExecError as e:
+                # What the command said, or the log shows only its exit code
+                said = (e.stderr or e.stdout)[-6000:]
+                print(f"❌ {name} failed: {e}\n{said}")
+                failed = True
             except Exception as e:
                 print(f"❌ {name} failed: {e}")
                 failed = True

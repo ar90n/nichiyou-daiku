@@ -36,7 +36,8 @@ fi
 /// A fresh folder: bin/ with a uname saying `system` and `machine` and a
 /// curl for file:// URLs, an empty cache, and releases/ to fill.
 pub fn folder(name: &str, system: &str, machine: &str) -> PathBuf {
-    let dir = std::env::temp_dir().join(format!("nd-plugin-{}-{name}", std::process::id()));
+    // One folder per test, reused by the next run rather than piling up
+    let dir = std::env::temp_dir().join(format!("nd-plugin-{name}"));
     let _ = fs::remove_dir_all(&dir);
     for sub in ["bin", "cache", "releases"] {
         fs::create_dir_all(dir.join(sub)).unwrap();

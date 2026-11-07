@@ -50,9 +50,9 @@ fn fixed_date(text: &str) -> String {
         .collect()
 }
 
-/// Runs `args` on the corpus cases `wanted` picks and compares the output
-/// with NAME.<suffix>.
-fn check_corpus(args: &[&str], suffix: &str, wanted: impl Fn(&str) -> bool) {
+/// Runs `args` on the corpus cases `wanted` picks, at least `least` of them,
+/// and compares the output with NAME.<suffix>.
+fn check_corpus(args: &[&str], suffix: &str, least: usize, wanted: impl Fn(&str) -> bool) {
     let (mut failures, mut checked) = (Vec::new(), 0);
     for (name, source) in common::corpus(Path::new(CORPUS)) {
         let got = wanted(&name).then(|| run(args, &source, Path::new(CORPUS)));
@@ -62,12 +62,13 @@ fn check_corpus(args: &[&str], suffix: &str, wanted: impl Fn(&str) -> bool) {
             failures.push(error);
         }
     }
+    assert!(checked >= least, "only {checked} cases for {suffix}");
     common::assert_none(&failures, checked);
 }
 
 #[test]
 fn validate_prints_its_golden_files() {
-    check_corpus(&["validate", "-"], "cli-validate.txt", |_| true);
+    check_corpus(&["validate", "-"], "cli-validate.txt", 700, |_| true);
 }
 
 #[test]
@@ -97,13 +98,14 @@ fn validate_json_prints_its_golden_files() {
     check_corpus(
         &["validate", "--json", "-"],
         "cli-validate-json.txt",
+        9,
         |name| name.starts_with("example-"),
     );
 }
 
 #[test]
 fn report_prints_its_golden_files() {
-    check_corpus(&["report", "-"], "cli-report.txt", |_| true);
+    check_corpus(&["report", "-"], "cli-report.txt", 700, |_| true);
 }
 
 #[derive(serde::Deserialize)]
